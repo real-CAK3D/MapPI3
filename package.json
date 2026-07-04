@@ -1,13 +1,14 @@
 {
   "name": "mappi3",
-  "version": "1.2.5",
+  "version": "1.2.6",
   "private": true,
   "type": "module",
   "scripts": {
     "dev": "vite --host 0.0.0.0",
     "build": "vite build",
     "preview": "vite preview --host 0.0.0.0",
-    "smoke": "node scripts/smoke.mjs"
+    "smoke": "node scripts/smoke.mjs",
+    "tunnel": "npx --yes localtunnel --port 8080 --local-host 127.0.0.1 --subdomain mappi3-cak3d"
   },
   "dependencies": {
     "@vitejs/plugin-react": "latest",

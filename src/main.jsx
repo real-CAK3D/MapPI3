@@ -4,7 +4,7 @@ import { primaryMapPreviewPath, primaryRoutePack, primaryWaypoints, seedRoutes }
 import LiveLeafletMap from './components/LiveLeafletMap.jsx';
 import './styles.css';
 
-const VERSION = 'V1.2.5';
+const VERSION = 'V1.2.6';
 const tabs = ['Explore', 'Plan', 'Navigate', 'Daily Exercise', 'Saved', 'Health', 'Field Kit', 'Survival', 'Settings'];
 const routePath = primaryMapPreviewPath;
 const plannerWaypoints = primaryWaypoints;
