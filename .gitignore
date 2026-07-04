@@ -7,3 +7,5 @@ dist/
 *.log
 coverage/
 .cache/
+*.ts.net.crt
+*.ts.net.key

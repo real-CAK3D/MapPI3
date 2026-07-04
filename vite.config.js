@@ -10,7 +10,8 @@ export default defineConfig({
       'localhost',
       '127.0.0.1',
       '150.136.165.61',
-      '100.82.165.23'
+      '100.82.165.23',
+      'terminal-vnic.tailac984b.ts.net'
     ]
   },
   preview: {
@@ -20,7 +21,8 @@ export default defineConfig({
       'localhost',
       '127.0.0.1',
       '150.136.165.61',
-      '100.82.165.23'
+      '100.82.165.23',
+      'terminal-vnic.tailac984b.ts.net'
     ]
   }
 });
