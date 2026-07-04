@@ -1,26 +1,12 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { createRoot } from 'react-dom/client';
+import { primaryMapPreviewPath, primaryRoutePack, primaryWaypoints, seedRoutes } from './data/routePacks.js';
 import './styles.css';
 
-const VERSION = 'V1.0.3';
+const VERSION = 'V1.0.4';
 const tabs = ['Explore', 'Plan', 'Navigate', 'Saved', 'Field Kit', 'Survival', 'Settings'];
-const routePath = [
-  [35, 195], [58, 171], [83, 144], [113, 149], [150, 105], [185, 82], [225, 78], [260, 118], [292, 165], [330, 54]
-];
-
-const seedRoutes = [
-  { id: 'hh-ridge', name: 'Hocking Hills Ridge Loop', place: 'Logan, Ohio', miles: 5.8, time: '2h 42m', gain: '734 ft', tags: ['waterfall', 'loop', 'downloaded'], difficulty: 'Moderate', status: 'Downloaded', size: '184 MB' },
-  { id: 'rrg-sky', name: 'Red River Gorge Skyline', place: 'Slade, Kentucky', miles: 7.2, time: '3h 35m', gain: '1,012 ft', tags: ['views', 'shelter', 'offline ready'], difficulty: 'Hard', status: 'Ready', size: '226 MB' },
-  { id: 'mohican-scout', name: 'Mohican River Scout Path', place: 'Loudonville, Ohio', miles: 3.4, time: '1h 28m', gain: '282 ft', tags: ['water', 'family', 'custom'], difficulty: 'Easy', status: 'Not saved', size: '92 MB' }
-];
-
-const plannerWaypoints = [
-  { name: 'Trailhead', type: 'Start', mile: '0.0', icon: '◎', lat: 39.4261, lon: -82.5412 },
-  { name: 'Water crossing', type: 'Water', mile: '0.7', icon: '≋', lat: 39.4284, lon: -82.5387 },
-  { name: 'Ridge shelter', type: 'Shelter', mile: '1.9', icon: '⌂', lat: 39.4316, lon: -82.5368 },
-  { name: 'South overlook', type: 'View', mile: '2.4', icon: '◆', lat: 39.4330, lon: -82.5326 },
-  { name: 'Return split', type: 'Waypoint', mile: '4.8', icon: '•', lat: 39.4296, lon: -82.5291 }
-];
+const routePath = primaryMapPreviewPath;
+const plannerWaypoints = primaryWaypoints;
 
 const survivalTips = [
   ['If lost', 'Stop, breathe, mark your location, conserve battery, retrace only if safe.'],
@@ -48,7 +34,7 @@ function formatClock(seconds) {
 function makeGpx() {
   const points = plannerWaypoints.map(p => `    <wpt lat="${p.lat}" lon="${p.lon}"><name>${p.name}</name><type>${p.type}</type></wpt>`).join('\n');
   const rtepts = plannerWaypoints.map(p => `      <rtept lat="${p.lat}" lon="${p.lon}"><name>${p.name}</name></rtept>`).join('\n');
-  return `<?xml version="1.0" encoding="UTF-8"?>\n<gpx version="1.1" creator="MapPi3 ${VERSION}" xmlns="http://www.topografix.com/GPX/1/1">\n  <metadata><name>Hocking Hills Ridge Loop - MapPi3 Sample</name></metadata>\n${points}\n  <rte><name>Hocking Hills Ridge Loop</name>\n${rtepts}\n  </rte>\n</gpx>\n`;
+  return `<?xml version="1.0" encoding="UTF-8"?>\n<gpx version="1.1" creator="MapPi3 ${VERSION}" xmlns="http://www.topografix.com/GPX/1/1">\n  <metadata><name>${primaryRoutePack.name} - MapPi3 Sample</name></metadata>\n${points}\n  <rte><name>${primaryRoutePack.name}</name>\n${rtepts}\n  </rte>\n</gpx>\n`;
 }
 
 function Pill({ children, tone = 'default' }) { return <span className={`pill ${tone}`}>{children}</span>; }
@@ -70,7 +56,7 @@ function RouteMap({ activeTab, progress, recording }) {
         <circle cx={x} cy={y} r="5" className="gps-dot" />
         <circle cx="260" cy="118" r="7" className="poi water" /><circle cx="330" cy="54" r="7" className="poi shelter" /><circle cx="112" cy="147" r="6" className="poi view" />
       </svg>
-      <div className="north-chip">N ↑</div><div className="elevation-card"><strong>Elev.</strong><span>+734 ft</span><small>{Math.round(progress * 5.8 * 10) / 10} mi in</small></div>
+      <div className="north-chip">N ↑</div><div className="elevation-card"><strong>Elev.</strong><span>+734 ft</span><small>{Math.round(progress * primaryRoutePack.distanceMiles * 10) / 10} mi in</small></div>
     </div>
     <div className="live-row"><strong>Live Navigation</strong><span>{recording ? 'Simulated GPS moving · breadcrumb recording' : 'Simulator paused · route corridor cached'}</span></div>
   </section>;
@@ -81,18 +67,18 @@ function Explore({ routes, onDownload }) {
 }
 
 function Plan({ gpxStatus, onExportGpx, onImportGpx }) {
-  return <section className="panel two-col"><div><h2>Custom route builder</h2><p className="muted">V1.0.3 mock flow: tap tools, export a real sample GPX file, and simulate an imported GPX being staged for offline use.</p><div className="builder-tools">{['Draw route', 'Add waypoint', 'Water', 'Shelter', 'Camp', 'Danger'].map(tool => <button key={tool}>{tool}</button>)}<button onClick={onImportGpx}>GPX import</button><button onClick={onExportGpx}>GPX export</button></div><div className="route-summary"><Stat value="5" label="waypoints" /><Stat value="5.8" label="planned mi" /><Stat value="734ft" label="gain" /><Stat value="184MB" label="pack est." /></div><div className="alert info">{gpxStatus}</div></div><div><h2>Waypoints / POIs</h2>{plannerWaypoints.map(point => <div className="poi-row" key={point.name}><strong><span className="poi-icon">{point.icon}</span>{point.name}</strong><span>{point.mile} mi</span><p>{point.type}</p></div>)}</div></section>;
+  return <section className="panel two-col"><div><h2>Custom route builder</h2><p className="muted">V1.0.4 route-pack flow: tap tools, export a real sample GPX file, and simulate an imported GPX being staged for offline use.</p><div className="builder-tools">{['Draw route', 'Add waypoint', 'Water', 'Shelter', 'Camp', 'Danger'].map(tool => <button key={tool}>{tool}</button>)}<button onClick={onImportGpx}>GPX import</button><button onClick={onExportGpx}>GPX export</button></div><div className="route-summary"><Stat value={plannerWaypoints.length} label="waypoints" /><Stat value={primaryRoutePack.distanceMiles} label="planned mi" /><Stat value={`${primaryRoutePack.elevationGainFt}ft`} label="gain" /><Stat value={`${primaryRoutePack.storageEstimateMb}MB`} label="pack est." /></div><div className="alert info">{gpxStatus}</div></div><div><h2>Waypoints / POIs</h2>{plannerWaypoints.map(point => <div className="poi-row" key={point.name}><strong><span className="poi-icon">{point.icon}</span>{point.name}</strong><span>{point.mile} mi</span><p>{point.type}</p></div>)}</div></section>;
 }
 
 function Navigate({ recording, setRecording, elapsed, progress, resetTrack }) {
-  const miles = Math.round(progress * 5.8 * 10) / 10;
-  const remaining = Math.max(0, Math.round((5.8 - miles) * 10) / 10);
+  const miles = Math.round(progress * primaryRoutePack.distanceMiles * 10) / 10;
+  const remaining = Math.max(0, Math.round((primaryRoutePack.distanceMiles - miles) * 10) / 10);
   return <section className="panel dashboard-panel"><div className="section-head"><h2>Active hike simulator</h2><div className="button-row"><button className="primary small" onClick={() => setRecording(!recording)}>{recording ? 'Pause recording' : 'Start recording'}</button><button className="ghost small" onClick={resetTrack}>Reset</button></div></div><div className="nav-grid"><Stat value={miles.toFixed(1)} label="mi tracked" /><Stat value={formatClock(elapsed)} label="elapsed" /><Stat value={remaining.toFixed(1)} label="mi remaining" /><Stat value="±12ft" label="GPS accuracy" /><Stat value={recording ? '2.9mph' : '0.0mph'} label="pace" /><Stat value="NW 318°" label="heading" /><Stat value="14:12" label="sunset" /><Stat value={`${Math.round(progress * 100)}%`} label="route progress" /></div><div className="alert good">{recording ? 'Recording simulated track · next waypoint updates as marker moves' : 'Paused · ready to record when hike starts'}</div></section>;
 }
 
 function Saved({ routes }) {
   const downloaded = routes.filter(r => r.status === 'Downloaded');
-  return <section className="panel"><h2>Saved offline packs</h2><p className="muted">Downloaded packs are browser-persisted in V1.0.3. Later this becomes the Pi SD route-pack database.</p>{downloaded.map(route => <div className="saved-row" key={route.id}><strong>{route.name}</strong><span>{route.size}</span><Pill>Ready offline</Pill><small>Local browser state</small></div>)}<div className="saved-row"><strong>Base survival library</strong><span>12 MB</span><Pill>Always local</Pill><small>{VERSION}</small></div></section>;
+  return <section className="panel"><h2>Saved offline packs</h2><p className="muted">Downloaded packs are browser-persisted in V1.0.4. Route cards now come from route-pack JSON; later this becomes the Pi SD route-pack database.</p>{downloaded.map(route => <div className="saved-row" key={route.id}><strong>{route.name}</strong><span>{route.size}</span><Pill>Ready offline</Pill><small>Local browser state</small></div>)}<div className="saved-row"><strong>Base survival library</strong><span>12 MB</span><Pill>Always local</Pill><small>{VERSION}</small></div></section>;
 }
 
 function FieldKit() { return <section className="panel two-col"><div><h2>Sense HAT compass</h2><div className="kit-card big"><div className="matrix"><span>↑</span></div><div><h3>LED north arrow</h3><p>Enable this before hiking. Calibrate flat, away from magnets/metal, then use bag mode smoothing. While moving, MapPi3 can fall back to GPS heading.</p><button>Start quick calibration</button></div></div></div><div><h2>Sensor status</h2><div className="sensor-list"><span>GPS lock <b>3D / good</b></span><span>Magnetic field <b>stable</b></span><span>Temp <b>71°F</b></span><span>Pressure trend <b>steady</b></span></div></div></section>; }
@@ -100,7 +86,7 @@ function Survival() { return <section className="panel two-col"><div><h2>Surviva
 
 function Settings({ settings, setSettings, clearLocalState }) {
   const update = (key, value) => setSettings(s => ({ ...s, [key]: value }));
-  return <section className="panel two-col"><div><h2>Settings</h2><div className="setting-row"><span>Connection mode</span><select value={settings.mode} onChange={e => update('mode', e.target.value)}><option>Hotspot</option><option>Known Wi‑Fi</option><option>Offline only</option></select></div><div className="setting-row"><span>Units</span><select value={settings.units} onChange={e => update('units', e.target.value)}><option>Miles / °F</option><option>Kilometers / °C</option></select></div><div className="setting-row"><span>Map theme</span><select value={settings.theme} onChange={e => update('theme', e.target.value)}><option>Topo Night</option><option>Trail Day</option><option>Battery Saver</option></select></div><button className="ghost full" onClick={clearLocalState}>Reset local V1.0.3 state</button></div><div><h2>Integrations later</h2><div className="integration-list"><Pill>GitHub ready</Pill><Pill>Supabase env placeholders</Pill><Pill>Vercel-ready static frontend</Pill><Pill>Pi hotspot first</Pill><Pill>localStorage demo</Pill></div></div></section>;
+  return <section className="panel two-col"><div><h2>Settings</h2><div className="setting-row"><span>Connection mode</span><select value={settings.mode} onChange={e => update('mode', e.target.value)}><option>Hotspot</option><option>Known Wi‑Fi</option><option>Offline only</option></select></div><div className="setting-row"><span>Units</span><select value={settings.units} onChange={e => update('units', e.target.value)}><option>Miles / °F</option><option>Kilometers / °C</option></select></div><div className="setting-row"><span>Map theme</span><select value={settings.theme} onChange={e => update('theme', e.target.value)}><option>Topo Night</option><option>Trail Day</option><option>Battery Saver</option></select></div><button className="ghost full" onClick={clearLocalState}>Reset local V1.0.4 state</button></div><div><h2>Integrations later</h2><div className="integration-list"><Pill>GitHub ready</Pill><Pill>Supabase env placeholders</Pill><Pill>Vercel-ready static frontend</Pill><Pill>Pi hotspot first</Pill><Pill>localStorage demo</Pill></div></div></section>;
 }
 
 function DownloadPanel() { return <div className="mini-panel"><h2>Download workflow</h2><div className="sync-steps"><span>Search online</span><span>Pick route</span><span>Cache to Pi SD</span><span>Hike offline</span></div></div>; }
@@ -119,7 +105,12 @@ function ActiveTab(props) {
 function App() {
   const [activeTab, setActiveTab] = useState(() => loadStored('mappi3.activeTab', 'Explore'));
   const [settings, setSettings] = useState(() => loadStored('mappi3.settings', { mode: 'Hotspot', units: 'Miles / °F', theme: 'Topo Night' }));
-  const [routes, setRoutes] = useState(() => loadStored('mappi3.routes', seedRoutes));
+  const [routes, setRoutes] = useState(() => {
+    const stored = loadStored('mappi3.routes', null);
+    if (!stored) return seedRoutes;
+    const storedById = Object.fromEntries(stored.map(route => [route.id, route]));
+    return seedRoutes.map(route => ({ ...route, status: storedById[route.id]?.status ?? route.status, tags: storedById[route.id]?.tags ?? route.tags }));
+  });
   const [recording, setRecording] = useState(false);
   const [elapsed, setElapsed] = useState(() => loadStored('mappi3.elapsed', 0));
   const [progress, setProgress] = useState(() => loadStored('mappi3.progress', 0.34));
@@ -147,12 +138,12 @@ function App() {
     const url = URL.createObjectURL(blob);
     const link = document.createElement('a');
     link.href = url; link.download = 'mappi3-sample-route.gpx'; link.click(); URL.revokeObjectURL(url);
-    setGpxStatus('Exported mappi3-sample-route.gpx from the V1.0.3 sample route.');
+    setGpxStatus(`Exported mappi3-sample-route.gpx from ${primaryRoutePack.name}.`);
   };
   const onImportGpx = () => setGpxStatus('Mock import staged: sample GPX would be parsed into route geometry, waypoints, POIs, and an offline pack request.');
   const clearLocalState = () => { ['mappi3.activeTab','mappi3.settings','mappi3.routes','mappi3.elapsed','mappi3.progress'].forEach(k => localStorage.removeItem(k)); location.reload(); };
 
-  return <main className="app-shell"><section className="hero-card"><div className="top-line"><span className="brand-mark">△</span><div><h1>MapPi3</h1><p>Trail OS · {VERSION}</p></div><Pill tone="online">{settings.mode}</Pill></div><div className="search-box"><span>⌕</span><input placeholder="Search places, trails, or saved GPX…" defaultValue="Hocking Hills" /></div><div className="quick-stats"><Stat value={(progress * 5.8).toFixed(1)} label="mi tracked" /><Stat value={formatClock(elapsed)} label="elapsed" /><Stat value={`${downloadedCount}/3`} label="packs local" /><Stat value="±12ft" label="GPS lock" /></div></section><RouteMap activeTab={activeTab} progress={progress} recording={recording} /><section className="tabs-grid" aria-label="MapPi3 sections">{tabs.map(item => <button key={item} className={item === activeTab ? 'active' : ''} onClick={() => setActiveTab(item)}>{item}</button>)}</section><ActiveTab activeTab={activeTab} routes={routes} onDownload={onDownload} settings={settings} setSettings={setSettings} recording={recording} setRecording={setRecording} elapsed={elapsed} progress={progress} resetTrack={resetTrack} gpxStatus={gpxStatus} onExportGpx={onExportGpx} onImportGpx={onImportGpx} clearLocalState={clearLocalState} /></main>;
+  return <main className="app-shell"><section className="hero-card"><div className="top-line"><span className="brand-mark">△</span><div><h1>MapPi3</h1><p>Trail OS · {VERSION}</p></div><Pill tone="online">{settings.mode}</Pill></div><div className="search-box"><span>⌕</span><input placeholder="Search places, trails, or saved GPX…" defaultValue="Hocking Hills" /></div><div className="quick-stats"><Stat value={(progress * primaryRoutePack.distanceMiles).toFixed(1)} label="mi tracked" /><Stat value={formatClock(elapsed)} label="elapsed" /><Stat value={`${downloadedCount}/3`} label="packs local" /><Stat value="±12ft" label="GPS lock" /></div></section><RouteMap activeTab={activeTab} progress={progress} recording={recording} /><section className="tabs-grid" aria-label="MapPi3 sections">{tabs.map(item => <button key={item} className={item === activeTab ? 'active' : ''} onClick={() => setActiveTab(item)}>{item}</button>)}</section><ActiveTab activeTab={activeTab} routes={routes} onDownload={onDownload} settings={settings} setSettings={setSettings} recording={recording} setRecording={setRecording} elapsed={elapsed} progress={progress} resetTrack={resetTrack} gpxStatus={gpxStatus} onExportGpx={onExportGpx} onImportGpx={onImportGpx} clearLocalState={clearLocalState} /></main>;
 }
 
 createRoot(document.getElementById('root')).render(<App />);

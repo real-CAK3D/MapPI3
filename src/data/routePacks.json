@@ -1,0 +1,418 @@
+[
+  {
+    "id": "hh-ridge",
+    "schemaVersion": "mappi3.routePack.v1",
+    "name": "Hocking Hills Ridge Loop",
+    "place": "Logan, Ohio",
+    "region": "Ohio",
+    "summary": "Sample loop with waterfall, water crossing, shelter, overlook, and offline topo corridor.",
+    "difficulty": "Moderate",
+    "routeType": "Loop",
+    "status": "Downloaded",
+    "distanceMiles": 5.8,
+    "estimatedTime": "2h 42m",
+    "elevationGainFt": 734,
+    "storageEstimateMb": 184,
+    "tags": [
+      "waterfall",
+      "loop",
+      "downloaded",
+      "water",
+      "shelter"
+    ],
+    "sync": {
+      "state": "local",
+      "lastSynced": "demo",
+      "supabaseReady": false
+    },
+    "offline": {
+      "required": true,
+      "tileFormat": "MBTiles",
+      "tileBounds": [
+        -82.552,
+        39.421,
+        -82.522,
+        39.438
+      ],
+      "minZoom": 11,
+      "maxZoom": 16,
+      "layers": [
+        "trail",
+        "topo",
+        "hillshade",
+        "contours"
+      ]
+    },
+    "weather": {
+      "cachePolicy": "refresh-when-online",
+      "lastForecastLabel": "cached 24h outlook"
+    },
+    "geometry": {
+      "type": "LineString",
+      "coordinates": [
+        [
+          -82.5412,
+          39.4261
+        ],
+        [
+          -82.5387,
+          39.4284
+        ],
+        [
+          -82.5368,
+          39.4316
+        ],
+        [
+          -82.5326,
+          39.433
+        ],
+        [
+          -82.5291,
+          39.4296
+        ],
+        [
+          -82.5412,
+          39.4261
+        ]
+      ]
+    },
+    "mapPreviewPath": [
+      [
+        35,
+        195
+      ],
+      [
+        58,
+        171
+      ],
+      [
+        83,
+        144
+      ],
+      [
+        113,
+        149
+      ],
+      [
+        150,
+        105
+      ],
+      [
+        185,
+        82
+      ],
+      [
+        225,
+        78
+      ],
+      [
+        260,
+        118
+      ],
+      [
+        292,
+        165
+      ],
+      [
+        330,
+        54
+      ]
+    ],
+    "waypoints": [
+      {
+        "id": "hh-start",
+        "name": "Trailhead",
+        "type": "Start",
+        "mile": 0,
+        "icon": "\u25ce",
+        "lat": 39.4261,
+        "lon": -82.5412
+      },
+      {
+        "id": "hh-water",
+        "name": "Water crossing",
+        "type": "Water",
+        "mile": 0.7,
+        "icon": "\u224b",
+        "lat": 39.4284,
+        "lon": -82.5387
+      },
+      {
+        "id": "hh-shelter",
+        "name": "Ridge shelter",
+        "type": "Shelter",
+        "mile": 1.9,
+        "icon": "\u2302",
+        "lat": 39.4316,
+        "lon": -82.5368
+      },
+      {
+        "id": "hh-view",
+        "name": "South overlook",
+        "type": "View",
+        "mile": 2.4,
+        "icon": "\u25c6",
+        "lat": 39.433,
+        "lon": -82.5326
+      },
+      {
+        "id": "hh-return",
+        "name": "Return split",
+        "type": "Waypoint",
+        "mile": 4.8,
+        "icon": "\u2022",
+        "lat": 39.4296,
+        "lon": -82.5291
+      }
+    ],
+    "pois": [
+      {
+        "id": "hh-poi-water",
+        "type": "water",
+        "label": "Filter/treat before drinking",
+        "mile": 0.7
+      },
+      {
+        "id": "hh-poi-shelter",
+        "type": "shelter",
+        "label": "Lean-to near ridge split",
+        "mile": 1.9
+      },
+      {
+        "id": "hh-poi-caution",
+        "type": "caution",
+        "label": "Steep washout after rain",
+        "mile": 3.1
+      }
+    ]
+  },
+  {
+    "id": "rrg-sky",
+    "schemaVersion": "mappi3.routePack.v1",
+    "name": "Red River Gorge Skyline",
+    "place": "Slade, Kentucky",
+    "region": "Kentucky",
+    "summary": "Longer ridge route with views, shelter notes, and heavier terrain cache.",
+    "difficulty": "Hard",
+    "routeType": "Point-to-point",
+    "status": "Ready",
+    "distanceMiles": 7.2,
+    "estimatedTime": "3h 35m",
+    "elevationGainFt": 1012,
+    "storageEstimateMb": 226,
+    "tags": [
+      "views",
+      "shelter",
+      "offline ready"
+    ],
+    "sync": {
+      "state": "remote-catalog",
+      "lastSynced": null,
+      "supabaseReady": false
+    },
+    "offline": {
+      "required": false,
+      "tileFormat": "MBTiles",
+      "tileBounds": [
+        -83.72,
+        37.75,
+        -83.6,
+        37.86
+      ],
+      "minZoom": 10,
+      "maxZoom": 15,
+      "layers": [
+        "trail",
+        "topo",
+        "hillshade"
+      ]
+    },
+    "weather": {
+      "cachePolicy": "refresh-when-online",
+      "lastForecastLabel": "not cached"
+    },
+    "geometry": {
+      "type": "LineString",
+      "coordinates": [
+        [
+          -83.68,
+          37.79
+        ],
+        [
+          -83.66,
+          37.81
+        ],
+        [
+          -83.63,
+          37.84
+        ]
+      ]
+    },
+    "mapPreviewPath": [
+      [
+        25,
+        205
+      ],
+      [
+        80,
+        154
+      ],
+      [
+        140,
+        130
+      ],
+      [
+        202,
+        87
+      ],
+      [
+        270,
+        118
+      ],
+      [
+        335,
+        58
+      ]
+    ],
+    "waypoints": [
+      {
+        "id": "rrg-start",
+        "name": "Skyline start",
+        "type": "Start",
+        "mile": 0,
+        "icon": "\u25ce",
+        "lat": 37.79,
+        "lon": -83.68
+      },
+      {
+        "id": "rrg-view",
+        "name": "Gorge overlook",
+        "type": "View",
+        "mile": 2.6,
+        "icon": "\u25c6",
+        "lat": 37.81,
+        "lon": -83.66
+      },
+      {
+        "id": "rrg-end",
+        "name": "Exit trailhead",
+        "type": "Finish",
+        "mile": 7.2,
+        "icon": "\u25ce",
+        "lat": 37.84,
+        "lon": -83.63
+      }
+    ],
+    "pois": []
+  },
+  {
+    "id": "mohican-scout",
+    "schemaVersion": "mappi3.routePack.v1",
+    "name": "Mohican River Scout Path",
+    "place": "Loudonville, Ohio",
+    "region": "Ohio",
+    "summary": "Shorter family/custom sample with water and low storage footprint.",
+    "difficulty": "Easy",
+    "routeType": "Out-and-back",
+    "status": "Not saved",
+    "distanceMiles": 3.4,
+    "estimatedTime": "1h 28m",
+    "elevationGainFt": 282,
+    "storageEstimateMb": 92,
+    "tags": [
+      "water",
+      "family",
+      "custom"
+    ],
+    "sync": {
+      "state": "draft",
+      "lastSynced": null,
+      "supabaseReady": false
+    },
+    "offline": {
+      "required": false,
+      "tileFormat": "MBTiles",
+      "tileBounds": [
+        -82.28,
+        40.58,
+        -82.2,
+        40.64
+      ],
+      "minZoom": 11,
+      "maxZoom": 16,
+      "layers": [
+        "trail",
+        "topo"
+      ]
+    },
+    "weather": {
+      "cachePolicy": "refresh-when-online",
+      "lastForecastLabel": "not cached"
+    },
+    "geometry": {
+      "type": "LineString",
+      "coordinates": [
+        [
+          -82.25,
+          40.6
+        ],
+        [
+          -82.23,
+          40.61
+        ],
+        [
+          -82.21,
+          40.63
+        ]
+      ]
+    },
+    "mapPreviewPath": [
+      [
+        40,
+        180
+      ],
+      [
+        120,
+        135
+      ],
+      [
+        210,
+        128
+      ],
+      [
+        320,
+        75
+      ]
+    ],
+    "waypoints": [
+      {
+        "id": "mo-start",
+        "name": "River trailhead",
+        "type": "Start",
+        "mile": 0,
+        "icon": "\u25ce",
+        "lat": 40.6,
+        "lon": -82.25
+      },
+      {
+        "id": "mo-water",
+        "name": "River access",
+        "type": "Water",
+        "mile": 1.1,
+        "icon": "\u224b",
+        "lat": 40.61,
+        "lon": -82.23
+      },
+      {
+        "id": "mo-turn",
+        "name": "Turnaround",
+        "type": "Waypoint",
+        "mile": 1.7,
+        "icon": "\u2022",
+        "lat": 40.63,
+        "lon": -82.21
+      }
+    ],
+    "pois": []
+  }
+]
