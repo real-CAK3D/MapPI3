@@ -8,7 +8,7 @@ function routeToPoints(route) {
   return route?.geometry?.coordinates?.map(([lon, lat]) => [lat, lon]) || [];
 }
 
-export default function LiveLeafletMap({ trace = [], center = defaultCenter, active = false, route = null, waypoints = [] }) {
+export default function LiveLeafletMap({ trace = [], center = defaultCenter, active = false, route = null, waypoints = [], onMapClick = null }) {
   const mapRef = useRef(null);
   const containerRef = useRef(null);
   const layerRef = useRef({ marker: null, line: null, route: null, waypoints: [] });
@@ -31,6 +31,13 @@ export default function LiveLeafletMap({ trace = [], center = defaultCenter, act
   }, [center]);
 
   useEffect(() => {
+    if (!mapRef.current) return undefined;
+    const handler = (event) => onMapClick && onMapClick({ lat: event.latlng.lat, lon: event.latlng.lng });
+    mapRef.current.on('click', handler);
+    return () => mapRef.current && mapRef.current.off('click', handler);
+  }, [onMapClick]);
+
+  useEffect(() => {
     if (!mapRef.current) return;
     const map = mapRef.current;
     const latest = points[points.length - 1] || center;
@@ -44,12 +51,12 @@ export default function LiveLeafletMap({ trace = [], center = defaultCenter, act
       layerRef.current.route = L.polyline(routePoints, { color: '#9ce36c', weight: 5, opacity: 0.72, dashArray: '10 8' }).addTo(map);
       (waypoints || []).forEach(point => {
         const marker = L.circleMarker([point.lat, point.lon], {
-          radius: 6,
-          color: '#122016',
+          radius: point.custom ? 8 : 6,
+          color: point.custom ? '#dff1ff' : '#122016',
           weight: 2,
-          fillColor: '#ffd36a',
+          fillColor: point.custom ? '#ff8bd1' : '#ffd36a',
           fillOpacity: 0.95
-        }).bindTooltip(`${point.name} · ${point.mile} mi`, { direction: 'top' }).addTo(map);
+        }).bindTooltip(`${point.name} · ${point.mile} mi${point.custom ? ' · custom' : ''}`, { direction: 'top' }).addTo(map);
         layerRef.current.waypoints.push(marker);
       });
     }
