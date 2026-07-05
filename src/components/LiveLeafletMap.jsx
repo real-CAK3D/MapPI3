@@ -8,7 +8,16 @@ function routeToPoints(route) {
   return route?.geometry?.coordinates?.map(([lon, lat]) => [lat, lon]) || [];
 }
 
-export default function LiveLeafletMap({ trace = [], center = defaultCenter, active = false, route = null, waypoints = [], onMapClick = null }) {
+function iconFor(point) {
+  return L.divIcon({
+    className: `mappi3-waypoint-icon ${point.custom ? 'custom' : 'stock'}`,
+    html: `<span>${point.icon || (point.custom ? '✚' : '•')}</span>`,
+    iconSize: [28, 28],
+    iconAnchor: [14, 14]
+  });
+}
+
+export default function LiveLeafletMap({ trace = [], center = defaultCenter, active = false, route = null, waypoints = [], onMapClick = null, onWaypointMove = null }) {
   const mapRef = useRef(null);
   const containerRef = useRef(null);
   const layerRef = useRef({ marker: null, line: null, route: null, waypoints: [] });
@@ -50,13 +59,15 @@ export default function LiveLeafletMap({ trace = [], center = defaultCenter, act
     if (routePoints.length > 1) {
       layerRef.current.route = L.polyline(routePoints, { color: '#9ce36c', weight: 5, opacity: 0.72, dashArray: '10 8' }).addTo(map);
       (waypoints || []).forEach(point => {
-        const marker = L.circleMarker([point.lat, point.lon], {
-          radius: point.custom ? 8 : 6,
-          color: point.custom ? '#dff1ff' : '#122016',
-          weight: 2,
-          fillColor: point.custom ? '#ff8bd1' : '#ffd36a',
-          fillOpacity: 0.95
-        }).bindTooltip(`${point.name} · ${point.mile} mi${point.custom ? ' · custom' : ''}`, { direction: 'top' }).addTo(map);
+        const marker = L.marker([point.lat, point.lon], { icon: iconFor(point), draggable: Boolean(point.custom && onWaypointMove) })
+          .bindTooltip(`${point.name} · ${point.mile} mi${point.custom ? ' · custom' : ''}`, { direction: 'top' })
+          .addTo(map);
+        if (point.custom && onWaypointMove) {
+          marker.on('dragend', event => {
+            const latlng = event.target.getLatLng();
+            onWaypointMove(point.id, { lat: latlng.lat, lon: latlng.lng });
+          });
+        }
         layerRef.current.waypoints.push(marker);
       });
     }
@@ -74,7 +85,7 @@ export default function LiveLeafletMap({ trace = [], center = defaultCenter, act
     const boundsPoints = [...routePoints, ...tracePoints];
     if (boundsPoints.length > 1) map.fitBounds(L.latLngBounds(boundsPoints), { padding: [24, 24], maxZoom: 17 });
     else map.setView(latest, 15);
-  }, [points, tracePoints, routePoints, waypoints, center, active]);
+  }, [points, tracePoints, routePoints, waypoints, center, active, onWaypointMove]);
 
   return <div className="leaflet-shell"><div ref={containerRef} className="leaflet-map" /></div>;
 }
