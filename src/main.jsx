@@ -4,7 +4,7 @@ import { primaryMapPreviewPath, primaryRoutePack, primaryWaypoints, seedRoutes }
 import LiveLeafletMap from './components/LiveLeafletMap.jsx';
 import './styles.css';
 
-const VERSION = 'V1.2.24';
+const VERSION = 'V1.2.25';
 const tabs = ['Explore', 'Plan', 'Launch', 'Navigate', 'Daily Exercise', 'Saved', 'Health', 'Field Kit', 'Survival', 'Settings'];
 const routePath = primaryMapPreviewPath;
 const plannerWaypoints = primaryWaypoints;
@@ -90,12 +90,13 @@ function routeMatches(route, query) {
   const needle = query.trim().toLowerCase();
   if (!needle) return true;
   if (needle === 'near me') return true;
+  if (needle === 'at') return (route.tags || []).includes('at') || /appalachian trail/i.test([route.name, route.summary, route.region].join(' '));
   const waypointText = (route.waypoints || []).map(p => `${p.name} ${p.type}`).join(' ');
   const poiText = (route.pois || []).map(p => `${p.type} ${p.label}`).join(' ');
-  return [route.name, route.place, route.difficulty, route.routeType, route.summary, waypointText, poiText, ...(route.tags || [])].join(' ').toLowerCase().includes(needle);
+  return [route.name, route.place, route.region, route.difficulty, route.routeType, route.summary, waypointText, poiText, ...(route.tags || [])].join(' ').toLowerCase().includes(needle);
 }
 function routeSearchSuggestions(routes, query) { const tokens = new Set(); routes.forEach(route => { [route.name, route.place, route.region, route.difficulty, route.routeType, ...(route.tags || []), ...(route.waypoints || []).map(w => w.type), ...(route.pois || []).map(p => p.type)].filter(Boolean).forEach(value => tokens.add(String(value))); }); const needle = query.trim().toLowerCase(); return [...tokens].filter(value => !needle || value.toLowerCase().includes(needle)).slice(0, 8); }
-const routeQuickFilters = ['near me', 'sunrise', 'sunset', 'water', 'easy', 'moderate', 'shelter', 'overlook'];
+const routeQuickFilters = ['near me', 'AT', 'route 26', 'speck pond', 'sunrise', 'sunset', 'water', 'easy', 'moderate', 'shelter', 'overlook'];
 function CompassDial() {
   const [heading, setHeading] = useState(null);
   const [status, setStatus] = useState('Tap Enable phone compass. iPhone may ask for motion/orientation permission.');

@@ -3229,5 +3229,3656 @@
         "mile": 0.8
       }
     ]
+  },
+  {
+    "id": "la-thorncrag-loop",
+    "schemaVersion": "mappi3.routePack.v1",
+    "name": "Thorncrag Bird Sanctuary Loop",
+    "place": "Lewiston, Maine",
+    "region": "Lewiston-Auburn Maine",
+    "summary": "Local Lewiston woods and sanctuary loop for short hikes, family walks, and quick shakedown tests.",
+    "difficulty": "Easy",
+    "routeType": "Loop",
+    "status": "Ready",
+    "distanceMiles": 2.1,
+    "estimatedTime": "1h 05m",
+    "elevationGainFt": 220,
+    "storageEstimateMb": 46,
+    "tags": [
+      "lewiston",
+      "auburn",
+      "local",
+      "easy",
+      "family",
+      "woods",
+      "birds"
+    ],
+    "sync": {
+      "state": "local-maine-seed-catalog",
+      "lastSynced": "seed-v1.2.25",
+      "supabaseReady": false
+    },
+    "offline": {
+      "required": false,
+      "tileFormat": "MBTiles",
+      "tileBounds": [
+        -70.2138,
+        44.0759,
+        -70.1238,
+        44.1409
+      ],
+      "minZoom": 10,
+      "maxZoom": 16,
+      "layers": [
+        "trail",
+        "topo",
+        "waypoints",
+        "notes"
+      ]
+    },
+    "weather": {
+      "cachePolicy": "refresh-when-online",
+      "lastForecastLabel": "not cached"
+    },
+    "geometry": {
+      "type": "LineString",
+      "coordinates": [
+        [
+          -70.1788,
+          44.1059
+        ],
+        [
+          -70.1733,
+          44.109551
+        ],
+        [
+          -70.1678,
+          44.108883
+        ],
+        [
+          -70.1623,
+          44.104686
+        ],
+        [
+          -70.1568,
+          44.101925
+        ],
+        [
+          -70.1513,
+          44.103867
+        ],
+        [
+          -70.1788,
+          44.1059
+        ]
+      ]
+    },
+    "mapPreviewPath": [
+      [
+        30,
+        171
+      ],
+      [
+        80,
+        128
+      ],
+      [
+        130,
+        110
+      ],
+      [
+        180,
+        189
+      ],
+      [
+        230,
+        232
+      ],
+      [
+        280,
+        249
+      ],
+      [
+        330,
+        169
+      ]
+    ],
+    "waypoints": [
+      {
+        "id": "la-thorncrag-loop-start",
+        "name": "Trailhead",
+        "type": "Start",
+        "mile": 0,
+        "icon": "\u25ce",
+        "lat": 44.1059,
+        "lon": -70.1788
+      },
+      {
+        "id": "la-thorncrag-loop-mid",
+        "name": "Key marker / viewpoint",
+        "type": "Waypoint",
+        "mile": 1.1,
+        "icon": "\u25c6",
+        "lat": 44.104686,
+        "lon": -70.1623
+      },
+      {
+        "id": "la-thorncrag-loop-finish",
+        "name": "Finish / turnaround",
+        "type": "Return",
+        "mile": 2.1,
+        "icon": "\u25ce",
+        "lat": 44.1059,
+        "lon": -70.1788
+      }
+    ],
+    "pois": [
+      {
+        "id": "la-thorncrag-loop-poi",
+        "type": "lewiston",
+        "label": "Local Lewiston woods and sanctuary loop for short hikes, family walks, and quick shakedown",
+        "mile": 1.1
+      }
+    ]
+  },
+  {
+    "id": "la-mount-apatite-loop",
+    "schemaVersion": "mappi3.routePack.v1",
+    "name": "Mount Apatite Park Loop",
+    "place": "Auburn, Maine",
+    "region": "Lewiston-Auburn Maine",
+    "summary": "Auburn local trail network sample with quarry history, woods, and short-loop options.",
+    "difficulty": "Easy",
+    "routeType": "Loop",
+    "status": "Ready",
+    "distanceMiles": 3.2,
+    "estimatedTime": "1h 35m",
+    "elevationGainFt": 340,
+    "storageEstimateMb": 64,
+    "tags": [
+      "lewiston",
+      "auburn",
+      "local",
+      "easy",
+      "quarry",
+      "woods"
+    ],
+    "sync": {
+      "state": "local-maine-seed-catalog",
+      "lastSynced": "seed-v1.2.25",
+      "supabaseReady": false
+    },
+    "offline": {
+      "required": false,
+      "tileFormat": "MBTiles",
+      "tileBounds": [
+        -70.2958,
+        44.0491,
+        -70.2058,
+        44.1141
+      ],
+      "minZoom": 10,
+      "maxZoom": 16,
+      "layers": [
+        "trail",
+        "topo",
+        "waypoints",
+        "notes"
+      ]
+    },
+    "weather": {
+      "cachePolicy": "refresh-when-online",
+      "lastForecastLabel": "not cached"
+    },
+    "geometry": {
+      "type": "LineString",
+      "coordinates": [
+        [
+          -70.2608,
+          44.0791
+        ],
+        [
+          -70.2553,
+          44.082751
+        ],
+        [
+          -70.2498,
+          44.082083
+        ],
+        [
+          -70.2443,
+          44.077886
+        ],
+        [
+          -70.2388,
+          44.075125
+        ],
+        [
+          -70.2333,
+          44.077067
+        ],
+        [
+          -70.2608,
+          44.0791
+        ]
+      ]
+    },
+    "mapPreviewPath": [
+      [
+        30,
+        171
+      ],
+      [
+        80,
+        128
+      ],
+      [
+        130,
+        110
+      ],
+      [
+        180,
+        189
+      ],
+      [
+        230,
+        232
+      ],
+      [
+        280,
+        249
+      ],
+      [
+        330,
+        169
+      ]
+    ],
+    "waypoints": [
+      {
+        "id": "la-mount-apatite-loop-start",
+        "name": "Trailhead",
+        "type": "Start",
+        "mile": 0,
+        "icon": "\u25ce",
+        "lat": 44.0791,
+        "lon": -70.2608
+      },
+      {
+        "id": "la-mount-apatite-loop-mid",
+        "name": "Key marker / viewpoint",
+        "type": "Waypoint",
+        "mile": 1.6,
+        "icon": "\u25c6",
+        "lat": 44.077886,
+        "lon": -70.2443
+      },
+      {
+        "id": "la-mount-apatite-loop-finish",
+        "name": "Finish / turnaround",
+        "type": "Return",
+        "mile": 3.2,
+        "icon": "\u25ce",
+        "lat": 44.0791,
+        "lon": -70.2608
+      }
+    ],
+    "pois": [
+      {
+        "id": "la-mount-apatite-loop-poi",
+        "type": "lewiston",
+        "label": "Auburn local trail network sample with quarry history, woods, and short-loop options.",
+        "mile": 1.6
+      }
+    ]
+  },
+  {
+    "id": "la-androscoggin-riverlands",
+    "schemaVersion": "mappi3.routePack.v1",
+    "name": "Androscoggin Riverlands Homestead Trail",
+    "place": "Turner, Maine",
+    "region": "Lewiston-Auburn Maine",
+    "summary": "Nearby riverlands route for longer local mileage, river views, and low-key offline testing.",
+    "difficulty": "Moderate",
+    "routeType": "Out-and-back",
+    "status": "Ready",
+    "distanceMiles": 5.4,
+    "estimatedTime": "2h 20m",
+    "elevationGainFt": 410,
+    "storageEstimateMb": 92,
+    "tags": [
+      "lewiston",
+      "auburn",
+      "turner",
+      "river",
+      "water",
+      "local",
+      "moderate"
+    ],
+    "sync": {
+      "state": "local-maine-seed-catalog",
+      "lastSynced": "seed-v1.2.25",
+      "supabaseReady": false
+    },
+    "offline": {
+      "required": false,
+      "tileFormat": "MBTiles",
+      "tileBounds": [
+        -70.2368,
+        44.1867,
+        -70.1468,
+        44.2517
+      ],
+      "minZoom": 10,
+      "maxZoom": 16,
+      "layers": [
+        "trail",
+        "topo",
+        "waypoints",
+        "notes"
+      ]
+    },
+    "weather": {
+      "cachePolicy": "refresh-when-online",
+      "lastForecastLabel": "not cached"
+    },
+    "geometry": {
+      "type": "LineString",
+      "coordinates": [
+        [
+          -70.2018,
+          44.2167
+        ],
+        [
+          -70.1963,
+          44.220351
+        ],
+        [
+          -70.1908,
+          44.219683
+        ],
+        [
+          -70.1853,
+          44.215486
+        ],
+        [
+          -70.1798,
+          44.212725
+        ]
+      ]
+    },
+    "mapPreviewPath": [
+      [
+        30,
+        171
+      ],
+      [
+        105,
+        128
+      ],
+      [
+        180,
+        110
+      ],
+      [
+        255,
+        189
+      ],
+      [
+        330,
+        232
+      ]
+    ],
+    "waypoints": [
+      {
+        "id": "la-androscoggin-riverlands-start",
+        "name": "Trailhead",
+        "type": "Start",
+        "mile": 0,
+        "icon": "\u25ce",
+        "lat": 44.2167,
+        "lon": -70.2018
+      },
+      {
+        "id": "la-androscoggin-riverlands-mid",
+        "name": "Key marker / viewpoint",
+        "type": "Waypoint",
+        "mile": 2.7,
+        "icon": "\u25c6",
+        "lat": 44.219683,
+        "lon": -70.1908
+      },
+      {
+        "id": "la-androscoggin-riverlands-finish",
+        "name": "Finish / turnaround",
+        "type": "Finish",
+        "mile": 5.4,
+        "icon": "\u25ce",
+        "lat": 44.212725,
+        "lon": -70.1798
+      }
+    ],
+    "pois": [
+      {
+        "id": "la-androscoggin-riverlands-poi",
+        "type": "lewiston",
+        "label": "Nearby riverlands route for longer local mileage, river views, and low-key offline testing",
+        "mile": 2.7
+      }
+    ]
+  },
+  {
+    "id": "la-riverwalk-loop",
+    "schemaVersion": "mappi3.routePack.v1",
+    "name": "Lewiston-Auburn Riverwalk",
+    "place": "Lewiston / Auburn, Maine",
+    "region": "Lewiston-Auburn Maine",
+    "summary": "Urban riverwalk planning route along the Androscoggin for quick exercise and GPS testing.",
+    "difficulty": "Easy",
+    "routeType": "Out-and-back",
+    "status": "Ready",
+    "distanceMiles": 2.4,
+    "estimatedTime": "0h 55m",
+    "elevationGainFt": 90,
+    "storageEstimateMb": 38,
+    "tags": [
+      "lewiston",
+      "auburn",
+      "riverwalk",
+      "easy",
+      "urban",
+      "water"
+    ],
+    "sync": {
+      "state": "local-maine-seed-catalog",
+      "lastSynced": "seed-v1.2.25",
+      "supabaseReady": false
+    },
+    "offline": {
+      "required": false,
+      "tileFormat": "MBTiles",
+      "tileBounds": [
+        -70.2562,
+        44.0664,
+        -70.1662,
+        44.1314
+      ],
+      "minZoom": 10,
+      "maxZoom": 16,
+      "layers": [
+        "trail",
+        "topo",
+        "waypoints",
+        "notes"
+      ]
+    },
+    "weather": {
+      "cachePolicy": "refresh-when-online",
+      "lastForecastLabel": "not cached"
+    },
+    "geometry": {
+      "type": "LineString",
+      "coordinates": [
+        [
+          -70.2212,
+          44.0964
+        ],
+        [
+          -70.2157,
+          44.100051
+        ],
+        [
+          -70.2102,
+          44.099383
+        ],
+        [
+          -70.2047,
+          44.095186
+        ],
+        [
+          -70.1992,
+          44.092425
+        ]
+      ]
+    },
+    "mapPreviewPath": [
+      [
+        30,
+        171
+      ],
+      [
+        105,
+        128
+      ],
+      [
+        180,
+        110
+      ],
+      [
+        255,
+        189
+      ],
+      [
+        330,
+        232
+      ]
+    ],
+    "waypoints": [
+      {
+        "id": "la-riverwalk-loop-start",
+        "name": "Trailhead",
+        "type": "Start",
+        "mile": 0,
+        "icon": "\u25ce",
+        "lat": 44.0964,
+        "lon": -70.2212
+      },
+      {
+        "id": "la-riverwalk-loop-mid",
+        "name": "Key marker / viewpoint",
+        "type": "Waypoint",
+        "mile": 1.2,
+        "icon": "\u25c6",
+        "lat": 44.099383,
+        "lon": -70.2102
+      },
+      {
+        "id": "la-riverwalk-loop-finish",
+        "name": "Finish / turnaround",
+        "type": "Finish",
+        "mile": 2.4,
+        "icon": "\u25ce",
+        "lat": 44.092425,
+        "lon": -70.1992
+      }
+    ],
+    "pois": [
+      {
+        "id": "la-riverwalk-loop-poi",
+        "type": "lewiston",
+        "label": "Urban riverwalk planning route along the Androscoggin for quick exercise and GPS testing.",
+        "mile": 1.2
+      }
+    ]
+  },
+  {
+    "id": "la-range-ponds-loop",
+    "schemaVersion": "mappi3.routePack.v1",
+    "name": "Range Ponds Shoreline Loop",
+    "place": "Poland, Maine",
+    "region": "Lewiston-Auburn Maine",
+    "summary": "Nearby lake/shore route sample for family hiking, swimming-season planning, and easy offline packs.",
+    "difficulty": "Easy",
+    "routeType": "Loop",
+    "status": "Ready",
+    "distanceMiles": 2.3,
+    "estimatedTime": "1h 05m",
+    "elevationGainFt": 160,
+    "storageEstimateMb": 52,
+    "tags": [
+      "poland",
+      "lewiston",
+      "auburn",
+      "lake",
+      "water",
+      "easy",
+      "family"
+    ],
+    "sync": {
+      "state": "local-maine-seed-catalog",
+      "lastSynced": "seed-v1.2.25",
+      "supabaseReady": false
+    },
+    "offline": {
+      "required": false,
+      "tileFormat": "MBTiles",
+      "tileBounds": [
+        -70.4366,
+        44.0008,
+        -70.3466,
+        44.0658
+      ],
+      "minZoom": 10,
+      "maxZoom": 16,
+      "layers": [
+        "trail",
+        "topo",
+        "waypoints",
+        "notes"
+      ]
+    },
+    "weather": {
+      "cachePolicy": "refresh-when-online",
+      "lastForecastLabel": "not cached"
+    },
+    "geometry": {
+      "type": "LineString",
+      "coordinates": [
+        [
+          -70.4016,
+          44.0308
+        ],
+        [
+          -70.3961,
+          44.034451
+        ],
+        [
+          -70.3906,
+          44.033783
+        ],
+        [
+          -70.3851,
+          44.029586
+        ],
+        [
+          -70.3796,
+          44.026825
+        ],
+        [
+          -70.3741,
+          44.028767
+        ],
+        [
+          -70.4016,
+          44.0308
+        ]
+      ]
+    },
+    "mapPreviewPath": [
+      [
+        30,
+        171
+      ],
+      [
+        80,
+        128
+      ],
+      [
+        130,
+        110
+      ],
+      [
+        180,
+        189
+      ],
+      [
+        230,
+        232
+      ],
+      [
+        280,
+        249
+      ],
+      [
+        330,
+        169
+      ]
+    ],
+    "waypoints": [
+      {
+        "id": "la-range-ponds-loop-start",
+        "name": "Trailhead",
+        "type": "Start",
+        "mile": 0,
+        "icon": "\u25ce",
+        "lat": 44.0308,
+        "lon": -70.4016
+      },
+      {
+        "id": "la-range-ponds-loop-mid",
+        "name": "Key marker / viewpoint",
+        "type": "Waypoint",
+        "mile": 1.1,
+        "icon": "\u25c6",
+        "lat": 44.029586,
+        "lon": -70.3851
+      },
+      {
+        "id": "la-range-ponds-loop-finish",
+        "name": "Finish / turnaround",
+        "type": "Return",
+        "mile": 2.3,
+        "icon": "\u25ce",
+        "lat": 44.0308,
+        "lon": -70.4016
+      }
+    ],
+    "pois": [
+      {
+        "id": "la-range-ponds-loop-poi",
+        "type": "poland",
+        "label": "Nearby lake/shore route sample for family hiking, swimming-season planning, and easy offli",
+        "mile": 1.1
+      }
+    ]
+  },
+  {
+    "id": "la-david-rancourt-preserve",
+    "schemaVersion": "mappi3.routePack.v1",
+    "name": "David Rancourt River Preserve",
+    "place": "Lewiston, Maine",
+    "region": "Lewiston-Auburn Maine",
+    "summary": "Local preserve-style route for short woods walking and river corridor planning.",
+    "difficulty": "Easy",
+    "routeType": "Loop",
+    "status": "Ready",
+    "distanceMiles": 1.8,
+    "estimatedTime": "0h 50m",
+    "elevationGainFt": 140,
+    "storageEstimateMb": 42,
+    "tags": [
+      "lewiston",
+      "local",
+      "preserve",
+      "easy",
+      "woods",
+      "river"
+    ],
+    "sync": {
+      "state": "local-maine-seed-catalog",
+      "lastSynced": "seed-v1.2.25",
+      "supabaseReady": false
+    },
+    "offline": {
+      "required": false,
+      "tileFormat": "MBTiles",
+      "tileBounds": [
+        -70.1965,
+        44.0385,
+        -70.1065,
+        44.1035
+      ],
+      "minZoom": 10,
+      "maxZoom": 16,
+      "layers": [
+        "trail",
+        "topo",
+        "waypoints",
+        "notes"
+      ]
+    },
+    "weather": {
+      "cachePolicy": "refresh-when-online",
+      "lastForecastLabel": "not cached"
+    },
+    "geometry": {
+      "type": "LineString",
+      "coordinates": [
+        [
+          -70.1615,
+          44.0685
+        ],
+        [
+          -70.156,
+          44.072151
+        ],
+        [
+          -70.1505,
+          44.071483
+        ],
+        [
+          -70.145,
+          44.067286
+        ],
+        [
+          -70.1395,
+          44.064525
+        ],
+        [
+          -70.134,
+          44.066467
+        ],
+        [
+          -70.1615,
+          44.0685
+        ]
+      ]
+    },
+    "mapPreviewPath": [
+      [
+        30,
+        171
+      ],
+      [
+        80,
+        128
+      ],
+      [
+        130,
+        110
+      ],
+      [
+        180,
+        189
+      ],
+      [
+        230,
+        232
+      ],
+      [
+        280,
+        249
+      ],
+      [
+        330,
+        169
+      ]
+    ],
+    "waypoints": [
+      {
+        "id": "la-david-rancourt-preserve-start",
+        "name": "Trailhead",
+        "type": "Start",
+        "mile": 0,
+        "icon": "\u25ce",
+        "lat": 44.0685,
+        "lon": -70.1615
+      },
+      {
+        "id": "la-david-rancourt-preserve-mid",
+        "name": "Key marker / viewpoint",
+        "type": "Waypoint",
+        "mile": 0.9,
+        "icon": "\u25c6",
+        "lat": 44.067286,
+        "lon": -70.145
+      },
+      {
+        "id": "la-david-rancourt-preserve-finish",
+        "name": "Finish / turnaround",
+        "type": "Return",
+        "mile": 1.8,
+        "icon": "\u25ce",
+        "lat": 44.0685,
+        "lon": -70.1615
+      }
+    ],
+    "pois": [
+      {
+        "id": "la-david-rancourt-preserve-poi",
+        "type": "lewiston",
+        "label": "Local preserve-style route for short woods walking and river corridor planning.",
+        "mile": 0.9
+      }
+    ]
+  },
+  {
+    "id": "la-sherwood-forest",
+    "schemaVersion": "mappi3.routePack.v1",
+    "name": "Sherwood Forest Conservation Loop",
+    "place": "Auburn, Maine",
+    "region": "Lewiston-Auburn Maine",
+    "summary": "Auburn neighborhood woods loop placeholder for local route-pack testing and quick hikes.",
+    "difficulty": "Easy",
+    "routeType": "Loop",
+    "status": "Ready",
+    "distanceMiles": 1.6,
+    "estimatedTime": "0h 45m",
+    "elevationGainFt": 120,
+    "storageEstimateMb": 38,
+    "tags": [
+      "auburn",
+      "local",
+      "easy",
+      "woods",
+      "family"
+    ],
+    "sync": {
+      "state": "local-maine-seed-catalog",
+      "lastSynced": "seed-v1.2.25",
+      "supabaseReady": false
+    },
+    "offline": {
+      "required": false,
+      "tileFormat": "MBTiles",
+      "tileBounds": [
+        -70.2734,
+        44.0417,
+        -70.1834,
+        44.1067
+      ],
+      "minZoom": 10,
+      "maxZoom": 16,
+      "layers": [
+        "trail",
+        "topo",
+        "waypoints",
+        "notes"
+      ]
+    },
+    "weather": {
+      "cachePolicy": "refresh-when-online",
+      "lastForecastLabel": "not cached"
+    },
+    "geometry": {
+      "type": "LineString",
+      "coordinates": [
+        [
+          -70.2384,
+          44.0717
+        ],
+        [
+          -70.2329,
+          44.075351
+        ],
+        [
+          -70.2274,
+          44.074683
+        ],
+        [
+          -70.2219,
+          44.070486
+        ],
+        [
+          -70.2164,
+          44.067725
+        ],
+        [
+          -70.2109,
+          44.069667
+        ],
+        [
+          -70.2384,
+          44.0717
+        ]
+      ]
+    },
+    "mapPreviewPath": [
+      [
+        30,
+        171
+      ],
+      [
+        80,
+        128
+      ],
+      [
+        130,
+        110
+      ],
+      [
+        180,
+        189
+      ],
+      [
+        230,
+        232
+      ],
+      [
+        280,
+        249
+      ],
+      [
+        330,
+        169
+      ]
+    ],
+    "waypoints": [
+      {
+        "id": "la-sherwood-forest-start",
+        "name": "Trailhead",
+        "type": "Start",
+        "mile": 0,
+        "icon": "\u25ce",
+        "lat": 44.0717,
+        "lon": -70.2384
+      },
+      {
+        "id": "la-sherwood-forest-mid",
+        "name": "Key marker / viewpoint",
+        "type": "Waypoint",
+        "mile": 0.8,
+        "icon": "\u25c6",
+        "lat": 44.070486,
+        "lon": -70.2219
+      },
+      {
+        "id": "la-sherwood-forest-finish",
+        "name": "Finish / turnaround",
+        "type": "Return",
+        "mile": 1.6,
+        "icon": "\u25ce",
+        "lat": 44.0717,
+        "lon": -70.2384
+      }
+    ],
+    "pois": [
+      {
+        "id": "la-sherwood-forest-poi",
+        "type": "auburn",
+        "label": "Auburn neighborhood woods loop placeholder for local route-pack testing and quick hikes.",
+        "mile": 0.8
+      }
+    ]
+  },
+  {
+    "id": "la-lake-auburn-overlook",
+    "schemaVersion": "mappi3.routePack.v1",
+    "name": "Lake Auburn Overlook Walk",
+    "place": "Auburn, Maine",
+    "region": "Lewiston-Auburn Maine",
+    "summary": "Short lake-area route sample for sunset checks and local weather/origin testing.",
+    "difficulty": "Easy",
+    "routeType": "Out-and-back",
+    "status": "Ready",
+    "distanceMiles": 1.9,
+    "estimatedTime": "0h 55m",
+    "elevationGainFt": 180,
+    "storageEstimateMb": 44,
+    "tags": [
+      "auburn",
+      "lake auburn",
+      "sunset",
+      "local",
+      "easy",
+      "water"
+    ],
+    "sync": {
+      "state": "local-maine-seed-catalog",
+      "lastSynced": "seed-v1.2.25",
+      "supabaseReady": false
+    },
+    "offline": {
+      "required": false,
+      "tileFormat": "MBTiles",
+      "tileBounds": [
+        -70.2747,
+        44.0935,
+        -70.1847,
+        44.1585
+      ],
+      "minZoom": 10,
+      "maxZoom": 16,
+      "layers": [
+        "trail",
+        "topo",
+        "waypoints",
+        "notes"
+      ]
+    },
+    "weather": {
+      "cachePolicy": "refresh-when-online",
+      "lastForecastLabel": "not cached"
+    },
+    "geometry": {
+      "type": "LineString",
+      "coordinates": [
+        [
+          -70.2397,
+          44.1235
+        ],
+        [
+          -70.2342,
+          44.127151
+        ],
+        [
+          -70.2287,
+          44.126483
+        ],
+        [
+          -70.2232,
+          44.122286
+        ],
+        [
+          -70.2177,
+          44.119525
+        ]
+      ]
+    },
+    "mapPreviewPath": [
+      [
+        30,
+        171
+      ],
+      [
+        105,
+        128
+      ],
+      [
+        180,
+        110
+      ],
+      [
+        255,
+        189
+      ],
+      [
+        330,
+        232
+      ]
+    ],
+    "waypoints": [
+      {
+        "id": "la-lake-auburn-overlook-start",
+        "name": "Trailhead",
+        "type": "Start",
+        "mile": 0,
+        "icon": "\u25ce",
+        "lat": 44.1235,
+        "lon": -70.2397
+      },
+      {
+        "id": "la-lake-auburn-overlook-mid",
+        "name": "Key marker / viewpoint",
+        "type": "View",
+        "mile": 0.9,
+        "icon": "\u25c6",
+        "lat": 44.126483,
+        "lon": -70.2287
+      },
+      {
+        "id": "la-lake-auburn-overlook-finish",
+        "name": "Finish / turnaround",
+        "type": "Finish",
+        "mile": 1.9,
+        "icon": "\u25ce",
+        "lat": 44.119525,
+        "lon": -70.2177
+      }
+    ],
+    "pois": [
+      {
+        "id": "la-lake-auburn-overlook-poi",
+        "type": "auburn",
+        "label": "Short lake-area route sample for sunset checks and local weather/origin testing.",
+        "mile": 0.9
+      }
+    ]
+  },
+  {
+    "id": "me-tumbledown-loop-trail",
+    "schemaVersion": "mappi3.routePack.v1",
+    "name": "Tumbledown Loop Trail",
+    "place": "Weld, Maine",
+    "region": "Tumbledown / Mount Blue Maine",
+    "summary": "Classic steep Tumbledown route sample with pond/summit timing and caution planning.",
+    "difficulty": "Hard",
+    "routeType": "Loop",
+    "status": "Ready",
+    "distanceMiles": 4.9,
+    "estimatedTime": "3h 55m",
+    "elevationGainFt": 1900,
+    "storageEstimateMb": 172,
+    "tags": [
+      "tumbledown",
+      "weld",
+      "mount blue",
+      "pond",
+      "summit",
+      "hard",
+      "water"
+    ],
+    "sync": {
+      "state": "local-maine-seed-catalog",
+      "lastSynced": "seed-v1.2.25",
+      "supabaseReady": false
+    },
+    "offline": {
+      "required": false,
+      "tileFormat": "MBTiles",
+      "tileBounds": [
+        -70.5626,
+        44.6894,
+        -70.4726,
+        44.7544
+      ],
+      "minZoom": 10,
+      "maxZoom": 16,
+      "layers": [
+        "trail",
+        "topo",
+        "waypoints",
+        "notes"
+      ]
+    },
+    "weather": {
+      "cachePolicy": "refresh-when-online",
+      "lastForecastLabel": "not cached"
+    },
+    "geometry": {
+      "type": "LineString",
+      "coordinates": [
+        [
+          -70.5276,
+          44.7194
+        ],
+        [
+          -70.5221,
+          44.723051
+        ],
+        [
+          -70.5166,
+          44.722383
+        ],
+        [
+          -70.5111,
+          44.718186
+        ],
+        [
+          -70.5056,
+          44.715425
+        ],
+        [
+          -70.5001,
+          44.717367
+        ],
+        [
+          -70.5276,
+          44.7194
+        ]
+      ]
+    },
+    "mapPreviewPath": [
+      [
+        30,
+        171
+      ],
+      [
+        80,
+        128
+      ],
+      [
+        130,
+        110
+      ],
+      [
+        180,
+        189
+      ],
+      [
+        230,
+        232
+      ],
+      [
+        280,
+        249
+      ],
+      [
+        330,
+        169
+      ]
+    ],
+    "waypoints": [
+      {
+        "id": "me-tumbledown-loop-trail-start",
+        "name": "Trailhead",
+        "type": "Start",
+        "mile": 0,
+        "icon": "\u25ce",
+        "lat": 44.7194,
+        "lon": -70.5276
+      },
+      {
+        "id": "me-tumbledown-loop-trail-mid",
+        "name": "Key marker / viewpoint",
+        "type": "View",
+        "mile": 2.5,
+        "icon": "\u25c6",
+        "lat": 44.718186,
+        "lon": -70.5111
+      },
+      {
+        "id": "me-tumbledown-loop-trail-finish",
+        "name": "Finish / turnaround",
+        "type": "Return",
+        "mile": 4.9,
+        "icon": "\u25ce",
+        "lat": 44.7194,
+        "lon": -70.5276
+      }
+    ],
+    "pois": [
+      {
+        "id": "me-tumbledown-loop-trail-poi",
+        "type": "tumbledown",
+        "label": "Classic steep Tumbledown route sample with pond/summit timing and caution planning.",
+        "mile": 2.5
+      }
+    ]
+  },
+  {
+    "id": "me-tumbledown-parker-ridge",
+    "schemaVersion": "mappi3.routePack.v1",
+    "name": "Tumbledown Parker Ridge Trail",
+    "place": "Weld, Maine",
+    "region": "Tumbledown / Mount Blue Maine",
+    "summary": "Ridge approach option for Tumbledown with longer views and turn-around planning.",
+    "difficulty": "Hard",
+    "routeType": "Out-and-back",
+    "status": "Ready",
+    "distanceMiles": 5.1,
+    "estimatedTime": "3h 45m",
+    "elevationGainFt": 1750,
+    "storageEstimateMb": 160,
+    "tags": [
+      "tumbledown",
+      "parker ridge",
+      "weld",
+      "views",
+      "hard",
+      "mount blue"
+    ],
+    "sync": {
+      "state": "local-maine-seed-catalog",
+      "lastSynced": "seed-v1.2.25",
+      "supabaseReady": false
+    },
+    "offline": {
+      "required": false,
+      "tileFormat": "MBTiles",
+      "tileBounds": [
+        -70.5589,
+        44.6908,
+        -70.4689,
+        44.7558
+      ],
+      "minZoom": 10,
+      "maxZoom": 16,
+      "layers": [
+        "trail",
+        "topo",
+        "waypoints",
+        "notes"
+      ]
+    },
+    "weather": {
+      "cachePolicy": "refresh-when-online",
+      "lastForecastLabel": "not cached"
+    },
+    "geometry": {
+      "type": "LineString",
+      "coordinates": [
+        [
+          -70.5239,
+          44.7208
+        ],
+        [
+          -70.5184,
+          44.724451
+        ],
+        [
+          -70.5129,
+          44.723783
+        ],
+        [
+          -70.5074,
+          44.719586
+        ],
+        [
+          -70.5019,
+          44.716825
+        ]
+      ]
+    },
+    "mapPreviewPath": [
+      [
+        30,
+        171
+      ],
+      [
+        105,
+        128
+      ],
+      [
+        180,
+        110
+      ],
+      [
+        255,
+        189
+      ],
+      [
+        330,
+        232
+      ]
+    ],
+    "waypoints": [
+      {
+        "id": "me-tumbledown-parker-ridge-start",
+        "name": "Trailhead",
+        "type": "Start",
+        "mile": 0,
+        "icon": "\u25ce",
+        "lat": 44.7208,
+        "lon": -70.5239
+      },
+      {
+        "id": "me-tumbledown-parker-ridge-mid",
+        "name": "Key marker / viewpoint",
+        "type": "View",
+        "mile": 2.5,
+        "icon": "\u25c6",
+        "lat": 44.723783,
+        "lon": -70.5129
+      },
+      {
+        "id": "me-tumbledown-parker-ridge-finish",
+        "name": "Finish / turnaround",
+        "type": "Finish",
+        "mile": 5.1,
+        "icon": "\u25ce",
+        "lat": 44.716825,
+        "lon": -70.5019
+      }
+    ],
+    "pois": [
+      {
+        "id": "me-tumbledown-parker-ridge-poi",
+        "type": "tumbledown",
+        "label": "Ridge approach option for Tumbledown with longer views and turn-around planning.",
+        "mile": 2.5
+      }
+    ]
+  },
+  {
+    "id": "me-little-jackson",
+    "schemaVersion": "mappi3.routePack.v1",
+    "name": "Little Jackson Mountain Trail",
+    "place": "Weld, Maine",
+    "region": "Tumbledown / Mount Blue Maine",
+    "summary": "Nearby rugged Weld-area route sample for longer day planning near Tumbledown.",
+    "difficulty": "Hard",
+    "routeType": "Out-and-back",
+    "status": "Ready",
+    "distanceMiles": 6.3,
+    "estimatedTime": "4h 35m",
+    "elevationGainFt": 2200,
+    "storageEstimateMb": 184,
+    "tags": [
+      "little jackson",
+      "weld",
+      "mount blue",
+      "summit",
+      "hard",
+      "views"
+    ],
+    "sync": {
+      "state": "local-maine-seed-catalog",
+      "lastSynced": "seed-v1.2.25",
+      "supabaseReady": false
+    },
+    "offline": {
+      "required": false,
+      "tileFormat": "MBTiles",
+      "tileBounds": [
+        -70.5872,
+        44.7258,
+        -70.4972,
+        44.7908
+      ],
+      "minZoom": 10,
+      "maxZoom": 16,
+      "layers": [
+        "trail",
+        "topo",
+        "waypoints",
+        "notes"
+      ]
+    },
+    "weather": {
+      "cachePolicy": "refresh-when-online",
+      "lastForecastLabel": "not cached"
+    },
+    "geometry": {
+      "type": "LineString",
+      "coordinates": [
+        [
+          -70.5522,
+          44.7558
+        ],
+        [
+          -70.5467,
+          44.759451
+        ],
+        [
+          -70.5412,
+          44.758783
+        ],
+        [
+          -70.5357,
+          44.754586
+        ],
+        [
+          -70.5302,
+          44.751825
+        ]
+      ]
+    },
+    "mapPreviewPath": [
+      [
+        30,
+        171
+      ],
+      [
+        105,
+        128
+      ],
+      [
+        180,
+        110
+      ],
+      [
+        255,
+        189
+      ],
+      [
+        330,
+        232
+      ]
+    ],
+    "waypoints": [
+      {
+        "id": "me-little-jackson-start",
+        "name": "Trailhead",
+        "type": "Start",
+        "mile": 0,
+        "icon": "\u25ce",
+        "lat": 44.7558,
+        "lon": -70.5522
+      },
+      {
+        "id": "me-little-jackson-mid",
+        "name": "Key marker / viewpoint",
+        "type": "View",
+        "mile": 3.1,
+        "icon": "\u25c6",
+        "lat": 44.758783,
+        "lon": -70.5412
+      },
+      {
+        "id": "me-little-jackson-finish",
+        "name": "Finish / turnaround",
+        "type": "Finish",
+        "mile": 6.3,
+        "icon": "\u25ce",
+        "lat": 44.751825,
+        "lon": -70.5302
+      }
+    ],
+    "pois": [
+      {
+        "id": "me-little-jackson-poi",
+        "type": "little jackson",
+        "label": "Nearby rugged Weld-area route sample for longer day planning near Tumbledown.",
+        "mile": 3.1
+      }
+    ]
+  },
+  {
+    "id": "me-blueberry-mountain-stone-house",
+    "schemaVersion": "mappi3.routePack.v1",
+    "name": "Blueberry Mountain Stone House Trail",
+    "place": "Evans Notch / Stow, Maine",
+    "region": "Western Maine / Evans Notch",
+    "summary": "Western Maine Blueberry Mountain route with ledges, views, and moderate timing.",
+    "difficulty": "Moderate",
+    "routeType": "Loop",
+    "status": "Ready",
+    "distanceMiles": 4.0,
+    "estimatedTime": "2h 35m",
+    "elevationGainFt": 1250,
+    "storageEstimateMb": 130,
+    "tags": [
+      "blueberry mountain",
+      "evans notch",
+      "views",
+      "moderate",
+      "western maine"
+    ],
+    "sync": {
+      "state": "local-maine-seed-catalog",
+      "lastSynced": "seed-v1.2.25",
+      "supabaseReady": false
+    },
+    "offline": {
+      "required": false,
+      "tileFormat": "MBTiles",
+      "tileBounds": [
+        -71.0067,
+        44.2505,
+        -70.9167,
+        44.3155
+      ],
+      "minZoom": 10,
+      "maxZoom": 16,
+      "layers": [
+        "trail",
+        "topo",
+        "waypoints",
+        "notes"
+      ]
+    },
+    "weather": {
+      "cachePolicy": "refresh-when-online",
+      "lastForecastLabel": "not cached"
+    },
+    "geometry": {
+      "type": "LineString",
+      "coordinates": [
+        [
+          -70.9717,
+          44.2805
+        ],
+        [
+          -70.9662,
+          44.284151
+        ],
+        [
+          -70.9607,
+          44.283483
+        ],
+        [
+          -70.9552,
+          44.279286
+        ],
+        [
+          -70.9497,
+          44.276525
+        ],
+        [
+          -70.9442,
+          44.278467
+        ],
+        [
+          -70.9717,
+          44.2805
+        ]
+      ]
+    },
+    "mapPreviewPath": [
+      [
+        30,
+        171
+      ],
+      [
+        80,
+        128
+      ],
+      [
+        130,
+        110
+      ],
+      [
+        180,
+        189
+      ],
+      [
+        230,
+        232
+      ],
+      [
+        280,
+        249
+      ],
+      [
+        330,
+        169
+      ]
+    ],
+    "waypoints": [
+      {
+        "id": "me-blueberry-mountain-stone-house-start",
+        "name": "Trailhead",
+        "type": "Start",
+        "mile": 0,
+        "icon": "\u25ce",
+        "lat": 44.2805,
+        "lon": -70.9717
+      },
+      {
+        "id": "me-blueberry-mountain-stone-house-mid",
+        "name": "Key marker / viewpoint",
+        "type": "View",
+        "mile": 2.0,
+        "icon": "\u25c6",
+        "lat": 44.279286,
+        "lon": -70.9552
+      },
+      {
+        "id": "me-blueberry-mountain-stone-house-finish",
+        "name": "Finish / turnaround",
+        "type": "Return",
+        "mile": 4.0,
+        "icon": "\u25ce",
+        "lat": 44.2805,
+        "lon": -70.9717
+      }
+    ],
+    "pois": [
+      {
+        "id": "me-blueberry-mountain-stone-house-poi",
+        "type": "blueberry mountain",
+        "label": "Western Maine Blueberry Mountain route with ledges, views, and moderate timing.",
+        "mile": 2.0
+      }
+    ]
+  },
+  {
+    "id": "me-mount-blue-trail",
+    "schemaVersion": "mappi3.routePack.v1",
+    "name": "Mount Blue Trail",
+    "place": "Weld, Maine",
+    "region": "Tumbledown / Mount Blue Maine",
+    "summary": "Mount Blue summit planning route near Weld and Tumbledown for local mountain catalog depth.",
+    "difficulty": "Hard",
+    "routeType": "Out-and-back",
+    "status": "Ready",
+    "distanceMiles": 3.6,
+    "estimatedTime": "2h 55m",
+    "elevationGainFt": 1600,
+    "storageEstimateMb": 128,
+    "tags": [
+      "mount blue",
+      "weld",
+      "summit",
+      "hard",
+      "views"
+    ],
+    "sync": {
+      "state": "local-maine-seed-catalog",
+      "lastSynced": "seed-v1.2.25",
+      "supabaseReady": false
+    },
+    "offline": {
+      "required": false,
+      "tileFormat": "MBTiles",
+      "tileBounds": [
+        -70.4426,
+        44.6805,
+        -70.3526,
+        44.7455
+      ],
+      "minZoom": 10,
+      "maxZoom": 16,
+      "layers": [
+        "trail",
+        "topo",
+        "waypoints",
+        "notes"
+      ]
+    },
+    "weather": {
+      "cachePolicy": "refresh-when-online",
+      "lastForecastLabel": "not cached"
+    },
+    "geometry": {
+      "type": "LineString",
+      "coordinates": [
+        [
+          -70.4076,
+          44.7105
+        ],
+        [
+          -70.4021,
+          44.714151
+        ],
+        [
+          -70.3966,
+          44.713483
+        ],
+        [
+          -70.3911,
+          44.709286
+        ],
+        [
+          -70.3856,
+          44.706525
+        ]
+      ]
+    },
+    "mapPreviewPath": [
+      [
+        30,
+        171
+      ],
+      [
+        105,
+        128
+      ],
+      [
+        180,
+        110
+      ],
+      [
+        255,
+        189
+      ],
+      [
+        330,
+        232
+      ]
+    ],
+    "waypoints": [
+      {
+        "id": "me-mount-blue-trail-start",
+        "name": "Trailhead",
+        "type": "Start",
+        "mile": 0,
+        "icon": "\u25ce",
+        "lat": 44.7105,
+        "lon": -70.4076
+      },
+      {
+        "id": "me-mount-blue-trail-mid",
+        "name": "Key marker / viewpoint",
+        "type": "View",
+        "mile": 1.8,
+        "icon": "\u25c6",
+        "lat": 44.713483,
+        "lon": -70.3966
+      },
+      {
+        "id": "me-mount-blue-trail-finish",
+        "name": "Finish / turnaround",
+        "type": "Finish",
+        "mile": 3.6,
+        "icon": "\u25ce",
+        "lat": 44.706525,
+        "lon": -70.3856
+      }
+    ],
+    "pois": [
+      {
+        "id": "me-mount-blue-trail-poi",
+        "type": "mount blue",
+        "label": "Mount Blue summit planning route near Weld and Tumbledown for local mountain catalog depth",
+        "mile": 1.8
+      }
+    ]
+  },
+  {
+    "id": "me-center-hill-nature",
+    "schemaVersion": "mappi3.routePack.v1",
+    "name": "Center Hill Nature Trail",
+    "place": "Mount Blue State Park, Maine",
+    "region": "Tumbledown / Mount Blue Maine",
+    "summary": "Short Mount Blue State Park nature loop for easier local family hikes near Weld.",
+    "difficulty": "Easy",
+    "routeType": "Loop",
+    "status": "Ready",
+    "distanceMiles": 0.9,
+    "estimatedTime": "0h 35m",
+    "elevationGainFt": 110,
+    "storageEstimateMb": 34,
+    "tags": [
+      "mount blue",
+      "weld",
+      "easy",
+      "family",
+      "nature"
+    ],
+    "sync": {
+      "state": "local-maine-seed-catalog",
+      "lastSynced": "seed-v1.2.25",
+      "supabaseReady": false
+    },
+    "offline": {
+      "required": false,
+      "tileFormat": "MBTiles",
+      "tileBounds": [
+        -70.4495,
+        44.6776,
+        -70.3595,
+        44.7426
+      ],
+      "minZoom": 10,
+      "maxZoom": 16,
+      "layers": [
+        "trail",
+        "topo",
+        "waypoints",
+        "notes"
+      ]
+    },
+    "weather": {
+      "cachePolicy": "refresh-when-online",
+      "lastForecastLabel": "not cached"
+    },
+    "geometry": {
+      "type": "LineString",
+      "coordinates": [
+        [
+          -70.4145,
+          44.7076
+        ],
+        [
+          -70.409,
+          44.711251
+        ],
+        [
+          -70.4035,
+          44.710583
+        ],
+        [
+          -70.398,
+          44.706386
+        ],
+        [
+          -70.3925,
+          44.703625
+        ],
+        [
+          -70.387,
+          44.705567
+        ],
+        [
+          -70.4145,
+          44.7076
+        ]
+      ]
+    },
+    "mapPreviewPath": [
+      [
+        30,
+        171
+      ],
+      [
+        80,
+        128
+      ],
+      [
+        130,
+        110
+      ],
+      [
+        180,
+        189
+      ],
+      [
+        230,
+        232
+      ],
+      [
+        280,
+        249
+      ],
+      [
+        330,
+        169
+      ]
+    ],
+    "waypoints": [
+      {
+        "id": "me-center-hill-nature-start",
+        "name": "Trailhead",
+        "type": "Start",
+        "mile": 0,
+        "icon": "\u25ce",
+        "lat": 44.7076,
+        "lon": -70.4145
+      },
+      {
+        "id": "me-center-hill-nature-mid",
+        "name": "Key marker / viewpoint",
+        "type": "Waypoint",
+        "mile": 0.5,
+        "icon": "\u25c6",
+        "lat": 44.706386,
+        "lon": -70.398
+      },
+      {
+        "id": "me-center-hill-nature-finish",
+        "name": "Finish / turnaround",
+        "type": "Return",
+        "mile": 0.9,
+        "icon": "\u25ce",
+        "lat": 44.7076,
+        "lon": -70.4145
+      }
+    ],
+    "pois": [
+      {
+        "id": "me-center-hill-nature-poi",
+        "type": "mount blue",
+        "label": "Short Mount Blue State Park nature loop for easier local family hikes near Weld.",
+        "mile": 0.5
+      }
+    ]
+  },
+  {
+    "id": "me-speck-pond-route26-at",
+    "schemaVersion": "mappi3.routePack.v1",
+    "name": "Speck Pond via Route 26 AT",
+    "place": "Grafton Notch, Maine",
+    "region": "Grafton Notch / Route 26 Maine",
+    "summary": "Next-hike candidate: Route 26 Appalachian Trail climb toward Speck Pond with strict timing, water, and turn-around planning.",
+    "difficulty": "Hard",
+    "routeType": "Out-and-back",
+    "status": "Ready",
+    "distanceMiles": 7.6,
+    "estimatedTime": "5h 40m",
+    "elevationGainFt": 2600,
+    "storageEstimateMb": 236,
+    "tags": [
+      "speck pond",
+      "spec pond",
+      "route 26",
+      "grafton notch",
+      "appalachian trail",
+      "at",
+      "water",
+      "hard",
+      "next hike"
+    ],
+    "sync": {
+      "state": "local-maine-seed-catalog",
+      "lastSynced": "seed-v1.2.25",
+      "supabaseReady": false
+    },
+    "offline": {
+      "required": false,
+      "tileFormat": "MBTiles",
+      "tileBounds": [
+        -70.9822,
+        44.5606,
+        -70.8922,
+        44.6256
+      ],
+      "minZoom": 10,
+      "maxZoom": 16,
+      "layers": [
+        "trail",
+        "topo",
+        "waypoints",
+        "notes"
+      ]
+    },
+    "weather": {
+      "cachePolicy": "refresh-when-online",
+      "lastForecastLabel": "not cached"
+    },
+    "geometry": {
+      "type": "LineString",
+      "coordinates": [
+        [
+          -70.9472,
+          44.5906
+        ],
+        [
+          -70.9417,
+          44.594251
+        ],
+        [
+          -70.9362,
+          44.593583
+        ],
+        [
+          -70.9307,
+          44.589386
+        ],
+        [
+          -70.9252,
+          44.586625
+        ]
+      ]
+    },
+    "mapPreviewPath": [
+      [
+        30,
+        171
+      ],
+      [
+        105,
+        128
+      ],
+      [
+        180,
+        110
+      ],
+      [
+        255,
+        189
+      ],
+      [
+        330,
+        232
+      ]
+    ],
+    "waypoints": [
+      {
+        "id": "me-speck-pond-route26-at-start",
+        "name": "Trailhead",
+        "type": "Start",
+        "mile": 0,
+        "icon": "\u25ce",
+        "lat": 44.5906,
+        "lon": -70.9472
+      },
+      {
+        "id": "me-speck-pond-route26-at-mid",
+        "name": "Key marker / viewpoint",
+        "type": "Waypoint",
+        "mile": 3.8,
+        "icon": "\u25c6",
+        "lat": 44.593583,
+        "lon": -70.9362
+      },
+      {
+        "id": "me-speck-pond-route26-at-finish",
+        "name": "Finish / turnaround",
+        "type": "Finish",
+        "mile": 7.6,
+        "icon": "\u25ce",
+        "lat": 44.586625,
+        "lon": -70.9252
+      }
+    ],
+    "pois": [
+      {
+        "id": "me-speck-pond-route26-at-poi",
+        "type": "speck pond",
+        "label": "Next-hike candidate: Route 26 Appalachian Trail climb toward Speck Pond with strict timing",
+        "mile": 3.8
+      }
+    ]
+  },
+  {
+    "id": "me-old-speck-at-route26",
+    "schemaVersion": "mappi3.routePack.v1",
+    "name": "Old Speck via Appalachian Trail",
+    "place": "Grafton Notch, Maine",
+    "region": "Grafton Notch / Route 26 Maine",
+    "summary": "AT climb from Route 26 toward Old Speck fire tower, exposed summit weather, and long daylight planning.",
+    "difficulty": "Hard",
+    "routeType": "Out-and-back",
+    "status": "Ready",
+    "distanceMiles": 7.4,
+    "estimatedTime": "5h 25m",
+    "elevationGainFt": 2850,
+    "storageEstimateMb": 248,
+    "tags": [
+      "old speck",
+      "route 26",
+      "grafton notch",
+      "appalachian trail",
+      "at",
+      "summit",
+      "hard"
+    ],
+    "sync": {
+      "state": "local-maine-seed-catalog",
+      "lastSynced": "seed-v1.2.25",
+      "supabaseReady": false
+    },
+    "offline": {
+      "required": false,
+      "tileFormat": "MBTiles",
+      "tileBounds": [
+        -71.0008,
+        44.5406,
+        -70.9108,
+        44.6056
+      ],
+      "minZoom": 10,
+      "maxZoom": 16,
+      "layers": [
+        "trail",
+        "topo",
+        "waypoints",
+        "notes"
+      ]
+    },
+    "weather": {
+      "cachePolicy": "refresh-when-online",
+      "lastForecastLabel": "not cached"
+    },
+    "geometry": {
+      "type": "LineString",
+      "coordinates": [
+        [
+          -70.9658,
+          44.5706
+        ],
+        [
+          -70.9603,
+          44.574251
+        ],
+        [
+          -70.9548,
+          44.573583
+        ],
+        [
+          -70.9493,
+          44.569386
+        ],
+        [
+          -70.9438,
+          44.566625
+        ]
+      ]
+    },
+    "mapPreviewPath": [
+      [
+        30,
+        171
+      ],
+      [
+        105,
+        128
+      ],
+      [
+        180,
+        110
+      ],
+      [
+        255,
+        189
+      ],
+      [
+        330,
+        232
+      ]
+    ],
+    "waypoints": [
+      {
+        "id": "me-old-speck-at-route26-start",
+        "name": "Trailhead",
+        "type": "Start",
+        "mile": 0,
+        "icon": "\u25ce",
+        "lat": 44.5706,
+        "lon": -70.9658
+      },
+      {
+        "id": "me-old-speck-at-route26-mid",
+        "name": "Key marker / viewpoint",
+        "type": "View",
+        "mile": 3.7,
+        "icon": "\u25c6",
+        "lat": 44.573583,
+        "lon": -70.9548
+      },
+      {
+        "id": "me-old-speck-at-route26-finish",
+        "name": "Finish / turnaround",
+        "type": "Finish",
+        "mile": 7.4,
+        "icon": "\u25ce",
+        "lat": 44.566625,
+        "lon": -70.9438
+      }
+    ],
+    "pois": [
+      {
+        "id": "me-old-speck-at-route26-poi",
+        "type": "old speck",
+        "label": "AT climb from Route 26 toward Old Speck fire tower, exposed summit weather, and long dayli",
+        "mile": 3.7
+      }
+    ]
+  },
+  {
+    "id": "me-eyebrow-old-speck-loop",
+    "schemaVersion": "mappi3.routePack.v1",
+    "name": "Eyebrow + Old Speck Loop",
+    "place": "Grafton Notch, Maine",
+    "region": "Grafton Notch / Route 26 Maine",
+    "summary": "Steep Eyebrow connector and AT loop sample with ladder/cable caution and serious route timing.",
+    "difficulty": "Hard",
+    "routeType": "Loop",
+    "status": "Ready",
+    "distanceMiles": 6.8,
+    "estimatedTime": "5h 10m",
+    "elevationGainFt": 2700,
+    "storageEstimateMb": 220,
+    "tags": [
+      "eyebrow trail",
+      "old speck",
+      "grafton notch",
+      "route 26",
+      "at",
+      "caution",
+      "views"
+    ],
+    "sync": {
+      "state": "local-maine-seed-catalog",
+      "lastSynced": "seed-v1.2.25",
+      "supabaseReady": false
+    },
+    "offline": {
+      "required": false,
+      "tileFormat": "MBTiles",
+      "tileBounds": [
+        -71.0002,
+        44.5414,
+        -70.9102,
+        44.6064
+      ],
+      "minZoom": 10,
+      "maxZoom": 16,
+      "layers": [
+        "trail",
+        "topo",
+        "waypoints",
+        "notes"
+      ]
+    },
+    "weather": {
+      "cachePolicy": "refresh-when-online",
+      "lastForecastLabel": "not cached"
+    },
+    "geometry": {
+      "type": "LineString",
+      "coordinates": [
+        [
+          -70.9652,
+          44.5714
+        ],
+        [
+          -70.9597,
+          44.575051
+        ],
+        [
+          -70.9542,
+          44.574383
+        ],
+        [
+          -70.9487,
+          44.570186
+        ],
+        [
+          -70.9432,
+          44.567425
+        ],
+        [
+          -70.9377,
+          44.569367
+        ],
+        [
+          -70.9652,
+          44.5714
+        ]
+      ]
+    },
+    "mapPreviewPath": [
+      [
+        30,
+        171
+      ],
+      [
+        80,
+        128
+      ],
+      [
+        130,
+        110
+      ],
+      [
+        180,
+        189
+      ],
+      [
+        230,
+        232
+      ],
+      [
+        280,
+        249
+      ],
+      [
+        330,
+        169
+      ]
+    ],
+    "waypoints": [
+      {
+        "id": "me-eyebrow-old-speck-loop-start",
+        "name": "Trailhead",
+        "type": "Start",
+        "mile": 0,
+        "icon": "\u25ce",
+        "lat": 44.5714,
+        "lon": -70.9652
+      },
+      {
+        "id": "me-eyebrow-old-speck-loop-mid",
+        "name": "Key marker / viewpoint",
+        "type": "View",
+        "mile": 3.4,
+        "icon": "\u25c6",
+        "lat": 44.570186,
+        "lon": -70.9487
+      },
+      {
+        "id": "me-eyebrow-old-speck-loop-finish",
+        "name": "Finish / turnaround",
+        "type": "Return",
+        "mile": 6.8,
+        "icon": "\u25ce",
+        "lat": 44.5714,
+        "lon": -70.9652
+      }
+    ],
+    "pois": [
+      {
+        "id": "me-eyebrow-old-speck-loop-poi",
+        "type": "eyebrow trail",
+        "label": "Steep Eyebrow connector and AT loop sample with ladder/cable caution and serious route tim",
+        "mile": 3.4
+      }
+    ]
+  },
+  {
+    "id": "me-table-rock-grafton-notch",
+    "schemaVersion": "mappi3.routePack.v1",
+    "name": "Table Rock Trail",
+    "place": "Grafton Notch, Maine",
+    "region": "Grafton Notch / Route 26 Maine",
+    "summary": "Short but steep Grafton Notch classic overlook route for sunrise/sunset planning.",
+    "difficulty": "Moderate",
+    "routeType": "Loop",
+    "status": "Ready",
+    "distanceMiles": 2.4,
+    "estimatedTime": "1h 45m",
+    "elevationGainFt": 960,
+    "storageEstimateMb": 92,
+    "tags": [
+      "table rock",
+      "grafton notch",
+      "route 26",
+      "overlook",
+      "sunset",
+      "moderate"
+    ],
+    "sync": {
+      "state": "local-maine-seed-catalog",
+      "lastSynced": "seed-v1.2.25",
+      "supabaseReady": false
+    },
+    "offline": {
+      "required": false,
+      "tileFormat": "MBTiles",
+      "tileBounds": [
+        -70.9813,
+        44.5586,
+        -70.8913,
+        44.6236
+      ],
+      "minZoom": 10,
+      "maxZoom": 16,
+      "layers": [
+        "trail",
+        "topo",
+        "waypoints",
+        "notes"
+      ]
+    },
+    "weather": {
+      "cachePolicy": "refresh-when-online",
+      "lastForecastLabel": "not cached"
+    },
+    "geometry": {
+      "type": "LineString",
+      "coordinates": [
+        [
+          -70.9463,
+          44.5886
+        ],
+        [
+          -70.9408,
+          44.592251
+        ],
+        [
+          -70.9353,
+          44.591583
+        ],
+        [
+          -70.9298,
+          44.587386
+        ],
+        [
+          -70.9243,
+          44.584625
+        ],
+        [
+          -70.9188,
+          44.586567
+        ],
+        [
+          -70.9463,
+          44.5886
+        ]
+      ]
+    },
+    "mapPreviewPath": [
+      [
+        30,
+        171
+      ],
+      [
+        80,
+        128
+      ],
+      [
+        130,
+        110
+      ],
+      [
+        180,
+        189
+      ],
+      [
+        230,
+        232
+      ],
+      [
+        280,
+        249
+      ],
+      [
+        330,
+        169
+      ]
+    ],
+    "waypoints": [
+      {
+        "id": "me-table-rock-grafton-notch-start",
+        "name": "Trailhead",
+        "type": "Start",
+        "mile": 0,
+        "icon": "\u25ce",
+        "lat": 44.5886,
+        "lon": -70.9463
+      },
+      {
+        "id": "me-table-rock-grafton-notch-mid",
+        "name": "Key marker / viewpoint",
+        "type": "View",
+        "mile": 1.2,
+        "icon": "\u25c6",
+        "lat": 44.587386,
+        "lon": -70.9298
+      },
+      {
+        "id": "me-table-rock-grafton-notch-finish",
+        "name": "Finish / turnaround",
+        "type": "Return",
+        "mile": 2.4,
+        "icon": "\u25ce",
+        "lat": 44.5886,
+        "lon": -70.9463
+      }
+    ],
+    "pois": [
+      {
+        "id": "me-table-rock-grafton-notch-poi",
+        "type": "table rock",
+        "label": "Short but steep Grafton Notch classic overlook route for sunrise/sunset planning.",
+        "mile": 1.2
+      }
+    ]
+  },
+  {
+    "id": "me-baldpate-west-peak-at",
+    "schemaVersion": "mappi3.routePack.v1",
+    "name": "Baldpate West Peak via AT",
+    "place": "Grafton Notch, Maine",
+    "region": "Grafton Notch / Route 26 Maine",
+    "summary": "Appalachian Trail climb toward West Baldpate from Route 26, useful for AT segment planning.",
+    "difficulty": "Hard",
+    "routeType": "Out-and-back",
+    "status": "Ready",
+    "distanceMiles": 5.8,
+    "estimatedTime": "4h 35m",
+    "elevationGainFt": 2300,
+    "storageEstimateMb": 190,
+    "tags": [
+      "baldpate",
+      "west peak",
+      "appalachian trail",
+      "at",
+      "route 26",
+      "hard",
+      "views"
+    ],
+    "sync": {
+      "state": "local-maine-seed-catalog",
+      "lastSynced": "seed-v1.2.25",
+      "supabaseReady": false
+    },
+    "offline": {
+      "required": false,
+      "tileFormat": "MBTiles",
+      "tileBounds": [
+        -70.9374,
+        44.5687,
+        -70.8474,
+        44.6337
+      ],
+      "minZoom": 10,
+      "maxZoom": 16,
+      "layers": [
+        "trail",
+        "topo",
+        "waypoints",
+        "notes"
+      ]
+    },
+    "weather": {
+      "cachePolicy": "refresh-when-online",
+      "lastForecastLabel": "not cached"
+    },
+    "geometry": {
+      "type": "LineString",
+      "coordinates": [
+        [
+          -70.9024,
+          44.5987
+        ],
+        [
+          -70.8969,
+          44.602351
+        ],
+        [
+          -70.8914,
+          44.601683
+        ],
+        [
+          -70.8859,
+          44.597486
+        ],
+        [
+          -70.8804,
+          44.594725
+        ]
+      ]
+    },
+    "mapPreviewPath": [
+      [
+        30,
+        171
+      ],
+      [
+        105,
+        128
+      ],
+      [
+        180,
+        110
+      ],
+      [
+        255,
+        189
+      ],
+      [
+        330,
+        232
+      ]
+    ],
+    "waypoints": [
+      {
+        "id": "me-baldpate-west-peak-at-start",
+        "name": "Trailhead",
+        "type": "Start",
+        "mile": 0,
+        "icon": "\u25ce",
+        "lat": 44.5987,
+        "lon": -70.9024
+      },
+      {
+        "id": "me-baldpate-west-peak-at-mid",
+        "name": "Key marker / viewpoint",
+        "type": "View",
+        "mile": 2.9,
+        "icon": "\u25c6",
+        "lat": 44.601683,
+        "lon": -70.8914
+      },
+      {
+        "id": "me-baldpate-west-peak-at-finish",
+        "name": "Finish / turnaround",
+        "type": "Finish",
+        "mile": 5.8,
+        "icon": "\u25ce",
+        "lat": 44.594725,
+        "lon": -70.8804
+      }
+    ],
+    "pois": [
+      {
+        "id": "me-baldpate-west-peak-at-poi",
+        "type": "baldpate",
+        "label": "Appalachian Trail climb toward West Baldpate from Route 26, useful for AT segment planning",
+        "mile": 2.9
+      }
+    ]
+  },
+  {
+    "id": "me-baldpate-east-peak-at",
+    "schemaVersion": "mappi3.routePack.v1",
+    "name": "Baldpate East Peak via AT",
+    "place": "Grafton Notch, Maine",
+    "region": "Grafton Notch / Route 26 Maine",
+    "summary": "Longer AT sample over Baldpate terrain with alpine-style ledges and turn-around checks.",
+    "difficulty": "Hard",
+    "routeType": "Out-and-back",
+    "status": "Ready",
+    "distanceMiles": 8.0,
+    "estimatedTime": "6h 25m",
+    "elevationGainFt": 3100,
+    "storageEstimateMb": 260,
+    "tags": [
+      "baldpate",
+      "east peak",
+      "appalachian trail",
+      "at",
+      "route 26",
+      "hard",
+      "ridge"
+    ],
+    "sync": {
+      "state": "local-maine-seed-catalog",
+      "lastSynced": "seed-v1.2.25",
+      "supabaseReady": false
+    },
+    "offline": {
+      "required": false,
+      "tileFormat": "MBTiles",
+      "tileBounds": [
+        -70.9371,
+        44.5691,
+        -70.8471,
+        44.6341
+      ],
+      "minZoom": 10,
+      "maxZoom": 16,
+      "layers": [
+        "trail",
+        "topo",
+        "waypoints",
+        "notes"
+      ]
+    },
+    "weather": {
+      "cachePolicy": "refresh-when-online",
+      "lastForecastLabel": "not cached"
+    },
+    "geometry": {
+      "type": "LineString",
+      "coordinates": [
+        [
+          -70.9021,
+          44.5991
+        ],
+        [
+          -70.8966,
+          44.602751
+        ],
+        [
+          -70.8911,
+          44.602083
+        ],
+        [
+          -70.8856,
+          44.597886
+        ],
+        [
+          -70.8801,
+          44.595125
+        ]
+      ]
+    },
+    "mapPreviewPath": [
+      [
+        30,
+        171
+      ],
+      [
+        105,
+        128
+      ],
+      [
+        180,
+        110
+      ],
+      [
+        255,
+        189
+      ],
+      [
+        330,
+        232
+      ]
+    ],
+    "waypoints": [
+      {
+        "id": "me-baldpate-east-peak-at-start",
+        "name": "Trailhead",
+        "type": "Start",
+        "mile": 0,
+        "icon": "\u25ce",
+        "lat": 44.5991,
+        "lon": -70.9021
+      },
+      {
+        "id": "me-baldpate-east-peak-at-mid",
+        "name": "Key marker / viewpoint",
+        "type": "Waypoint",
+        "mile": 4.0,
+        "icon": "\u25c6",
+        "lat": 44.602083,
+        "lon": -70.8911
+      },
+      {
+        "id": "me-baldpate-east-peak-at-finish",
+        "name": "Finish / turnaround",
+        "type": "Finish",
+        "mile": 8.0,
+        "icon": "\u25ce",
+        "lat": 44.595125,
+        "lon": -70.8801
+      }
+    ],
+    "pois": [
+      {
+        "id": "me-baldpate-east-peak-at-poi",
+        "type": "baldpate",
+        "label": "Longer AT sample over Baldpate terrain with alpine-style ledges and turn-around checks.",
+        "mile": 4.0
+      }
+    ]
+  },
+  {
+    "id": "me-puzzle-mountain-grafton-loop",
+    "schemaVersion": "mappi3.routePack.v1",
+    "name": "Puzzle Mountain via Grafton Loop Trail",
+    "place": "Newry, Maine",
+    "region": "Grafton Notch / Route 26 Maine",
+    "summary": "Grafton Loop Trail mountain route near Route 26 with views and moderate-hard timing.",
+    "difficulty": "Hard",
+    "routeType": "Out-and-back",
+    "status": "Ready",
+    "distanceMiles": 7.0,
+    "estimatedTime": "4h 55m",
+    "elevationGainFt": 2450,
+    "storageEstimateMb": 214,
+    "tags": [
+      "puzzle mountain",
+      "grafton loop",
+      "route 26",
+      "views",
+      "hard"
+    ],
+    "sync": {
+      "state": "local-maine-seed-catalog",
+      "lastSynced": "seed-v1.2.25",
+      "supabaseReady": false
+    },
+    "offline": {
+      "required": false,
+      "tileFormat": "MBTiles",
+      "tileBounds": [
+        -70.8932,
+        44.5307,
+        -70.8032,
+        44.5957
+      ],
+      "minZoom": 10,
+      "maxZoom": 16,
+      "layers": [
+        "trail",
+        "topo",
+        "waypoints",
+        "notes"
+      ]
+    },
+    "weather": {
+      "cachePolicy": "refresh-when-online",
+      "lastForecastLabel": "not cached"
+    },
+    "geometry": {
+      "type": "LineString",
+      "coordinates": [
+        [
+          -70.8582,
+          44.5607
+        ],
+        [
+          -70.8527,
+          44.564351
+        ],
+        [
+          -70.8472,
+          44.563683
+        ],
+        [
+          -70.8417,
+          44.559486
+        ],
+        [
+          -70.8362,
+          44.556725
+        ]
+      ]
+    },
+    "mapPreviewPath": [
+      [
+        30,
+        171
+      ],
+      [
+        105,
+        128
+      ],
+      [
+        180,
+        110
+      ],
+      [
+        255,
+        189
+      ],
+      [
+        330,
+        232
+      ]
+    ],
+    "waypoints": [
+      {
+        "id": "me-puzzle-mountain-grafton-loop-start",
+        "name": "Trailhead",
+        "type": "Start",
+        "mile": 0,
+        "icon": "\u25ce",
+        "lat": 44.5607,
+        "lon": -70.8582
+      },
+      {
+        "id": "me-puzzle-mountain-grafton-loop-mid",
+        "name": "Key marker / viewpoint",
+        "type": "View",
+        "mile": 3.5,
+        "icon": "\u25c6",
+        "lat": 44.563683,
+        "lon": -70.8472
+      },
+      {
+        "id": "me-puzzle-mountain-grafton-loop-finish",
+        "name": "Finish / turnaround",
+        "type": "Finish",
+        "mile": 7.0,
+        "icon": "\u25ce",
+        "lat": 44.556725,
+        "lon": -70.8362
+      }
+    ],
+    "pois": [
+      {
+        "id": "me-puzzle-mountain-grafton-loop-poi",
+        "type": "puzzle mountain",
+        "label": "Grafton Loop Trail mountain route near Route 26 with views and moderate-hard timing.",
+        "mile": 3.5
+      }
+    ]
+  },
+  {
+    "id": "me-sunday-river-whitecap",
+    "schemaVersion": "mappi3.routePack.v1",
+    "name": "Sunday River Whitecap",
+    "place": "Newry, Maine",
+    "region": "Grafton Notch / Route 26 Maine",
+    "summary": "Open ledge summit route in the Grafton Loop system with weather exposure and sunset views.",
+    "difficulty": "Hard",
+    "routeType": "Out-and-back",
+    "status": "Ready",
+    "distanceMiles": 5.8,
+    "estimatedTime": "4h 20m",
+    "elevationGainFt": 2100,
+    "storageEstimateMb": 188,
+    "tags": [
+      "sunday river whitecap",
+      "grafton loop",
+      "newry",
+      "views",
+      "sunset",
+      "hard"
+    ],
+    "sync": {
+      "state": "local-maine-seed-catalog",
+      "lastSynced": "seed-v1.2.25",
+      "supabaseReady": false
+    },
+    "offline": {
+      "required": false,
+      "tileFormat": "MBTiles",
+      "tileBounds": [
+        -70.8791,
+        44.4748,
+        -70.7891,
+        44.5398
+      ],
+      "minZoom": 10,
+      "maxZoom": 16,
+      "layers": [
+        "trail",
+        "topo",
+        "waypoints",
+        "notes"
+      ]
+    },
+    "weather": {
+      "cachePolicy": "refresh-when-online",
+      "lastForecastLabel": "not cached"
+    },
+    "geometry": {
+      "type": "LineString",
+      "coordinates": [
+        [
+          -70.8441,
+          44.5048
+        ],
+        [
+          -70.8386,
+          44.508451
+        ],
+        [
+          -70.8331,
+          44.507783
+        ],
+        [
+          -70.8276,
+          44.503586
+        ],
+        [
+          -70.8221,
+          44.500825
+        ]
+      ]
+    },
+    "mapPreviewPath": [
+      [
+        30,
+        171
+      ],
+      [
+        105,
+        128
+      ],
+      [
+        180,
+        110
+      ],
+      [
+        255,
+        189
+      ],
+      [
+        330,
+        232
+      ]
+    ],
+    "waypoints": [
+      {
+        "id": "me-sunday-river-whitecap-start",
+        "name": "Trailhead",
+        "type": "Start",
+        "mile": 0,
+        "icon": "\u25ce",
+        "lat": 44.5048,
+        "lon": -70.8441
+      },
+      {
+        "id": "me-sunday-river-whitecap-mid",
+        "name": "Key marker / viewpoint",
+        "type": "View",
+        "mile": 2.9,
+        "icon": "\u25c6",
+        "lat": 44.507783,
+        "lon": -70.8331
+      },
+      {
+        "id": "me-sunday-river-whitecap-finish",
+        "name": "Finish / turnaround",
+        "type": "Finish",
+        "mile": 5.8,
+        "icon": "\u25ce",
+        "lat": 44.500825,
+        "lon": -70.8221
+      }
+    ],
+    "pois": [
+      {
+        "id": "me-sunday-river-whitecap-poi",
+        "type": "sunday river whitecap",
+        "label": "Open ledge summit route in the Grafton Loop system with weather exposure and sunset views.",
+        "mile": 2.9
+      }
+    ]
+  },
+  {
+    "id": "me-step-falls-preserve",
+    "schemaVersion": "mappi3.routePack.v1",
+    "name": "Step Falls Preserve Trail",
+    "place": "Newry, Maine",
+    "region": "Grafton Notch / Route 26 Maine",
+    "summary": "Short waterfall stop off Route 26, good for family water-feature planning before or after bigger hikes.",
+    "difficulty": "Easy",
+    "routeType": "Out-and-back",
+    "status": "Ready",
+    "distanceMiles": 1.1,
+    "estimatedTime": "0h 40m",
+    "elevationGainFt": 250,
+    "storageEstimateMb": 42,
+    "tags": [
+      "step falls",
+      "route 26",
+      "newry",
+      "waterfall",
+      "easy",
+      "family",
+      "water"
+    ],
+    "sync": {
+      "state": "local-maine-seed-catalog",
+      "lastSynced": "seed-v1.2.25",
+      "supabaseReady": false
+    },
+    "offline": {
+      "required": false,
+      "tileFormat": "MBTiles",
+      "tileBounds": [
+        -70.8776,
+        44.4994,
+        -70.7876,
+        44.5644
+      ],
+      "minZoom": 10,
+      "maxZoom": 16,
+      "layers": [
+        "trail",
+        "topo",
+        "waypoints",
+        "notes"
+      ]
+    },
+    "weather": {
+      "cachePolicy": "refresh-when-online",
+      "lastForecastLabel": "not cached"
+    },
+    "geometry": {
+      "type": "LineString",
+      "coordinates": [
+        [
+          -70.8426,
+          44.5294
+        ],
+        [
+          -70.8371,
+          44.533051
+        ],
+        [
+          -70.8316,
+          44.532383
+        ],
+        [
+          -70.8261,
+          44.528186
+        ],
+        [
+          -70.8206,
+          44.525425
+        ]
+      ]
+    },
+    "mapPreviewPath": [
+      [
+        30,
+        171
+      ],
+      [
+        105,
+        128
+      ],
+      [
+        180,
+        110
+      ],
+      [
+        255,
+        189
+      ],
+      [
+        330,
+        232
+      ]
+    ],
+    "waypoints": [
+      {
+        "id": "me-step-falls-preserve-start",
+        "name": "Trailhead",
+        "type": "Start",
+        "mile": 0,
+        "icon": "\u25ce",
+        "lat": 44.5294,
+        "lon": -70.8426
+      },
+      {
+        "id": "me-step-falls-preserve-mid",
+        "name": "Key marker / viewpoint",
+        "type": "Waypoint",
+        "mile": 0.6,
+        "icon": "\u25c6",
+        "lat": 44.532383,
+        "lon": -70.8316
+      },
+      {
+        "id": "me-step-falls-preserve-finish",
+        "name": "Finish / turnaround",
+        "type": "Finish",
+        "mile": 1.1,
+        "icon": "\u25ce",
+        "lat": 44.525425,
+        "lon": -70.8206
+      }
+    ],
+    "pois": [
+      {
+        "id": "me-step-falls-preserve-poi",
+        "type": "step falls",
+        "label": "Short waterfall stop off Route 26, good for family water-feature planning before or after ",
+        "mile": 0.6
+      }
+    ]
+  },
+  {
+    "id": "me-screw-auger-falls",
+    "schemaVersion": "mappi3.routePack.v1",
+    "name": "Screw Auger Falls Walk",
+    "place": "Grafton Notch, Maine",
+    "region": "Grafton Notch / Route 26 Maine",
+    "summary": "Very short falls stop for Grafton Notch route-pack POI testing and family side trips.",
+    "difficulty": "Easy",
+    "routeType": "Out-and-back",
+    "status": "Ready",
+    "distanceMiles": 0.4,
+    "estimatedTime": "0h 20m",
+    "elevationGainFt": 60,
+    "storageEstimateMb": 28,
+    "tags": [
+      "screw auger falls",
+      "grafton notch",
+      "route 26",
+      "waterfall",
+      "easy",
+      "family"
+    ],
+    "sync": {
+      "state": "local-maine-seed-catalog",
+      "lastSynced": "seed-v1.2.25",
+      "supabaseReady": false
+    },
+    "offline": {
+      "required": false,
+      "tileFormat": "MBTiles",
+      "tileBounds": [
+        -70.9817,
+        44.5602,
+        -70.8917,
+        44.6252
+      ],
+      "minZoom": 10,
+      "maxZoom": 16,
+      "layers": [
+        "trail",
+        "topo",
+        "waypoints",
+        "notes"
+      ]
+    },
+    "weather": {
+      "cachePolicy": "refresh-when-online",
+      "lastForecastLabel": "not cached"
+    },
+    "geometry": {
+      "type": "LineString",
+      "coordinates": [
+        [
+          -70.9467,
+          44.5902
+        ],
+        [
+          -70.9412,
+          44.593851
+        ],
+        [
+          -70.9357,
+          44.593183
+        ],
+        [
+          -70.9302,
+          44.588986
+        ],
+        [
+          -70.9247,
+          44.586225
+        ]
+      ]
+    },
+    "mapPreviewPath": [
+      [
+        30,
+        171
+      ],
+      [
+        105,
+        128
+      ],
+      [
+        180,
+        110
+      ],
+      [
+        255,
+        189
+      ],
+      [
+        330,
+        232
+      ]
+    ],
+    "waypoints": [
+      {
+        "id": "me-screw-auger-falls-start",
+        "name": "Trailhead",
+        "type": "Start",
+        "mile": 0,
+        "icon": "\u25ce",
+        "lat": 44.5902,
+        "lon": -70.9467
+      },
+      {
+        "id": "me-screw-auger-falls-mid",
+        "name": "Key marker / viewpoint",
+        "type": "Waypoint",
+        "mile": 0.2,
+        "icon": "\u25c6",
+        "lat": 44.593183,
+        "lon": -70.9357
+      },
+      {
+        "id": "me-screw-auger-falls-finish",
+        "name": "Finish / turnaround",
+        "type": "Finish",
+        "mile": 0.4,
+        "icon": "\u25ce",
+        "lat": 44.586225,
+        "lon": -70.9247
+      }
+    ],
+    "pois": [
+      {
+        "id": "me-screw-auger-falls-poi",
+        "type": "screw auger falls",
+        "label": "Very short falls stop for Grafton Notch route-pack POI testing and family side trips.",
+        "mile": 0.2
+      }
+    ]
+  },
+  {
+    "id": "me-moose-cave-mother-walker",
+    "schemaVersion": "mappi3.routePack.v1",
+    "name": "Moose Cave + Mother Walker Falls",
+    "place": "Grafton Notch, Maine",
+    "region": "Grafton Notch / Route 26 Maine",
+    "summary": "Short roadside notch stops grouped as a mini route pack for Route 26 field planning.",
+    "difficulty": "Easy",
+    "routeType": "Out-and-back",
+    "status": "Ready",
+    "distanceMiles": 0.8,
+    "estimatedTime": "0h 35m",
+    "elevationGainFt": 130,
+    "storageEstimateMb": 34,
+    "tags": [
+      "moose cave",
+      "mother walker falls",
+      "grafton notch",
+      "route 26",
+      "easy",
+      "waterfall"
+    ],
+    "sync": {
+      "state": "local-maine-seed-catalog",
+      "lastSynced": "seed-v1.2.25",
+      "supabaseReady": false
+    },
+    "offline": {
+      "required": false,
+      "tileFormat": "MBTiles",
+      "tileBounds": [
+        -70.9932,
+        44.5489,
+        -70.9032,
+        44.6139
+      ],
+      "minZoom": 10,
+      "maxZoom": 16,
+      "layers": [
+        "trail",
+        "topo",
+        "waypoints",
+        "notes"
+      ]
+    },
+    "weather": {
+      "cachePolicy": "refresh-when-online",
+      "lastForecastLabel": "not cached"
+    },
+    "geometry": {
+      "type": "LineString",
+      "coordinates": [
+        [
+          -70.9582,
+          44.5789
+        ],
+        [
+          -70.9527,
+          44.582551
+        ],
+        [
+          -70.9472,
+          44.581883
+        ],
+        [
+          -70.9417,
+          44.577686
+        ],
+        [
+          -70.9362,
+          44.574925
+        ]
+      ]
+    },
+    "mapPreviewPath": [
+      [
+        30,
+        171
+      ],
+      [
+        105,
+        128
+      ],
+      [
+        180,
+        110
+      ],
+      [
+        255,
+        189
+      ],
+      [
+        330,
+        232
+      ]
+    ],
+    "waypoints": [
+      {
+        "id": "me-moose-cave-mother-walker-start",
+        "name": "Trailhead",
+        "type": "Start",
+        "mile": 0,
+        "icon": "\u25ce",
+        "lat": 44.5789,
+        "lon": -70.9582
+      },
+      {
+        "id": "me-moose-cave-mother-walker-mid",
+        "name": "Key marker / viewpoint",
+        "type": "Waypoint",
+        "mile": 0.4,
+        "icon": "\u25c6",
+        "lat": 44.581883,
+        "lon": -70.9472
+      },
+      {
+        "id": "me-moose-cave-mother-walker-finish",
+        "name": "Finish / turnaround",
+        "type": "Finish",
+        "mile": 0.8,
+        "icon": "\u25ce",
+        "lat": 44.574925,
+        "lon": -70.9362
+      }
+    ],
+    "pois": [
+      {
+        "id": "me-moose-cave-mother-walker-poi",
+        "type": "moose cave",
+        "label": "Short roadside notch stops grouped as a mini route pack for Route 26 field planning.",
+        "mile": 0.4
+      }
+    ]
+  },
+  {
+    "id": "me-mahoosuc-notch-at",
+    "schemaVersion": "mappi3.routePack.v1",
+    "name": "Mahoosuc Notch AT Segment",
+    "place": "Newry, Maine",
+    "region": "Mahoosuc / Grafton Maine",
+    "summary": "Remote Appalachian Trail sample segment for future advanced planning; verify access before use.",
+    "difficulty": "Hard",
+    "routeType": "Point-to-point",
+    "status": "Ready",
+    "distanceMiles": 4.7,
+    "estimatedTime": "4h 30m",
+    "elevationGainFt": 1700,
+    "storageEstimateMb": 210,
+    "tags": [
+      "mahoosuc notch",
+      "appalachian trail",
+      "at",
+      "hard",
+      "boulder",
+      "advanced"
+    ],
+    "sync": {
+      "state": "local-maine-seed-catalog",
+      "lastSynced": "seed-v1.2.25",
+      "supabaseReady": false
+    },
+    "offline": {
+      "required": false,
+      "tileFormat": "MBTiles",
+      "tileBounds": [
+        -71.0141,
+        44.4447,
+        -70.9241,
+        44.5097
+      ],
+      "minZoom": 10,
+      "maxZoom": 16,
+      "layers": [
+        "trail",
+        "topo",
+        "waypoints",
+        "notes"
+      ]
+    },
+    "weather": {
+      "cachePolicy": "refresh-when-online",
+      "lastForecastLabel": "not cached"
+    },
+    "geometry": {
+      "type": "LineString",
+      "coordinates": [
+        [
+          -70.9791,
+          44.4747
+        ],
+        [
+          -70.9736,
+          44.478351
+        ],
+        [
+          -70.9681,
+          44.477683
+        ],
+        [
+          -70.9626,
+          44.473486
+        ],
+        [
+          -70.9571,
+          44.470725
+        ]
+      ]
+    },
+    "mapPreviewPath": [
+      [
+        30,
+        171
+      ],
+      [
+        105,
+        128
+      ],
+      [
+        180,
+        110
+      ],
+      [
+        255,
+        189
+      ],
+      [
+        330,
+        232
+      ]
+    ],
+    "waypoints": [
+      {
+        "id": "me-mahoosuc-notch-at-start",
+        "name": "Trailhead",
+        "type": "Start",
+        "mile": 0,
+        "icon": "\u25ce",
+        "lat": 44.4747,
+        "lon": -70.9791
+      },
+      {
+        "id": "me-mahoosuc-notch-at-mid",
+        "name": "Key marker / viewpoint",
+        "type": "Waypoint",
+        "mile": 2.4,
+        "icon": "\u25c6",
+        "lat": 44.477683,
+        "lon": -70.9681
+      },
+      {
+        "id": "me-mahoosuc-notch-at-finish",
+        "name": "Finish / turnaround",
+        "type": "Finish",
+        "mile": 4.7,
+        "icon": "\u25ce",
+        "lat": 44.470725,
+        "lon": -70.9571
+      }
+    ],
+    "pois": [
+      {
+        "id": "me-mahoosuc-notch-at-poi",
+        "type": "mahoosuc notch",
+        "label": "Remote Appalachian Trail sample segment for future advanced planning; verify access before",
+        "mile": 2.4
+      }
+    ]
   }
 ]
