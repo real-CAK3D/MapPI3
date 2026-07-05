@@ -30,6 +30,6 @@ export const mapRoutePackToCard = (pack) => ({
 
 export const seedRoutePacks = routePacks;
 export const seedRoutes = routePacks.map(mapRoutePackToCard);
-export const primaryRoutePack = routePacks[0];
+export const primaryRoutePack = routePacks.find(pack => pack.id === 'me-speck-pond-route26-at') || routePacks[0];
 export const primaryWaypoints = primaryRoutePack.waypoints;
 export const primaryMapPreviewPath = primaryRoutePack.mapPreviewPath;

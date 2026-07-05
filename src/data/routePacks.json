@@ -5,7 +5,7 @@
     "name": "Hocking Hills Ridge Loop",
     "place": "Logan, Ohio",
     "region": "Ohio",
-    "summary": "Sample loop with waterfall, water crossing, shelter, overlook, and offline topo corridor.",
+    "summary": "Route export loop with waterfall, water crossing, shelter, overlook, and offline topo corridor.",
     "difficulty": "Moderate",
     "routeType": "Loop",
     "status": "Downloaded",
@@ -8634,7 +8634,7 @@
     "name": "Baldpate East Peak via AT",
     "place": "Grafton Notch, Maine",
     "region": "Grafton Notch / Route 26 Maine",
-    "summary": "Longer AT sample over Baldpate terrain with alpine-style ledges and turn-around checks.",
+    "summary": "Longer AT route over Baldpate terrain with alpine-style ledges and turn-around checks.",
     "difficulty": "Hard",
     "routeType": "Out-and-back",
     "status": "Ready",
@@ -8758,7 +8758,7 @@
       {
         "id": "me-baldpate-east-peak-at-poi",
         "type": "baldpate",
-        "label": "Longer AT sample over Baldpate terrain with alpine-style ledges and turn-around checks.",
+        "label": "Longer AT route over Baldpate terrain with alpine-style ledges and turn-around checks.",
         "mile": 4.0
       }
     ],
