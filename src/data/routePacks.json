@@ -414,5 +414,2820 @@
       }
     ],
     "pois": []
+  },
+  {
+    "id": "me-baxter-knifes-edge",
+    "schemaVersion": "mappi3.routePack.v1",
+    "name": "Baxter Knife Edge Approach",
+    "place": "Millinocket, Maine",
+    "region": "Maine",
+    "summary": "Alpine ridge sample for sunrise planning, exposed terrain, big views, and strict safety timing.",
+    "difficulty": "Hard",
+    "routeType": "Out-and-back",
+    "status": "Ready",
+    "distanceMiles": 5.2,
+    "estimatedTime": "4h 10m",
+    "elevationGainFt": 2100,
+    "storageEstimateMb": 248,
+    "tags": [
+      "maine",
+      "sunrise",
+      "ridge",
+      "views",
+      "hard"
+    ],
+    "sync": {
+      "state": "local-seed-catalog",
+      "lastSynced": "seed-v1.2.24",
+      "supabaseReady": false
+    },
+    "offline": {
+      "required": false,
+      "tileFormat": "MBTiles",
+      "tileBounds": [
+        -68.9563,
+        45.8692,
+        -68.8663,
+        45.9392
+      ],
+      "minZoom": 10,
+      "maxZoom": 16,
+      "layers": [
+        "trail",
+        "topo",
+        "waypoints"
+      ]
+    },
+    "weather": {
+      "cachePolicy": "refresh-when-online",
+      "lastForecastLabel": "not cached"
+    },
+    "geometry": {
+      "type": "LineString",
+      "coordinates": [
+        [
+          -68.9213,
+          45.9042
+        ],
+        [
+          -68.9148,
+          45.908394
+        ],
+        [
+          -68.9083,
+          45.90724
+        ],
+        [
+          -68.9018,
+          45.902209
+        ],
+        [
+          -68.8953,
+          45.899717
+        ]
+      ]
+    },
+    "mapPreviewPath": [
+      [
+        30,
+        170
+      ],
+      [
+        105,
+        118
+      ],
+      [
+        180,
+        105
+      ],
+      [
+        255,
+        202
+      ],
+      [
+        330,
+        246
+      ]
+    ],
+    "waypoints": [
+      {
+        "id": "me-baxter-knifes-edge-start",
+        "name": "Trailhead",
+        "type": "Start",
+        "mile": 0,
+        "icon": "\u25ce",
+        "lat": 45.9042,
+        "lon": -68.9213
+      },
+      {
+        "id": "me-baxter-knifes-edge-mid",
+        "name": "Mid-route marker",
+        "type": "View",
+        "mile": 2.6,
+        "icon": "\u25c6",
+        "lat": 45.90724,
+        "lon": -68.9083
+      },
+      {
+        "id": "me-baxter-knifes-edge-finish",
+        "name": "Finish / turnaround",
+        "type": "Finish",
+        "mile": 5.2,
+        "icon": "\u25ce",
+        "lat": 45.899717,
+        "lon": -68.8953
+      }
+    ],
+    "pois": [
+      {
+        "id": "me-baxter-knifes-edge-poi",
+        "type": "maine",
+        "label": "Alpine ridge sample for sunrise planning, exposed terrain, big views, and strict",
+        "mile": 2.6
+      }
+    ]
+  },
+  {
+    "id": "me-acadia-beehive",
+    "schemaVersion": "mappi3.routePack.v1",
+    "name": "Acadia Beehive Loop",
+    "place": "Bar Harbor, Maine",
+    "region": "Maine",
+    "summary": "Short steep ladder-and-view loop for sunrise or ocean overlook planning.",
+    "difficulty": "Hard",
+    "routeType": "Loop",
+    "status": "Ready",
+    "distanceMiles": 1.6,
+    "estimatedTime": "1h 20m",
+    "elevationGainFt": 520,
+    "storageEstimateMb": 96,
+    "tags": [
+      "maine",
+      "acadia",
+      "sunrise",
+      "views",
+      "ocean"
+    ],
+    "sync": {
+      "state": "local-seed-catalog",
+      "lastSynced": "seed-v1.2.24",
+      "supabaseReady": false
+    },
+    "offline": {
+      "required": false,
+      "tileFormat": "MBTiles",
+      "tileBounds": [
+        -68.2206,
+        44.2965,
+        -68.1306,
+        44.3665
+      ],
+      "minZoom": 10,
+      "maxZoom": 16,
+      "layers": [
+        "trail",
+        "topo",
+        "waypoints"
+      ]
+    },
+    "weather": {
+      "cachePolicy": "refresh-when-online",
+      "lastForecastLabel": "not cached"
+    },
+    "geometry": {
+      "type": "LineString",
+      "coordinates": [
+        [
+          -68.1856,
+          44.3315
+        ],
+        [
+          -68.1791,
+          44.335694
+        ],
+        [
+          -68.1726,
+          44.33454
+        ],
+        [
+          -68.1661,
+          44.329509
+        ],
+        [
+          -68.1596,
+          44.327017
+        ],
+        [
+          -68.1531,
+          44.330243
+        ],
+        [
+          -68.1856,
+          44.3315
+        ]
+      ]
+    },
+    "mapPreviewPath": [
+      [
+        30,
+        170
+      ],
+      [
+        80,
+        118
+      ],
+      [
+        130,
+        105
+      ],
+      [
+        180,
+        202
+      ],
+      [
+        230,
+        246
+      ],
+      [
+        280,
+        246
+      ],
+      [
+        330,
+        145
+      ]
+    ],
+    "waypoints": [
+      {
+        "id": "me-acadia-beehive-start",
+        "name": "Trailhead",
+        "type": "Start",
+        "mile": 0,
+        "icon": "\u25ce",
+        "lat": 44.3315,
+        "lon": -68.1856
+      },
+      {
+        "id": "me-acadia-beehive-mid",
+        "name": "Mid-route marker",
+        "type": "View",
+        "mile": 0.8,
+        "icon": "\u25c6",
+        "lat": 44.329509,
+        "lon": -68.1661
+      },
+      {
+        "id": "me-acadia-beehive-finish",
+        "name": "Finish / turnaround",
+        "type": "Return",
+        "mile": 1.6,
+        "icon": "\u25ce",
+        "lat": 44.3315,
+        "lon": -68.1856
+      }
+    ],
+    "pois": [
+      {
+        "id": "me-acadia-beehive-poi",
+        "type": "maine",
+        "label": "Short steep ladder-and-view loop for sunrise or ocean overlook planning.",
+        "mile": 0.8
+      }
+    ]
+  },
+  {
+    "id": "me-acadia-precipice",
+    "schemaVersion": "mappi3.routePack.v1",
+    "name": "Acadia Precipice Trail",
+    "place": "Bar Harbor, Maine",
+    "region": "Maine",
+    "summary": "Steep cliffside sample route with caution notes and early-start planning.",
+    "difficulty": "Hard",
+    "routeType": "Out-and-back",
+    "status": "Ready",
+    "distanceMiles": 2.1,
+    "estimatedTime": "2h 05m",
+    "elevationGainFt": 1050,
+    "storageEstimateMb": 112,
+    "tags": [
+      "maine",
+      "acadia",
+      "caution",
+      "views",
+      "sunrise"
+    ],
+    "sync": {
+      "state": "local-seed-catalog",
+      "lastSynced": "seed-v1.2.24",
+      "supabaseReady": false
+    },
+    "offline": {
+      "required": false,
+      "tileFormat": "MBTiles",
+      "tileBounds": [
+        -68.2237,
+        44.3148,
+        -68.1337,
+        44.3848
+      ],
+      "minZoom": 10,
+      "maxZoom": 16,
+      "layers": [
+        "trail",
+        "topo",
+        "waypoints"
+      ]
+    },
+    "weather": {
+      "cachePolicy": "refresh-when-online",
+      "lastForecastLabel": "not cached"
+    },
+    "geometry": {
+      "type": "LineString",
+      "coordinates": [
+        [
+          -68.1887,
+          44.3498
+        ],
+        [
+          -68.1822,
+          44.353994
+        ],
+        [
+          -68.1757,
+          44.35284
+        ],
+        [
+          -68.1692,
+          44.347809
+        ],
+        [
+          -68.1627,
+          44.345317
+        ]
+      ]
+    },
+    "mapPreviewPath": [
+      [
+        30,
+        170
+      ],
+      [
+        105,
+        118
+      ],
+      [
+        180,
+        105
+      ],
+      [
+        255,
+        202
+      ],
+      [
+        330,
+        246
+      ]
+    ],
+    "waypoints": [
+      {
+        "id": "me-acadia-precipice-start",
+        "name": "Trailhead",
+        "type": "Start",
+        "mile": 0,
+        "icon": "\u25ce",
+        "lat": 44.3498,
+        "lon": -68.1887
+      },
+      {
+        "id": "me-acadia-precipice-mid",
+        "name": "Mid-route marker",
+        "type": "View",
+        "mile": 1.1,
+        "icon": "\u25c6",
+        "lat": 44.35284,
+        "lon": -68.1757
+      },
+      {
+        "id": "me-acadia-precipice-finish",
+        "name": "Finish / turnaround",
+        "type": "Finish",
+        "mile": 2.1,
+        "icon": "\u25ce",
+        "lat": 44.345317,
+        "lon": -68.1627
+      }
+    ],
+    "pois": [
+      {
+        "id": "me-acadia-precipice-poi",
+        "type": "maine",
+        "label": "Steep cliffside sample route with caution notes and early-start planning.",
+        "mile": 1.1
+      }
+    ]
+  },
+  {
+    "id": "me-camden-maiden-cliff",
+    "schemaVersion": "mappi3.routePack.v1",
+    "name": "Camden Hills Maiden Cliff",
+    "place": "Camden, Maine",
+    "region": "Maine",
+    "summary": "Moderate wooded climb to lake views; useful for family sunset timing.",
+    "difficulty": "Moderate",
+    "routeType": "Out-and-back",
+    "status": "Ready",
+    "distanceMiles": 2.8,
+    "estimatedTime": "1h 35m",
+    "elevationGainFt": 820,
+    "storageEstimateMb": 104,
+    "tags": [
+      "maine",
+      "views",
+      "sunset",
+      "family",
+      "moderate"
+    ],
+    "sync": {
+      "state": "local-seed-catalog",
+      "lastSynced": "seed-v1.2.24",
+      "supabaseReady": false
+    },
+    "offline": {
+      "required": false,
+      "tileFormat": "MBTiles",
+      "tileBounds": [
+        -69.0991,
+        44.2125,
+        -69.0091,
+        44.2825
+      ],
+      "minZoom": 10,
+      "maxZoom": 16,
+      "layers": [
+        "trail",
+        "topo",
+        "waypoints"
+      ]
+    },
+    "weather": {
+      "cachePolicy": "refresh-when-online",
+      "lastForecastLabel": "not cached"
+    },
+    "geometry": {
+      "type": "LineString",
+      "coordinates": [
+        [
+          -69.0641,
+          44.2475
+        ],
+        [
+          -69.0576,
+          44.251694
+        ],
+        [
+          -69.0511,
+          44.25054
+        ],
+        [
+          -69.0446,
+          44.245509
+        ],
+        [
+          -69.0381,
+          44.243017
+        ]
+      ]
+    },
+    "mapPreviewPath": [
+      [
+        30,
+        170
+      ],
+      [
+        105,
+        118
+      ],
+      [
+        180,
+        105
+      ],
+      [
+        255,
+        202
+      ],
+      [
+        330,
+        246
+      ]
+    ],
+    "waypoints": [
+      {
+        "id": "me-camden-maiden-cliff-start",
+        "name": "Trailhead",
+        "type": "Start",
+        "mile": 0,
+        "icon": "\u25ce",
+        "lat": 44.2475,
+        "lon": -69.0641
+      },
+      {
+        "id": "me-camden-maiden-cliff-mid",
+        "name": "Mid-route marker",
+        "type": "View",
+        "mile": 1.4,
+        "icon": "\u25c6",
+        "lat": 44.25054,
+        "lon": -69.0511
+      },
+      {
+        "id": "me-camden-maiden-cliff-finish",
+        "name": "Finish / turnaround",
+        "type": "Finish",
+        "mile": 2.8,
+        "icon": "\u25ce",
+        "lat": 44.243017,
+        "lon": -69.0381
+      }
+    ],
+    "pois": [
+      {
+        "id": "me-camden-maiden-cliff-poi",
+        "type": "maine",
+        "label": "Moderate wooded climb to lake views; useful for family sunset timing.",
+        "mile": 1.4
+      }
+    ]
+  },
+  {
+    "id": "me-grafton-table-rock",
+    "schemaVersion": "mappi3.routePack.v1",
+    "name": "Grafton Notch Table Rock",
+    "place": "Newry, Maine",
+    "region": "Maine",
+    "summary": "Rocky overlook route with shelter/water planning and strong sunset views.",
+    "difficulty": "Moderate",
+    "routeType": "Loop",
+    "status": "Ready",
+    "distanceMiles": 2.7,
+    "estimatedTime": "1h 55m",
+    "elevationGainFt": 900,
+    "storageEstimateMb": 118,
+    "tags": [
+      "maine",
+      "overlook",
+      "sunset",
+      "water",
+      "loop"
+    ],
+    "sync": {
+      "state": "local-seed-catalog",
+      "lastSynced": "seed-v1.2.24",
+      "supabaseReady": false
+    },
+    "offline": {
+      "required": false,
+      "tileFormat": "MBTiles",
+      "tileBounds": [
+        -70.9828,
+        44.5519,
+        -70.8928,
+        44.6219
+      ],
+      "minZoom": 10,
+      "maxZoom": 16,
+      "layers": [
+        "trail",
+        "topo",
+        "waypoints"
+      ]
+    },
+    "weather": {
+      "cachePolicy": "refresh-when-online",
+      "lastForecastLabel": "not cached"
+    },
+    "geometry": {
+      "type": "LineString",
+      "coordinates": [
+        [
+          -70.9478,
+          44.5869
+        ],
+        [
+          -70.9413,
+          44.591094
+        ],
+        [
+          -70.9348,
+          44.58994
+        ],
+        [
+          -70.9283,
+          44.584909
+        ],
+        [
+          -70.9218,
+          44.582417
+        ],
+        [
+          -70.9153,
+          44.585643
+        ],
+        [
+          -70.9478,
+          44.5869
+        ]
+      ]
+    },
+    "mapPreviewPath": [
+      [
+        30,
+        170
+      ],
+      [
+        80,
+        118
+      ],
+      [
+        130,
+        105
+      ],
+      [
+        180,
+        202
+      ],
+      [
+        230,
+        246
+      ],
+      [
+        280,
+        246
+      ],
+      [
+        330,
+        145
+      ]
+    ],
+    "waypoints": [
+      {
+        "id": "me-grafton-table-rock-start",
+        "name": "Trailhead",
+        "type": "Start",
+        "mile": 0,
+        "icon": "\u25ce",
+        "lat": 44.5869,
+        "lon": -70.9478
+      },
+      {
+        "id": "me-grafton-table-rock-mid",
+        "name": "Mid-route marker",
+        "type": "View",
+        "mile": 1.4,
+        "icon": "\u25c6",
+        "lat": 44.584909,
+        "lon": -70.9283
+      },
+      {
+        "id": "me-grafton-table-rock-finish",
+        "name": "Finish / turnaround",
+        "type": "Return",
+        "mile": 2.7,
+        "icon": "\u25ce",
+        "lat": 44.5869,
+        "lon": -70.9478
+      }
+    ],
+    "pois": [
+      {
+        "id": "me-grafton-table-rock-poi",
+        "type": "maine",
+        "label": "Rocky overlook route with shelter/water planning and strong sunset views.",
+        "mile": 1.4
+      }
+    ]
+  },
+  {
+    "id": "me-tumbledown-brook",
+    "schemaVersion": "mappi3.routePack.v1",
+    "name": "Tumbledown Brook Trail",
+    "place": "Weld, Maine",
+    "region": "Maine",
+    "summary": "Mountain pond and ridge route sample with water POI and longer day timing.",
+    "difficulty": "Hard",
+    "routeType": "Out-and-back",
+    "status": "Ready",
+    "distanceMiles": 5.6,
+    "estimatedTime": "3h 45m",
+    "elevationGainFt": 1950,
+    "storageEstimateMb": 168,
+    "tags": [
+      "maine",
+      "water",
+      "pond",
+      "views",
+      "hard"
+    ],
+    "sync": {
+      "state": "local-seed-catalog",
+      "lastSynced": "seed-v1.2.24",
+      "supabaseReady": false
+    },
+    "offline": {
+      "required": false,
+      "tileFormat": "MBTiles",
+      "tileBounds": [
+        -70.5737,
+        44.6882,
+        -70.4837,
+        44.7582
+      ],
+      "minZoom": 10,
+      "maxZoom": 16,
+      "layers": [
+        "trail",
+        "topo",
+        "waypoints"
+      ]
+    },
+    "weather": {
+      "cachePolicy": "refresh-when-online",
+      "lastForecastLabel": "not cached"
+    },
+    "geometry": {
+      "type": "LineString",
+      "coordinates": [
+        [
+          -70.5387,
+          44.7232
+        ],
+        [
+          -70.5322,
+          44.727394
+        ],
+        [
+          -70.5257,
+          44.72624
+        ],
+        [
+          -70.5192,
+          44.721209
+        ],
+        [
+          -70.5127,
+          44.718717
+        ]
+      ]
+    },
+    "mapPreviewPath": [
+      [
+        30,
+        170
+      ],
+      [
+        105,
+        118
+      ],
+      [
+        180,
+        105
+      ],
+      [
+        255,
+        202
+      ],
+      [
+        330,
+        246
+      ]
+    ],
+    "waypoints": [
+      {
+        "id": "me-tumbledown-brook-start",
+        "name": "Trailhead",
+        "type": "Start",
+        "mile": 0,
+        "icon": "\u25ce",
+        "lat": 44.7232,
+        "lon": -70.5387
+      },
+      {
+        "id": "me-tumbledown-brook-mid",
+        "name": "Mid-route marker",
+        "type": "View",
+        "mile": 2.8,
+        "icon": "\u25c6",
+        "lat": 44.72624,
+        "lon": -70.5257
+      },
+      {
+        "id": "me-tumbledown-brook-finish",
+        "name": "Finish / turnaround",
+        "type": "Finish",
+        "mile": 5.6,
+        "icon": "\u25ce",
+        "lat": 44.718717,
+        "lon": -70.5127
+      }
+    ],
+    "pois": [
+      {
+        "id": "me-tumbledown-brook-poi",
+        "type": "maine",
+        "label": "Mountain pond and ridge route sample with water POI and longer day timing.",
+        "mile": 2.8
+      }
+    ]
+  },
+  {
+    "id": "me-bradbury-summit",
+    "schemaVersion": "mappi3.routePack.v1",
+    "name": "Bradbury Mountain Summit Loop",
+    "place": "Pownal, Maine",
+    "region": "Maine",
+    "summary": "Easy local-style summit loop with fast offline pack and kid-friendly planning.",
+    "difficulty": "Easy",
+    "routeType": "Loop",
+    "status": "Ready",
+    "distanceMiles": 1.4,
+    "estimatedTime": "0h 45m",
+    "elevationGainFt": 210,
+    "storageEstimateMb": 54,
+    "tags": [
+      "maine",
+      "easy",
+      "family",
+      "sunset",
+      "loop"
+    ],
+    "sync": {
+      "state": "local-seed-catalog",
+      "lastSynced": "seed-v1.2.24",
+      "supabaseReady": false
+    },
+    "offline": {
+      "required": false,
+      "tileFormat": "MBTiles",
+      "tileBounds": [
+        -70.2154,
+        43.8695,
+        -70.1254,
+        43.9395
+      ],
+      "minZoom": 10,
+      "maxZoom": 16,
+      "layers": [
+        "trail",
+        "topo",
+        "waypoints"
+      ]
+    },
+    "weather": {
+      "cachePolicy": "refresh-when-online",
+      "lastForecastLabel": "not cached"
+    },
+    "geometry": {
+      "type": "LineString",
+      "coordinates": [
+        [
+          -70.1804,
+          43.9045
+        ],
+        [
+          -70.1739,
+          43.908694
+        ],
+        [
+          -70.1674,
+          43.90754
+        ],
+        [
+          -70.1609,
+          43.902509
+        ],
+        [
+          -70.1544,
+          43.900017
+        ],
+        [
+          -70.1479,
+          43.903243
+        ],
+        [
+          -70.1804,
+          43.9045
+        ]
+      ]
+    },
+    "mapPreviewPath": [
+      [
+        30,
+        170
+      ],
+      [
+        80,
+        118
+      ],
+      [
+        130,
+        105
+      ],
+      [
+        180,
+        202
+      ],
+      [
+        230,
+        246
+      ],
+      [
+        280,
+        246
+      ],
+      [
+        330,
+        145
+      ]
+    ],
+    "waypoints": [
+      {
+        "id": "me-bradbury-summit-start",
+        "name": "Trailhead",
+        "type": "Start",
+        "mile": 0,
+        "icon": "\u25ce",
+        "lat": 43.9045,
+        "lon": -70.1804
+      },
+      {
+        "id": "me-bradbury-summit-mid",
+        "name": "Mid-route marker",
+        "type": "View",
+        "mile": 0.7,
+        "icon": "\u25c6",
+        "lat": 43.902509,
+        "lon": -70.1609
+      },
+      {
+        "id": "me-bradbury-summit-finish",
+        "name": "Finish / turnaround",
+        "type": "Return",
+        "mile": 1.4,
+        "icon": "\u25ce",
+        "lat": 43.9045,
+        "lon": -70.1804
+      }
+    ],
+    "pois": [
+      {
+        "id": "me-bradbury-summit-poi",
+        "type": "maine",
+        "label": "Easy local-style summit loop with fast offline pack and kid-friendly planning.",
+        "mile": 0.7
+      }
+    ]
+  },
+  {
+    "id": "me-sebago-douglas",
+    "schemaVersion": "mappi3.routePack.v1",
+    "name": "Sebago Douglas Mountain Loop",
+    "place": "Sebago, Maine",
+    "region": "Maine",
+    "summary": "Short tower-view loop for sunset timing and water/food readiness checks.",
+    "difficulty": "Moderate",
+    "routeType": "Loop",
+    "status": "Ready",
+    "distanceMiles": 2.3,
+    "estimatedTime": "1h 15m",
+    "elevationGainFt": 470,
+    "storageEstimateMb": 72,
+    "tags": [
+      "maine",
+      "tower",
+      "sunset",
+      "views",
+      "moderate"
+    ],
+    "sync": {
+      "state": "local-seed-catalog",
+      "lastSynced": "seed-v1.2.24",
+      "supabaseReady": false
+    },
+    "offline": {
+      "required": false,
+      "tileFormat": "MBTiles",
+      "tileBounds": [
+        -70.7399,
+        43.8462,
+        -70.6499,
+        43.9162
+      ],
+      "minZoom": 10,
+      "maxZoom": 16,
+      "layers": [
+        "trail",
+        "topo",
+        "waypoints"
+      ]
+    },
+    "weather": {
+      "cachePolicy": "refresh-when-online",
+      "lastForecastLabel": "not cached"
+    },
+    "geometry": {
+      "type": "LineString",
+      "coordinates": [
+        [
+          -70.7049,
+          43.8812
+        ],
+        [
+          -70.6984,
+          43.885394
+        ],
+        [
+          -70.6919,
+          43.88424
+        ],
+        [
+          -70.6854,
+          43.879209
+        ],
+        [
+          -70.6789,
+          43.876717
+        ],
+        [
+          -70.6724,
+          43.879943
+        ],
+        [
+          -70.7049,
+          43.8812
+        ]
+      ]
+    },
+    "mapPreviewPath": [
+      [
+        30,
+        170
+      ],
+      [
+        80,
+        118
+      ],
+      [
+        130,
+        105
+      ],
+      [
+        180,
+        202
+      ],
+      [
+        230,
+        246
+      ],
+      [
+        280,
+        246
+      ],
+      [
+        330,
+        145
+      ]
+    ],
+    "waypoints": [
+      {
+        "id": "me-sebago-douglas-start",
+        "name": "Trailhead",
+        "type": "Start",
+        "mile": 0,
+        "icon": "\u25ce",
+        "lat": 43.8812,
+        "lon": -70.7049
+      },
+      {
+        "id": "me-sebago-douglas-mid",
+        "name": "Mid-route marker",
+        "type": "View",
+        "mile": 1.1,
+        "icon": "\u25c6",
+        "lat": 43.879209,
+        "lon": -70.6854
+      },
+      {
+        "id": "me-sebago-douglas-finish",
+        "name": "Finish / turnaround",
+        "type": "Return",
+        "mile": 2.3,
+        "icon": "\u25ce",
+        "lat": 43.8812,
+        "lon": -70.7049
+      }
+    ],
+    "pois": [
+      {
+        "id": "me-sebago-douglas-poi",
+        "type": "maine",
+        "label": "Short tower-view loop for sunset timing and water/food readiness checks.",
+        "mile": 1.1
+      }
+    ]
+  },
+  {
+    "id": "nh-franconia-ridge",
+    "schemaVersion": "mappi3.routePack.v1",
+    "name": "Franconia Ridge Loop",
+    "place": "Lincoln, New Hampshire",
+    "region": "New Hampshire",
+    "summary": "Classic high ridge sample with hard effort, exposure, and daylight turn-around planning.",
+    "difficulty": "Hard",
+    "routeType": "Loop",
+    "status": "Ready",
+    "distanceMiles": 8.9,
+    "estimatedTime": "6h 35m",
+    "elevationGainFt": 3900,
+    "storageEstimateMb": 312,
+    "tags": [
+      "new hampshire",
+      "ridge",
+      "views",
+      "hard",
+      "sunrise"
+    ],
+    "sync": {
+      "state": "local-seed-catalog",
+      "lastSynced": "seed-v1.2.24",
+      "supabaseReady": false
+    },
+    "offline": {
+      "required": false,
+      "tileFormat": "MBTiles",
+      "tileBounds": [
+        -71.7169,
+        44.1078,
+        -71.6269,
+        44.1778
+      ],
+      "minZoom": 10,
+      "maxZoom": 16,
+      "layers": [
+        "trail",
+        "topo",
+        "waypoints"
+      ]
+    },
+    "weather": {
+      "cachePolicy": "refresh-when-online",
+      "lastForecastLabel": "not cached"
+    },
+    "geometry": {
+      "type": "LineString",
+      "coordinates": [
+        [
+          -71.6819,
+          44.1428
+        ],
+        [
+          -71.6754,
+          44.146994
+        ],
+        [
+          -71.6689,
+          44.14584
+        ],
+        [
+          -71.6624,
+          44.140809
+        ],
+        [
+          -71.6559,
+          44.138317
+        ],
+        [
+          -71.6494,
+          44.141543
+        ],
+        [
+          -71.6819,
+          44.1428
+        ]
+      ]
+    },
+    "mapPreviewPath": [
+      [
+        30,
+        170
+      ],
+      [
+        80,
+        118
+      ],
+      [
+        130,
+        105
+      ],
+      [
+        180,
+        202
+      ],
+      [
+        230,
+        246
+      ],
+      [
+        280,
+        246
+      ],
+      [
+        330,
+        145
+      ]
+    ],
+    "waypoints": [
+      {
+        "id": "nh-franconia-ridge-start",
+        "name": "Trailhead",
+        "type": "Start",
+        "mile": 0,
+        "icon": "\u25ce",
+        "lat": 44.1428,
+        "lon": -71.6819
+      },
+      {
+        "id": "nh-franconia-ridge-mid",
+        "name": "Mid-route marker",
+        "type": "View",
+        "mile": 4.5,
+        "icon": "\u25c6",
+        "lat": 44.140809,
+        "lon": -71.6624
+      },
+      {
+        "id": "nh-franconia-ridge-finish",
+        "name": "Finish / turnaround",
+        "type": "Return",
+        "mile": 8.9,
+        "icon": "\u25ce",
+        "lat": 44.1428,
+        "lon": -71.6819
+      }
+    ],
+    "pois": [
+      {
+        "id": "nh-franconia-ridge-poi",
+        "type": "new hampshire",
+        "label": "Classic high ridge sample with hard effort, exposure, and daylight turn-around p",
+        "mile": 4.5
+      }
+    ]
+  },
+  {
+    "id": "nh-mount-major",
+    "schemaVersion": "mappi3.routePack.v1",
+    "name": "Mount Major Main Trail",
+    "place": "Alton, New Hampshire",
+    "region": "New Hampshire",
+    "summary": "Lake overlook route for sunrise/sunset planning near Winnipesaukee.",
+    "difficulty": "Moderate",
+    "routeType": "Out-and-back",
+    "status": "Ready",
+    "distanceMiles": 3.8,
+    "estimatedTime": "2h 30m",
+    "elevationGainFt": 1150,
+    "storageEstimateMb": 138,
+    "tags": [
+      "new hampshire",
+      "lake",
+      "overlook",
+      "sunset"
+    ],
+    "sync": {
+      "state": "local-seed-catalog",
+      "lastSynced": "seed-v1.2.24",
+      "supabaseReady": false
+    },
+    "offline": {
+      "required": false,
+      "tileFormat": "MBTiles",
+      "tileBounds": [
+        -71.3063,
+        43.4777,
+        -71.2163,
+        43.5477
+      ],
+      "minZoom": 10,
+      "maxZoom": 16,
+      "layers": [
+        "trail",
+        "topo",
+        "waypoints"
+      ]
+    },
+    "weather": {
+      "cachePolicy": "refresh-when-online",
+      "lastForecastLabel": "not cached"
+    },
+    "geometry": {
+      "type": "LineString",
+      "coordinates": [
+        [
+          -71.2713,
+          43.5127
+        ],
+        [
+          -71.2648,
+          43.516894
+        ],
+        [
+          -71.2583,
+          43.51574
+        ],
+        [
+          -71.2518,
+          43.510709
+        ],
+        [
+          -71.2453,
+          43.508217
+        ]
+      ]
+    },
+    "mapPreviewPath": [
+      [
+        30,
+        170
+      ],
+      [
+        105,
+        118
+      ],
+      [
+        180,
+        105
+      ],
+      [
+        255,
+        202
+      ],
+      [
+        330,
+        246
+      ]
+    ],
+    "waypoints": [
+      {
+        "id": "nh-mount-major-start",
+        "name": "Trailhead",
+        "type": "Start",
+        "mile": 0,
+        "icon": "\u25ce",
+        "lat": 43.5127,
+        "lon": -71.2713
+      },
+      {
+        "id": "nh-mount-major-mid",
+        "name": "Mid-route marker",
+        "type": "View",
+        "mile": 1.9,
+        "icon": "\u25c6",
+        "lat": 43.51574,
+        "lon": -71.2583
+      },
+      {
+        "id": "nh-mount-major-finish",
+        "name": "Finish / turnaround",
+        "type": "Finish",
+        "mile": 3.8,
+        "icon": "\u25ce",
+        "lat": 43.508217,
+        "lon": -71.2453
+      }
+    ],
+    "pois": [
+      {
+        "id": "nh-mount-major-poi",
+        "type": "new hampshire",
+        "label": "Lake overlook route for sunrise/sunset planning near Winnipesaukee.",
+        "mile": 1.9
+      }
+    ]
+  },
+  {
+    "id": "vt-camel-hump",
+    "schemaVersion": "mappi3.routePack.v1",
+    "name": "Camel\u2019s Hump Burrows Trail",
+    "place": "Huntington, Vermont",
+    "region": "Vermont",
+    "summary": "Vermont summit route sample with alpine caution and route-pack readiness.",
+    "difficulty": "Hard",
+    "routeType": "Out-and-back",
+    "status": "Ready",
+    "distanceMiles": 6.0,
+    "estimatedTime": "4h 20m",
+    "elevationGainFt": 2580,
+    "storageEstimateMb": 196,
+    "tags": [
+      "vermont",
+      "summit",
+      "ridge",
+      "hard",
+      "views"
+    ],
+    "sync": {
+      "state": "local-seed-catalog",
+      "lastSynced": "seed-v1.2.24",
+      "supabaseReady": false
+    },
+    "offline": {
+      "required": false,
+      "tileFormat": "MBTiles",
+      "tileBounds": [
+        -72.9218,
+        44.2846,
+        -72.8318,
+        44.3546
+      ],
+      "minZoom": 10,
+      "maxZoom": 16,
+      "layers": [
+        "trail",
+        "topo",
+        "waypoints"
+      ]
+    },
+    "weather": {
+      "cachePolicy": "refresh-when-online",
+      "lastForecastLabel": "not cached"
+    },
+    "geometry": {
+      "type": "LineString",
+      "coordinates": [
+        [
+          -72.8868,
+          44.3196
+        ],
+        [
+          -72.8803,
+          44.323794
+        ],
+        [
+          -72.8738,
+          44.32264
+        ],
+        [
+          -72.8673,
+          44.317609
+        ],
+        [
+          -72.8608,
+          44.315117
+        ]
+      ]
+    },
+    "mapPreviewPath": [
+      [
+        30,
+        170
+      ],
+      [
+        105,
+        118
+      ],
+      [
+        180,
+        105
+      ],
+      [
+        255,
+        202
+      ],
+      [
+        330,
+        246
+      ]
+    ],
+    "waypoints": [
+      {
+        "id": "vt-camel-hump-start",
+        "name": "Trailhead",
+        "type": "Start",
+        "mile": 0,
+        "icon": "\u25ce",
+        "lat": 44.3196,
+        "lon": -72.8868
+      },
+      {
+        "id": "vt-camel-hump-mid",
+        "name": "Mid-route marker",
+        "type": "View",
+        "mile": 3.0,
+        "icon": "\u25c6",
+        "lat": 44.32264,
+        "lon": -72.8738
+      },
+      {
+        "id": "vt-camel-hump-finish",
+        "name": "Finish / turnaround",
+        "type": "Finish",
+        "mile": 6.0,
+        "icon": "\u25ce",
+        "lat": 44.315117,
+        "lon": -72.8608
+      }
+    ],
+    "pois": [
+      {
+        "id": "vt-camel-hump-poi",
+        "type": "vermont",
+        "label": "Vermont summit route sample with alpine caution and route-pack readiness.",
+        "mile": 3.0
+      }
+    ]
+  },
+  {
+    "id": "ma-wachusett-loop",
+    "schemaVersion": "mappi3.routePack.v1",
+    "name": "Mount Wachusett Loop",
+    "place": "Princeton, Massachusetts",
+    "region": "Massachusetts",
+    "summary": "Accessible summit loop sample with fire-road options and sunset views.",
+    "difficulty": "Moderate",
+    "routeType": "Loop",
+    "status": "Ready",
+    "distanceMiles": 3.9,
+    "estimatedTime": "2h 10m",
+    "elevationGainFt": 870,
+    "storageEstimateMb": 121,
+    "tags": [
+      "massachusetts",
+      "summit",
+      "sunset",
+      "moderate",
+      "loop"
+    ],
+    "sync": {
+      "state": "local-seed-catalog",
+      "lastSynced": "seed-v1.2.24",
+      "supabaseReady": false
+    },
+    "offline": {
+      "required": false,
+      "tileFormat": "MBTiles",
+      "tileBounds": [
+        -71.9229,
+        42.4533,
+        -71.8329,
+        42.5233
+      ],
+      "minZoom": 10,
+      "maxZoom": 16,
+      "layers": [
+        "trail",
+        "topo",
+        "waypoints"
+      ]
+    },
+    "weather": {
+      "cachePolicy": "refresh-when-online",
+      "lastForecastLabel": "not cached"
+    },
+    "geometry": {
+      "type": "LineString",
+      "coordinates": [
+        [
+          -71.8879,
+          42.4883
+        ],
+        [
+          -71.8814,
+          42.492494
+        ],
+        [
+          -71.8749,
+          42.49134
+        ],
+        [
+          -71.8684,
+          42.486309
+        ],
+        [
+          -71.8619,
+          42.483817
+        ],
+        [
+          -71.8554,
+          42.487043
+        ],
+        [
+          -71.8879,
+          42.4883
+        ]
+      ]
+    },
+    "mapPreviewPath": [
+      [
+        30,
+        170
+      ],
+      [
+        80,
+        118
+      ],
+      [
+        130,
+        105
+      ],
+      [
+        180,
+        202
+      ],
+      [
+        230,
+        246
+      ],
+      [
+        280,
+        246
+      ],
+      [
+        330,
+        145
+      ]
+    ],
+    "waypoints": [
+      {
+        "id": "ma-wachusett-loop-start",
+        "name": "Trailhead",
+        "type": "Start",
+        "mile": 0,
+        "icon": "\u25ce",
+        "lat": 42.4883,
+        "lon": -71.8879
+      },
+      {
+        "id": "ma-wachusett-loop-mid",
+        "name": "Mid-route marker",
+        "type": "View",
+        "mile": 1.9,
+        "icon": "\u25c6",
+        "lat": 42.486309,
+        "lon": -71.8684
+      },
+      {
+        "id": "ma-wachusett-loop-finish",
+        "name": "Finish / turnaround",
+        "type": "Return",
+        "mile": 3.9,
+        "icon": "\u25ce",
+        "lat": 42.4883,
+        "lon": -71.8879
+      }
+    ],
+    "pois": [
+      {
+        "id": "ma-wachusett-loop-poi",
+        "type": "massachusetts",
+        "label": "Accessible summit loop sample with fire-road options and sunset views.",
+        "mile": 1.9
+      }
+    ]
+  },
+  {
+    "id": "ny-breakneck-ridge",
+    "schemaVersion": "mappi3.routePack.v1",
+    "name": "Breakneck Ridge Short Loop",
+    "place": "Cold Spring, New York",
+    "region": "New York",
+    "summary": "Steep scramble sample route with caution, views, and strict timing needs.",
+    "difficulty": "Hard",
+    "routeType": "Loop",
+    "status": "Ready",
+    "distanceMiles": 3.2,
+    "estimatedTime": "3h 10m",
+    "elevationGainFt": 1250,
+    "storageEstimateMb": 146,
+    "tags": [
+      "new york",
+      "scramble",
+      "views",
+      "caution",
+      "sunrise"
+    ],
+    "sync": {
+      "state": "local-seed-catalog",
+      "lastSynced": "seed-v1.2.24",
+      "supabaseReady": false
+    },
+    "offline": {
+      "required": false,
+      "tileFormat": "MBTiles",
+      "tileBounds": [
+        -74.0137,
+        41.4089,
+        -73.9237,
+        41.4789
+      ],
+      "minZoom": 10,
+      "maxZoom": 16,
+      "layers": [
+        "trail",
+        "topo",
+        "waypoints"
+      ]
+    },
+    "weather": {
+      "cachePolicy": "refresh-when-online",
+      "lastForecastLabel": "not cached"
+    },
+    "geometry": {
+      "type": "LineString",
+      "coordinates": [
+        [
+          -73.9787,
+          41.4439
+        ],
+        [
+          -73.9722,
+          41.448094
+        ],
+        [
+          -73.9657,
+          41.44694
+        ],
+        [
+          -73.9592,
+          41.441909
+        ],
+        [
+          -73.9527,
+          41.439417
+        ],
+        [
+          -73.9462,
+          41.442643
+        ],
+        [
+          -73.9787,
+          41.4439
+        ]
+      ]
+    },
+    "mapPreviewPath": [
+      [
+        30,
+        170
+      ],
+      [
+        80,
+        118
+      ],
+      [
+        130,
+        105
+      ],
+      [
+        180,
+        202
+      ],
+      [
+        230,
+        246
+      ],
+      [
+        280,
+        246
+      ],
+      [
+        330,
+        145
+      ]
+    ],
+    "waypoints": [
+      {
+        "id": "ny-breakneck-ridge-start",
+        "name": "Trailhead",
+        "type": "Start",
+        "mile": 0,
+        "icon": "\u25ce",
+        "lat": 41.4439,
+        "lon": -73.9787
+      },
+      {
+        "id": "ny-breakneck-ridge-mid",
+        "name": "Mid-route marker",
+        "type": "View",
+        "mile": 1.6,
+        "icon": "\u25c6",
+        "lat": 41.441909,
+        "lon": -73.9592
+      },
+      {
+        "id": "ny-breakneck-ridge-finish",
+        "name": "Finish / turnaround",
+        "type": "Return",
+        "mile": 3.2,
+        "icon": "\u25ce",
+        "lat": 41.4439,
+        "lon": -73.9787
+      }
+    ],
+    "pois": [
+      {
+        "id": "ny-breakneck-ridge-poi",
+        "type": "new york",
+        "label": "Steep scramble sample route with caution, views, and strict timing needs.",
+        "mile": 1.6
+      }
+    ]
+  },
+  {
+    "id": "pa-ricketts-falls",
+    "schemaVersion": "mappi3.routePack.v1",
+    "name": "Ricketts Glen Falls Loop",
+    "place": "Benton, Pennsylvania",
+    "region": "Pennsylvania",
+    "summary": "Waterfall-heavy loop with slippery-rock caution and water POIs.",
+    "difficulty": "Hard",
+    "routeType": "Loop",
+    "status": "Ready",
+    "distanceMiles": 7.1,
+    "estimatedTime": "4h 55m",
+    "elevationGainFt": 1200,
+    "storageEstimateMb": 228,
+    "tags": [
+      "pennsylvania",
+      "waterfall",
+      "water",
+      "loop",
+      "caution"
+    ],
+    "sync": {
+      "state": "local-seed-catalog",
+      "lastSynced": "seed-v1.2.24",
+      "supabaseReady": false
+    },
+    "offline": {
+      "required": false,
+      "tileFormat": "MBTiles",
+      "tileBounds": [
+        -76.3272,
+        41.2942,
+        -76.2372,
+        41.3642
+      ],
+      "minZoom": 10,
+      "maxZoom": 16,
+      "layers": [
+        "trail",
+        "topo",
+        "waypoints"
+      ]
+    },
+    "weather": {
+      "cachePolicy": "refresh-when-online",
+      "lastForecastLabel": "not cached"
+    },
+    "geometry": {
+      "type": "LineString",
+      "coordinates": [
+        [
+          -76.2922,
+          41.3292
+        ],
+        [
+          -76.2857,
+          41.333394
+        ],
+        [
+          -76.2792,
+          41.33224
+        ],
+        [
+          -76.2727,
+          41.327209
+        ],
+        [
+          -76.2662,
+          41.324717
+        ],
+        [
+          -76.2597,
+          41.327943
+        ],
+        [
+          -76.2922,
+          41.3292
+        ]
+      ]
+    },
+    "mapPreviewPath": [
+      [
+        30,
+        170
+      ],
+      [
+        80,
+        118
+      ],
+      [
+        130,
+        105
+      ],
+      [
+        180,
+        202
+      ],
+      [
+        230,
+        246
+      ],
+      [
+        280,
+        246
+      ],
+      [
+        330,
+        145
+      ]
+    ],
+    "waypoints": [
+      {
+        "id": "pa-ricketts-falls-start",
+        "name": "Trailhead",
+        "type": "Start",
+        "mile": 0,
+        "icon": "\u25ce",
+        "lat": 41.3292,
+        "lon": -76.2922
+      },
+      {
+        "id": "pa-ricketts-falls-mid",
+        "name": "Mid-route marker",
+        "type": "Waypoint",
+        "mile": 3.5,
+        "icon": "\u25c6",
+        "lat": 41.327209,
+        "lon": -76.2727
+      },
+      {
+        "id": "pa-ricketts-falls-finish",
+        "name": "Finish / turnaround",
+        "type": "Return",
+        "mile": 7.1,
+        "icon": "\u25ce",
+        "lat": 41.3292,
+        "lon": -76.2922
+      }
+    ],
+    "pois": [
+      {
+        "id": "pa-ricketts-falls-poi",
+        "type": "pennsylvania",
+        "label": "Waterfall-heavy loop with slippery-rock caution and water POIs.",
+        "mile": 3.5
+      }
+    ]
+  },
+  {
+    "id": "wv-dolly-sods-bear-rocks",
+    "schemaVersion": "mappi3.routePack.v1",
+    "name": "Dolly Sods Bear Rocks",
+    "place": "Davis, West Virginia",
+    "region": "West Virginia",
+    "summary": "Open plateau route sample for sunset, weather exposure, and wayfinding readiness.",
+    "difficulty": "Moderate",
+    "routeType": "Out-and-back",
+    "status": "Ready",
+    "distanceMiles": 4.7,
+    "estimatedTime": "2h 40m",
+    "elevationGainFt": 620,
+    "storageEstimateMb": 152,
+    "tags": [
+      "west virginia",
+      "sunset",
+      "views",
+      "weather",
+      "moderate"
+    ],
+    "sync": {
+      "state": "local-seed-catalog",
+      "lastSynced": "seed-v1.2.24",
+      "supabaseReady": false
+    },
+    "offline": {
+      "required": false,
+      "tileFormat": "MBTiles",
+      "tileBounds": [
+        -79.3383,
+        39.0288,
+        -79.2483,
+        39.0988
+      ],
+      "minZoom": 10,
+      "maxZoom": 16,
+      "layers": [
+        "trail",
+        "topo",
+        "waypoints"
+      ]
+    },
+    "weather": {
+      "cachePolicy": "refresh-when-online",
+      "lastForecastLabel": "not cached"
+    },
+    "geometry": {
+      "type": "LineString",
+      "coordinates": [
+        [
+          -79.3033,
+          39.0638
+        ],
+        [
+          -79.2968,
+          39.067994
+        ],
+        [
+          -79.2903,
+          39.06684
+        ],
+        [
+          -79.2838,
+          39.061809
+        ],
+        [
+          -79.2773,
+          39.059317
+        ]
+      ]
+    },
+    "mapPreviewPath": [
+      [
+        30,
+        170
+      ],
+      [
+        105,
+        118
+      ],
+      [
+        180,
+        105
+      ],
+      [
+        255,
+        202
+      ],
+      [
+        330,
+        246
+      ]
+    ],
+    "waypoints": [
+      {
+        "id": "wv-dolly-sods-bear-rocks-start",
+        "name": "Trailhead",
+        "type": "Start",
+        "mile": 0,
+        "icon": "\u25ce",
+        "lat": 39.0638,
+        "lon": -79.3033
+      },
+      {
+        "id": "wv-dolly-sods-bear-rocks-mid",
+        "name": "Mid-route marker",
+        "type": "View",
+        "mile": 2.4,
+        "icon": "\u25c6",
+        "lat": 39.06684,
+        "lon": -79.2903
+      },
+      {
+        "id": "wv-dolly-sods-bear-rocks-finish",
+        "name": "Finish / turnaround",
+        "type": "Finish",
+        "mile": 4.7,
+        "icon": "\u25ce",
+        "lat": 39.059317,
+        "lon": -79.2773
+      }
+    ],
+    "pois": [
+      {
+        "id": "wv-dolly-sods-bear-rocks-poi",
+        "type": "west virginia",
+        "label": "Open plateau route sample for sunset, weather exposure, and wayfinding readiness",
+        "mile": 2.4
+      }
+    ]
+  },
+  {
+    "id": "ky-natural-bridge-loop",
+    "schemaVersion": "mappi3.routePack.v1",
+    "name": "Natural Bridge Original Trail",
+    "place": "Slade, Kentucky",
+    "region": "Kentucky",
+    "summary": "Short arch and overlook loop for Red River Gorge-style day planning.",
+    "difficulty": "Moderate",
+    "routeType": "Loop",
+    "status": "Ready",
+    "distanceMiles": 2.5,
+    "estimatedTime": "1h 40m",
+    "elevationGainFt": 650,
+    "storageEstimateMb": 88,
+    "tags": [
+      "kentucky",
+      "arch",
+      "overlook",
+      "sunrise",
+      "loop"
+    ],
+    "sync": {
+      "state": "local-seed-catalog",
+      "lastSynced": "seed-v1.2.24",
+      "supabaseReady": false
+    },
+    "offline": {
+      "required": false,
+      "tileFormat": "MBTiles",
+      "tileBounds": [
+        -83.7204,
+        37.7423,
+        -83.6304,
+        37.8123
+      ],
+      "minZoom": 10,
+      "maxZoom": 16,
+      "layers": [
+        "trail",
+        "topo",
+        "waypoints"
+      ]
+    },
+    "weather": {
+      "cachePolicy": "refresh-when-online",
+      "lastForecastLabel": "not cached"
+    },
+    "geometry": {
+      "type": "LineString",
+      "coordinates": [
+        [
+          -83.6854,
+          37.7773
+        ],
+        [
+          -83.6789,
+          37.781494
+        ],
+        [
+          -83.6724,
+          37.78034
+        ],
+        [
+          -83.6659,
+          37.775309
+        ],
+        [
+          -83.6594,
+          37.772817
+        ],
+        [
+          -83.6529,
+          37.776043
+        ],
+        [
+          -83.6854,
+          37.7773
+        ]
+      ]
+    },
+    "mapPreviewPath": [
+      [
+        30,
+        170
+      ],
+      [
+        80,
+        118
+      ],
+      [
+        130,
+        105
+      ],
+      [
+        180,
+        202
+      ],
+      [
+        230,
+        246
+      ],
+      [
+        280,
+        246
+      ],
+      [
+        330,
+        145
+      ]
+    ],
+    "waypoints": [
+      {
+        "id": "ky-natural-bridge-loop-start",
+        "name": "Trailhead",
+        "type": "Start",
+        "mile": 0,
+        "icon": "\u25ce",
+        "lat": 37.7773,
+        "lon": -83.6854
+      },
+      {
+        "id": "ky-natural-bridge-loop-mid",
+        "name": "Mid-route marker",
+        "type": "View",
+        "mile": 1.2,
+        "icon": "\u25c6",
+        "lat": 37.775309,
+        "lon": -83.6659
+      },
+      {
+        "id": "ky-natural-bridge-loop-finish",
+        "name": "Finish / turnaround",
+        "type": "Return",
+        "mile": 2.5,
+        "icon": "\u25ce",
+        "lat": 37.7773,
+        "lon": -83.6854
+      }
+    ],
+    "pois": [
+      {
+        "id": "ky-natural-bridge-loop-poi",
+        "type": "kentucky",
+        "label": "Short arch and overlook loop for Red River Gorge-style day planning.",
+        "mile": 1.2
+      }
+    ]
+  },
+  {
+    "id": "oh-old-mans-cave",
+    "schemaVersion": "mappi3.routePack.v1",
+    "name": "Old Man\u2019s Cave Gorge Trail",
+    "place": "Logan, Ohio",
+    "region": "Ohio",
+    "summary": "Hocking-style gorge trail with waterfalls, bridges, and family-friendly route timing.",
+    "difficulty": "Easy",
+    "routeType": "Loop",
+    "status": "Ready",
+    "distanceMiles": 1.9,
+    "estimatedTime": "1h 10m",
+    "elevationGainFt": 260,
+    "storageEstimateMb": 76,
+    "tags": [
+      "ohio",
+      "waterfall",
+      "easy",
+      "family",
+      "water"
+    ],
+    "sync": {
+      "state": "local-seed-catalog",
+      "lastSynced": "seed-v1.2.24",
+      "supabaseReady": false
+    },
+    "offline": {
+      "required": false,
+      "tileFormat": "MBTiles",
+      "tileBounds": [
+        -82.5752,
+        39.4022,
+        -82.4852,
+        39.4722
+      ],
+      "minZoom": 10,
+      "maxZoom": 16,
+      "layers": [
+        "trail",
+        "topo",
+        "waypoints"
+      ]
+    },
+    "weather": {
+      "cachePolicy": "refresh-when-online",
+      "lastForecastLabel": "not cached"
+    },
+    "geometry": {
+      "type": "LineString",
+      "coordinates": [
+        [
+          -82.5402,
+          39.4372
+        ],
+        [
+          -82.5337,
+          39.441394
+        ],
+        [
+          -82.5272,
+          39.44024
+        ],
+        [
+          -82.5207,
+          39.435209
+        ],
+        [
+          -82.5142,
+          39.432717
+        ],
+        [
+          -82.5077,
+          39.435943
+        ],
+        [
+          -82.5402,
+          39.4372
+        ]
+      ]
+    },
+    "mapPreviewPath": [
+      [
+        30,
+        170
+      ],
+      [
+        80,
+        118
+      ],
+      [
+        130,
+        105
+      ],
+      [
+        180,
+        202
+      ],
+      [
+        230,
+        246
+      ],
+      [
+        280,
+        246
+      ],
+      [
+        330,
+        145
+      ]
+    ],
+    "waypoints": [
+      {
+        "id": "oh-old-mans-cave-start",
+        "name": "Trailhead",
+        "type": "Start",
+        "mile": 0,
+        "icon": "\u25ce",
+        "lat": 39.4372,
+        "lon": -82.5402
+      },
+      {
+        "id": "oh-old-mans-cave-mid",
+        "name": "Mid-route marker",
+        "type": "Waypoint",
+        "mile": 0.9,
+        "icon": "\u25c6",
+        "lat": 39.435209,
+        "lon": -82.5207
+      },
+      {
+        "id": "oh-old-mans-cave-finish",
+        "name": "Finish / turnaround",
+        "type": "Return",
+        "mile": 1.9,
+        "icon": "\u25ce",
+        "lat": 39.4372,
+        "lon": -82.5402
+      }
+    ],
+    "pois": [
+      {
+        "id": "oh-old-mans-cave-poi",
+        "type": "ohio",
+        "label": "Hocking-style gorge trail with waterfalls, bridges, and family-friendly route ti",
+        "mile": 0.9
+      }
+    ]
+  },
+  {
+    "id": "oh-ash-cave-rim",
+    "schemaVersion": "mappi3.routePack.v1",
+    "name": "Ash Cave Rim and Gorge",
+    "place": "Logan, Ohio",
+    "region": "Ohio",
+    "summary": "Short cave/gorge sample route with accessible planning and water/caution markers.",
+    "difficulty": "Easy",
+    "routeType": "Loop",
+    "status": "Ready",
+    "distanceMiles": 1.2,
+    "estimatedTime": "0h 45m",
+    "elevationGainFt": 180,
+    "storageEstimateMb": 62,
+    "tags": [
+      "ohio",
+      "cave",
+      "waterfall",
+      "easy",
+      "family"
+    ],
+    "sync": {
+      "state": "local-seed-catalog",
+      "lastSynced": "seed-v1.2.24",
+      "supabaseReady": false
+    },
+    "offline": {
+      "required": false,
+      "tileFormat": "MBTiles",
+      "tileBounds": [
+        -82.5801,
+        39.3607,
+        -82.4901,
+        39.4307
+      ],
+      "minZoom": 10,
+      "maxZoom": 16,
+      "layers": [
+        "trail",
+        "topo",
+        "waypoints"
+      ]
+    },
+    "weather": {
+      "cachePolicy": "refresh-when-online",
+      "lastForecastLabel": "not cached"
+    },
+    "geometry": {
+      "type": "LineString",
+      "coordinates": [
+        [
+          -82.5451,
+          39.3957
+        ],
+        [
+          -82.5386,
+          39.399894
+        ],
+        [
+          -82.5321,
+          39.39874
+        ],
+        [
+          -82.5256,
+          39.393709
+        ],
+        [
+          -82.5191,
+          39.391217
+        ],
+        [
+          -82.5126,
+          39.394443
+        ],
+        [
+          -82.5451,
+          39.3957
+        ]
+      ]
+    },
+    "mapPreviewPath": [
+      [
+        30,
+        170
+      ],
+      [
+        80,
+        118
+      ],
+      [
+        130,
+        105
+      ],
+      [
+        180,
+        202
+      ],
+      [
+        230,
+        246
+      ],
+      [
+        280,
+        246
+      ],
+      [
+        330,
+        145
+      ]
+    ],
+    "waypoints": [
+      {
+        "id": "oh-ash-cave-rim-start",
+        "name": "Trailhead",
+        "type": "Start",
+        "mile": 0,
+        "icon": "\u25ce",
+        "lat": 39.3957,
+        "lon": -82.5451
+      },
+      {
+        "id": "oh-ash-cave-rim-mid",
+        "name": "Mid-route marker",
+        "type": "Waypoint",
+        "mile": 0.6,
+        "icon": "\u25c6",
+        "lat": 39.393709,
+        "lon": -82.5256
+      },
+      {
+        "id": "oh-ash-cave-rim-finish",
+        "name": "Finish / turnaround",
+        "type": "Return",
+        "mile": 1.2,
+        "icon": "\u25ce",
+        "lat": 39.3957,
+        "lon": -82.5451
+      }
+    ],
+    "pois": [
+      {
+        "id": "oh-ash-cave-rim-poi",
+        "type": "ohio",
+        "label": "Short cave/gorge sample route with accessible planning and water/caution markers",
+        "mile": 0.6
+      }
+    ]
+  },
+  {
+    "id": "me-pleasant-mountain",
+    "schemaVersion": "mappi3.routePack.v1",
+    "name": "Pleasant Mountain Ledges Trail",
+    "place": "Bridgton, Maine",
+    "region": "Maine",
+    "summary": "Western Maine ledge trail with views and sunset return timing.",
+    "difficulty": "Moderate",
+    "routeType": "Out-and-back",
+    "status": "Ready",
+    "distanceMiles": 3.6,
+    "estimatedTime": "2h 20m",
+    "elevationGainFt": 1500,
+    "storageEstimateMb": 132,
+    "tags": [
+      "maine",
+      "sunset",
+      "views",
+      "ledge",
+      "moderate"
+    ],
+    "sync": {
+      "state": "local-seed-catalog",
+      "lastSynced": "seed-v1.2.24",
+      "supabaseReady": false
+    },
+    "offline": {
+      "required": false,
+      "tileFormat": "MBTiles",
+      "tileBounds": [
+        -70.8508,
+        44.0236,
+        -70.7608,
+        44.0936
+      ],
+      "minZoom": 10,
+      "maxZoom": 16,
+      "layers": [
+        "trail",
+        "topo",
+        "waypoints"
+      ]
+    },
+    "weather": {
+      "cachePolicy": "refresh-when-online",
+      "lastForecastLabel": "not cached"
+    },
+    "geometry": {
+      "type": "LineString",
+      "coordinates": [
+        [
+          -70.8158,
+          44.0586
+        ],
+        [
+          -70.8093,
+          44.062794
+        ],
+        [
+          -70.8028,
+          44.06164
+        ],
+        [
+          -70.7963,
+          44.056609
+        ],
+        [
+          -70.7898,
+          44.054117
+        ]
+      ]
+    },
+    "mapPreviewPath": [
+      [
+        30,
+        170
+      ],
+      [
+        105,
+        118
+      ],
+      [
+        180,
+        105
+      ],
+      [
+        255,
+        202
+      ],
+      [
+        330,
+        246
+      ]
+    ],
+    "waypoints": [
+      {
+        "id": "me-pleasant-mountain-start",
+        "name": "Trailhead",
+        "type": "Start",
+        "mile": 0,
+        "icon": "\u25ce",
+        "lat": 44.0586,
+        "lon": -70.8158
+      },
+      {
+        "id": "me-pleasant-mountain-mid",
+        "name": "Mid-route marker",
+        "type": "View",
+        "mile": 1.8,
+        "icon": "\u25c6",
+        "lat": 44.06164,
+        "lon": -70.8028
+      },
+      {
+        "id": "me-pleasant-mountain-finish",
+        "name": "Finish / turnaround",
+        "type": "Finish",
+        "mile": 3.6,
+        "icon": "\u25ce",
+        "lat": 44.054117,
+        "lon": -70.7898
+      }
+    ],
+    "pois": [
+      {
+        "id": "me-pleasant-mountain-poi",
+        "type": "maine",
+        "label": "Western Maine ledge trail with views and sunset return timing.",
+        "mile": 1.8
+      }
+    ]
+  },
+  {
+    "id": "me-moxie-falls",
+    "schemaVersion": "mappi3.routePack.v1",
+    "name": "Moxie Falls Trail",
+    "place": "The Forks, Maine",
+    "region": "Maine",
+    "summary": "Easy waterfall route with short mileage and family water-feature planning.",
+    "difficulty": "Easy",
+    "routeType": "Out-and-back",
+    "status": "Ready",
+    "distanceMiles": 1.7,
+    "estimatedTime": "0h 55m",
+    "elevationGainFt": 230,
+    "storageEstimateMb": 70,
+    "tags": [
+      "maine",
+      "waterfall",
+      "easy",
+      "family",
+      "water"
+    ],
+    "sync": {
+      "state": "local-seed-catalog",
+      "lastSynced": "seed-v1.2.24",
+      "supabaseReady": false
+    },
+    "offline": {
+      "required": false,
+      "tileFormat": "MBTiles",
+      "tileBounds": [
+        -69.9861,
+        45.2832,
+        -69.8961,
+        45.3532
+      ],
+      "minZoom": 10,
+      "maxZoom": 16,
+      "layers": [
+        "trail",
+        "topo",
+        "waypoints"
+      ]
+    },
+    "weather": {
+      "cachePolicy": "refresh-when-online",
+      "lastForecastLabel": "not cached"
+    },
+    "geometry": {
+      "type": "LineString",
+      "coordinates": [
+        [
+          -69.9511,
+          45.3182
+        ],
+        [
+          -69.9446,
+          45.322394
+        ],
+        [
+          -69.9381,
+          45.32124
+        ],
+        [
+          -69.9316,
+          45.316209
+        ],
+        [
+          -69.9251,
+          45.313717
+        ]
+      ]
+    },
+    "mapPreviewPath": [
+      [
+        30,
+        170
+      ],
+      [
+        105,
+        118
+      ],
+      [
+        180,
+        105
+      ],
+      [
+        255,
+        202
+      ],
+      [
+        330,
+        246
+      ]
+    ],
+    "waypoints": [
+      {
+        "id": "me-moxie-falls-start",
+        "name": "Trailhead",
+        "type": "Start",
+        "mile": 0,
+        "icon": "\u25ce",
+        "lat": 45.3182,
+        "lon": -69.9511
+      },
+      {
+        "id": "me-moxie-falls-mid",
+        "name": "Mid-route marker",
+        "type": "Waypoint",
+        "mile": 0.8,
+        "icon": "\u25c6",
+        "lat": 45.32124,
+        "lon": -69.9381
+      },
+      {
+        "id": "me-moxie-falls-finish",
+        "name": "Finish / turnaround",
+        "type": "Finish",
+        "mile": 1.7,
+        "icon": "\u25ce",
+        "lat": 45.313717,
+        "lon": -69.9251
+      }
+    ],
+    "pois": [
+      {
+        "id": "me-moxie-falls-poi",
+        "type": "maine",
+        "label": "Easy waterfall route with short mileage and family water-feature planning.",
+        "mile": 0.8
+      }
+    ]
   }
 ]
