@@ -184,7 +184,10 @@
         "label": "Steep washout after rain",
         "mile": 3.1
       }
-    ]
+    ],
+    "landType": "Public trail / verify access",
+    "catalogCategory": "mountain trail",
+    "mountainArea": "Ohio"
   },
   {
     "id": "rrg-sky",
@@ -303,7 +306,10 @@
         "lon": -83.63
       }
     ],
-    "pois": []
+    "pois": [],
+    "landType": "Public trail / verify access",
+    "catalogCategory": "local trail",
+    "mountainArea": "Kentucky"
   },
   {
     "id": "mohican-scout",
@@ -413,7 +419,10 @@
         "lon": -82.21
       }
     ],
-    "pois": []
+    "pois": [],
+    "landType": "Public trail / verify access",
+    "catalogCategory": "local trail",
+    "mountainArea": "Ohio"
   },
   {
     "id": "me-baxter-knifes-edge",
@@ -545,7 +554,10 @@
         "label": "Alpine ridge sample for sunrise planning, exposed terrain, big views, and strict",
         "mile": 2.6
       }
-    ]
+    ],
+    "landType": "Public trail / verify access",
+    "catalogCategory": "mountain trail",
+    "mountainArea": "Maine"
   },
   {
     "id": "me-acadia-beehive",
@@ -693,7 +705,10 @@
         "label": "Short steep ladder-and-view loop for sunrise or ocean overlook planning.",
         "mile": 0.8
       }
-    ]
+    ],
+    "landType": "Public trail / verify access",
+    "catalogCategory": "local trail",
+    "mountainArea": "Acadia"
   },
   {
     "id": "me-acadia-precipice",
@@ -825,7 +840,10 @@
         "label": "Steep cliffside sample route with caution notes and early-start planning.",
         "mile": 1.1
       }
-    ]
+    ],
+    "landType": "Public trail / verify access",
+    "catalogCategory": "local trail",
+    "mountainArea": "Acadia"
   },
   {
     "id": "me-camden-maiden-cliff",
@@ -957,7 +975,10 @@
         "label": "Moderate wooded climb to lake views; useful for family sunset timing.",
         "mile": 1.4
       }
-    ]
+    ],
+    "landType": "Public trail / verify access",
+    "catalogCategory": "local trail",
+    "mountainArea": "Maine"
   },
   {
     "id": "me-grafton-table-rock",
@@ -1105,7 +1126,10 @@
         "label": "Rocky overlook route with shelter/water planning and strong sunset views.",
         "mile": 1.4
       }
-    ]
+    ],
+    "landType": "Public land",
+    "catalogCategory": "mountain trail",
+    "mountainArea": "Grafton Notch / Route 26"
   },
   {
     "id": "me-tumbledown-brook",
@@ -1237,7 +1261,10 @@
         "label": "Mountain pond and ridge route sample with water POI and longer day timing.",
         "mile": 2.8
       }
-    ]
+    ],
+    "landType": "Public trail / verify access",
+    "catalogCategory": "mountain trail",
+    "mountainArea": "Tumbledown / Mount Blue"
   },
   {
     "id": "me-bradbury-summit",
@@ -1385,7 +1412,10 @@
         "label": "Easy local-style summit loop with fast offline pack and kid-friendly planning.",
         "mile": 0.7
       }
-    ]
+    ],
+    "landType": "Public land",
+    "catalogCategory": "mountain trail",
+    "mountainArea": "Maine"
   },
   {
     "id": "me-sebago-douglas",
@@ -1533,7 +1563,10 @@
         "label": "Short tower-view loop for sunset timing and water/food readiness checks.",
         "mile": 1.1
       }
-    ]
+    ],
+    "landType": "Public trail / verify access",
+    "catalogCategory": "mountain trail",
+    "mountainArea": "Maine"
   },
   {
     "id": "nh-franconia-ridge",
@@ -1681,7 +1714,10 @@
         "label": "Classic high ridge sample with hard effort, exposure, and daylight turn-around p",
         "mile": 4.5
       }
-    ]
+    ],
+    "landType": "Public trail / verify access",
+    "catalogCategory": "mountain trail",
+    "mountainArea": "New Hampshire"
   },
   {
     "id": "nh-mount-major",
@@ -1812,7 +1848,10 @@
         "label": "Lake overlook route for sunrise/sunset planning near Winnipesaukee.",
         "mile": 1.9
       }
-    ]
+    ],
+    "landType": "Public trail / verify access",
+    "catalogCategory": "local trail",
+    "mountainArea": "New Hampshire"
   },
   {
     "id": "vt-camel-hump",
@@ -1944,7 +1983,10 @@
         "label": "Vermont summit route sample with alpine caution and route-pack readiness.",
         "mile": 3.0
       }
-    ]
+    ],
+    "landType": "Public trail / verify access",
+    "catalogCategory": "mountain trail",
+    "mountainArea": "Vermont"
   },
   {
     "id": "ma-wachusett-loop",
@@ -2092,7 +2134,10 @@
         "label": "Accessible summit loop sample with fire-road options and sunset views.",
         "mile": 1.9
       }
-    ]
+    ],
+    "landType": "Public trail / verify access",
+    "catalogCategory": "mountain trail",
+    "mountainArea": "Massachusetts"
   },
   {
     "id": "ny-breakneck-ridge",
@@ -2240,7 +2285,10 @@
         "label": "Steep scramble sample route with caution, views, and strict timing needs.",
         "mile": 1.6
       }
-    ]
+    ],
+    "landType": "Public trail / verify access",
+    "catalogCategory": "mountain trail",
+    "mountainArea": "New York"
   },
   {
     "id": "pa-ricketts-falls",
@@ -2388,7 +2436,10 @@
         "label": "Waterfall-heavy loop with slippery-rock caution and water POIs.",
         "mile": 3.5
       }
-    ]
+    ],
+    "landType": "Public land / falls access",
+    "catalogCategory": "waterfall / notch stop",
+    "mountainArea": "Pennsylvania"
   },
   {
     "id": "wv-dolly-sods-bear-rocks",
@@ -2520,7 +2571,10 @@
         "label": "Open plateau route sample for sunset, weather exposure, and wayfinding readiness",
         "mile": 2.4
       }
-    ]
+    ],
+    "landType": "Public trail / verify access",
+    "catalogCategory": "local trail",
+    "mountainArea": "West Virginia"
   },
   {
     "id": "ky-natural-bridge-loop",
@@ -2668,7 +2722,10 @@
         "label": "Short arch and overlook loop for Red River Gorge-style day planning.",
         "mile": 1.2
       }
-    ]
+    ],
+    "landType": "Public trail / verify access",
+    "catalogCategory": "mountain trail",
+    "mountainArea": "Kentucky"
   },
   {
     "id": "oh-old-mans-cave",
@@ -2816,7 +2873,10 @@
         "label": "Hocking-style gorge trail with waterfalls, bridges, and family-friendly route ti",
         "mile": 0.9
       }
-    ]
+    ],
+    "landType": "Public land / falls access",
+    "catalogCategory": "waterfall / notch stop",
+    "mountainArea": "Ohio"
   },
   {
     "id": "oh-ash-cave-rim",
@@ -2964,7 +3024,10 @@
         "label": "Short cave/gorge sample route with accessible planning and water/caution markers",
         "mile": 0.6
       }
-    ]
+    ],
+    "landType": "Public land / falls access",
+    "catalogCategory": "waterfall / notch stop",
+    "mountainArea": "Ohio"
   },
   {
     "id": "me-pleasant-mountain",
@@ -3096,7 +3159,10 @@
         "label": "Western Maine ledge trail with views and sunset return timing.",
         "mile": 1.8
       }
-    ]
+    ],
+    "landType": "Public trail / verify access",
+    "catalogCategory": "mountain trail",
+    "mountainArea": "Maine"
   },
   {
     "id": "me-moxie-falls",
@@ -3228,7 +3294,10 @@
         "label": "Easy waterfall route with short mileage and family water-feature planning.",
         "mile": 0.8
       }
-    ]
+    ],
+    "landType": "Public land / falls access",
+    "catalogCategory": "waterfall / notch stop",
+    "mountainArea": "Maine"
   },
   {
     "id": "la-thorncrag-loop",
@@ -3379,7 +3448,10 @@
         "label": "Local Lewiston woods and sanctuary loop for short hikes, family walks, and quick shakedown",
         "mile": 1.1
       }
-    ]
+    ],
+    "landType": "Public preserve",
+    "catalogCategory": "local trail",
+    "mountainArea": "Lewiston-Auburn local"
   },
   {
     "id": "la-mount-apatite-loop",
@@ -3529,7 +3601,10 @@
         "label": "Auburn local trail network sample with quarry history, woods, and short-loop options.",
         "mile": 1.6
       }
-    ]
+    ],
+    "landType": "Public trail / verify access",
+    "catalogCategory": "local trail",
+    "mountainArea": "Lewiston-Auburn local"
   },
   {
     "id": "la-androscoggin-riverlands",
@@ -3664,7 +3739,10 @@
         "label": "Nearby riverlands route for longer local mileage, river views, and low-key offline testing",
         "mile": 2.7
       }
-    ]
+    ],
+    "landType": "Public trail / verify access",
+    "catalogCategory": "local trail",
+    "mountainArea": "Lewiston-Auburn local"
   },
   {
     "id": "la-riverwalk-loop",
@@ -3798,7 +3876,10 @@
         "label": "Urban riverwalk planning route along the Androscoggin for quick exercise and GPS testing.",
         "mile": 1.2
       }
-    ]
+    ],
+    "landType": "Walking path",
+    "catalogCategory": "walking path",
+    "mountainArea": "Lewiston-Auburn local"
   },
   {
     "id": "la-range-ponds-loop",
@@ -3949,7 +4030,10 @@
         "label": "Nearby lake/shore route sample for family hiking, swimming-season planning, and easy offli",
         "mile": 1.1
       }
-    ]
+    ],
+    "landType": "Public land",
+    "catalogCategory": "local trail",
+    "mountainArea": "Lewiston-Auburn local"
   },
   {
     "id": "la-david-rancourt-preserve",
@@ -4099,7 +4183,10 @@
         "label": "Local preserve-style route for short woods walking and river corridor planning.",
         "mile": 0.9
       }
-    ]
+    ],
+    "landType": "Public preserve",
+    "catalogCategory": "local trail",
+    "mountainArea": "Lewiston-Auburn local"
   },
   {
     "id": "la-sherwood-forest",
@@ -4248,7 +4335,10 @@
         "label": "Auburn neighborhood woods loop placeholder for local route-pack testing and quick hikes.",
         "mile": 0.8
       }
-    ]
+    ],
+    "landType": "Public preserve",
+    "catalogCategory": "local trail",
+    "mountainArea": "Lewiston-Auburn local"
   },
   {
     "id": "la-lake-auburn-overlook",
@@ -4382,7 +4472,10 @@
         "label": "Short lake-area route sample for sunset checks and local weather/origin testing.",
         "mile": 0.9
       }
-    ]
+    ],
+    "landType": "Public trail / verify access",
+    "catalogCategory": "local trail",
+    "mountainArea": "Lewiston-Auburn local"
   },
   {
     "id": "me-tumbledown-loop-trail",
@@ -4533,7 +4626,10 @@
         "label": "Classic steep Tumbledown route sample with pond/summit timing and caution planning.",
         "mile": 2.5
       }
-    ]
+    ],
+    "landType": "Public land",
+    "catalogCategory": "mountain trail",
+    "mountainArea": "Tumbledown / Mount Blue"
   },
   {
     "id": "me-tumbledown-parker-ridge",
@@ -4667,7 +4763,10 @@
         "label": "Ridge approach option for Tumbledown with longer views and turn-around planning.",
         "mile": 2.5
       }
-    ]
+    ],
+    "landType": "Public land",
+    "catalogCategory": "mountain trail",
+    "mountainArea": "Tumbledown / Mount Blue"
   },
   {
     "id": "me-little-jackson",
@@ -4801,7 +4900,10 @@
         "label": "Nearby rugged Weld-area route sample for longer day planning near Tumbledown.",
         "mile": 3.1
       }
-    ]
+    ],
+    "landType": "Public land",
+    "catalogCategory": "mountain trail",
+    "mountainArea": "Tumbledown / Mount Blue"
   },
   {
     "id": "me-blueberry-mountain-stone-house",
@@ -4950,7 +5052,10 @@
         "label": "Western Maine Blueberry Mountain route with ledges, views, and moderate timing.",
         "mile": 2.0
       }
-    ]
+    ],
+    "landType": "Public trail / verify access",
+    "catalogCategory": "mountain trail",
+    "mountainArea": "Blueberry Mountain / Evans Notch"
   },
   {
     "id": "me-mount-blue-trail",
@@ -5083,7 +5188,10 @@
         "label": "Mount Blue summit planning route near Weld and Tumbledown for local mountain catalog depth",
         "mile": 1.8
       }
-    ]
+    ],
+    "landType": "Public land",
+    "catalogCategory": "mountain trail",
+    "mountainArea": "Tumbledown / Mount Blue"
   },
   {
     "id": "me-center-hill-nature",
@@ -5232,7 +5340,10 @@
         "label": "Short Mount Blue State Park nature loop for easier local family hikes near Weld.",
         "mile": 0.5
       }
-    ]
+    ],
+    "landType": "Public land",
+    "catalogCategory": "mountain trail",
+    "mountainArea": "Tumbledown / Mount Blue"
   },
   {
     "id": "me-speck-pond-route26-at",
@@ -5369,7 +5480,10 @@
         "label": "Next-hike candidate: Route 26 Appalachian Trail climb toward Speck Pond with strict timing",
         "mile": 3.8
       }
-    ]
+    ],
+    "landType": "Appalachian Trail",
+    "catalogCategory": "appalachian trail",
+    "mountainArea": "Grafton Notch / Route 26"
   },
   {
     "id": "me-old-speck-at-route26",
@@ -5504,7 +5618,10 @@
         "label": "AT climb from Route 26 toward Old Speck fire tower, exposed summit weather, and long dayli",
         "mile": 3.7
       }
-    ]
+    ],
+    "landType": "Appalachian Trail",
+    "catalogCategory": "appalachian trail",
+    "mountainArea": "Grafton Notch / Route 26"
   },
   {
     "id": "me-eyebrow-old-speck-loop",
@@ -5655,7 +5772,10 @@
         "label": "Steep Eyebrow connector and AT loop sample with ladder/cable caution and serious route tim",
         "mile": 3.4
       }
-    ]
+    ],
+    "landType": "Appalachian Trail",
+    "catalogCategory": "appalachian trail",
+    "mountainArea": "Grafton Notch / Route 26"
   },
   {
     "id": "me-table-rock-grafton-notch",
@@ -5805,7 +5925,10 @@
         "label": "Short but steep Grafton Notch classic overlook route for sunrise/sunset planning.",
         "mile": 1.2
       }
-    ]
+    ],
+    "landType": "Public land",
+    "catalogCategory": "mountain trail",
+    "mountainArea": "Grafton Notch / Route 26"
   },
   {
     "id": "me-baldpate-west-peak-at",
@@ -5940,7 +6063,10 @@
         "label": "Appalachian Trail climb toward West Baldpate from Route 26, useful for AT segment planning",
         "mile": 2.9
       }
-    ]
+    ],
+    "landType": "Appalachian Trail",
+    "catalogCategory": "appalachian trail",
+    "mountainArea": "Grafton Notch / Route 26"
   },
   {
     "id": "me-baldpate-east-peak-at",
@@ -6075,7 +6201,10 @@
         "label": "Longer AT sample over Baldpate terrain with alpine-style ledges and turn-around checks.",
         "mile": 4.0
       }
-    ]
+    ],
+    "landType": "Appalachian Trail",
+    "catalogCategory": "appalachian trail",
+    "mountainArea": "Grafton Notch / Route 26"
   },
   {
     "id": "me-puzzle-mountain-grafton-loop",
@@ -6208,7 +6337,10 @@
         "label": "Grafton Loop Trail mountain route near Route 26 with views and moderate-hard timing.",
         "mile": 3.5
       }
-    ]
+    ],
+    "landType": "Public land",
+    "catalogCategory": "mountain trail",
+    "mountainArea": "Grafton Notch / Route 26"
   },
   {
     "id": "me-sunday-river-whitecap",
@@ -6342,7 +6474,10 @@
         "label": "Open ledge summit route in the Grafton Loop system with weather exposure and sunset views.",
         "mile": 2.9
       }
-    ]
+    ],
+    "landType": "Public land",
+    "catalogCategory": "mountain trail",
+    "mountainArea": "Grafton Notch / Route 26"
   },
   {
     "id": "me-step-falls-preserve",
@@ -6477,7 +6612,10 @@
         "label": "Short waterfall stop off Route 26, good for family water-feature planning before or after ",
         "mile": 0.6
       }
-    ]
+    ],
+    "landType": "Public preserve",
+    "catalogCategory": "waterfall / notch stop",
+    "mountainArea": "Grafton Notch / Route 26"
   },
   {
     "id": "me-screw-auger-falls",
@@ -6611,7 +6749,10 @@
         "label": "Very short falls stop for Grafton Notch route-pack POI testing and family side trips.",
         "mile": 0.2
       }
-    ]
+    ],
+    "landType": "Public land",
+    "catalogCategory": "waterfall / notch stop",
+    "mountainArea": "Grafton Notch / Route 26"
   },
   {
     "id": "me-moose-cave-mother-walker",
@@ -6745,7 +6886,10 @@
         "label": "Short roadside notch stops grouped as a mini route pack for Route 26 field planning.",
         "mile": 0.4
       }
-    ]
+    ],
+    "landType": "Public land",
+    "catalogCategory": "waterfall / notch stop",
+    "mountainArea": "Grafton Notch / Route 26"
   },
   {
     "id": "me-mahoosuc-notch-at",
@@ -6879,6 +7023,9 @@
         "label": "Remote Appalachian Trail sample segment for future advanced planning; verify access before",
         "mile": 2.4
       }
-    ]
+    ],
+    "landType": "Appalachian Trail",
+    "catalogCategory": "appalachian trail",
+    "mountainArea": "Grafton Notch / Route 26"
   }
 ]

@@ -34,3 +34,5 @@
 .food-search{position:relative}.food-picks{position:relative;z-index:5;max-height:230px;overflow:auto;border-radius:14px;background:rgba(6,12,8,.96);border:1px solid rgba(255,255,255,.12);padding:6px;box-shadow:0 14px 34px rgba(0,0,0,.35)}.food-picks:empty{display:none}
 
 .route-quick-filters,.route-suggest{display:flex;gap:7px;flex-wrap:wrap;margin:8px 0}.route-quick-filters button,.route-suggest button{border:1px solid rgba(255,255,255,.14);border-radius:999px;background:rgba(255,255,255,.08);color:#f2f7ed;padding:7px 10px;font-weight:800}.route-suggest{padding:8px;border-radius:16px;background:rgba(0,0,0,.2)}.route-suggest button{background:rgba(156,227,108,.12);border-color:rgba(156,227,108,.24)}
+
+.route-result-group{margin-top:14px}.route-result-group h3{margin:10px 0;color:#dfffd1}.route-result-group+.route-result-group{padding-top:12px;border-top:1px solid rgba(255,255,255,.1)}.route-card .tag-row .pill:nth-child(2){background:rgba(75,210,255,.12);border-color:rgba(75,210,255,.24)}.route-card .tag-row .pill:nth-child(3){background:rgba(255,211,106,.1);border-color:rgba(255,211,106,.22)}
