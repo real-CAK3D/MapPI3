@@ -16,3 +16,5 @@
 .waypoint-form{display:grid;gap:8px;margin:12px 0}.waypoint-form .field-line input{width:180px}.custom-waypoint{border-color:rgba(255,139,209,.35)!important;background:rgba(255,139,209,.08)!important}.custom-waypoint button{margin-top:6px}
 
 .mappi3-waypoint-icon{display:grid;place-items:center;border-radius:999px;border:2px solid #122016;background:#ffd36a;color:#102014;font-size:15px;box-shadow:0 0 14px rgba(0,0,0,.35)}.mappi3-waypoint-icon.custom{background:#ff8bd1;color:#180b18;border-color:#dff1ff}.icon-picker{display:flex;gap:6px;flex-wrap:wrap}.icon-picker button{min-width:38px}.icon-picker button.active{border-color:#9ce36c;background:rgba(156,227,108,.18)}.toggle-line{display:flex;align-items:center;gap:8px;color:var(--muted);font-size:.9rem}.toggle-line input{width:auto}.waypoint-form .field-line input{width:min(220px,52vw)}
+
+.route-card.selected{outline:2px solid rgba(156,227,108,.5)}.builder-tools button:nth-last-child(-n+4){border-color:rgba(255,211,106,.28)}
