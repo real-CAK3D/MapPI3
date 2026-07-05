@@ -22,6 +22,7 @@ export const mapRoutePackToCard = (pack) => ({
   offline: pack.offline,
   weather: pack.weather,
   geometry: pack.geometry,
+  geometryQuality: pack.geometryQuality || pack.geometry?.source || 'seed-planning',
   mapPreviewPath: pack.mapPreviewPath,
   waypoints: pack.waypoints,
   pois: pack.pois
