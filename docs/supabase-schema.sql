@@ -1,5 +1,5 @@
 -- MapPi3 starter Supabase schema.
--- Apply in Supabase SQL editor after reviewing. Do not put database passwords or secret keys in the app repo.
+-- Applied to project adbsxppzotasctjdiwgc on 2026-07-05. Do not put database passwords or secret keys in the app repo.
 
 create table if not exists public.mappi3_records (
   id uuid primary key default gen_random_uuid(),
