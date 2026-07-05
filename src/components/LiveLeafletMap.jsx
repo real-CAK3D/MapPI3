@@ -4,15 +4,22 @@ import 'leaflet/dist/leaflet.css';
 
 const defaultCenter = [44.1004, -70.2148];
 
-export default function LiveLeafletMap({ trace = [], center = defaultCenter, active = false }) {
+function routeToPoints(route) {
+  return route?.geometry?.coordinates?.map(([lon, lat]) => [lat, lon]) || [];
+}
+
+export default function LiveLeafletMap({ trace = [], center = defaultCenter, active = false, route = null, waypoints = [] }) {
   const mapRef = useRef(null);
   const containerRef = useRef(null);
-  const layerRef = useRef({ marker: null, line: null });
+  const layerRef = useRef({ marker: null, line: null, route: null, waypoints: [] });
+  const routePoints = useMemo(() => routeToPoints(route), [route]);
 
-  const points = useMemo(() => {
-    if (!trace.length) return [center];
+  const tracePoints = useMemo(() => {
+    if (!trace.length) return [];
     return trace.map(point => [point.lat, point.lon]);
-  }, [trace, center]);
+  }, [trace]);
+
+  const points = tracePoints.length ? tracePoints : (routePoints.length ? routePoints : [center]);
 
   useEffect(() => {
     if (!containerRef.current || mapRef.current) return;
@@ -29,7 +36,26 @@ export default function LiveLeafletMap({ trace = [], center = defaultCenter, act
     const latest = points[points.length - 1] || center;
     if (layerRef.current.line) layerRef.current.line.remove();
     if (layerRef.current.marker) layerRef.current.marker.remove();
-    layerRef.current.line = L.polyline(points, { color: '#4bd2ff', weight: 6, opacity: 0.9 }).addTo(map);
+    if (layerRef.current.route) layerRef.current.route.remove();
+    layerRef.current.waypoints.forEach(layer => layer.remove());
+    layerRef.current.waypoints = [];
+
+    if (routePoints.length > 1) {
+      layerRef.current.route = L.polyline(routePoints, { color: '#9ce36c', weight: 5, opacity: 0.72, dashArray: '10 8' }).addTo(map);
+      (waypoints || []).forEach(point => {
+        const marker = L.circleMarker([point.lat, point.lon], {
+          radius: 6,
+          color: '#122016',
+          weight: 2,
+          fillColor: '#ffd36a',
+          fillOpacity: 0.95
+        }).bindTooltip(`${point.name} · ${point.mile} mi`, { direction: 'top' }).addTo(map);
+        layerRef.current.waypoints.push(marker);
+      });
+    }
+
+    if (tracePoints.length > 1) layerRef.current.line = L.polyline(tracePoints, { color: '#4bd2ff', weight: 6, opacity: 0.9 }).addTo(map);
+    else layerRef.current.line = L.polyline(points, { color: '#4bd2ff', weight: 4, opacity: 0.4 }).addTo(map);
     layerRef.current.marker = L.circleMarker(latest, {
       radius: 9,
       color: '#dff1ff',
@@ -37,9 +63,11 @@ export default function LiveLeafletMap({ trace = [], center = defaultCenter, act
       fillColor: active ? '#58a8ff' : '#9ce36c',
       fillOpacity: 0.9
     }).addTo(map);
-    if (points.length > 1) map.fitBounds(layerRef.current.line.getBounds(), { padding: [24, 24], maxZoom: 17 });
+
+    const boundsPoints = [...routePoints, ...tracePoints];
+    if (boundsPoints.length > 1) map.fitBounds(L.latLngBounds(boundsPoints), { padding: [24, 24], maxZoom: 17 });
     else map.setView(latest, 15);
-  }, [points, center, active]);
+  }, [points, tracePoints, routePoints, waypoints, center, active]);
 
   return <div className="leaflet-shell"><div ref={containerRef} className="leaflet-map" /></div>;
 }
