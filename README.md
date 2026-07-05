@@ -1,45 +1,57 @@
-# MapPi3
+# MapPI3
 
-**Version:** V1.0.1  
-**Status:** phone-first trail OS/app seed  
-**Owner:** CAK3D / Maple
+**Version:** V1.2.29  
+**Owner:** CAK3D / Maple  
+**Status:** phone-first trail app with local accounts, offline route packs, OSM-backed priority trail geometry, and Supabase/GitHub readiness.
 
-MapPi3 is a Raspberry Pi Zero 2 WH trail-navigation OS/app concept: an AllTrails-style, offline-first field companion that runs from a Pi hotspot, serves a polished mobile web app, reads GPS, manages route packs, and later integrates Sense HAT compass/LED matrix, Supabase sync, GitHub, Vercel, and Raspberry Pi Imager OS builds.
+MapPI3 is a mobile-first trail companion for planning, launching, and navigating hikes. It is designed for the current phone/Tailscale workflow and the future Raspberry Pi Zero 2 WH field-kit path.
 
-> Safety: MapPi3 assists route planning and field awareness. It does **not** replace paper maps, a real compass, emergency beacon, local guidance, or emergency services.
+> Safety: MapPI3 assists route planning and field awareness. It does **not** replace paper maps, a real compass, emergency beacon, official trail maps, local guidance, or emergency services.
 
-## V1.0.1 contents
+## Current highlights
 
-- Git-ready repo scaffold
-- Vite/React mobile PWA-style UI prototype
-- Offline/hotspot-first product docs
-- Supabase/Vercel/GitHub placeholders without secrets
-- Route/map/download/sync UX mock data
-- Sense HAT LED compass calibration flow design
+- Route search stays empty until typed; results drill down by area → mountain/cluster → trail.
+- Near-me ranking and search radius controls keep local results close unless expanded.
+- Maine/Lewiston-Auburn/Grafton Notch/Route 26 route catalog.
+- OSM/Overpass geometry imported for priority Grafton routes including Speck Pond, Table Rock, Old Speck/Eyebrow area, and Mahoosuc/AT segment.
+- Leaflet/OpenStreetMap route and GPS views.
+- Launch checklist with sunrise/sunset, leave-time, turn-around, water/calorie/battery planning.
+- Local Account tab for CAK3D, tiny-Z, and Guest device sessions.
+- Local completion log for trails; Supabase schema/readiness docs included.
 
 ## Quick start
 
 ```bash
-cd /home/ubuntu/MapPi3
 npm install
-npm run dev -- --host 0.0.0.0 --port 5173
+npm run dev -- --host 0.0.0.0 --port 8080
 ```
 
-Open `http://<pi-or-vm-ip>:5173` on a phone/tablet.
+For phone GPS/location features, use a secure HTTPS origin such as the configured Tailscale Serve URL.
 
-## Build check
+## Build and smoke check
 
 ```bash
 npm run build
 npm run smoke
+npm audit --audit-level=high
 ```
 
-## Rollback for V1.0.1
+## Supabase
 
-This is a new project. To roll back this pass before any remote push:
+Only browser-safe values belong in the frontend:
 
-```bash
-rm -rf /home/ubuntu/MapPi3
+```text
+VITE_SUPABASE_URL=
+VITE_SUPABASE_PUBLISHABLE_KEY=
 ```
 
-After GitHub exists, rollback should use branches/tags/releases instead of deleting the workspace.
+Do **not** commit database passwords, secret/service keys, JWT secrets, or personal access tokens. See:
+
+```text
+docs/supabase-schema.sql
+docs/integrations.md
+```
+
+## Field-data honesty
+
+Routes marked as OSM geometry use real OpenStreetMap/Overpass lines but still require current access, closure, weather, and trail-condition verification before field reliance. Routes still marked as rough seed geometry need GPX/OSM/Supabase enrichment before they should be trusted for exact navigation.
