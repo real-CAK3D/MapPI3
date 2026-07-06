@@ -12,16 +12,32 @@ function iconFor(point) {
   return L.divIcon({
     className: `mappi3-waypoint-icon ${point.custom ? 'custom' : 'stock'}`,
     html: `<span>${point.icon || (point.custom ? '✚' : '•')}</span>`,
-    iconSize: [28, 28],
-    iconAnchor: [14, 14]
+    iconSize: [30, 30],
+    iconAnchor: [15, 15]
   });
+}
+
+function segmentSlice(routePoints, routeMiles, segment) {
+  if (!routePoints.length || !routeMiles.length || !segment) return routePoints;
+  const start = Number(segment.startMile || 0);
+  const end = Number(segment.endMile || routeMiles.at(-1) || start);
+  const kept = routePoints.filter((_, index) => routeMiles[index] >= start && routeMiles[index] <= end);
+  if (kept.length >= 2) return kept;
+  const startIndex = routeMiles.findIndex(value => value >= start);
+  const endIndex = routeMiles.findIndex(value => value >= end);
+  return routePoints.slice(Math.max(0, startIndex - 1), Math.max(startIndex + 1, endIndex + 1));
 }
 
 export default function LiveLeafletMap({ trace = [], center = defaultCenter, active = false, route = null, waypoints = [], onMapClick = null, onWaypointMove = null }) {
   const mapRef = useRef(null);
   const containerRef = useRef(null);
-  const layerRef = useRef({ marker: null, line: null, route: null, waypoints: [] });
+  const layerRef = useRef({ marker: null, line: null, route: null, segments: [], waypoints: [] });
   const routePoints = useMemo(() => routeToPoints(route), [route]);
+  const routeMiles = useMemo(() => {
+    const total = Number(route?.distanceMiles || route?.miles || 0);
+    const count = Math.max(1, routePoints.length - 1);
+    return routePoints.map((_, index) => total * (index / count));
+  }, [routePoints, route]);
 
   const tracePoints = useMemo(() => {
     if (!trace.length) return [];
@@ -53,15 +69,29 @@ export default function LiveLeafletMap({ trace = [], center = defaultCenter, act
     if (layerRef.current.line) layerRef.current.line.remove();
     if (layerRef.current.marker) layerRef.current.marker.remove();
     if (layerRef.current.route) layerRef.current.route.remove();
+    layerRef.current.segments.forEach(layer => layer.remove());
     layerRef.current.waypoints.forEach(layer => layer.remove());
+    layerRef.current.segments = [];
     layerRef.current.waypoints = [];
 
     if (routePoints.length > 1) {
-      layerRef.current.route = L.polyline(routePoints, { color: '#9ce36c', weight: 5, opacity: 0.72, dashArray: '10 8' }).addTo(map);
+      const segments = route?.segments || [];
+      if (segments.length) {
+        segments.forEach(segment => {
+          const segmentPoints = segmentSlice(routePoints, routeMiles, segment);
+          if (segmentPoints.length > 1) {
+            const layer = L.polyline(segmentPoints, { color: segment.color || route?.color || '#9ce36c', weight: 6, opacity: 0.86 }).bindTooltip(`${segment.name || 'Route segment'} · ${segment.startMile ?? 0}-${segment.endMile ?? ''} mi`).addTo(map);
+            layerRef.current.segments.push(layer);
+          }
+        });
+      } else {
+        layerRef.current.route = L.polyline(routePoints, { color: route?.color || '#9ce36c', weight: 6, opacity: 0.78 }).addTo(map);
+      }
       (waypoints || []).forEach(point => {
         const marker = L.marker([point.lat, point.lon], { icon: iconFor(point), draggable: Boolean(point.custom && onWaypointMove) })
-          .bindTooltip(`${point.name} · ${point.mile} mi${point.custom ? ' · custom' : ''}`, { direction: 'top' })
+          .bindTooltip(`${point.name} · ${point.type || 'Waypoint'} · ${point.mile} mi${point.custom ? ' · custom' : ''}`, { direction: 'top' })
           .addTo(map);
+        marker.bindPopup(`<strong>${point.name}</strong><br>${point.type || 'Waypoint'} · ${point.mile} mi${point.notes ? `<br>${point.notes}` : ''}`);
         if (point.custom && onWaypointMove) {
           marker.on('dragend', event => {
             const latlng = event.target.getLatLng();
@@ -78,14 +108,14 @@ export default function LiveLeafletMap({ trace = [], center = defaultCenter, act
       radius: 9,
       color: '#dff1ff',
       weight: 3,
-      fillColor: active ? '#58a8ff' : '#9ce36c',
+      fillColor: active ? '#58a8ff' : (route?.color || '#9ce36c'),
       fillOpacity: 0.9
     }).addTo(map);
 
     const boundsPoints = [...routePoints, ...tracePoints];
     if (boundsPoints.length > 1) map.fitBounds(L.latLngBounds(boundsPoints), { padding: [24, 24], maxZoom: 17 });
     else map.setView(latest, 15);
-  }, [points, tracePoints, routePoints, waypoints, center, active, onWaypointMove]);
+  }, [points, tracePoints, routePoints, routeMiles, waypoints, center, active, onWaypointMove, route]);
 
   return <div className="leaflet-shell"><div ref={containerRef} className="leaflet-map" /></div>;
 }

@@ -123,7 +123,7 @@
         "id": "hh-start",
         "name": "Trailhead",
         "type": "Start",
-        "mile": 0,
+        "mile": 0.0,
         "icon": "\u25ce",
         "lat": 39.4261,
         "lon": -82.5412
@@ -132,7 +132,7 @@
         "id": "hh-water",
         "name": "Water crossing",
         "type": "Water",
-        "mile": 0.7,
+        "mile": 1.45,
         "icon": "\u224b",
         "lat": 39.4284,
         "lon": -82.5387
@@ -141,7 +141,7 @@
         "id": "hh-shelter",
         "name": "Ridge shelter",
         "type": "Shelter",
-        "mile": 1.9,
+        "mile": 2.9,
         "icon": "\u2302",
         "lat": 39.4316,
         "lon": -82.5368
@@ -150,7 +150,7 @@
         "id": "hh-view",
         "name": "South overlook",
         "type": "View",
-        "mile": 2.4,
+        "mile": 4.35,
         "icon": "\u25c6",
         "lat": 39.433,
         "lon": -82.5326
@@ -159,7 +159,7 @@
         "id": "hh-return",
         "name": "Return split",
         "type": "Waypoint",
-        "mile": 4.8,
+        "mile": 5.8,
         "icon": "\u2022",
         "lat": 39.4296,
         "lon": -82.5291
@@ -187,7 +187,32 @@
     ],
     "landType": "Public trail / verify access",
     "catalogCategory": "mountain trail",
-    "mountainArea": "Ohio"
+    "mountainArea": "Ohio",
+    "color": "#9ce36c",
+    "segments": [
+      {
+        "id": "seg-1",
+        "name": "Loop start / approach",
+        "startMile": 0.0,
+        "endMile": 1.97,
+        "color": "#9ce36c"
+      },
+      {
+        "id": "seg-2",
+        "name": "High point / ridge",
+        "startMile": 1.97,
+        "endMile": 3.94,
+        "color": "#4bd2ff"
+      },
+      {
+        "id": "seg-3",
+        "name": "Loop return",
+        "startMile": 3.94,
+        "endMile": 5.8,
+        "color": "#ffd36a"
+      }
+    ],
+    "markerDensity": "rich route markers from attached geometry"
   },
   {
     "id": "rrg-sky",
@@ -279,37 +304,95 @@
     ],
     "waypoints": [
       {
-        "id": "rrg-start",
-        "name": "Skyline start",
+        "id": "rrg-sky-wp-1",
+        "name": "Slade, Kentucky trailhead",
         "type": "Start",
-        "mile": 0,
+        "mile": 0.0,
         "icon": "\u25ce",
         "lat": 37.79,
-        "lon": -83.68
+        "lon": -83.68,
+        "source": "OSM geometry mile marker"
       },
       {
-        "id": "rrg-view",
-        "name": "Gorge overlook",
-        "type": "View",
-        "mile": 2.6,
+        "id": "rrg-sky-wp-2",
+        "name": "Red River Gorge Skyline first bearing check",
+        "type": "Waypoint",
+        "mile": 1.44,
         "icon": "\u25c6",
-        "lat": 37.81,
-        "lon": -83.66
+        "lat": 37.797499,
+        "lon": -83.672501,
+        "source": "OSM geometry mile marker"
       },
       {
-        "id": "rrg-end",
-        "name": "Exit trailhead",
+        "id": "rrg-sky-wp-3",
+        "name": "Red River Gorge Skyline pacing marker",
+        "type": "Waypoint",
+        "mile": 2.88,
+        "icon": "\u25c6",
+        "lat": 37.805999,
+        "lon": -83.664001,
+        "source": "OSM geometry mile marker"
+      },
+      {
+        "id": "rrg-sky-wp-4",
+        "name": "Red River Gorge Skyline midpoint / condition check",
+        "type": "Waypoint",
+        "mile": 4.32,
+        "icon": "\u25c6",
+        "lat": 37.814999,
+        "lon": -83.655001,
+        "source": "OSM geometry mile marker"
+      },
+      {
+        "id": "rrg-sky-wp-5",
+        "name": "Red River Gorge Skyline view or rest stop",
+        "type": "View",
+        "mile": 5.76,
+        "icon": "\ud83d\udc41\ufe0f",
+        "lat": 37.823999,
+        "lon": -83.646001,
+        "source": "OSM geometry mile marker"
+      },
+      {
+        "id": "rrg-sky-wp-6",
+        "name": "Red River Gorge Skyline turnaround / finish",
         "type": "Finish",
         "mile": 7.2,
         "icon": "\u25ce",
         "lat": 37.84,
-        "lon": -83.63
+        "lon": -83.63,
+        "source": "OSM geometry mile marker"
       }
     ],
     "pois": [],
     "landType": "Public trail / verify access",
     "catalogCategory": "local trail",
-    "mountainArea": "Kentucky"
+    "mountainArea": "Kentucky",
+    "color": "#4bd2ff",
+    "segments": [
+      {
+        "id": "seg-1",
+        "name": "Outbound / approach",
+        "startMile": 0.0,
+        "endMile": 2.45,
+        "color": "#4bd2ff"
+      },
+      {
+        "id": "seg-2",
+        "name": "Middle climb / ridge",
+        "startMile": 2.45,
+        "endMile": 4.9,
+        "color": "#ffd36a"
+      },
+      {
+        "id": "seg-3",
+        "name": "Return / continuation",
+        "startMile": 4.9,
+        "endMile": 7.2,
+        "color": "#ff8bd1"
+      }
+    ],
+    "markerDensity": "rich route markers from attached geometry"
   },
   {
     "id": "mohican-scout",
@@ -392,37 +475,95 @@
     ],
     "waypoints": [
       {
-        "id": "mo-start",
-        "name": "River trailhead",
+        "id": "mohican-scout-wp-1",
+        "name": "Loudonville, Ohio trailhead",
         "type": "Start",
-        "mile": 0,
+        "mile": 0.0,
         "icon": "\u25ce",
         "lat": 40.6,
-        "lon": -82.25
+        "lon": -82.25,
+        "source": "OSM geometry mile marker"
       },
       {
-        "id": "mo-water",
-        "name": "River access",
-        "type": "Water",
-        "mile": 1.1,
-        "icon": "\u224b",
-        "lat": 40.61,
-        "lon": -82.23
-      },
-      {
-        "id": "mo-turn",
-        "name": "Turnaround",
+        "id": "mohican-scout-wp-2",
+        "name": "Mohican River Scout Path first bearing check",
         "type": "Waypoint",
-        "mile": 1.7,
-        "icon": "\u2022",
+        "mile": 0.68,
+        "icon": "\u25c6",
+        "lat": 40.603572,
+        "lon": -82.242857,
+        "source": "OSM geometry mile marker"
+      },
+      {
+        "id": "mohican-scout-wp-3",
+        "name": "Mohican River Scout Path pacing marker",
+        "type": "Waypoint",
+        "mile": 1.36,
+        "icon": "\u25c6",
+        "lat": 40.607619,
+        "lon": -82.234761,
+        "source": "OSM geometry mile marker"
+      },
+      {
+        "id": "mohican-scout-wp-4",
+        "name": "Mohican River Scout Path midpoint / condition check",
+        "type": "Waypoint",
+        "mile": 2.04,
+        "icon": "\u25c6",
+        "lat": 40.612759,
+        "lon": -82.227241,
+        "source": "OSM geometry mile marker"
+      },
+      {
+        "id": "mohican-scout-wp-5",
+        "name": "Mohican River Scout Path view or rest stop",
+        "type": "View",
+        "mile": 2.72,
+        "icon": "\ud83d\udc41\ufe0f",
+        "lat": 40.618966,
+        "lon": -82.221034,
+        "source": "OSM geometry mile marker"
+      },
+      {
+        "id": "mohican-scout-wp-6",
+        "name": "Mohican River Scout Path turnaround / finish",
+        "type": "Finish",
+        "mile": 3.4,
+        "icon": "\u25ce",
         "lat": 40.63,
-        "lon": -82.21
+        "lon": -82.21,
+        "source": "OSM geometry mile marker"
       }
     ],
     "pois": [],
     "landType": "Public trail / verify access",
     "catalogCategory": "local trail",
-    "mountainArea": "Ohio"
+    "mountainArea": "Ohio",
+    "color": "#ffd36a",
+    "segments": [
+      {
+        "id": "seg-1",
+        "name": "Outbound / approach",
+        "startMile": 0.0,
+        "endMile": 1.16,
+        "color": "#ffd36a"
+      },
+      {
+        "id": "seg-2",
+        "name": "Middle climb / ridge",
+        "startMile": 1.16,
+        "endMile": 2.31,
+        "color": "#ff8bd1"
+      },
+      {
+        "id": "seg-3",
+        "name": "Return / continuation",
+        "startMile": 2.31,
+        "endMile": 3.4,
+        "color": "#b997ff"
+      }
+    ],
+    "markerDensity": "rich route markers from attached geometry"
   },
   {
     "id": "me-baxter-knifes-edge",
@@ -520,31 +661,64 @@
     ],
     "waypoints": [
       {
-        "id": "me-baxter-knifes-edge-start",
-        "name": "Trailhead",
+        "id": "me-baxter-knifes-edge-wp-1",
+        "name": "Millinocket, Maine trailhead",
         "type": "Start",
-        "mile": 0,
+        "mile": 0.0,
         "icon": "\u25ce",
         "lat": 45.9042,
-        "lon": -68.9213
+        "lon": -68.9213,
+        "source": "OSM geometry mile marker"
       },
       {
-        "id": "me-baxter-knifes-edge-mid",
-        "name": "Mid-route marker",
-        "type": "View",
-        "mile": 2.6,
+        "id": "me-baxter-knifes-edge-wp-2",
+        "name": "Baxter Knife Edge Approach first bearing check",
+        "type": "Waypoint",
+        "mile": 1.04,
         "icon": "\u25c6",
-        "lat": 45.90724,
-        "lon": -68.9083
+        "lat": 45.906522,
+        "lon": -68.917701,
+        "source": "OSM geometry mile marker"
       },
       {
-        "id": "me-baxter-knifes-edge-finish",
-        "name": "Finish / turnaround",
+        "id": "me-baxter-knifes-edge-wp-3",
+        "name": "Baxter Knife Edge Approach pacing marker",
+        "type": "Waypoint",
+        "mile": 2.08,
+        "icon": "\u25c6",
+        "lat": 45.908118,
+        "lon": -68.913245,
+        "source": "OSM geometry mile marker"
+      },
+      {
+        "id": "me-baxter-knifes-edge-wp-4",
+        "name": "Baxter Knife Edge Approach midpoint / condition check",
+        "type": "Waypoint",
+        "mile": 3.12,
+        "icon": "\u25c6",
+        "lat": 45.906833,
+        "lon": -68.907775,
+        "source": "OSM geometry mile marker"
+      },
+      {
+        "id": "me-baxter-knifes-edge-wp-5",
+        "name": "Baxter Knife Edge Approach view or rest stop",
+        "type": "View",
+        "mile": 4.16,
+        "icon": "\ud83d\udc41\ufe0f",
+        "lat": 45.903786,
+        "lon": -68.903837,
+        "source": "OSM geometry mile marker"
+      },
+      {
+        "id": "me-baxter-knifes-edge-wp-6",
+        "name": "Baxter Knife Edge Approach turnaround / finish",
         "type": "Finish",
         "mile": 5.2,
         "icon": "\u25ce",
         "lat": 45.899717,
-        "lon": -68.8953
+        "lon": -68.8953,
+        "source": "OSM geometry mile marker"
       }
     ],
     "pois": [
@@ -557,7 +731,32 @@
     ],
     "landType": "Public trail / verify access",
     "catalogCategory": "mountain trail",
-    "mountainArea": "Maine"
+    "mountainArea": "Maine",
+    "color": "#ff8bd1",
+    "segments": [
+      {
+        "id": "seg-1",
+        "name": "Outbound / approach",
+        "startMile": 0.0,
+        "endMile": 1.77,
+        "color": "#ff8bd1"
+      },
+      {
+        "id": "seg-2",
+        "name": "Middle climb / ridge",
+        "startMile": 1.77,
+        "endMile": 3.54,
+        "color": "#b997ff"
+      },
+      {
+        "id": "seg-3",
+        "name": "Return / continuation",
+        "startMile": 3.54,
+        "endMile": 5.2,
+        "color": "#ff7e5f"
+      }
+    ],
+    "markerDensity": "rich route markers from attached geometry"
   },
   {
     "id": "me-acadia-beehive",
@@ -671,31 +870,64 @@
     ],
     "waypoints": [
       {
-        "id": "me-acadia-beehive-start",
-        "name": "Trailhead",
+        "id": "me-acadia-beehive-wp-1",
+        "name": "Bar Harbor, Maine trailhead",
         "type": "Start",
-        "mile": 0,
+        "mile": 0.0,
         "icon": "\u25ce",
         "lat": 44.3315,
-        "lon": -68.1856
+        "lon": -68.1856,
+        "source": "OSM geometry mile marker"
       },
       {
-        "id": "me-acadia-beehive-mid",
-        "name": "Mid-route marker",
-        "type": "View",
-        "mile": 0.8,
+        "id": "me-acadia-beehive-wp-2",
+        "name": "Acadia Beehive Loop first bearing check",
+        "type": "Waypoint",
+        "mile": 0.32,
         "icon": "\u25c6",
-        "lat": 44.329509,
-        "lon": -68.1661
+        "lat": 44.335319,
+        "lon": -68.176988,
+        "source": "OSM geometry mile marker"
       },
       {
-        "id": "me-acadia-beehive-finish",
-        "name": "Finish / turnaround",
-        "type": "Return",
+        "id": "me-acadia-beehive-wp-3",
+        "name": "Acadia Beehive Loop pacing marker",
+        "type": "Waypoint",
+        "mile": 0.64,
+        "icon": "\u25c6",
+        "lat": 44.330408,
+        "lon": -68.167262,
+        "source": "OSM geometry mile marker"
+      },
+      {
+        "id": "me-acadia-beehive-wp-4",
+        "name": "Acadia Beehive Loop midpoint / condition check",
+        "type": "Waypoint",
+        "mile": 0.96,
+        "icon": "\u25c6",
+        "lat": 44.32866,
+        "lon": -68.15629,
+        "source": "OSM geometry mile marker"
+      },
+      {
+        "id": "me-acadia-beehive-wp-5",
+        "name": "Acadia Beehive Loop view or rest stop",
+        "type": "View",
+        "mile": 1.28,
+        "icon": "\ud83d\udc41\ufe0f",
+        "lat": 44.3306,
+        "lon": -68.162318,
+        "source": "OSM geometry mile marker"
+      },
+      {
+        "id": "me-acadia-beehive-wp-6",
+        "name": "Acadia Beehive Loop turnaround / finish",
+        "type": "Finish",
         "mile": 1.6,
         "icon": "\u25ce",
         "lat": 44.3315,
-        "lon": -68.1856
+        "lon": -68.1856,
+        "source": "OSM geometry mile marker"
       }
     ],
     "pois": [
@@ -708,7 +940,32 @@
     ],
     "landType": "Public trail / verify access",
     "catalogCategory": "local trail",
-    "mountainArea": "Acadia"
+    "mountainArea": "Acadia",
+    "color": "#b997ff",
+    "segments": [
+      {
+        "id": "seg-1",
+        "name": "Loop start / approach",
+        "startMile": 0.0,
+        "endMile": 0.54,
+        "color": "#b997ff"
+      },
+      {
+        "id": "seg-2",
+        "name": "High point / ridge",
+        "startMile": 0.54,
+        "endMile": 1.09,
+        "color": "#ff7e5f"
+      },
+      {
+        "id": "seg-3",
+        "name": "Loop return",
+        "startMile": 1.09,
+        "endMile": 1.6,
+        "color": "#6cf0c2"
+      }
+    ],
+    "markerDensity": "rich route markers from attached geometry"
   },
   {
     "id": "me-acadia-precipice",
@@ -806,31 +1063,64 @@
     ],
     "waypoints": [
       {
-        "id": "me-acadia-precipice-start",
-        "name": "Trailhead",
+        "id": "me-acadia-precipice-wp-1",
+        "name": "Bar Harbor, Maine trailhead",
         "type": "Start",
-        "mile": 0,
+        "mile": 0.0,
         "icon": "\u25ce",
         "lat": 44.3498,
-        "lon": -68.1887
+        "lon": -68.1887,
+        "source": "OSM geometry mile marker"
       },
       {
-        "id": "me-acadia-precipice-mid",
-        "name": "Mid-route marker",
-        "type": "View",
-        "mile": 1.1,
+        "id": "me-acadia-precipice-wp-2",
+        "name": "Acadia Precipice Trail first bearing check",
+        "type": "Waypoint",
+        "mile": 0.42,
         "icon": "\u25c6",
-        "lat": 44.35284,
-        "lon": -68.1757
+        "lat": 44.352129,
+        "lon": -68.185091,
+        "source": "OSM geometry mile marker"
       },
       {
-        "id": "me-acadia-precipice-finish",
-        "name": "Finish / turnaround",
+        "id": "me-acadia-precipice-wp-3",
+        "name": "Acadia Precipice Trail pacing marker",
+        "type": "Waypoint",
+        "mile": 0.84,
+        "icon": "\u25c6",
+        "lat": 44.353716,
+        "lon": -68.180632,
+        "source": "OSM geometry mile marker"
+      },
+      {
+        "id": "me-acadia-precipice-wp-4",
+        "name": "Acadia Precipice Trail midpoint / condition check",
+        "type": "Waypoint",
+        "mile": 1.26,
+        "icon": "\u25c6",
+        "lat": 44.352445,
+        "lon": -68.17519,
+        "source": "OSM geometry mile marker"
+      },
+      {
+        "id": "me-acadia-precipice-wp-5",
+        "name": "Acadia Precipice Trail view or rest stop",
+        "type": "View",
+        "mile": 1.68,
+        "icon": "\ud83d\udc41\ufe0f",
+        "lat": 44.349382,
+        "lon": -68.171232,
+        "source": "OSM geometry mile marker"
+      },
+      {
+        "id": "me-acadia-precipice-wp-6",
+        "name": "Acadia Precipice Trail turnaround / finish",
         "type": "Finish",
         "mile": 2.1,
         "icon": "\u25ce",
         "lat": 44.345317,
-        "lon": -68.1627
+        "lon": -68.1627,
+        "source": "OSM geometry mile marker"
       }
     ],
     "pois": [
@@ -843,7 +1133,32 @@
     ],
     "landType": "Public trail / verify access",
     "catalogCategory": "local trail",
-    "mountainArea": "Acadia"
+    "mountainArea": "Acadia",
+    "color": "#ff7e5f",
+    "segments": [
+      {
+        "id": "seg-1",
+        "name": "Outbound / approach",
+        "startMile": 0.0,
+        "endMile": 0.71,
+        "color": "#ff7e5f"
+      },
+      {
+        "id": "seg-2",
+        "name": "Middle climb / ridge",
+        "startMile": 0.71,
+        "endMile": 1.43,
+        "color": "#6cf0c2"
+      },
+      {
+        "id": "seg-3",
+        "name": "Return / continuation",
+        "startMile": 1.43,
+        "endMile": 2.1,
+        "color": "#9ce36c"
+      }
+    ],
+    "markerDensity": "rich route markers from attached geometry"
   },
   {
     "id": "me-camden-maiden-cliff",
@@ -941,31 +1256,64 @@
     ],
     "waypoints": [
       {
-        "id": "me-camden-maiden-cliff-start",
-        "name": "Trailhead",
+        "id": "me-camden-maiden-cliff-wp-1",
+        "name": "Camden, Maine trailhead",
         "type": "Start",
-        "mile": 0,
+        "mile": 0.0,
         "icon": "\u25ce",
         "lat": 44.2475,
-        "lon": -69.0641
+        "lon": -69.0641,
+        "source": "OSM geometry mile marker"
       },
       {
-        "id": "me-camden-maiden-cliff-mid",
-        "name": "Mid-route marker",
-        "type": "View",
-        "mile": 1.4,
+        "id": "me-camden-maiden-cliff-wp-2",
+        "name": "Camden Hills Maiden Cliff first bearing check",
+        "type": "Waypoint",
+        "mile": 0.56,
         "icon": "\u25c6",
-        "lat": 44.25054,
-        "lon": -69.0511
+        "lat": 44.249829,
+        "lon": -69.06049,
+        "source": "OSM geometry mile marker"
       },
       {
-        "id": "me-camden-maiden-cliff-finish",
-        "name": "Finish / turnaround",
+        "id": "me-camden-maiden-cliff-wp-3",
+        "name": "Camden Hills Maiden Cliff pacing marker",
+        "type": "Waypoint",
+        "mile": 1.12,
+        "icon": "\u25c6",
+        "lat": 44.251416,
+        "lon": -69.056032,
+        "source": "OSM geometry mile marker"
+      },
+      {
+        "id": "me-camden-maiden-cliff-wp-4",
+        "name": "Camden Hills Maiden Cliff midpoint / condition check",
+        "type": "Waypoint",
+        "mile": 1.68,
+        "icon": "\u25c6",
+        "lat": 44.250146,
+        "lon": -69.050591,
+        "source": "OSM geometry mile marker"
+      },
+      {
+        "id": "me-camden-maiden-cliff-wp-5",
+        "name": "Camden Hills Maiden Cliff view or rest stop",
+        "type": "View",
+        "mile": 2.24,
+        "icon": "\ud83d\udc41\ufe0f",
+        "lat": 44.247081,
+        "lon": -69.046632,
+        "source": "OSM geometry mile marker"
+      },
+      {
+        "id": "me-camden-maiden-cliff-wp-6",
+        "name": "Camden Hills Maiden Cliff turnaround / finish",
         "type": "Finish",
         "mile": 2.8,
         "icon": "\u25ce",
         "lat": 44.243017,
-        "lon": -69.0381
+        "lon": -69.0381,
+        "source": "OSM geometry mile marker"
       }
     ],
     "pois": [
@@ -978,7 +1326,32 @@
     ],
     "landType": "Public trail / verify access",
     "catalogCategory": "local trail",
-    "mountainArea": "Maine"
+    "mountainArea": "Maine",
+    "color": "#6cf0c2",
+    "segments": [
+      {
+        "id": "seg-1",
+        "name": "Outbound / approach",
+        "startMile": 0.0,
+        "endMile": 0.95,
+        "color": "#6cf0c2"
+      },
+      {
+        "id": "seg-2",
+        "name": "Middle climb / ridge",
+        "startMile": 0.95,
+        "endMile": 1.9,
+        "color": "#9ce36c"
+      },
+      {
+        "id": "seg-3",
+        "name": "Return / continuation",
+        "startMile": 1.9,
+        "endMile": 2.8,
+        "color": "#4bd2ff"
+      }
+    ],
+    "markerDensity": "rich route markers from attached geometry"
   },
   {
     "id": "me-grafton-table-rock",
@@ -1527,31 +1900,64 @@
     ],
     "waypoints": [
       {
-        "id": "me-grafton-table-rock-start",
-        "name": "Trailhead",
+        "id": "me-grafton-table-rock-wp-1",
+        "name": "Grafton Notch parking",
         "type": "Start",
-        "mile": 0,
+        "mile": 0.0,
         "icon": "\u25ce",
-        "lat": 44.5869,
-        "lon": -70.9478
+        "lat": 44.591021,
+        "lon": -70.945077,
+        "source": "OSM geometry mile marker"
       },
       {
-        "id": "me-grafton-table-rock-mid",
-        "name": "Mid-route marker",
+        "id": "me-grafton-table-rock-wp-2",
+        "name": "Table Rock Trail entrance",
+        "type": "Junction",
+        "mile": 0.16,
+        "icon": "\u2197",
+        "lat": 44.589927,
+        "lon": -70.943979,
+        "source": "OSM geometry mile marker"
+      },
+      {
+        "id": "me-grafton-table-rock-wp-3",
+        "name": "Boulder scramble section",
+        "type": "Climb",
+        "mile": 0.32,
+        "icon": "\u25b2",
+        "lat": 44.587966,
+        "lon": -70.942524,
+        "source": "OSM geometry mile marker"
+      },
+      {
+        "id": "me-grafton-table-rock-wp-4",
+        "name": "Cliff edge caution",
+        "type": "Danger",
+        "mile": 0.49,
+        "icon": "\u26a0\ufe0f",
+        "lat": 44.587764,
+        "lon": -70.939714,
+        "source": "OSM geometry mile marker"
+      },
+      {
+        "id": "me-grafton-table-rock-wp-5",
+        "name": "Table Rock viewpoint",
         "type": "View",
-        "mile": 1.4,
-        "icon": "\u25c6",
-        "lat": 44.584909,
-        "lon": -70.9283
+        "mile": 0.65,
+        "icon": "\ud83d\udc41\ufe0f",
+        "lat": 44.588082,
+        "lon": -70.936421,
+        "source": "OSM geometry mile marker"
       },
       {
-        "id": "me-grafton-table-rock-finish",
-        "name": "Finish / turnaround",
-        "type": "Return",
-        "mile": 2.7,
+        "id": "me-grafton-table-rock-wp-6",
+        "name": "Turnaround / descend same way",
+        "type": "Finish",
+        "mile": 0.81,
         "icon": "\u25ce",
-        "lat": 44.5869,
-        "lon": -70.9478
+        "lat": 44.58825,
+        "lon": -70.935665,
+        "source": "OSM geometry mile marker"
       }
     ],
     "pois": [
@@ -1565,7 +1971,32 @@
     "landType": "Public land",
     "catalogCategory": "mountain trail",
     "mountainArea": "Grafton Notch / Route 26",
-    "geometryQuality": "osm-imported-needs-field-check"
+    "geometryQuality": "osm-imported-needs-field-check",
+    "color": "#9ce36c",
+    "segments": [
+      {
+        "id": "seg-1",
+        "name": "Loop start / approach",
+        "startMile": 0.0,
+        "endMile": 0.28,
+        "color": "#9ce36c"
+      },
+      {
+        "id": "seg-2",
+        "name": "High point / ridge",
+        "startMile": 0.28,
+        "endMile": 0.55,
+        "color": "#4bd2ff"
+      },
+      {
+        "id": "seg-3",
+        "name": "Loop return",
+        "startMile": 0.55,
+        "endMile": 0.81,
+        "color": "#ffd36a"
+      }
+    ],
+    "markerDensity": "rich route markers from attached geometry"
   },
   {
     "id": "me-tumbledown-brook",
@@ -1663,31 +2094,64 @@
     ],
     "waypoints": [
       {
-        "id": "me-tumbledown-brook-start",
-        "name": "Trailhead",
+        "id": "me-tumbledown-brook-wp-1",
+        "name": "Weld, Maine trailhead",
         "type": "Start",
-        "mile": 0,
+        "mile": 0.0,
         "icon": "\u25ce",
         "lat": 44.7232,
-        "lon": -70.5387
+        "lon": -70.5387,
+        "source": "OSM geometry mile marker"
       },
       {
-        "id": "me-tumbledown-brook-mid",
-        "name": "Mid-route marker",
-        "type": "View",
-        "mile": 2.8,
+        "id": "me-tumbledown-brook-wp-2",
+        "name": "Tumbledown Brook Trail first bearing check",
+        "type": "Waypoint",
+        "mile": 1.12,
         "icon": "\u25c6",
-        "lat": 44.72624,
-        "lon": -70.5257
+        "lat": 44.725527,
+        "lon": -70.535093,
+        "source": "OSM geometry mile marker"
       },
       {
-        "id": "me-tumbledown-brook-finish",
-        "name": "Finish / turnaround",
+        "id": "me-tumbledown-brook-wp-3",
+        "name": "Tumbledown Brook Trail pacing marker",
+        "type": "Waypoint",
+        "mile": 2.24,
+        "icon": "\u25c6",
+        "lat": 44.727116,
+        "lon": -70.530635,
+        "source": "OSM geometry mile marker"
+      },
+      {
+        "id": "me-tumbledown-brook-wp-4",
+        "name": "Tumbledown Brook Trail midpoint / condition check",
+        "type": "Waypoint",
+        "mile": 3.36,
+        "icon": "\u25c6",
+        "lat": 44.725843,
+        "lon": -70.525187,
+        "source": "OSM geometry mile marker"
+      },
+      {
+        "id": "me-tumbledown-brook-wp-5",
+        "name": "Tumbledown Brook Trail view or rest stop",
+        "type": "View",
+        "mile": 4.48,
+        "icon": "\ud83d\udc41\ufe0f",
+        "lat": 44.722783,
+        "lon": -70.521233,
+        "source": "OSM geometry mile marker"
+      },
+      {
+        "id": "me-tumbledown-brook-wp-6",
+        "name": "Tumbledown Brook Trail turnaround / finish",
         "type": "Finish",
         "mile": 5.6,
         "icon": "\u25ce",
         "lat": 44.718717,
-        "lon": -70.5127
+        "lon": -70.5127,
+        "source": "OSM geometry mile marker"
       }
     ],
     "pois": [
@@ -1700,7 +2164,32 @@
     ],
     "landType": "Public trail / verify access",
     "catalogCategory": "mountain trail",
-    "mountainArea": "Tumbledown / Mount Blue"
+    "mountainArea": "Tumbledown / Mount Blue",
+    "color": "#4bd2ff",
+    "segments": [
+      {
+        "id": "seg-1",
+        "name": "Outbound / approach",
+        "startMile": 0.0,
+        "endMile": 1.9,
+        "color": "#4bd2ff"
+      },
+      {
+        "id": "seg-2",
+        "name": "Middle climb / ridge",
+        "startMile": 1.9,
+        "endMile": 3.81,
+        "color": "#ffd36a"
+      },
+      {
+        "id": "seg-3",
+        "name": "Return / continuation",
+        "startMile": 3.81,
+        "endMile": 5.6,
+        "color": "#ff8bd1"
+      }
+    ],
+    "markerDensity": "rich route markers from attached geometry"
   },
   {
     "id": "me-bradbury-summit",
@@ -1814,31 +2303,64 @@
     ],
     "waypoints": [
       {
-        "id": "me-bradbury-summit-start",
-        "name": "Trailhead",
+        "id": "me-bradbury-summit-wp-1",
+        "name": "Pownal, Maine trailhead",
         "type": "Start",
-        "mile": 0,
+        "mile": 0.0,
         "icon": "\u25ce",
         "lat": 43.9045,
-        "lon": -70.1804
+        "lon": -70.1804,
+        "source": "OSM geometry mile marker"
       },
       {
-        "id": "me-bradbury-summit-mid",
-        "name": "Mid-route marker",
-        "type": "View",
-        "mile": 0.7,
+        "id": "me-bradbury-summit-wp-2",
+        "name": "Bradbury Mountain Summit Loop first bearing check",
+        "type": "Waypoint",
+        "mile": 0.28,
         "icon": "\u25c6",
-        "lat": 43.902509,
-        "lon": -70.1609
+        "lat": 43.908317,
+        "lon": -70.171774,
+        "source": "OSM geometry mile marker"
       },
       {
-        "id": "me-bradbury-summit-finish",
-        "name": "Finish / turnaround",
-        "type": "Return",
+        "id": "me-bradbury-summit-wp-3",
+        "name": "Bradbury Mountain Summit Loop pacing marker",
+        "type": "Waypoint",
+        "mile": 0.56,
+        "icon": "\u25c6",
+        "lat": 43.903392,
+        "lon": -70.162041,
+        "source": "OSM geometry mile marker"
+      },
+      {
+        "id": "me-bradbury-summit-wp-4",
+        "name": "Bradbury Mountain Summit Loop midpoint / condition check",
+        "type": "Waypoint",
+        "mile": 0.84,
+        "icon": "\u25c6",
+        "lat": 43.901676,
+        "lon": -70.151057,
+        "source": "OSM geometry mile marker"
+      },
+      {
+        "id": "me-bradbury-summit-wp-5",
+        "name": "Bradbury Mountain Summit Loop view or rest stop",
+        "type": "View",
+        "mile": 1.12,
+        "icon": "\ud83d\udc41\ufe0f",
+        "lat": 43.903601,
+        "lon": -70.15715,
+        "source": "OSM geometry mile marker"
+      },
+      {
+        "id": "me-bradbury-summit-wp-6",
+        "name": "Bradbury Mountain Summit Loop turnaround / finish",
+        "type": "Finish",
         "mile": 1.4,
         "icon": "\u25ce",
         "lat": 43.9045,
-        "lon": -70.1804
+        "lon": -70.1804,
+        "source": "OSM geometry mile marker"
       }
     ],
     "pois": [
@@ -1851,7 +2373,32 @@
     ],
     "landType": "Public land",
     "catalogCategory": "mountain trail",
-    "mountainArea": "Maine"
+    "mountainArea": "Maine",
+    "color": "#ffd36a",
+    "segments": [
+      {
+        "id": "seg-1",
+        "name": "Loop start / approach",
+        "startMile": 0.0,
+        "endMile": 0.48,
+        "color": "#ffd36a"
+      },
+      {
+        "id": "seg-2",
+        "name": "High point / ridge",
+        "startMile": 0.48,
+        "endMile": 0.95,
+        "color": "#ff8bd1"
+      },
+      {
+        "id": "seg-3",
+        "name": "Loop return",
+        "startMile": 0.95,
+        "endMile": 1.4,
+        "color": "#b997ff"
+      }
+    ],
+    "markerDensity": "rich route markers from attached geometry"
   },
   {
     "id": "me-sebago-douglas",
@@ -1965,31 +2512,64 @@
     ],
     "waypoints": [
       {
-        "id": "me-sebago-douglas-start",
-        "name": "Trailhead",
+        "id": "me-sebago-douglas-wp-1",
+        "name": "Sebago, Maine trailhead",
         "type": "Start",
-        "mile": 0,
+        "mile": 0.0,
         "icon": "\u25ce",
         "lat": 43.8812,
-        "lon": -70.7049
+        "lon": -70.7049,
+        "source": "OSM geometry mile marker"
       },
       {
-        "id": "me-sebago-douglas-mid",
-        "name": "Mid-route marker",
-        "type": "View",
-        "mile": 1.1,
+        "id": "me-sebago-douglas-wp-2",
+        "name": "Sebago Douglas Mountain Loop first bearing check",
+        "type": "Waypoint",
+        "mile": 0.46,
         "icon": "\u25c6",
-        "lat": 43.879209,
-        "lon": -70.6854
+        "lat": 43.885016,
+        "lon": -70.696274,
+        "source": "OSM geometry mile marker"
       },
       {
-        "id": "me-sebago-douglas-finish",
-        "name": "Finish / turnaround",
-        "type": "Return",
+        "id": "me-sebago-douglas-wp-3",
+        "name": "Sebago Douglas Mountain Loop pacing marker",
+        "type": "Waypoint",
+        "mile": 0.92,
+        "icon": "\u25c6",
+        "lat": 43.880092,
+        "lon": -70.68654,
+        "source": "OSM geometry mile marker"
+      },
+      {
+        "id": "me-sebago-douglas-wp-4",
+        "name": "Sebago Douglas Mountain Loop midpoint / condition check",
+        "type": "Waypoint",
+        "mile": 1.38,
+        "icon": "\u25c6",
+        "lat": 43.878377,
+        "lon": -70.675556,
+        "source": "OSM geometry mile marker"
+      },
+      {
+        "id": "me-sebago-douglas-wp-5",
+        "name": "Sebago Douglas Mountain Loop view or rest stop",
+        "type": "View",
+        "mile": 1.84,
+        "icon": "\ud83d\udc41\ufe0f",
+        "lat": 43.880301,
+        "lon": -70.681651,
+        "source": "OSM geometry mile marker"
+      },
+      {
+        "id": "me-sebago-douglas-wp-6",
+        "name": "Sebago Douglas Mountain Loop turnaround / finish",
+        "type": "Finish",
         "mile": 2.3,
         "icon": "\u25ce",
         "lat": 43.8812,
-        "lon": -70.7049
+        "lon": -70.7049,
+        "source": "OSM geometry mile marker"
       }
     ],
     "pois": [
@@ -2002,7 +2582,32 @@
     ],
     "landType": "Public trail / verify access",
     "catalogCategory": "mountain trail",
-    "mountainArea": "Maine"
+    "mountainArea": "Maine",
+    "color": "#ff8bd1",
+    "segments": [
+      {
+        "id": "seg-1",
+        "name": "Loop start / approach",
+        "startMile": 0.0,
+        "endMile": 0.78,
+        "color": "#ff8bd1"
+      },
+      {
+        "id": "seg-2",
+        "name": "High point / ridge",
+        "startMile": 0.78,
+        "endMile": 1.56,
+        "color": "#b997ff"
+      },
+      {
+        "id": "seg-3",
+        "name": "Loop return",
+        "startMile": 1.56,
+        "endMile": 2.3,
+        "color": "#ff7e5f"
+      }
+    ],
+    "markerDensity": "rich route markers from attached geometry"
   },
   {
     "id": "nh-franconia-ridge",
@@ -2116,31 +2721,64 @@
     ],
     "waypoints": [
       {
-        "id": "nh-franconia-ridge-start",
-        "name": "Trailhead",
+        "id": "nh-franconia-ridge-wp-1",
+        "name": "Lincoln, New Hampshire trailhead",
         "type": "Start",
-        "mile": 0,
+        "mile": 0.0,
         "icon": "\u25ce",
         "lat": 44.1428,
-        "lon": -71.6819
+        "lon": -71.6819,
+        "source": "OSM geometry mile marker"
       },
       {
-        "id": "nh-franconia-ridge-mid",
-        "name": "Mid-route marker",
-        "type": "View",
-        "mile": 4.5,
+        "id": "nh-franconia-ridge-wp-2",
+        "name": "Franconia Ridge Loop first bearing check",
+        "type": "Waypoint",
+        "mile": 1.78,
         "icon": "\u25c6",
-        "lat": 44.140809,
-        "lon": -71.6624
+        "lat": 44.146618,
+        "lon": -71.673282,
+        "source": "OSM geometry mile marker"
       },
       {
-        "id": "nh-franconia-ridge-finish",
-        "name": "Finish / turnaround",
-        "type": "Return",
+        "id": "nh-franconia-ridge-wp-3",
+        "name": "Franconia Ridge Loop pacing marker",
+        "type": "Waypoint",
+        "mile": 3.56,
+        "icon": "\u25c6",
+        "lat": 44.141701,
+        "lon": -71.663553,
+        "source": "OSM geometry mile marker"
+      },
+      {
+        "id": "nh-franconia-ridge-wp-4",
+        "name": "Franconia Ridge Loop midpoint / condition check",
+        "type": "Waypoint",
+        "mile": 5.34,
+        "icon": "\u25c6",
+        "lat": 44.139967,
+        "lon": -71.652576,
+        "source": "OSM geometry mile marker"
+      },
+      {
+        "id": "nh-franconia-ridge-wp-5",
+        "name": "Franconia Ridge Loop view or rest stop",
+        "type": "View",
+        "mile": 7.12,
+        "icon": "\ud83d\udc41\ufe0f",
+        "lat": 44.1419,
+        "lon": -71.658632,
+        "source": "OSM geometry mile marker"
+      },
+      {
+        "id": "nh-franconia-ridge-wp-6",
+        "name": "Franconia Ridge Loop turnaround / finish",
+        "type": "Finish",
         "mile": 8.9,
         "icon": "\u25ce",
         "lat": 44.1428,
-        "lon": -71.6819
+        "lon": -71.6819,
+        "source": "OSM geometry mile marker"
       }
     ],
     "pois": [
@@ -2153,7 +2791,32 @@
     ],
     "landType": "Public trail / verify access",
     "catalogCategory": "mountain trail",
-    "mountainArea": "New Hampshire"
+    "mountainArea": "New Hampshire",
+    "color": "#b997ff",
+    "segments": [
+      {
+        "id": "seg-1",
+        "name": "Loop start / approach",
+        "startMile": 0.0,
+        "endMile": 3.03,
+        "color": "#b997ff"
+      },
+      {
+        "id": "seg-2",
+        "name": "High point / ridge",
+        "startMile": 3.03,
+        "endMile": 6.05,
+        "color": "#ff7e5f"
+      },
+      {
+        "id": "seg-3",
+        "name": "Loop return",
+        "startMile": 6.05,
+        "endMile": 8.9,
+        "color": "#6cf0c2"
+      }
+    ],
+    "markerDensity": "rich route markers from attached geometry"
   },
   {
     "id": "nh-mount-major",
@@ -2250,31 +2913,64 @@
     ],
     "waypoints": [
       {
-        "id": "nh-mount-major-start",
-        "name": "Trailhead",
+        "id": "nh-mount-major-wp-1",
+        "name": "Alton, New Hampshire trailhead",
         "type": "Start",
-        "mile": 0,
+        "mile": 0.0,
         "icon": "\u25ce",
         "lat": 43.5127,
-        "lon": -71.2713
+        "lon": -71.2713,
+        "source": "OSM geometry mile marker"
       },
       {
-        "id": "nh-mount-major-mid",
-        "name": "Mid-route marker",
-        "type": "View",
-        "mile": 1.9,
+        "id": "nh-mount-major-wp-2",
+        "name": "Mount Major Main Trail first bearing check",
+        "type": "Waypoint",
+        "mile": 0.76,
         "icon": "\u25c6",
-        "lat": 43.51574,
-        "lon": -71.2583
+        "lat": 43.515032,
+        "lon": -71.267686,
+        "source": "OSM geometry mile marker"
       },
       {
-        "id": "nh-mount-major-finish",
-        "name": "Finish / turnaround",
+        "id": "nh-mount-major-wp-3",
+        "name": "Mount Major Main Trail pacing marker",
+        "type": "Waypoint",
+        "mile": 1.52,
+        "icon": "\u25c6",
+        "lat": 43.516615,
+        "lon": -71.263226,
+        "source": "OSM geometry mile marker"
+      },
+      {
+        "id": "nh-mount-major-wp-4",
+        "name": "Mount Major Main Trail midpoint / condition check",
+        "type": "Waypoint",
+        "mile": 2.28,
+        "icon": "\u25c6",
+        "lat": 43.515352,
+        "lon": -71.257798,
+        "source": "OSM geometry mile marker"
+      },
+      {
+        "id": "nh-mount-major-wp-5",
+        "name": "Mount Major Main Trail view or rest stop",
+        "type": "View",
+        "mile": 3.04,
+        "icon": "\ud83d\udc41\ufe0f",
+        "lat": 43.512279,
+        "lon": -71.253829,
+        "source": "OSM geometry mile marker"
+      },
+      {
+        "id": "nh-mount-major-wp-6",
+        "name": "Mount Major Main Trail turnaround / finish",
         "type": "Finish",
         "mile": 3.8,
         "icon": "\u25ce",
         "lat": 43.508217,
-        "lon": -71.2453
+        "lon": -71.2453,
+        "source": "OSM geometry mile marker"
       }
     ],
     "pois": [
@@ -2287,7 +2983,32 @@
     ],
     "landType": "Public trail / verify access",
     "catalogCategory": "local trail",
-    "mountainArea": "New Hampshire"
+    "mountainArea": "New Hampshire",
+    "color": "#ff7e5f",
+    "segments": [
+      {
+        "id": "seg-1",
+        "name": "Outbound / approach",
+        "startMile": 0.0,
+        "endMile": 1.29,
+        "color": "#ff7e5f"
+      },
+      {
+        "id": "seg-2",
+        "name": "Middle climb / ridge",
+        "startMile": 1.29,
+        "endMile": 2.58,
+        "color": "#6cf0c2"
+      },
+      {
+        "id": "seg-3",
+        "name": "Return / continuation",
+        "startMile": 2.58,
+        "endMile": 3.8,
+        "color": "#9ce36c"
+      }
+    ],
+    "markerDensity": "rich route markers from attached geometry"
   },
   {
     "id": "vt-camel-hump",
@@ -2385,31 +3106,64 @@
     ],
     "waypoints": [
       {
-        "id": "vt-camel-hump-start",
-        "name": "Trailhead",
+        "id": "vt-camel-hump-wp-1",
+        "name": "Huntington, Vermont trailhead",
         "type": "Start",
-        "mile": 0,
+        "mile": 0.0,
         "icon": "\u25ce",
         "lat": 44.3196,
-        "lon": -72.8868
+        "lon": -72.8868,
+        "source": "OSM geometry mile marker"
       },
       {
-        "id": "vt-camel-hump-mid",
-        "name": "Mid-route marker",
-        "type": "View",
-        "mile": 3.0,
+        "id": "vt-camel-hump-wp-2",
+        "name": "Camel\u2019s Hump Burrows Trail first bearing check",
+        "type": "Waypoint",
+        "mile": 1.2,
         "icon": "\u25c6",
-        "lat": 44.32264,
-        "lon": -72.8738
+        "lat": 44.321929,
+        "lon": -72.883191,
+        "source": "OSM geometry mile marker"
       },
       {
-        "id": "vt-camel-hump-finish",
-        "name": "Finish / turnaround",
+        "id": "vt-camel-hump-wp-3",
+        "name": "Camel\u2019s Hump Burrows Trail pacing marker",
+        "type": "Waypoint",
+        "mile": 2.4,
+        "icon": "\u25c6",
+        "lat": 44.323516,
+        "lon": -72.878732,
+        "source": "OSM geometry mile marker"
+      },
+      {
+        "id": "vt-camel-hump-wp-4",
+        "name": "Camel\u2019s Hump Burrows Trail midpoint / condition check",
+        "type": "Waypoint",
+        "mile": 3.6,
+        "icon": "\u25c6",
+        "lat": 44.322246,
+        "lon": -72.873291,
+        "source": "OSM geometry mile marker"
+      },
+      {
+        "id": "vt-camel-hump-wp-5",
+        "name": "Camel\u2019s Hump Burrows Trail view or rest stop",
+        "type": "View",
+        "mile": 4.8,
+        "icon": "\ud83d\udc41\ufe0f",
+        "lat": 44.319182,
+        "lon": -72.869332,
+        "source": "OSM geometry mile marker"
+      },
+      {
+        "id": "vt-camel-hump-wp-6",
+        "name": "Camel\u2019s Hump Burrows Trail turnaround / finish",
         "type": "Finish",
         "mile": 6.0,
         "icon": "\u25ce",
         "lat": 44.315117,
-        "lon": -72.8608
+        "lon": -72.8608,
+        "source": "OSM geometry mile marker"
       }
     ],
     "pois": [
@@ -2422,7 +3176,32 @@
     ],
     "landType": "Public trail / verify access",
     "catalogCategory": "mountain trail",
-    "mountainArea": "Vermont"
+    "mountainArea": "Vermont",
+    "color": "#6cf0c2",
+    "segments": [
+      {
+        "id": "seg-1",
+        "name": "Outbound / approach",
+        "startMile": 0.0,
+        "endMile": 2.04,
+        "color": "#6cf0c2"
+      },
+      {
+        "id": "seg-2",
+        "name": "Middle climb / ridge",
+        "startMile": 2.04,
+        "endMile": 4.08,
+        "color": "#9ce36c"
+      },
+      {
+        "id": "seg-3",
+        "name": "Return / continuation",
+        "startMile": 4.08,
+        "endMile": 6.0,
+        "color": "#4bd2ff"
+      }
+    ],
+    "markerDensity": "rich route markers from attached geometry"
   },
   {
     "id": "ma-wachusett-loop",
@@ -2536,31 +3315,64 @@
     ],
     "waypoints": [
       {
-        "id": "ma-wachusett-loop-start",
-        "name": "Trailhead",
+        "id": "ma-wachusett-loop-wp-1",
+        "name": "Princeton, Massachusetts trailhead",
         "type": "Start",
-        "mile": 0,
+        "mile": 0.0,
         "icon": "\u25ce",
         "lat": 42.4883,
-        "lon": -71.8879
+        "lon": -71.8879,
+        "source": "OSM geometry mile marker"
       },
       {
-        "id": "ma-wachusett-loop-mid",
-        "name": "Mid-route marker",
-        "type": "View",
-        "mile": 1.9,
+        "id": "ma-wachusett-loop-wp-2",
+        "name": "Mount Wachusett Loop first bearing check",
+        "type": "Waypoint",
+        "mile": 0.78,
         "icon": "\u25c6",
-        "lat": 42.486309,
-        "lon": -71.8684
+        "lat": 42.492109,
+        "lon": -71.879231,
+        "source": "OSM geometry mile marker"
       },
       {
-        "id": "ma-wachusett-loop-finish",
-        "name": "Finish / turnaround",
-        "type": "Return",
+        "id": "ma-wachusett-loop-wp-3",
+        "name": "Mount Wachusett Loop pacing marker",
+        "type": "Waypoint",
+        "mile": 1.56,
+        "icon": "\u25c6",
+        "lat": 42.487142,
+        "lon": -71.869477,
+        "source": "OSM geometry mile marker"
+      },
+      {
+        "id": "ma-wachusett-loop-wp-4",
+        "name": "Mount Wachusett Loop midpoint / condition check",
+        "type": "Waypoint",
+        "mile": 2.34,
+        "icon": "\u25c6",
+        "lat": 42.485527,
+        "lon": -71.858454,
+        "source": "OSM geometry mile marker"
+      },
+      {
+        "id": "ma-wachusett-loop-wp-5",
+        "name": "Mount Wachusett Loop view or rest stop",
+        "type": "View",
+        "mile": 3.12,
+        "icon": "\ud83d\udc41\ufe0f",
+        "lat": 42.487405,
+        "lon": -71.864747,
+        "source": "OSM geometry mile marker"
+      },
+      {
+        "id": "ma-wachusett-loop-wp-6",
+        "name": "Mount Wachusett Loop turnaround / finish",
+        "type": "Finish",
         "mile": 3.9,
         "icon": "\u25ce",
         "lat": 42.4883,
-        "lon": -71.8879
+        "lon": -71.8879,
+        "source": "OSM geometry mile marker"
       }
     ],
     "pois": [
@@ -2573,7 +3385,32 @@
     ],
     "landType": "Public trail / verify access",
     "catalogCategory": "mountain trail",
-    "mountainArea": "Massachusetts"
+    "mountainArea": "Massachusetts",
+    "color": "#9ce36c",
+    "segments": [
+      {
+        "id": "seg-1",
+        "name": "Loop start / approach",
+        "startMile": 0.0,
+        "endMile": 1.33,
+        "color": "#9ce36c"
+      },
+      {
+        "id": "seg-2",
+        "name": "High point / ridge",
+        "startMile": 1.33,
+        "endMile": 2.65,
+        "color": "#4bd2ff"
+      },
+      {
+        "id": "seg-3",
+        "name": "Loop return",
+        "startMile": 2.65,
+        "endMile": 3.9,
+        "color": "#ffd36a"
+      }
+    ],
+    "markerDensity": "rich route markers from attached geometry"
   },
   {
     "id": "ny-breakneck-ridge",
@@ -2687,31 +3524,64 @@
     ],
     "waypoints": [
       {
-        "id": "ny-breakneck-ridge-start",
-        "name": "Trailhead",
+        "id": "ny-breakneck-ridge-wp-1",
+        "name": "Cold Spring, New York trailhead",
         "type": "Start",
-        "mile": 0,
+        "mile": 0.0,
         "icon": "\u25ce",
         "lat": 41.4439,
-        "lon": -73.9787
+        "lon": -73.9787,
+        "source": "OSM geometry mile marker"
       },
       {
-        "id": "ny-breakneck-ridge-mid",
-        "name": "Mid-route marker",
-        "type": "View",
-        "mile": 1.6,
+        "id": "ny-breakneck-ridge-wp-2",
+        "name": "Breakneck Ridge Short Loop first bearing check",
+        "type": "Waypoint",
+        "mile": 0.64,
         "icon": "\u25c6",
-        "lat": 41.441909,
-        "lon": -73.9592
+        "lat": 41.447704,
+        "lon": -73.970001,
+        "source": "OSM geometry mile marker"
       },
       {
-        "id": "ny-breakneck-ridge-finish",
-        "name": "Finish / turnaround",
-        "type": "Return",
+        "id": "ny-breakneck-ridge-wp-3",
+        "name": "Breakneck Ridge Short Loop pacing marker",
+        "type": "Waypoint",
+        "mile": 1.28,
+        "icon": "\u25c6",
+        "lat": 41.442707,
+        "lon": -73.960231,
+        "source": "OSM geometry mile marker"
+      },
+      {
+        "id": "ny-breakneck-ridge-wp-4",
+        "name": "Breakneck Ridge Short Loop midpoint / condition check",
+        "type": "Waypoint",
+        "mile": 1.92,
+        "icon": "\u25c6",
+        "lat": 41.441163,
+        "lon": -73.949182,
+        "source": "OSM geometry mile marker"
+      },
+      {
+        "id": "ny-breakneck-ridge-wp-5",
+        "name": "Breakneck Ridge Short Loop view or rest stop",
+        "type": "View",
+        "mile": 2.56,
+        "icon": "\ud83d\udc41\ufe0f",
+        "lat": 41.443007,
+        "lon": -73.955614,
+        "source": "OSM geometry mile marker"
+      },
+      {
+        "id": "ny-breakneck-ridge-wp-6",
+        "name": "Breakneck Ridge Short Loop turnaround / finish",
+        "type": "Finish",
         "mile": 3.2,
         "icon": "\u25ce",
         "lat": 41.4439,
-        "lon": -73.9787
+        "lon": -73.9787,
+        "source": "OSM geometry mile marker"
       }
     ],
     "pois": [
@@ -2724,7 +3594,32 @@
     ],
     "landType": "Public trail / verify access",
     "catalogCategory": "mountain trail",
-    "mountainArea": "New York"
+    "mountainArea": "New York",
+    "color": "#4bd2ff",
+    "segments": [
+      {
+        "id": "seg-1",
+        "name": "Loop start / approach",
+        "startMile": 0.0,
+        "endMile": 1.09,
+        "color": "#4bd2ff"
+      },
+      {
+        "id": "seg-2",
+        "name": "High point / ridge",
+        "startMile": 1.09,
+        "endMile": 2.18,
+        "color": "#ffd36a"
+      },
+      {
+        "id": "seg-3",
+        "name": "Loop return",
+        "startMile": 2.18,
+        "endMile": 3.2,
+        "color": "#ff8bd1"
+      }
+    ],
+    "markerDensity": "rich route markers from attached geometry"
   },
   {
     "id": "pa-ricketts-falls",
@@ -2838,31 +3733,64 @@
     ],
     "waypoints": [
       {
-        "id": "pa-ricketts-falls-start",
-        "name": "Trailhead",
+        "id": "pa-ricketts-falls-wp-1",
+        "name": "Benton, Pennsylvania trailhead",
         "type": "Start",
-        "mile": 0,
+        "mile": 0.0,
         "icon": "\u25ce",
         "lat": 41.3292,
-        "lon": -76.2922
+        "lon": -76.2922,
+        "source": "OSM geometry mile marker"
       },
       {
-        "id": "pa-ricketts-falls-mid",
-        "name": "Mid-route marker",
+        "id": "pa-ricketts-falls-wp-2",
+        "name": "Ricketts Glen Falls Loop first bearing check",
         "type": "Waypoint",
-        "mile": 3.5,
+        "mile": 1.42,
         "icon": "\u25c6",
-        "lat": 41.327209,
-        "lon": -76.2727
+        "lat": 41.333003,
+        "lon": -76.283498,
+        "source": "OSM geometry mile marker"
       },
       {
-        "id": "pa-ricketts-falls-finish",
-        "name": "Finish / turnaround",
-        "type": "Return",
+        "id": "pa-ricketts-falls-wp-3",
+        "name": "Ricketts Glen Falls Loop pacing marker",
+        "type": "Waypoint",
+        "mile": 2.84,
+        "icon": "\u25c6",
+        "lat": 41.328003,
+        "lon": -76.273726,
+        "source": "OSM geometry mile marker"
+      },
+      {
+        "id": "pa-ricketts-falls-wp-4",
+        "name": "Ricketts Glen Falls Loop midpoint / condition check",
+        "type": "Waypoint",
+        "mile": 4.26,
+        "icon": "\u25c6",
+        "lat": 41.326467,
+        "lon": -76.262674,
+        "source": "OSM geometry mile marker"
+      },
+      {
+        "id": "pa-ricketts-falls-wp-5",
+        "name": "Ricketts Glen Falls Loop view or rest stop",
+        "type": "View",
+        "mile": 5.68,
+        "icon": "\ud83d\udc41\ufe0f",
+        "lat": 41.328307,
+        "lon": -76.269121,
+        "source": "OSM geometry mile marker"
+      },
+      {
+        "id": "pa-ricketts-falls-wp-6",
+        "name": "Ricketts Glen Falls Loop turnaround / finish",
+        "type": "Finish",
         "mile": 7.1,
         "icon": "\u25ce",
         "lat": 41.3292,
-        "lon": -76.2922
+        "lon": -76.2922,
+        "source": "OSM geometry mile marker"
       }
     ],
     "pois": [
@@ -2875,7 +3803,32 @@
     ],
     "landType": "Public land / falls access",
     "catalogCategory": "waterfall / notch stop",
-    "mountainArea": "Pennsylvania"
+    "mountainArea": "Pennsylvania",
+    "color": "#ffd36a",
+    "segments": [
+      {
+        "id": "seg-1",
+        "name": "Loop start / approach",
+        "startMile": 0.0,
+        "endMile": 2.41,
+        "color": "#ffd36a"
+      },
+      {
+        "id": "seg-2",
+        "name": "High point / ridge",
+        "startMile": 2.41,
+        "endMile": 4.83,
+        "color": "#ff8bd1"
+      },
+      {
+        "id": "seg-3",
+        "name": "Loop return",
+        "startMile": 4.83,
+        "endMile": 7.1,
+        "color": "#b997ff"
+      }
+    ],
+    "markerDensity": "rich route markers from attached geometry"
   },
   {
     "id": "wv-dolly-sods-bear-rocks",
@@ -2973,31 +3926,64 @@
     ],
     "waypoints": [
       {
-        "id": "wv-dolly-sods-bear-rocks-start",
-        "name": "Trailhead",
+        "id": "wv-dolly-sods-bear-rocks-wp-1",
+        "name": "Davis, West Virginia trailhead",
         "type": "Start",
-        "mile": 0,
+        "mile": 0.0,
         "icon": "\u25ce",
         "lat": 39.0638,
-        "lon": -79.3033
+        "lon": -79.3033,
+        "source": "OSM geometry mile marker"
       },
       {
-        "id": "wv-dolly-sods-bear-rocks-mid",
-        "name": "Mid-route marker",
-        "type": "View",
-        "mile": 2.4,
+        "id": "wv-dolly-sods-bear-rocks-wp-2",
+        "name": "Dolly Sods Bear Rocks first bearing check",
+        "type": "Waypoint",
+        "mile": 0.94,
         "icon": "\u25c6",
-        "lat": 39.06684,
-        "lon": -79.2903
+        "lat": 39.066148,
+        "lon": -79.299661,
+        "source": "OSM geometry mile marker"
       },
       {
-        "id": "wv-dolly-sods-bear-rocks-finish",
-        "name": "Finish / turnaround",
+        "id": "wv-dolly-sods-bear-rocks-wp-3",
+        "name": "Dolly Sods Bear Rocks pacing marker",
+        "type": "Waypoint",
+        "mile": 1.88,
+        "icon": "\u25c6",
+        "lat": 39.06771,
+        "lon": -79.295198,
+        "source": "OSM geometry mile marker"
+      },
+      {
+        "id": "wv-dolly-sods-bear-rocks-wp-4",
+        "name": "Dolly Sods Bear Rocks midpoint / condition check",
+        "type": "Waypoint",
+        "mile": 2.82,
+        "icon": "\u25c6",
+        "lat": 39.066481,
+        "lon": -79.289837,
+        "source": "OSM geometry mile marker"
+      },
+      {
+        "id": "wv-dolly-sods-bear-rocks-wp-5",
+        "name": "Dolly Sods Bear Rocks view or rest stop",
+        "type": "View",
+        "mile": 3.76,
+        "icon": "\ud83d\udc41\ufe0f",
+        "lat": 39.063369,
+        "lon": -79.285815,
+        "source": "OSM geometry mile marker"
+      },
+      {
+        "id": "wv-dolly-sods-bear-rocks-wp-6",
+        "name": "Dolly Sods Bear Rocks turnaround / finish",
         "type": "Finish",
         "mile": 4.7,
         "icon": "\u25ce",
         "lat": 39.059317,
-        "lon": -79.2773
+        "lon": -79.2773,
+        "source": "OSM geometry mile marker"
       }
     ],
     "pois": [
@@ -3010,7 +3996,32 @@
     ],
     "landType": "Public trail / verify access",
     "catalogCategory": "local trail",
-    "mountainArea": "West Virginia"
+    "mountainArea": "West Virginia",
+    "color": "#ff8bd1",
+    "segments": [
+      {
+        "id": "seg-1",
+        "name": "Outbound / approach",
+        "startMile": 0.0,
+        "endMile": 1.6,
+        "color": "#ff8bd1"
+      },
+      {
+        "id": "seg-2",
+        "name": "Middle climb / ridge",
+        "startMile": 1.6,
+        "endMile": 3.2,
+        "color": "#b997ff"
+      },
+      {
+        "id": "seg-3",
+        "name": "Return / continuation",
+        "startMile": 3.2,
+        "endMile": 4.7,
+        "color": "#ff7e5f"
+      }
+    ],
+    "markerDensity": "rich route markers from attached geometry"
   },
   {
     "id": "ky-natural-bridge-loop",
@@ -3124,31 +4135,64 @@
     ],
     "waypoints": [
       {
-        "id": "ky-natural-bridge-loop-start",
-        "name": "Trailhead",
+        "id": "ky-natural-bridge-loop-wp-1",
+        "name": "Slade, Kentucky trailhead",
         "type": "Start",
-        "mile": 0,
+        "mile": 0.0,
         "icon": "\u25ce",
         "lat": 37.7773,
-        "lon": -83.6854
+        "lon": -83.6854,
+        "source": "OSM geometry mile marker"
       },
       {
-        "id": "ky-natural-bridge-loop-mid",
-        "name": "Mid-route marker",
-        "type": "View",
-        "mile": 1.2,
+        "id": "ky-natural-bridge-loop-wp-2",
+        "name": "Natural Bridge Original Trail first bearing check",
+        "type": "Waypoint",
+        "mile": 0.5,
         "icon": "\u25c6",
-        "lat": 37.775309,
-        "lon": -83.6659
+        "lat": 37.781087,
+        "lon": -83.676609,
+        "source": "OSM geometry mile marker"
       },
       {
-        "id": "ky-natural-bridge-loop-finish",
-        "name": "Finish / turnaround",
-        "type": "Return",
+        "id": "ky-natural-bridge-loop-wp-3",
+        "name": "Natural Bridge Original Trail pacing marker",
+        "type": "Waypoint",
+        "mile": 1.0,
+        "icon": "\u25c6",
+        "lat": 37.775995,
+        "lon": -83.666787,
+        "source": "OSM geometry mile marker"
+      },
+      {
+        "id": "ky-natural-bridge-loop-wp-4",
+        "name": "Natural Bridge Original Trail midpoint / condition check",
+        "type": "Waypoint",
+        "mile": 1.5,
+        "icon": "\u25c6",
+        "lat": 37.774675,
+        "lon": -83.655657,
+        "source": "OSM geometry mile marker"
+      },
+      {
+        "id": "ky-natural-bridge-loop-wp-5",
+        "name": "Natural Bridge Original Trail view or rest stop",
+        "type": "View",
+        "mile": 2.0,
+        "icon": "\ud83d\udc41\ufe0f",
+        "lat": 37.776415,
+        "lon": -83.662519,
+        "source": "OSM geometry mile marker"
+      },
+      {
+        "id": "ky-natural-bridge-loop-wp-6",
+        "name": "Natural Bridge Original Trail turnaround / finish",
+        "type": "Finish",
         "mile": 2.5,
         "icon": "\u25ce",
         "lat": 37.7773,
-        "lon": -83.6854
+        "lon": -83.6854,
+        "source": "OSM geometry mile marker"
       }
     ],
     "pois": [
@@ -3161,7 +4205,32 @@
     ],
     "landType": "Public trail / verify access",
     "catalogCategory": "mountain trail",
-    "mountainArea": "Kentucky"
+    "mountainArea": "Kentucky",
+    "color": "#b997ff",
+    "segments": [
+      {
+        "id": "seg-1",
+        "name": "Loop start / approach",
+        "startMile": 0.0,
+        "endMile": 0.85,
+        "color": "#b997ff"
+      },
+      {
+        "id": "seg-2",
+        "name": "High point / ridge",
+        "startMile": 0.85,
+        "endMile": 1.7,
+        "color": "#ff7e5f"
+      },
+      {
+        "id": "seg-3",
+        "name": "Loop return",
+        "startMile": 1.7,
+        "endMile": 2.5,
+        "color": "#6cf0c2"
+      }
+    ],
+    "markerDensity": "rich route markers from attached geometry"
   },
   {
     "id": "oh-old-mans-cave",
@@ -3275,31 +4344,64 @@
     ],
     "waypoints": [
       {
-        "id": "oh-old-mans-cave-start",
-        "name": "Trailhead",
+        "id": "oh-old-mans-cave-wp-1",
+        "name": "Logan, Ohio trailhead",
         "type": "Start",
-        "mile": 0,
+        "mile": 0.0,
         "icon": "\u25ce",
         "lat": 39.4372,
-        "lon": -82.5402
+        "lon": -82.5402,
+        "source": "OSM geometry mile marker"
       },
       {
-        "id": "oh-old-mans-cave-mid",
-        "name": "Mid-route marker",
+        "id": "oh-old-mans-cave-wp-2",
+        "name": "Old Man\u2019s Cave Gorge Trail first bearing check",
         "type": "Waypoint",
-        "mile": 0.9,
+        "mile": 0.38,
         "icon": "\u25c6",
-        "lat": 39.435209,
-        "lon": -82.5207
+        "lat": 39.440994,
+        "lon": -82.531448,
+        "source": "OSM geometry mile marker"
       },
       {
-        "id": "oh-old-mans-cave-finish",
-        "name": "Finish / turnaround",
-        "type": "Return",
+        "id": "oh-old-mans-cave-wp-3",
+        "name": "Old Man\u2019s Cave Gorge Trail pacing marker",
+        "type": "Waypoint",
+        "mile": 0.76,
+        "icon": "\u25c6",
+        "lat": 39.435944,
+        "lon": -82.521649,
+        "source": "OSM geometry mile marker"
+      },
+      {
+        "id": "oh-old-mans-cave-wp-4",
+        "name": "Old Man\u2019s Cave Gorge Trail midpoint / condition check",
+        "type": "Waypoint",
+        "mile": 1.14,
+        "icon": "\u25c6",
+        "lat": 39.434527,
+        "lon": -82.510553,
+        "source": "OSM geometry mile marker"
+      },
+      {
+        "id": "oh-old-mans-cave-wp-5",
+        "name": "Old Man\u2019s Cave Gorge Trail view or rest stop",
+        "type": "View",
+        "mile": 1.52,
+        "icon": "\ud83d\udc41\ufe0f",
+        "lat": 39.436312,
+        "lon": -82.517232,
+        "source": "OSM geometry mile marker"
+      },
+      {
+        "id": "oh-old-mans-cave-wp-6",
+        "name": "Old Man\u2019s Cave Gorge Trail turnaround / finish",
+        "type": "Finish",
         "mile": 1.9,
         "icon": "\u25ce",
         "lat": 39.4372,
-        "lon": -82.5402
+        "lon": -82.5402,
+        "source": "OSM geometry mile marker"
       }
     ],
     "pois": [
@@ -3312,7 +4414,32 @@
     ],
     "landType": "Public land / falls access",
     "catalogCategory": "waterfall / notch stop",
-    "mountainArea": "Ohio"
+    "mountainArea": "Ohio",
+    "color": "#ff7e5f",
+    "segments": [
+      {
+        "id": "seg-1",
+        "name": "Loop start / approach",
+        "startMile": 0.0,
+        "endMile": 0.65,
+        "color": "#ff7e5f"
+      },
+      {
+        "id": "seg-2",
+        "name": "High point / ridge",
+        "startMile": 0.65,
+        "endMile": 1.29,
+        "color": "#6cf0c2"
+      },
+      {
+        "id": "seg-3",
+        "name": "Loop return",
+        "startMile": 1.29,
+        "endMile": 1.9,
+        "color": "#9ce36c"
+      }
+    ],
+    "markerDensity": "rich route markers from attached geometry"
   },
   {
     "id": "oh-ash-cave-rim",
@@ -3426,31 +4553,64 @@
     ],
     "waypoints": [
       {
-        "id": "oh-ash-cave-rim-start",
-        "name": "Trailhead",
+        "id": "oh-ash-cave-rim-wp-1",
+        "name": "Logan, Ohio trailhead",
         "type": "Start",
-        "mile": 0,
+        "mile": 0.0,
         "icon": "\u25ce",
         "lat": 39.3957,
-        "lon": -82.5451
+        "lon": -82.5451,
+        "source": "OSM geometry mile marker"
       },
       {
-        "id": "oh-ash-cave-rim-mid",
-        "name": "Mid-route marker",
+        "id": "oh-ash-cave-rim-wp-2",
+        "name": "Ash Cave Rim and Gorge first bearing check",
         "type": "Waypoint",
-        "mile": 0.6,
+        "mile": 0.24,
         "icon": "\u25c6",
-        "lat": 39.393709,
-        "lon": -82.5256
+        "lat": 39.399494,
+        "lon": -82.536347,
+        "source": "OSM geometry mile marker"
       },
       {
-        "id": "oh-ash-cave-rim-finish",
-        "name": "Finish / turnaround",
-        "type": "Return",
+        "id": "oh-ash-cave-rim-wp-3",
+        "name": "Ash Cave Rim and Gorge pacing marker",
+        "type": "Waypoint",
+        "mile": 0.48,
+        "icon": "\u25c6",
+        "lat": 39.394443,
+        "lon": -82.526548,
+        "source": "OSM geometry mile marker"
+      },
+      {
+        "id": "oh-ash-cave-rim-wp-4",
+        "name": "Ash Cave Rim and Gorge midpoint / condition check",
+        "type": "Waypoint",
+        "mile": 0.72,
+        "icon": "\u25c6",
+        "lat": 39.393028,
+        "lon": -82.515451,
+        "source": "OSM geometry mile marker"
+      },
+      {
+        "id": "oh-ash-cave-rim-wp-5",
+        "name": "Ash Cave Rim and Gorge view or rest stop",
+        "type": "View",
+        "mile": 0.96,
+        "icon": "\ud83d\udc41\ufe0f",
+        "lat": 39.394812,
+        "lon": -82.522134,
+        "source": "OSM geometry mile marker"
+      },
+      {
+        "id": "oh-ash-cave-rim-wp-6",
+        "name": "Ash Cave Rim and Gorge turnaround / finish",
+        "type": "Finish",
         "mile": 1.2,
         "icon": "\u25ce",
         "lat": 39.3957,
-        "lon": -82.5451
+        "lon": -82.5451,
+        "source": "OSM geometry mile marker"
       }
     ],
     "pois": [
@@ -3463,7 +4623,32 @@
     ],
     "landType": "Public land / falls access",
     "catalogCategory": "waterfall / notch stop",
-    "mountainArea": "Ohio"
+    "mountainArea": "Ohio",
+    "color": "#6cf0c2",
+    "segments": [
+      {
+        "id": "seg-1",
+        "name": "Loop start / approach",
+        "startMile": 0.0,
+        "endMile": 0.41,
+        "color": "#6cf0c2"
+      },
+      {
+        "id": "seg-2",
+        "name": "High point / ridge",
+        "startMile": 0.41,
+        "endMile": 0.82,
+        "color": "#9ce36c"
+      },
+      {
+        "id": "seg-3",
+        "name": "Loop return",
+        "startMile": 0.82,
+        "endMile": 1.2,
+        "color": "#4bd2ff"
+      }
+    ],
+    "markerDensity": "rich route markers from attached geometry"
   },
   {
     "id": "me-pleasant-mountain",
@@ -3561,31 +4746,64 @@
     ],
     "waypoints": [
       {
-        "id": "me-pleasant-mountain-start",
-        "name": "Trailhead",
+        "id": "me-pleasant-mountain-wp-1",
+        "name": "Bridgton, Maine trailhead",
         "type": "Start",
-        "mile": 0,
+        "mile": 0.0,
         "icon": "\u25ce",
         "lat": 44.0586,
-        "lon": -70.8158
+        "lon": -70.8158,
+        "source": "OSM geometry mile marker"
       },
       {
-        "id": "me-pleasant-mountain-mid",
-        "name": "Mid-route marker",
-        "type": "View",
-        "mile": 1.8,
+        "id": "me-pleasant-mountain-wp-2",
+        "name": "Pleasant Mountain Ledges Trail first bearing check",
+        "type": "Waypoint",
+        "mile": 0.72,
         "icon": "\u25c6",
-        "lat": 44.06164,
-        "lon": -70.8028
+        "lat": 44.06093,
+        "lon": -70.812189,
+        "source": "OSM geometry mile marker"
       },
       {
-        "id": "me-pleasant-mountain-finish",
-        "name": "Finish / turnaround",
+        "id": "me-pleasant-mountain-wp-3",
+        "name": "Pleasant Mountain Ledges Trail pacing marker",
+        "type": "Waypoint",
+        "mile": 1.44,
+        "icon": "\u25c6",
+        "lat": 44.062515,
+        "lon": -70.80773,
+        "source": "OSM geometry mile marker"
+      },
+      {
+        "id": "me-pleasant-mountain-wp-4",
+        "name": "Pleasant Mountain Ledges Trail midpoint / condition check",
+        "type": "Waypoint",
+        "mile": 2.16,
+        "icon": "\u25c6",
+        "lat": 44.061248,
+        "lon": -70.802293,
+        "source": "OSM geometry mile marker"
+      },
+      {
+        "id": "me-pleasant-mountain-wp-5",
+        "name": "Pleasant Mountain Ledges Trail view or rest stop",
+        "type": "View",
+        "mile": 2.88,
+        "icon": "\ud83d\udc41\ufe0f",
+        "lat": 44.058181,
+        "lon": -70.798331,
+        "source": "OSM geometry mile marker"
+      },
+      {
+        "id": "me-pleasant-mountain-wp-6",
+        "name": "Pleasant Mountain Ledges Trail turnaround / finish",
         "type": "Finish",
         "mile": 3.6,
         "icon": "\u25ce",
         "lat": 44.054117,
-        "lon": -70.7898
+        "lon": -70.7898,
+        "source": "OSM geometry mile marker"
       }
     ],
     "pois": [
@@ -3598,7 +4816,32 @@
     ],
     "landType": "Public trail / verify access",
     "catalogCategory": "mountain trail",
-    "mountainArea": "Maine"
+    "mountainArea": "Maine",
+    "color": "#9ce36c",
+    "segments": [
+      {
+        "id": "seg-1",
+        "name": "Outbound / approach",
+        "startMile": 0.0,
+        "endMile": 1.22,
+        "color": "#9ce36c"
+      },
+      {
+        "id": "seg-2",
+        "name": "Middle climb / ridge",
+        "startMile": 1.22,
+        "endMile": 2.45,
+        "color": "#4bd2ff"
+      },
+      {
+        "id": "seg-3",
+        "name": "Return / continuation",
+        "startMile": 2.45,
+        "endMile": 3.6,
+        "color": "#ffd36a"
+      }
+    ],
+    "markerDensity": "rich route markers from attached geometry"
   },
   {
     "id": "me-moxie-falls",
@@ -3696,31 +4939,64 @@
     ],
     "waypoints": [
       {
-        "id": "me-moxie-falls-start",
-        "name": "Trailhead",
+        "id": "me-moxie-falls-wp-1",
+        "name": "The Forks, Maine trailhead",
         "type": "Start",
-        "mile": 0,
+        "mile": 0.0,
         "icon": "\u25ce",
         "lat": 45.3182,
-        "lon": -69.9511
+        "lon": -69.9511,
+        "source": "OSM geometry mile marker"
       },
       {
-        "id": "me-moxie-falls-mid",
-        "name": "Mid-route marker",
+        "id": "me-moxie-falls-wp-2",
+        "name": "Moxie Falls Trail first bearing check",
         "type": "Waypoint",
-        "mile": 0.8,
+        "mile": 0.34,
         "icon": "\u25c6",
-        "lat": 45.32124,
-        "lon": -69.9381
+        "lat": 45.320524,
+        "lon": -69.947497,
+        "source": "OSM geometry mile marker"
       },
       {
-        "id": "me-moxie-falls-finish",
-        "name": "Finish / turnaround",
+        "id": "me-moxie-falls-wp-3",
+        "name": "Moxie Falls Trail pacing marker",
+        "type": "Waypoint",
+        "mile": 0.68,
+        "icon": "\u25c6",
+        "lat": 45.322117,
+        "lon": -69.94304,
+        "source": "OSM geometry mile marker"
+      },
+      {
+        "id": "me-moxie-falls-wp-4",
+        "name": "Moxie Falls Trail midpoint / condition check",
+        "type": "Waypoint",
+        "mile": 1.02,
+        "icon": "\u25c6",
+        "lat": 45.320838,
+        "lon": -69.937581,
+        "source": "OSM geometry mile marker"
+      },
+      {
+        "id": "me-moxie-falls-wp-5",
+        "name": "Moxie Falls Trail view or rest stop",
+        "type": "View",
+        "mile": 1.36,
+        "icon": "\ud83d\udc41\ufe0f",
+        "lat": 45.317784,
+        "lon": -69.933635,
+        "source": "OSM geometry mile marker"
+      },
+      {
+        "id": "me-moxie-falls-wp-6",
+        "name": "Moxie Falls Trail turnaround / finish",
         "type": "Finish",
         "mile": 1.7,
         "icon": "\u25ce",
         "lat": 45.313717,
-        "lon": -69.9251
+        "lon": -69.9251,
+        "source": "OSM geometry mile marker"
       }
     ],
     "pois": [
@@ -3733,7 +5009,32 @@
     ],
     "landType": "Public land / falls access",
     "catalogCategory": "waterfall / notch stop",
-    "mountainArea": "Maine"
+    "mountainArea": "Maine",
+    "color": "#4bd2ff",
+    "segments": [
+      {
+        "id": "seg-1",
+        "name": "Outbound / approach",
+        "startMile": 0.0,
+        "endMile": 0.58,
+        "color": "#4bd2ff"
+      },
+      {
+        "id": "seg-2",
+        "name": "Middle climb / ridge",
+        "startMile": 0.58,
+        "endMile": 1.16,
+        "color": "#ffd36a"
+      },
+      {
+        "id": "seg-3",
+        "name": "Return / continuation",
+        "startMile": 1.16,
+        "endMile": 1.7,
+        "color": "#ff8bd1"
+      }
+    ],
+    "markerDensity": "rich route markers from attached geometry"
   },
   {
     "id": "la-thorncrag-loop",
@@ -3850,31 +5151,64 @@
     ],
     "waypoints": [
       {
-        "id": "la-thorncrag-loop-start",
-        "name": "Trailhead",
+        "id": "la-thorncrag-loop-wp-1",
+        "name": "Lewiston, Maine trailhead",
         "type": "Start",
-        "mile": 0,
+        "mile": 0.0,
         "icon": "\u25ce",
         "lat": 44.1059,
-        "lon": -70.1788
+        "lon": -70.1788,
+        "source": "OSM geometry mile marker"
       },
       {
-        "id": "la-thorncrag-loop-mid",
-        "name": "Key marker / viewpoint",
+        "id": "la-thorncrag-loop-wp-2",
+        "name": "Thorncrag Bird Sanctuary Loop first bearing check",
         "type": "Waypoint",
-        "mile": 1.1,
+        "mile": 0.42,
         "icon": "\u25c6",
-        "lat": 44.104686,
-        "lon": -70.1623
+        "lat": 44.109342,
+        "lon": -70.171577,
+        "source": "OSM geometry mile marker"
       },
       {
-        "id": "la-thorncrag-loop-finish",
-        "name": "Finish / turnaround",
-        "type": "Return",
+        "id": "la-thorncrag-loop-wp-3",
+        "name": "Thorncrag Bird Sanctuary Loop pacing marker",
+        "type": "Waypoint",
+        "mile": 0.84,
+        "icon": "\u25c6",
+        "lat": 44.105412,
+        "lon": -70.163251,
+        "source": "OSM geometry mile marker"
+      },
+      {
+        "id": "la-thorncrag-loop-wp-4",
+        "name": "Thorncrag Bird Sanctuary Loop midpoint / condition check",
+        "type": "Waypoint",
+        "mile": 1.26,
+        "icon": "\u25c6",
+        "lat": 44.102871,
+        "lon": -70.154121,
+        "source": "OSM geometry mile marker"
+      },
+      {
+        "id": "la-thorncrag-loop-wp-5",
+        "name": "Thorncrag Bird Sanctuary Loop view or rest stop",
+        "type": "View",
+        "mile": 1.68,
+        "icon": "\ud83d\udc41\ufe0f",
+        "lat": 44.104451,
+        "lon": -70.159198,
+        "source": "OSM geometry mile marker"
+      },
+      {
+        "id": "la-thorncrag-loop-wp-6",
+        "name": "Thorncrag Bird Sanctuary Loop turnaround / finish",
+        "type": "Finish",
         "mile": 2.1,
         "icon": "\u25ce",
         "lat": 44.1059,
-        "lon": -70.1788
+        "lon": -70.1788,
+        "source": "OSM geometry mile marker"
       }
     ],
     "pois": [
@@ -3887,7 +5221,32 @@
     ],
     "landType": "Public preserve",
     "catalogCategory": "local trail",
-    "mountainArea": "Lewiston-Auburn local"
+    "mountainArea": "Lewiston-Auburn local",
+    "color": "#ffd36a",
+    "segments": [
+      {
+        "id": "seg-1",
+        "name": "Loop start / approach",
+        "startMile": 0.0,
+        "endMile": 0.71,
+        "color": "#ffd36a"
+      },
+      {
+        "id": "seg-2",
+        "name": "High point / ridge",
+        "startMile": 0.71,
+        "endMile": 1.43,
+        "color": "#ff8bd1"
+      },
+      {
+        "id": "seg-3",
+        "name": "Loop return",
+        "startMile": 1.43,
+        "endMile": 2.1,
+        "color": "#b997ff"
+      }
+    ],
+    "markerDensity": "rich route markers from attached geometry"
   },
   {
     "id": "la-mount-apatite-loop",
@@ -4003,31 +5362,64 @@
     ],
     "waypoints": [
       {
-        "id": "la-mount-apatite-loop-start",
-        "name": "Trailhead",
+        "id": "la-mount-apatite-loop-wp-1",
+        "name": "Auburn, Maine trailhead",
         "type": "Start",
-        "mile": 0,
+        "mile": 0.0,
         "icon": "\u25ce",
         "lat": 44.0791,
-        "lon": -70.2608
+        "lon": -70.2608,
+        "source": "OSM geometry mile marker"
       },
       {
-        "id": "la-mount-apatite-loop-mid",
-        "name": "Key marker / viewpoint",
+        "id": "la-mount-apatite-loop-wp-2",
+        "name": "Mount Apatite Park Loop first bearing check",
         "type": "Waypoint",
-        "mile": 1.6,
+        "mile": 0.64,
         "icon": "\u25c6",
-        "lat": 44.077886,
-        "lon": -70.2443
+        "lat": 44.082542,
+        "lon": -70.253577,
+        "source": "OSM geometry mile marker"
       },
       {
-        "id": "la-mount-apatite-loop-finish",
-        "name": "Finish / turnaround",
-        "type": "Return",
+        "id": "la-mount-apatite-loop-wp-3",
+        "name": "Mount Apatite Park Loop pacing marker",
+        "type": "Waypoint",
+        "mile": 1.28,
+        "icon": "\u25c6",
+        "lat": 44.078611,
+        "lon": -70.24525,
+        "source": "OSM geometry mile marker"
+      },
+      {
+        "id": "la-mount-apatite-loop-wp-4",
+        "name": "Mount Apatite Park Loop midpoint / condition check",
+        "type": "Waypoint",
+        "mile": 1.92,
+        "icon": "\u25c6",
+        "lat": 44.076072,
+        "lon": -70.236119,
+        "source": "OSM geometry mile marker"
+      },
+      {
+        "id": "la-mount-apatite-loop-wp-5",
+        "name": "Mount Apatite Park Loop view or rest stop",
+        "type": "View",
+        "mile": 2.56,
+        "icon": "\ud83d\udc41\ufe0f",
+        "lat": 44.077651,
+        "lon": -70.2412,
+        "source": "OSM geometry mile marker"
+      },
+      {
+        "id": "la-mount-apatite-loop-wp-6",
+        "name": "Mount Apatite Park Loop turnaround / finish",
+        "type": "Finish",
         "mile": 3.2,
         "icon": "\u25ce",
         "lat": 44.0791,
-        "lon": -70.2608
+        "lon": -70.2608,
+        "source": "OSM geometry mile marker"
       }
     ],
     "pois": [
@@ -4040,7 +5432,32 @@
     ],
     "landType": "Public trail / verify access",
     "catalogCategory": "local trail",
-    "mountainArea": "Lewiston-Auburn local"
+    "mountainArea": "Lewiston-Auburn local",
+    "color": "#ff8bd1",
+    "segments": [
+      {
+        "id": "seg-1",
+        "name": "Loop start / approach",
+        "startMile": 0.0,
+        "endMile": 1.09,
+        "color": "#ff8bd1"
+      },
+      {
+        "id": "seg-2",
+        "name": "High point / ridge",
+        "startMile": 1.09,
+        "endMile": 2.18,
+        "color": "#b997ff"
+      },
+      {
+        "id": "seg-3",
+        "name": "Loop return",
+        "startMile": 2.18,
+        "endMile": 3.2,
+        "color": "#ff7e5f"
+      }
+    ],
+    "markerDensity": "rich route markers from attached geometry"
   },
   {
     "id": "la-androscoggin-riverlands",
@@ -4141,31 +5558,64 @@
     ],
     "waypoints": [
       {
-        "id": "la-androscoggin-riverlands-start",
-        "name": "Trailhead",
+        "id": "la-androscoggin-riverlands-wp-1",
+        "name": "Turner, Maine trailhead",
         "type": "Start",
-        "mile": 0,
+        "mile": 0.0,
         "icon": "\u25ce",
         "lat": 44.2167,
-        "lon": -70.2018
+        "lon": -70.2018,
+        "source": "OSM geometry mile marker"
       },
       {
-        "id": "la-androscoggin-riverlands-mid",
-        "name": "Key marker / viewpoint",
+        "id": "la-androscoggin-riverlands-wp-2",
+        "name": "Androscoggin Riverlands Homestead Trail first bearing check",
         "type": "Waypoint",
-        "mile": 2.7,
+        "mile": 1.08,
         "icon": "\u25c6",
-        "lat": 44.219683,
-        "lon": -70.1908
+        "lat": 44.218733,
+        "lon": -70.198738,
+        "source": "OSM geometry mile marker"
       },
       {
-        "id": "la-androscoggin-riverlands-finish",
-        "name": "Finish / turnaround",
+        "id": "la-androscoggin-riverlands-wp-3",
+        "name": "Androscoggin Riverlands Homestead Trail pacing marker",
+        "type": "Waypoint",
+        "mile": 2.16,
+        "icon": "\u25c6",
+        "lat": 44.220183,
+        "lon": -70.194913,
+        "source": "OSM geometry mile marker"
+      },
+      {
+        "id": "la-androscoggin-riverlands-wp-4",
+        "name": "Androscoggin Riverlands Homestead Trail midpoint / condition check",
+        "type": "Waypoint",
+        "mile": 3.24,
+        "icon": "\u25c6",
+        "lat": 44.219246,
+        "lon": -70.190227,
+        "source": "OSM geometry mile marker"
+      },
+      {
+        "id": "la-androscoggin-riverlands-wp-5",
+        "name": "Androscoggin Riverlands Homestead Trail view or rest stop",
+        "type": "View",
+        "mile": 4.32,
+        "icon": "\ud83d\udc41\ufe0f",
+        "lat": 44.216629,
+        "lon": -70.186798,
+        "source": "OSM geometry mile marker"
+      },
+      {
+        "id": "la-androscoggin-riverlands-wp-6",
+        "name": "Androscoggin Riverlands Homestead Trail turnaround / finish",
         "type": "Finish",
         "mile": 5.4,
         "icon": "\u25ce",
         "lat": 44.212725,
-        "lon": -70.1798
+        "lon": -70.1798,
+        "source": "OSM geometry mile marker"
       }
     ],
     "pois": [
@@ -4178,7 +5628,32 @@
     ],
     "landType": "Public trail / verify access",
     "catalogCategory": "local trail",
-    "mountainArea": "Lewiston-Auburn local"
+    "mountainArea": "Lewiston-Auburn local",
+    "color": "#b997ff",
+    "segments": [
+      {
+        "id": "seg-1",
+        "name": "Outbound / approach",
+        "startMile": 0.0,
+        "endMile": 1.84,
+        "color": "#b997ff"
+      },
+      {
+        "id": "seg-2",
+        "name": "Middle climb / ridge",
+        "startMile": 1.84,
+        "endMile": 3.67,
+        "color": "#ff7e5f"
+      },
+      {
+        "id": "seg-3",
+        "name": "Return / continuation",
+        "startMile": 3.67,
+        "endMile": 5.4,
+        "color": "#6cf0c2"
+      }
+    ],
+    "markerDensity": "rich route markers from attached geometry"
   },
   {
     "id": "la-riverwalk-loop",
@@ -4278,31 +5753,64 @@
     ],
     "waypoints": [
       {
-        "id": "la-riverwalk-loop-start",
-        "name": "Trailhead",
+        "id": "la-riverwalk-loop-wp-1",
+        "name": "Lewiston / Auburn, Maine trailhead",
         "type": "Start",
-        "mile": 0,
+        "mile": 0.0,
         "icon": "\u25ce",
         "lat": 44.0964,
-        "lon": -70.2212
+        "lon": -70.2212,
+        "source": "OSM geometry mile marker"
       },
       {
-        "id": "la-riverwalk-loop-mid",
-        "name": "Key marker / viewpoint",
+        "id": "la-riverwalk-loop-wp-2",
+        "name": "Lewiston-Auburn Riverwalk first bearing check",
         "type": "Waypoint",
-        "mile": 1.2,
+        "mile": 0.48,
         "icon": "\u25c6",
-        "lat": 44.099383,
-        "lon": -70.2102
+        "lat": 44.098433,
+        "lon": -70.218137,
+        "source": "OSM geometry mile marker"
       },
       {
-        "id": "la-riverwalk-loop-finish",
-        "name": "Finish / turnaround",
+        "id": "la-riverwalk-loop-wp-3",
+        "name": "Lewiston-Auburn Riverwalk pacing marker",
+        "type": "Waypoint",
+        "mile": 0.96,
+        "icon": "\u25c6",
+        "lat": 44.099882,
+        "lon": -70.214312,
+        "source": "OSM geometry mile marker"
+      },
+      {
+        "id": "la-riverwalk-loop-wp-4",
+        "name": "Lewiston-Auburn Riverwalk midpoint / condition check",
+        "type": "Waypoint",
+        "mile": 1.44,
+        "icon": "\u25c6",
+        "lat": 44.098947,
+        "lon": -70.209628,
+        "source": "OSM geometry mile marker"
+      },
+      {
+        "id": "la-riverwalk-loop-wp-5",
+        "name": "Lewiston-Auburn Riverwalk view or rest stop",
+        "type": "View",
+        "mile": 1.92,
+        "icon": "\ud83d\udc41\ufe0f",
+        "lat": 44.096329,
+        "lon": -70.206198,
+        "source": "OSM geometry mile marker"
+      },
+      {
+        "id": "la-riverwalk-loop-wp-6",
+        "name": "Lewiston-Auburn Riverwalk turnaround / finish",
         "type": "Finish",
         "mile": 2.4,
         "icon": "\u25ce",
         "lat": 44.092425,
-        "lon": -70.1992
+        "lon": -70.1992,
+        "source": "OSM geometry mile marker"
       }
     ],
     "pois": [
@@ -4315,7 +5823,32 @@
     ],
     "landType": "Walking path",
     "catalogCategory": "walking path",
-    "mountainArea": "Lewiston-Auburn local"
+    "mountainArea": "Lewiston-Auburn local",
+    "color": "#ff7e5f",
+    "segments": [
+      {
+        "id": "seg-1",
+        "name": "Outbound / approach",
+        "startMile": 0.0,
+        "endMile": 0.82,
+        "color": "#ff7e5f"
+      },
+      {
+        "id": "seg-2",
+        "name": "Middle climb / ridge",
+        "startMile": 0.82,
+        "endMile": 1.63,
+        "color": "#6cf0c2"
+      },
+      {
+        "id": "seg-3",
+        "name": "Return / continuation",
+        "startMile": 1.63,
+        "endMile": 2.4,
+        "color": "#9ce36c"
+      }
+    ],
+    "markerDensity": "rich route markers from attached geometry"
   },
   {
     "id": "la-range-ponds-loop",
@@ -4432,31 +5965,64 @@
     ],
     "waypoints": [
       {
-        "id": "la-range-ponds-loop-start",
-        "name": "Trailhead",
+        "id": "la-range-ponds-loop-wp-1",
+        "name": "Poland, Maine trailhead",
         "type": "Start",
-        "mile": 0,
+        "mile": 0.0,
         "icon": "\u25ce",
         "lat": 44.0308,
-        "lon": -70.4016
+        "lon": -70.4016,
+        "source": "OSM geometry mile marker"
       },
       {
-        "id": "la-range-ponds-loop-mid",
-        "name": "Key marker / viewpoint",
+        "id": "la-range-ponds-loop-wp-2",
+        "name": "Range Ponds Shoreline Loop first bearing check",
         "type": "Waypoint",
-        "mile": 1.1,
+        "mile": 0.46,
         "icon": "\u25c6",
-        "lat": 44.029586,
-        "lon": -70.3851
+        "lat": 44.034242,
+        "lon": -70.394375,
+        "source": "OSM geometry mile marker"
       },
       {
-        "id": "la-range-ponds-loop-finish",
-        "name": "Finish / turnaround",
-        "type": "Return",
+        "id": "la-range-ponds-loop-wp-3",
+        "name": "Range Ponds Shoreline Loop pacing marker",
+        "type": "Waypoint",
+        "mile": 0.92,
+        "icon": "\u25c6",
+        "lat": 44.03031,
+        "lon": -70.386048,
+        "source": "OSM geometry mile marker"
+      },
+      {
+        "id": "la-range-ponds-loop-wp-4",
+        "name": "Range Ponds Shoreline Loop midpoint / condition check",
+        "type": "Waypoint",
+        "mile": 1.38,
+        "icon": "\u25c6",
+        "lat": 44.027773,
+        "lon": -70.376916,
+        "source": "OSM geometry mile marker"
+      },
+      {
+        "id": "la-range-ponds-loop-wp-5",
+        "name": "Range Ponds Shoreline Loop view or rest stop",
+        "type": "View",
+        "mile": 1.84,
+        "icon": "\ud83d\udc41\ufe0f",
+        "lat": 44.029351,
+        "lon": -70.382003,
+        "source": "OSM geometry mile marker"
+      },
+      {
+        "id": "la-range-ponds-loop-wp-6",
+        "name": "Range Ponds Shoreline Loop turnaround / finish",
+        "type": "Finish",
         "mile": 2.3,
         "icon": "\u25ce",
         "lat": 44.0308,
-        "lon": -70.4016
+        "lon": -70.4016,
+        "source": "OSM geometry mile marker"
       }
     ],
     "pois": [
@@ -4469,7 +6035,32 @@
     ],
     "landType": "Public land",
     "catalogCategory": "local trail",
-    "mountainArea": "Lewiston-Auburn local"
+    "mountainArea": "Lewiston-Auburn local",
+    "color": "#6cf0c2",
+    "segments": [
+      {
+        "id": "seg-1",
+        "name": "Loop start / approach",
+        "startMile": 0.0,
+        "endMile": 0.78,
+        "color": "#6cf0c2"
+      },
+      {
+        "id": "seg-2",
+        "name": "High point / ridge",
+        "startMile": 0.78,
+        "endMile": 1.56,
+        "color": "#9ce36c"
+      },
+      {
+        "id": "seg-3",
+        "name": "Loop return",
+        "startMile": 1.56,
+        "endMile": 2.3,
+        "color": "#4bd2ff"
+      }
+    ],
+    "markerDensity": "rich route markers from attached geometry"
   },
   {
     "id": "la-david-rancourt-preserve",
@@ -4585,31 +6176,64 @@
     ],
     "waypoints": [
       {
-        "id": "la-david-rancourt-preserve-start",
-        "name": "Trailhead",
+        "id": "la-david-rancourt-preserve-wp-1",
+        "name": "Lewiston, Maine trailhead",
         "type": "Start",
-        "mile": 0,
+        "mile": 0.0,
         "icon": "\u25ce",
         "lat": 44.0685,
-        "lon": -70.1615
+        "lon": -70.1615,
+        "source": "OSM geometry mile marker"
       },
       {
-        "id": "la-david-rancourt-preserve-mid",
-        "name": "Key marker / viewpoint",
+        "id": "la-david-rancourt-preserve-wp-2",
+        "name": "David Rancourt River Preserve first bearing check",
         "type": "Waypoint",
-        "mile": 0.9,
+        "mile": 0.36,
         "icon": "\u25c6",
-        "lat": 44.067286,
-        "lon": -70.145
+        "lat": 44.071942,
+        "lon": -70.154276,
+        "source": "OSM geometry mile marker"
       },
       {
-        "id": "la-david-rancourt-preserve-finish",
-        "name": "Finish / turnaround",
-        "type": "Return",
+        "id": "la-david-rancourt-preserve-wp-3",
+        "name": "David Rancourt River Preserve pacing marker",
+        "type": "Waypoint",
+        "mile": 0.72,
+        "icon": "\u25c6",
+        "lat": 44.068011,
+        "lon": -70.14595,
+        "source": "OSM geometry mile marker"
+      },
+      {
+        "id": "la-david-rancourt-preserve-wp-4",
+        "name": "David Rancourt River Preserve midpoint / condition check",
+        "type": "Waypoint",
+        "mile": 1.08,
+        "icon": "\u25c6",
+        "lat": 44.065472,
+        "lon": -70.136818,
+        "source": "OSM geometry mile marker"
+      },
+      {
+        "id": "la-david-rancourt-preserve-wp-5",
+        "name": "David Rancourt River Preserve view or rest stop",
+        "type": "View",
+        "mile": 1.44,
+        "icon": "\ud83d\udc41\ufe0f",
+        "lat": 44.067051,
+        "lon": -70.141901,
+        "source": "OSM geometry mile marker"
+      },
+      {
+        "id": "la-david-rancourt-preserve-wp-6",
+        "name": "David Rancourt River Preserve turnaround / finish",
+        "type": "Finish",
         "mile": 1.8,
         "icon": "\u25ce",
         "lat": 44.0685,
-        "lon": -70.1615
+        "lon": -70.1615,
+        "source": "OSM geometry mile marker"
       }
     ],
     "pois": [
@@ -4622,7 +6246,32 @@
     ],
     "landType": "Public preserve",
     "catalogCategory": "local trail",
-    "mountainArea": "Lewiston-Auburn local"
+    "mountainArea": "Lewiston-Auburn local",
+    "color": "#9ce36c",
+    "segments": [
+      {
+        "id": "seg-1",
+        "name": "Loop start / approach",
+        "startMile": 0.0,
+        "endMile": 0.61,
+        "color": "#9ce36c"
+      },
+      {
+        "id": "seg-2",
+        "name": "High point / ridge",
+        "startMile": 0.61,
+        "endMile": 1.22,
+        "color": "#4bd2ff"
+      },
+      {
+        "id": "seg-3",
+        "name": "Loop return",
+        "startMile": 1.22,
+        "endMile": 1.8,
+        "color": "#ffd36a"
+      }
+    ],
+    "markerDensity": "rich route markers from attached geometry"
   },
   {
     "id": "la-sherwood-forest",
@@ -4737,31 +6386,64 @@
     ],
     "waypoints": [
       {
-        "id": "la-sherwood-forest-start",
-        "name": "Trailhead",
+        "id": "la-sherwood-forest-wp-1",
+        "name": "Auburn, Maine trailhead",
         "type": "Start",
-        "mile": 0,
+        "mile": 0.0,
         "icon": "\u25ce",
         "lat": 44.0717,
-        "lon": -70.2384
+        "lon": -70.2384,
+        "source": "OSM geometry mile marker"
       },
       {
-        "id": "la-sherwood-forest-mid",
-        "name": "Key marker / viewpoint",
+        "id": "la-sherwood-forest-wp-2",
+        "name": "Sherwood Forest Conservation Loop first bearing check",
         "type": "Waypoint",
-        "mile": 0.8,
+        "mile": 0.32,
         "icon": "\u25c6",
-        "lat": 44.070486,
-        "lon": -70.2219
+        "lat": 44.075142,
+        "lon": -70.231176,
+        "source": "OSM geometry mile marker"
       },
       {
-        "id": "la-sherwood-forest-finish",
-        "name": "Finish / turnaround",
-        "type": "Return",
+        "id": "la-sherwood-forest-wp-3",
+        "name": "Sherwood Forest Conservation Loop pacing marker",
+        "type": "Waypoint",
+        "mile": 0.64,
+        "icon": "\u25c6",
+        "lat": 44.071211,
+        "lon": -70.22285,
+        "source": "OSM geometry mile marker"
+      },
+      {
+        "id": "la-sherwood-forest-wp-4",
+        "name": "Sherwood Forest Conservation Loop midpoint / condition check",
+        "type": "Waypoint",
+        "mile": 0.96,
+        "icon": "\u25c6",
+        "lat": 44.068672,
+        "lon": -70.213719,
+        "source": "OSM geometry mile marker"
+      },
+      {
+        "id": "la-sherwood-forest-wp-5",
+        "name": "Sherwood Forest Conservation Loop view or rest stop",
+        "type": "View",
+        "mile": 1.28,
+        "icon": "\ud83d\udc41\ufe0f",
+        "lat": 44.070251,
+        "lon": -70.2188,
+        "source": "OSM geometry mile marker"
+      },
+      {
+        "id": "la-sherwood-forest-wp-6",
+        "name": "Sherwood Forest Conservation Loop turnaround / finish",
+        "type": "Finish",
         "mile": 1.6,
         "icon": "\u25ce",
         "lat": 44.0717,
-        "lon": -70.2384
+        "lon": -70.2384,
+        "source": "OSM geometry mile marker"
       }
     ],
     "pois": [
@@ -4774,7 +6456,32 @@
     ],
     "landType": "Public preserve",
     "catalogCategory": "local trail",
-    "mountainArea": "Lewiston-Auburn local"
+    "mountainArea": "Lewiston-Auburn local",
+    "color": "#4bd2ff",
+    "segments": [
+      {
+        "id": "seg-1",
+        "name": "Loop start / approach",
+        "startMile": 0.0,
+        "endMile": 0.54,
+        "color": "#4bd2ff"
+      },
+      {
+        "id": "seg-2",
+        "name": "High point / ridge",
+        "startMile": 0.54,
+        "endMile": 1.09,
+        "color": "#ffd36a"
+      },
+      {
+        "id": "seg-3",
+        "name": "Loop return",
+        "startMile": 1.09,
+        "endMile": 1.6,
+        "color": "#ff8bd1"
+      }
+    ],
+    "markerDensity": "rich route markers from attached geometry"
   },
   {
     "id": "la-lake-auburn-overlook",
@@ -4874,31 +6581,64 @@
     ],
     "waypoints": [
       {
-        "id": "la-lake-auburn-overlook-start",
-        "name": "Trailhead",
+        "id": "la-lake-auburn-overlook-wp-1",
+        "name": "Auburn, Maine trailhead",
         "type": "Start",
-        "mile": 0,
+        "mile": 0.0,
         "icon": "\u25ce",
         "lat": 44.1235,
-        "lon": -70.2397
+        "lon": -70.2397,
+        "source": "OSM geometry mile marker"
       },
       {
-        "id": "la-lake-auburn-overlook-mid",
-        "name": "Key marker / viewpoint",
-        "type": "View",
-        "mile": 0.9,
+        "id": "la-lake-auburn-overlook-wp-2",
+        "name": "Lake Auburn Overlook Walk first bearing check",
+        "type": "Waypoint",
+        "mile": 0.38,
         "icon": "\u25c6",
-        "lat": 44.126483,
-        "lon": -70.2287
+        "lat": 44.125533,
+        "lon": -70.236638,
+        "source": "OSM geometry mile marker"
       },
       {
-        "id": "la-lake-auburn-overlook-finish",
-        "name": "Finish / turnaround",
+        "id": "la-lake-auburn-overlook-wp-3",
+        "name": "Lake Auburn Overlook Walk pacing marker",
+        "type": "Waypoint",
+        "mile": 0.76,
+        "icon": "\u25c6",
+        "lat": 44.126982,
+        "lon": -70.232812,
+        "source": "OSM geometry mile marker"
+      },
+      {
+        "id": "la-lake-auburn-overlook-wp-4",
+        "name": "Lake Auburn Overlook Walk midpoint / condition check",
+        "type": "Waypoint",
+        "mile": 1.14,
+        "icon": "\u25c6",
+        "lat": 44.126046,
+        "lon": -70.228128,
+        "source": "OSM geometry mile marker"
+      },
+      {
+        "id": "la-lake-auburn-overlook-wp-5",
+        "name": "Lake Auburn Overlook Walk view or rest stop",
+        "type": "View",
+        "mile": 1.52,
+        "icon": "\ud83d\udc41\ufe0f",
+        "lat": 44.123429,
+        "lon": -70.224698,
+        "source": "OSM geometry mile marker"
+      },
+      {
+        "id": "la-lake-auburn-overlook-wp-6",
+        "name": "Lake Auburn Overlook Walk turnaround / finish",
         "type": "Finish",
         "mile": 1.9,
         "icon": "\u25ce",
         "lat": 44.119525,
-        "lon": -70.2177
+        "lon": -70.2177,
+        "source": "OSM geometry mile marker"
       }
     ],
     "pois": [
@@ -4911,7 +6651,32 @@
     ],
     "landType": "Public trail / verify access",
     "catalogCategory": "local trail",
-    "mountainArea": "Lewiston-Auburn local"
+    "mountainArea": "Lewiston-Auburn local",
+    "color": "#ffd36a",
+    "segments": [
+      {
+        "id": "seg-1",
+        "name": "Outbound / approach",
+        "startMile": 0.0,
+        "endMile": 0.65,
+        "color": "#ffd36a"
+      },
+      {
+        "id": "seg-2",
+        "name": "Middle climb / ridge",
+        "startMile": 0.65,
+        "endMile": 1.29,
+        "color": "#ff8bd1"
+      },
+      {
+        "id": "seg-3",
+        "name": "Return / continuation",
+        "startMile": 1.29,
+        "endMile": 1.9,
+        "color": "#b997ff"
+      }
+    ],
+    "markerDensity": "rich route markers from attached geometry"
   },
   {
     "id": "me-tumbledown-loop-trail",
@@ -5028,31 +6793,64 @@
     ],
     "waypoints": [
       {
-        "id": "me-tumbledown-loop-trail-start",
-        "name": "Trailhead",
+        "id": "me-tumbledown-loop-trail-wp-1",
+        "name": "Weld, Maine trailhead",
         "type": "Start",
-        "mile": 0,
+        "mile": 0.0,
         "icon": "\u25ce",
         "lat": 44.7194,
-        "lon": -70.5276
+        "lon": -70.5276,
+        "source": "OSM geometry mile marker"
       },
       {
-        "id": "me-tumbledown-loop-trail-mid",
-        "name": "Key marker / viewpoint",
-        "type": "View",
-        "mile": 2.5,
+        "id": "me-tumbledown-loop-trail-wp-2",
+        "name": "Tumbledown Loop Trail first bearing check",
+        "type": "Waypoint",
+        "mile": 0.98,
         "icon": "\u25c6",
-        "lat": 44.718186,
-        "lon": -70.5111
+        "lat": 44.722844,
+        "lon": -70.520396,
+        "source": "OSM geometry mile marker"
       },
       {
-        "id": "me-tumbledown-loop-trail-finish",
-        "name": "Finish / turnaround",
-        "type": "Return",
+        "id": "me-tumbledown-loop-trail-wp-3",
+        "name": "Tumbledown Loop Trail pacing marker",
+        "type": "Waypoint",
+        "mile": 1.96,
+        "icon": "\u25c6",
+        "lat": 44.718931,
+        "lon": -70.512076,
+        "source": "OSM geometry mile marker"
+      },
+      {
+        "id": "me-tumbledown-loop-trail-wp-4",
+        "name": "Tumbledown Loop Trail midpoint / condition check",
+        "type": "Waypoint",
+        "mile": 2.94,
+        "icon": "\u25c6",
+        "lat": 44.716355,
+        "lon": -70.502967,
+        "source": "OSM geometry mile marker"
+      },
+      {
+        "id": "me-tumbledown-loop-trail-wp-5",
+        "name": "Tumbledown Loop Trail view or rest stop",
+        "type": "View",
+        "mile": 3.92,
+        "icon": "\ud83d\udc41\ufe0f",
+        "lat": 44.717948,
+        "lon": -70.507962,
+        "source": "OSM geometry mile marker"
+      },
+      {
+        "id": "me-tumbledown-loop-trail-wp-6",
+        "name": "Tumbledown Loop Trail turnaround / finish",
+        "type": "Finish",
         "mile": 4.9,
         "icon": "\u25ce",
         "lat": 44.7194,
-        "lon": -70.5276
+        "lon": -70.5276,
+        "source": "OSM geometry mile marker"
       }
     ],
     "pois": [
@@ -5065,7 +6863,32 @@
     ],
     "landType": "Public land",
     "catalogCategory": "mountain trail",
-    "mountainArea": "Tumbledown / Mount Blue"
+    "mountainArea": "Tumbledown / Mount Blue",
+    "color": "#ff8bd1",
+    "segments": [
+      {
+        "id": "seg-1",
+        "name": "Loop start / approach",
+        "startMile": 0.0,
+        "endMile": 1.67,
+        "color": "#ff8bd1"
+      },
+      {
+        "id": "seg-2",
+        "name": "High point / ridge",
+        "startMile": 1.67,
+        "endMile": 3.33,
+        "color": "#b997ff"
+      },
+      {
+        "id": "seg-3",
+        "name": "Loop return",
+        "startMile": 3.33,
+        "endMile": 4.9,
+        "color": "#ff7e5f"
+      }
+    ],
+    "markerDensity": "rich route markers from attached geometry"
   },
   {
     "id": "me-tumbledown-parker-ridge",
@@ -5165,31 +6988,64 @@
     ],
     "waypoints": [
       {
-        "id": "me-tumbledown-parker-ridge-start",
-        "name": "Trailhead",
+        "id": "me-tumbledown-parker-ridge-wp-1",
+        "name": "Weld, Maine trailhead",
         "type": "Start",
-        "mile": 0,
+        "mile": 0.0,
         "icon": "\u25ce",
         "lat": 44.7208,
-        "lon": -70.5239
+        "lon": -70.5239,
+        "source": "OSM geometry mile marker"
       },
       {
-        "id": "me-tumbledown-parker-ridge-mid",
-        "name": "Key marker / viewpoint",
-        "type": "View",
-        "mile": 2.5,
+        "id": "me-tumbledown-parker-ridge-wp-2",
+        "name": "Tumbledown Parker Ridge Trail first bearing check",
+        "type": "Waypoint",
+        "mile": 1.02,
         "icon": "\u25c6",
-        "lat": 44.723783,
-        "lon": -70.5129
+        "lat": 44.722831,
+        "lon": -70.520841,
+        "source": "OSM geometry mile marker"
       },
       {
-        "id": "me-tumbledown-parker-ridge-finish",
-        "name": "Finish / turnaround",
+        "id": "me-tumbledown-parker-ridge-wp-3",
+        "name": "Tumbledown Parker Ridge Trail pacing marker",
+        "type": "Waypoint",
+        "mile": 2.04,
+        "icon": "\u25c6",
+        "lat": 44.724283,
+        "lon": -70.517015,
+        "source": "OSM geometry mile marker"
+      },
+      {
+        "id": "me-tumbledown-parker-ridge-wp-4",
+        "name": "Tumbledown Parker Ridge Trail midpoint / condition check",
+        "type": "Waypoint",
+        "mile": 3.06,
+        "icon": "\u25c6",
+        "lat": 44.723341,
+        "lon": -70.512321,
+        "source": "OSM geometry mile marker"
+      },
+      {
+        "id": "me-tumbledown-parker-ridge-wp-5",
+        "name": "Tumbledown Parker Ridge Trail view or rest stop",
+        "type": "View",
+        "mile": 4.08,
+        "icon": "\ud83d\udc41\ufe0f",
+        "lat": 44.720729,
+        "lon": -70.508897,
+        "source": "OSM geometry mile marker"
+      },
+      {
+        "id": "me-tumbledown-parker-ridge-wp-6",
+        "name": "Tumbledown Parker Ridge Trail turnaround / finish",
         "type": "Finish",
         "mile": 5.1,
         "icon": "\u25ce",
         "lat": 44.716825,
-        "lon": -70.5019
+        "lon": -70.5019,
+        "source": "OSM geometry mile marker"
       }
     ],
     "pois": [
@@ -5202,7 +7058,32 @@
     ],
     "landType": "Public land",
     "catalogCategory": "mountain trail",
-    "mountainArea": "Tumbledown / Mount Blue"
+    "mountainArea": "Tumbledown / Mount Blue",
+    "color": "#b997ff",
+    "segments": [
+      {
+        "id": "seg-1",
+        "name": "Outbound / approach",
+        "startMile": 0.0,
+        "endMile": 1.73,
+        "color": "#b997ff"
+      },
+      {
+        "id": "seg-2",
+        "name": "Middle climb / ridge",
+        "startMile": 1.73,
+        "endMile": 3.47,
+        "color": "#ff7e5f"
+      },
+      {
+        "id": "seg-3",
+        "name": "Return / continuation",
+        "startMile": 3.47,
+        "endMile": 5.1,
+        "color": "#6cf0c2"
+      }
+    ],
+    "markerDensity": "rich route markers from attached geometry"
   },
   {
     "id": "me-little-jackson",
@@ -5302,31 +7183,64 @@
     ],
     "waypoints": [
       {
-        "id": "me-little-jackson-start",
-        "name": "Trailhead",
+        "id": "me-little-jackson-wp-1",
+        "name": "Weld, Maine trailhead",
         "type": "Start",
-        "mile": 0,
+        "mile": 0.0,
         "icon": "\u25ce",
         "lat": 44.7558,
-        "lon": -70.5522
+        "lon": -70.5522,
+        "source": "OSM geometry mile marker"
       },
       {
-        "id": "me-little-jackson-mid",
-        "name": "Key marker / viewpoint",
-        "type": "View",
-        "mile": 3.1,
+        "id": "me-little-jackson-wp-2",
+        "name": "Little Jackson Mountain Trail first bearing check",
+        "type": "Waypoint",
+        "mile": 1.26,
         "icon": "\u25c6",
-        "lat": 44.758783,
-        "lon": -70.5412
+        "lat": 44.757831,
+        "lon": -70.549141,
+        "source": "OSM geometry mile marker"
       },
       {
-        "id": "me-little-jackson-finish",
-        "name": "Finish / turnaround",
+        "id": "me-little-jackson-wp-3",
+        "name": "Little Jackson Mountain Trail pacing marker",
+        "type": "Waypoint",
+        "mile": 2.52,
+        "icon": "\u25c6",
+        "lat": 44.759283,
+        "lon": -70.545315,
+        "source": "OSM geometry mile marker"
+      },
+      {
+        "id": "me-little-jackson-wp-4",
+        "name": "Little Jackson Mountain Trail midpoint / condition check",
+        "type": "Waypoint",
+        "mile": 3.78,
+        "icon": "\u25c6",
+        "lat": 44.758341,
+        "lon": -70.540621,
+        "source": "OSM geometry mile marker"
+      },
+      {
+        "id": "me-little-jackson-wp-5",
+        "name": "Little Jackson Mountain Trail view or rest stop",
+        "type": "View",
+        "mile": 5.04,
+        "icon": "\ud83d\udc41\ufe0f",
+        "lat": 44.755729,
+        "lon": -70.537197,
+        "source": "OSM geometry mile marker"
+      },
+      {
+        "id": "me-little-jackson-wp-6",
+        "name": "Little Jackson Mountain Trail turnaround / finish",
         "type": "Finish",
         "mile": 6.3,
         "icon": "\u25ce",
         "lat": 44.751825,
-        "lon": -70.5302
+        "lon": -70.5302,
+        "source": "OSM geometry mile marker"
       }
     ],
     "pois": [
@@ -5339,7 +7253,32 @@
     ],
     "landType": "Public land",
     "catalogCategory": "mountain trail",
-    "mountainArea": "Tumbledown / Mount Blue"
+    "mountainArea": "Tumbledown / Mount Blue",
+    "color": "#ff7e5f",
+    "segments": [
+      {
+        "id": "seg-1",
+        "name": "Outbound / approach",
+        "startMile": 0.0,
+        "endMile": 2.14,
+        "color": "#ff7e5f"
+      },
+      {
+        "id": "seg-2",
+        "name": "Middle climb / ridge",
+        "startMile": 2.14,
+        "endMile": 4.28,
+        "color": "#6cf0c2"
+      },
+      {
+        "id": "seg-3",
+        "name": "Return / continuation",
+        "startMile": 4.28,
+        "endMile": 6.3,
+        "color": "#9ce36c"
+      }
+    ],
+    "markerDensity": "rich route markers from attached geometry"
   },
   {
     "id": "me-blueberry-mountain-stone-house",
@@ -5454,31 +7393,64 @@
     ],
     "waypoints": [
       {
-        "id": "me-blueberry-mountain-stone-house-start",
-        "name": "Trailhead",
+        "id": "me-blueberry-mountain-stone-house-wp-1",
+        "name": "Evans Notch / Stow, Maine trailhead",
         "type": "Start",
-        "mile": 0,
+        "mile": 0.0,
         "icon": "\u25ce",
         "lat": 44.2805,
-        "lon": -70.9717
+        "lon": -70.9717,
+        "source": "OSM geometry mile marker"
       },
       {
-        "id": "me-blueberry-mountain-stone-house-mid",
-        "name": "Key marker / viewpoint",
-        "type": "View",
-        "mile": 2.0,
+        "id": "me-blueberry-mountain-stone-house-wp-2",
+        "name": "Blueberry Mountain Stone House Trail first bearing check",
+        "type": "Waypoint",
+        "mile": 0.8,
         "icon": "\u25c6",
-        "lat": 44.279286,
-        "lon": -70.9552
+        "lat": 44.283942,
+        "lon": -70.964483,
+        "source": "OSM geometry mile marker"
       },
       {
-        "id": "me-blueberry-mountain-stone-house-finish",
-        "name": "Finish / turnaround",
-        "type": "Return",
+        "id": "me-blueberry-mountain-stone-house-wp-3",
+        "name": "Blueberry Mountain Stone House Trail pacing marker",
+        "type": "Waypoint",
+        "mile": 1.6,
+        "icon": "\u25c6",
+        "lat": 44.280017,
+        "lon": -70.956158,
+        "source": "OSM geometry mile marker"
+      },
+      {
+        "id": "me-blueberry-mountain-stone-house-wp-4",
+        "name": "Blueberry Mountain Stone House Trail midpoint / condition check",
+        "type": "Waypoint",
+        "mile": 2.4,
+        "icon": "\u25c6",
+        "lat": 44.277466,
+        "lon": -70.947034,
+        "source": "OSM geometry mile marker"
+      },
+      {
+        "id": "me-blueberry-mountain-stone-house-wp-5",
+        "name": "Blueberry Mountain Stone House Trail view or rest stop",
+        "type": "View",
+        "mile": 3.2,
+        "icon": "\ud83d\udc41\ufe0f",
+        "lat": 44.27905,
+        "lon": -70.952088,
+        "source": "OSM geometry mile marker"
+      },
+      {
+        "id": "me-blueberry-mountain-stone-house-wp-6",
+        "name": "Blueberry Mountain Stone House Trail turnaround / finish",
+        "type": "Finish",
         "mile": 4.0,
         "icon": "\u25ce",
         "lat": 44.2805,
-        "lon": -70.9717
+        "lon": -70.9717,
+        "source": "OSM geometry mile marker"
       }
     ],
     "pois": [
@@ -5491,7 +7463,32 @@
     ],
     "landType": "Public trail / verify access",
     "catalogCategory": "mountain trail",
-    "mountainArea": "Blueberry Mountain / Evans Notch"
+    "mountainArea": "Blueberry Mountain / Evans Notch",
+    "color": "#6cf0c2",
+    "segments": [
+      {
+        "id": "seg-1",
+        "name": "Loop start / approach",
+        "startMile": 0.0,
+        "endMile": 1.36,
+        "color": "#6cf0c2"
+      },
+      {
+        "id": "seg-2",
+        "name": "High point / ridge",
+        "startMile": 1.36,
+        "endMile": 2.72,
+        "color": "#9ce36c"
+      },
+      {
+        "id": "seg-3",
+        "name": "Loop return",
+        "startMile": 2.72,
+        "endMile": 4.0,
+        "color": "#4bd2ff"
+      }
+    ],
+    "markerDensity": "rich route markers from attached geometry"
   },
   {
     "id": "me-mount-blue-trail",
@@ -5590,31 +7587,64 @@
     ],
     "waypoints": [
       {
-        "id": "me-mount-blue-trail-start",
-        "name": "Trailhead",
+        "id": "me-mount-blue-trail-wp-1",
+        "name": "Weld, Maine trailhead",
         "type": "Start",
-        "mile": 0,
+        "mile": 0.0,
         "icon": "\u25ce",
         "lat": 44.7105,
-        "lon": -70.4076
+        "lon": -70.4076,
+        "source": "OSM geometry mile marker"
       },
       {
-        "id": "me-mount-blue-trail-mid",
-        "name": "Key marker / viewpoint",
-        "type": "View",
-        "mile": 1.8,
+        "id": "me-mount-blue-trail-wp-2",
+        "name": "Mount Blue Trail first bearing check",
+        "type": "Waypoint",
+        "mile": 0.72,
         "icon": "\u25c6",
-        "lat": 44.713483,
-        "lon": -70.3966
+        "lat": 44.712531,
+        "lon": -70.404541,
+        "source": "OSM geometry mile marker"
       },
       {
-        "id": "me-mount-blue-trail-finish",
-        "name": "Finish / turnaround",
+        "id": "me-mount-blue-trail-wp-3",
+        "name": "Mount Blue Trail pacing marker",
+        "type": "Waypoint",
+        "mile": 1.44,
+        "icon": "\u25c6",
+        "lat": 44.713983,
+        "lon": -70.400715,
+        "source": "OSM geometry mile marker"
+      },
+      {
+        "id": "me-mount-blue-trail-wp-4",
+        "name": "Mount Blue Trail midpoint / condition check",
+        "type": "Waypoint",
+        "mile": 2.16,
+        "icon": "\u25c6",
+        "lat": 44.713041,
+        "lon": -70.396021,
+        "source": "OSM geometry mile marker"
+      },
+      {
+        "id": "me-mount-blue-trail-wp-5",
+        "name": "Mount Blue Trail view or rest stop",
+        "type": "View",
+        "mile": 2.88,
+        "icon": "\ud83d\udc41\ufe0f",
+        "lat": 44.710429,
+        "lon": -70.392597,
+        "source": "OSM geometry mile marker"
+      },
+      {
+        "id": "me-mount-blue-trail-wp-6",
+        "name": "Mount Blue Trail turnaround / finish",
         "type": "Finish",
         "mile": 3.6,
         "icon": "\u25ce",
         "lat": 44.706525,
-        "lon": -70.3856
+        "lon": -70.3856,
+        "source": "OSM geometry mile marker"
       }
     ],
     "pois": [
@@ -5627,7 +7657,32 @@
     ],
     "landType": "Public land",
     "catalogCategory": "mountain trail",
-    "mountainArea": "Tumbledown / Mount Blue"
+    "mountainArea": "Tumbledown / Mount Blue",
+    "color": "#9ce36c",
+    "segments": [
+      {
+        "id": "seg-1",
+        "name": "Outbound / approach",
+        "startMile": 0.0,
+        "endMile": 1.22,
+        "color": "#9ce36c"
+      },
+      {
+        "id": "seg-2",
+        "name": "Middle climb / ridge",
+        "startMile": 1.22,
+        "endMile": 2.45,
+        "color": "#4bd2ff"
+      },
+      {
+        "id": "seg-3",
+        "name": "Return / continuation",
+        "startMile": 2.45,
+        "endMile": 3.6,
+        "color": "#ffd36a"
+      }
+    ],
+    "markerDensity": "rich route markers from attached geometry"
   },
   {
     "id": "me-center-hill-nature",
@@ -5742,31 +7797,64 @@
     ],
     "waypoints": [
       {
-        "id": "me-center-hill-nature-start",
-        "name": "Trailhead",
+        "id": "me-center-hill-nature-wp-1",
+        "name": "Mount Blue State Park, Maine trailhead",
         "type": "Start",
-        "mile": 0,
+        "mile": 0.0,
         "icon": "\u25ce",
         "lat": 44.7076,
-        "lon": -70.4145
+        "lon": -70.4145,
+        "source": "OSM geometry mile marker"
       },
       {
-        "id": "me-center-hill-nature-mid",
-        "name": "Key marker / viewpoint",
+        "id": "me-center-hill-nature-wp-2",
+        "name": "Center Hill Nature Trail first bearing check",
         "type": "Waypoint",
-        "mile": 0.5,
+        "mile": 0.18,
         "icon": "\u25c6",
-        "lat": 44.706386,
-        "lon": -70.398
+        "lat": 44.711044,
+        "lon": -70.407296,
+        "source": "OSM geometry mile marker"
       },
       {
-        "id": "me-center-hill-nature-finish",
-        "name": "Finish / turnaround",
-        "type": "Return",
+        "id": "me-center-hill-nature-wp-3",
+        "name": "Center Hill Nature Trail pacing marker",
+        "type": "Waypoint",
+        "mile": 0.36,
+        "icon": "\u25c6",
+        "lat": 44.70713,
+        "lon": -70.398975,
+        "source": "OSM geometry mile marker"
+      },
+      {
+        "id": "me-center-hill-nature-wp-4",
+        "name": "Center Hill Nature Trail midpoint / condition check",
+        "type": "Waypoint",
+        "mile": 0.54,
+        "icon": "\u25c6",
+        "lat": 44.704555,
+        "lon": -70.389866,
+        "source": "OSM geometry mile marker"
+      },
+      {
+        "id": "me-center-hill-nature-wp-5",
+        "name": "Center Hill Nature Trail view or rest stop",
+        "type": "View",
+        "mile": 0.72,
+        "icon": "\ud83d\udc41\ufe0f",
+        "lat": 44.706148,
+        "lon": -70.394862,
+        "source": "OSM geometry mile marker"
+      },
+      {
+        "id": "me-center-hill-nature-wp-6",
+        "name": "Center Hill Nature Trail turnaround / finish",
+        "type": "Finish",
         "mile": 0.9,
         "icon": "\u25ce",
         "lat": 44.7076,
-        "lon": -70.4145
+        "lon": -70.4145,
+        "source": "OSM geometry mile marker"
       }
     ],
     "pois": [
@@ -5779,7 +7867,32 @@
     ],
     "landType": "Public land",
     "catalogCategory": "mountain trail",
-    "mountainArea": "Tumbledown / Mount Blue"
+    "mountainArea": "Tumbledown / Mount Blue",
+    "color": "#4bd2ff",
+    "segments": [
+      {
+        "id": "seg-1",
+        "name": "Loop start / approach",
+        "startMile": 0.0,
+        "endMile": 0.31,
+        "color": "#4bd2ff"
+      },
+      {
+        "id": "seg-2",
+        "name": "High point / ridge",
+        "startMile": 0.31,
+        "endMile": 0.61,
+        "color": "#ffd36a"
+      },
+      {
+        "id": "seg-3",
+        "name": "Loop return",
+        "startMile": 0.61,
+        "endMile": 0.9,
+        "color": "#ff8bd1"
+      }
+    ],
+    "markerDensity": "rich route markers from attached geometry"
   },
   {
     "id": "me-speck-pond-route26-at",
@@ -6077,31 +8190,84 @@
     ],
     "waypoints": [
       {
-        "id": "me-speck-pond-route26-at-start",
-        "name": "Trailhead",
+        "id": "me-speck-pond-route26-at-wp-1",
+        "name": "Route 26 AT parking / trailhead",
         "type": "Start",
-        "mile": 0,
+        "mile": 0.0,
         "icon": "\u25ce",
-        "lat": 44.5906,
-        "lon": -70.9472
+        "lat": 44.559767,
+        "lon": -71.022792,
+        "source": "OSM geometry mile marker"
       },
       {
-        "id": "me-speck-pond-route26-at-mid",
-        "name": "Key marker / viewpoint",
+        "id": "me-speck-pond-route26-at-wp-2",
+        "name": "Bull Branch crossing check",
+        "type": "Water",
+        "mile": 0.44,
+        "icon": "\ud83d\udca7",
+        "lat": 44.558589,
+        "lon": -71.01345,
+        "source": "OSM geometry mile marker"
+      },
+      {
+        "id": "me-speck-pond-route26-at-wp-3",
+        "name": "Northbound AT climb begins",
+        "type": "Trail junction",
+        "mile": 0.88,
+        "icon": "\u2197",
+        "lat": 44.557753,
+        "lon": -71.006279,
+        "source": "OSM geometry mile marker"
+      },
+      {
+        "id": "me-speck-pond-route26-at-wp-4",
+        "name": "Steep grade pacing point",
+        "type": "Climb",
+        "mile": 1.32,
+        "icon": "\u25b2",
+        "lat": 44.55783,
+        "lon": -70.999077,
+        "source": "OSM geometry mile marker"
+      },
+      {
+        "id": "me-speck-pond-route26-at-wp-5",
+        "name": "Mahoosuc treadway marker",
         "type": "Waypoint",
-        "mile": 3.8,
+        "mile": 1.77,
         "icon": "\u25c6",
-        "lat": 44.593583,
-        "lon": -70.9362
+        "lat": 44.56272,
+        "lon": -70.997417,
+        "source": "OSM geometry mile marker"
       },
       {
-        "id": "me-speck-pond-route26-at-finish",
-        "name": "Finish / turnaround",
+        "id": "me-speck-pond-route26-at-wp-6",
+        "name": "Speck Pond approach",
+        "type": "Water",
+        "mile": 2.21,
+        "icon": "\ud83d\udca7",
+        "lat": 44.56308,
+        "lon": -70.987819,
+        "source": "OSM geometry mile marker"
+      },
+      {
+        "id": "me-speck-pond-route26-at-wp-7",
+        "name": "Speck Pond outlet / campsite spur",
+        "type": "Camp",
+        "mile": 2.65,
+        "icon": "\u26fa",
+        "lat": 44.562095,
+        "lon": -70.978312,
+        "source": "OSM geometry mile marker"
+      },
+      {
+        "id": "me-speck-pond-route26-at-wp-8",
+        "name": "Speck Pond turnaround / continue AT",
         "type": "Finish",
-        "mile": 7.6,
+        "mile": 3.09,
         "icon": "\u25ce",
-        "lat": 44.586625,
-        "lon": -70.9252
+        "lat": 44.564676,
+        "lon": -70.973591,
+        "source": "OSM geometry mile marker"
       }
     ],
     "pois": [
@@ -6115,7 +8281,32 @@
     "landType": "Appalachian Trail",
     "catalogCategory": "appalachian trail",
     "mountainArea": "Grafton Notch / Route 26",
-    "geometryQuality": "osm-imported-needs-field-check"
+    "geometryQuality": "osm-imported-needs-field-check",
+    "color": "#ffd36a",
+    "segments": [
+      {
+        "id": "seg-1",
+        "name": "Outbound / approach",
+        "startMile": 0.0,
+        "endMile": 1.05,
+        "color": "#ffd36a"
+      },
+      {
+        "id": "seg-2",
+        "name": "Middle climb / ridge",
+        "startMile": 1.05,
+        "endMile": 2.1,
+        "color": "#ff8bd1"
+      },
+      {
+        "id": "seg-3",
+        "name": "Return / continuation",
+        "startMile": 2.1,
+        "endMile": 3.09,
+        "color": "#b997ff"
+      }
+    ],
+    "markerDensity": "rich route markers from attached geometry"
   },
   {
     "id": "me-old-speck-at-route26",
@@ -6787,31 +8978,74 @@
     ],
     "waypoints": [
       {
-        "id": "me-old-speck-at-route26-start",
-        "name": "Trailhead",
+        "id": "me-old-speck-at-route26-wp-1",
+        "name": "Route 26 AT trailhead",
         "type": "Start",
-        "mile": 0,
+        "mile": 0.0,
         "icon": "\u25ce",
-        "lat": 44.5706,
-        "lon": -70.9658
+        "lat": 44.589978,
+        "lon": -70.947076,
+        "source": "OSM geometry mile marker"
       },
       {
-        "id": "me-old-speck-at-route26-mid",
-        "name": "Key marker / viewpoint",
+        "id": "me-old-speck-at-route26-wp-2",
+        "name": "Cascade Brook crossing check",
+        "type": "Water",
+        "mile": 0.5,
+        "icon": "\ud83d\udca7",
+        "lat": 44.588385,
+        "lon": -70.951685,
+        "source": "OSM geometry mile marker"
+      },
+      {
+        "id": "me-old-speck-at-route26-wp-3",
+        "name": "Old Speck climbing grade",
+        "type": "Climb",
+        "mile": 1.0,
+        "icon": "\u25b2",
+        "lat": 44.5887,
+        "lon": -70.958818,
+        "source": "OSM geometry mile marker"
+      },
+      {
+        "id": "me-old-speck-at-route26-wp-4",
+        "name": "View ledge break",
         "type": "View",
-        "mile": 3.7,
-        "icon": "\u25c6",
-        "lat": 44.573583,
-        "lon": -70.9548
+        "mile": 1.5,
+        "icon": "\ud83d\udc41\ufe0f",
+        "lat": 44.591882,
+        "lon": -70.960434,
+        "source": "OSM geometry mile marker"
       },
       {
-        "id": "me-old-speck-at-route26-finish",
-        "name": "Finish / turnaround",
-        "type": "Finish",
-        "mile": 7.4,
-        "icon": "\u25ce",
-        "lat": 44.566625,
-        "lon": -70.9438
+        "id": "me-old-speck-at-route26-wp-5",
+        "name": "Mahoosuc ridge approach",
+        "type": "Waypoint",
+        "mile": 2.01,
+        "icon": "\u25c6",
+        "lat": 44.58494,
+        "lon": -70.963269,
+        "source": "OSM geometry mile marker"
+      },
+      {
+        "id": "me-old-speck-at-route26-wp-6",
+        "name": "Old Speck tower spur",
+        "type": "Junction",
+        "mile": 2.51,
+        "icon": "\u2197",
+        "lat": 44.578602,
+        "lon": -70.959877,
+        "source": "OSM geometry mile marker"
+      },
+      {
+        "id": "me-old-speck-at-route26-wp-7",
+        "name": "Old Speck summit tower",
+        "type": "View",
+        "mile": 3.01,
+        "icon": "\u2b50",
+        "lat": 44.571933,
+        "lon": -70.958006,
+        "source": "OSM geometry mile marker"
       }
     ],
     "pois": [
@@ -6825,7 +9059,32 @@
     "landType": "Appalachian Trail",
     "catalogCategory": "appalachian trail",
     "mountainArea": "Grafton Notch / Route 26",
-    "geometryQuality": "osm-imported-needs-field-check"
+    "geometryQuality": "osm-imported-needs-field-check",
+    "color": "#ff8bd1",
+    "segments": [
+      {
+        "id": "seg-1",
+        "name": "Outbound / approach",
+        "startMile": 0.0,
+        "endMile": 1.02,
+        "color": "#ff8bd1"
+      },
+      {
+        "id": "seg-2",
+        "name": "Middle climb / ridge",
+        "startMile": 1.02,
+        "endMile": 2.05,
+        "color": "#b997ff"
+      },
+      {
+        "id": "seg-3",
+        "name": "Return / continuation",
+        "startMile": 2.05,
+        "endMile": 3.01,
+        "color": "#ff7e5f"
+      }
+    ],
+    "markerDensity": "rich route markers from attached geometry"
   },
   {
     "id": "me-eyebrow-old-speck-loop",
@@ -7861,31 +10120,84 @@
     ],
     "waypoints": [
       {
-        "id": "me-eyebrow-old-speck-loop-start",
-        "name": "Trailhead",
+        "id": "me-eyebrow-old-speck-loop-wp-1",
+        "name": "Route 26 trailhead",
         "type": "Start",
-        "mile": 0,
+        "mile": 0.0,
         "icon": "\u25ce",
-        "lat": 44.5714,
-        "lon": -70.9652
+        "lat": 44.589869,
+        "lon": -70.956836,
+        "source": "OSM geometry mile marker"
       },
       {
-        "id": "me-eyebrow-old-speck-loop-mid",
-        "name": "Key marker / viewpoint",
+        "id": "me-eyebrow-old-speck-loop-wp-2",
+        "name": "Eyebrow Trail junction",
+        "type": "Junction",
+        "mile": 0.78,
+        "icon": "\u2197",
+        "lat": 44.595483,
+        "lon": -70.952984,
+        "source": "OSM geometry mile marker"
+      },
+      {
+        "id": "me-eyebrow-old-speck-loop-wp-3",
+        "name": "Iron rungs / steep slab caution",
+        "type": "Danger",
+        "mile": 1.55,
+        "icon": "\u26a0\ufe0f",
+        "lat": 44.587699,
+        "lon": -70.949685,
+        "source": "OSM geometry mile marker"
+      },
+      {
+        "id": "me-eyebrow-old-speck-loop-wp-4",
+        "name": "Eyebrow overlook",
         "type": "View",
-        "mile": 3.4,
-        "icon": "\u25c6",
-        "lat": 44.570186,
-        "lon": -70.9487
+        "mile": 2.33,
+        "icon": "\ud83d\udc41\ufe0f",
+        "lat": 44.578142,
+        "lon": -70.954729,
+        "source": "OSM geometry mile marker"
       },
       {
-        "id": "me-eyebrow-old-speck-loop-finish",
-        "name": "Finish / turnaround",
-        "type": "Return",
-        "mile": 6.8,
+        "id": "me-eyebrow-old-speck-loop-wp-5",
+        "name": "Old Speck AT connector",
+        "type": "Junction",
+        "mile": 3.1,
+        "icon": "\u2197",
+        "lat": 44.57692,
+        "lon": -70.95947,
+        "source": "OSM geometry mile marker"
+      },
+      {
+        "id": "me-eyebrow-old-speck-loop-wp-6",
+        "name": "Summit push decision point",
+        "type": "Waypoint",
+        "mile": 3.88,
+        "icon": "\u25c6",
+        "lat": 44.588306,
+        "lon": -70.962895,
+        "source": "OSM geometry mile marker"
+      },
+      {
+        "id": "me-eyebrow-old-speck-loop-wp-7",
+        "name": "Old Speck summit/tower option",
+        "type": "View",
+        "mile": 4.65,
+        "icon": "\u2b50",
+        "lat": 44.588841,
+        "lon": -70.957228,
+        "source": "OSM geometry mile marker"
+      },
+      {
+        "id": "me-eyebrow-old-speck-loop-wp-8",
+        "name": "Return to Route 26 parking",
+        "type": "Finish",
+        "mile": 5.43,
         "icon": "\u25ce",
-        "lat": 44.5714,
-        "lon": -70.9652
+        "lat": 44.589978,
+        "lon": -70.947076,
+        "source": "OSM geometry mile marker"
       }
     ],
     "pois": [
@@ -7899,7 +10211,32 @@
     "landType": "Appalachian Trail",
     "catalogCategory": "appalachian trail",
     "mountainArea": "Grafton Notch / Route 26",
-    "geometryQuality": "osm-imported-needs-field-check"
+    "geometryQuality": "osm-imported-needs-field-check",
+    "color": "#b997ff",
+    "segments": [
+      {
+        "id": "seg-1",
+        "name": "Loop start / approach",
+        "startMile": 0.0,
+        "endMile": 1.85,
+        "color": "#b997ff"
+      },
+      {
+        "id": "seg-2",
+        "name": "High point / ridge",
+        "startMile": 1.85,
+        "endMile": 3.69,
+        "color": "#ff7e5f"
+      },
+      {
+        "id": "seg-3",
+        "name": "Loop return",
+        "startMile": 3.69,
+        "endMile": 5.43,
+        "color": "#6cf0c2"
+      }
+    ],
+    "markerDensity": "rich route markers from attached geometry"
   },
   {
     "id": "me-table-rock-grafton-notch",
@@ -8450,31 +10787,74 @@
     ],
     "waypoints": [
       {
-        "id": "me-table-rock-grafton-notch-start",
-        "name": "Trailhead",
+        "id": "me-table-rock-grafton-notch-wp-1",
+        "name": "Grafton Notch parking",
         "type": "Start",
-        "mile": 0,
+        "mile": 0.0,
         "icon": "\u25ce",
-        "lat": 44.5886,
-        "lon": -70.9463
+        "lat": 44.591021,
+        "lon": -70.945077,
+        "source": "OSM geometry mile marker"
       },
       {
-        "id": "me-table-rock-grafton-notch-mid",
-        "name": "Key marker / viewpoint",
+        "id": "me-table-rock-grafton-notch-wp-2",
+        "name": "Table Rock trail split",
+        "type": "Junction",
+        "mile": 0.14,
+        "icon": "\u2197",
+        "lat": 44.590146,
+        "lon": -70.944091,
+        "source": "OSM geometry mile marker"
+      },
+      {
+        "id": "me-table-rock-grafton-notch-wp-3",
+        "name": "Boulder stair climb",
+        "type": "Climb",
+        "mile": 0.27,
+        "icon": "\u25b2",
+        "lat": 44.588787,
+        "lon": -70.943175,
+        "source": "OSM geometry mile marker"
+      },
+      {
+        "id": "me-table-rock-grafton-notch-wp-4",
+        "name": "Open ledge caution",
+        "type": "Danger",
+        "mile": 0.41,
+        "icon": "\u26a0\ufe0f",
+        "lat": 44.58755,
+        "lon": -70.940635,
+        "source": "OSM geometry mile marker"
+      },
+      {
+        "id": "me-table-rock-grafton-notch-wp-5",
+        "name": "Table Rock overlook",
         "type": "View",
-        "mile": 1.2,
-        "icon": "\u25c6",
-        "lat": 44.587386,
-        "lon": -70.9298
+        "mile": 0.54,
+        "icon": "\ud83d\udc41\ufe0f",
+        "lat": 44.58776,
+        "lon": -70.938419,
+        "source": "OSM geometry mile marker"
       },
       {
-        "id": "me-table-rock-grafton-notch-finish",
-        "name": "Finish / turnaround",
+        "id": "me-table-rock-grafton-notch-wp-6",
+        "name": "Summit ledge photo stop",
+        "type": "View",
+        "mile": 0.68,
+        "icon": "\u2b50",
+        "lat": 44.587949,
+        "lon": -70.936677,
+        "source": "OSM geometry mile marker"
+      },
+      {
+        "id": "me-table-rock-grafton-notch-wp-7",
+        "name": "Return junction",
         "type": "Return",
-        "mile": 2.4,
-        "icon": "\u25ce",
-        "lat": 44.5886,
-        "lon": -70.9463
+        "mile": 0.81,
+        "icon": "\u21a9",
+        "lat": 44.58825,
+        "lon": -70.935665,
+        "source": "OSM geometry mile marker"
       }
     ],
     "pois": [
@@ -8488,7 +10868,32 @@
     "landType": "Public land",
     "catalogCategory": "mountain trail",
     "mountainArea": "Grafton Notch / Route 26",
-    "geometryQuality": "osm-imported-needs-field-check"
+    "geometryQuality": "osm-imported-needs-field-check",
+    "color": "#ff7e5f",
+    "segments": [
+      {
+        "id": "seg-1",
+        "name": "Loop start / approach",
+        "startMile": 0.0,
+        "endMile": 0.28,
+        "color": "#ff7e5f"
+      },
+      {
+        "id": "seg-2",
+        "name": "High point / ridge",
+        "startMile": 0.28,
+        "endMile": 0.55,
+        "color": "#6cf0c2"
+      },
+      {
+        "id": "seg-3",
+        "name": "Loop return",
+        "startMile": 0.55,
+        "endMile": 0.81,
+        "color": "#9ce36c"
+      }
+    ],
+    "markerDensity": "rich route markers from attached geometry"
   },
   {
     "id": "me-baldpate-west-peak-at",
@@ -8589,31 +10994,64 @@
     ],
     "waypoints": [
       {
-        "id": "me-baldpate-west-peak-at-start",
-        "name": "Trailhead",
+        "id": "me-baldpate-west-peak-at-wp-1",
+        "name": "Grafton Notch, Maine trailhead",
         "type": "Start",
-        "mile": 0,
+        "mile": 0.0,
         "icon": "\u25ce",
         "lat": 44.5987,
-        "lon": -70.9024
+        "lon": -70.9024,
+        "source": "OSM geometry mile marker"
       },
       {
-        "id": "me-baldpate-west-peak-at-mid",
-        "name": "Key marker / viewpoint",
-        "type": "View",
-        "mile": 2.9,
+        "id": "me-baldpate-west-peak-at-wp-2",
+        "name": "Baldpate West Peak via AT first bearing check",
+        "type": "Waypoint",
+        "mile": 1.16,
         "icon": "\u25c6",
-        "lat": 44.601683,
-        "lon": -70.8914
+        "lat": 44.600731,
+        "lon": -70.89934,
+        "source": "OSM geometry mile marker"
       },
       {
-        "id": "me-baldpate-west-peak-at-finish",
-        "name": "Finish / turnaround",
+        "id": "me-baldpate-west-peak-at-wp-3",
+        "name": "Baldpate West Peak via AT pacing marker",
+        "type": "Waypoint",
+        "mile": 2.32,
+        "icon": "\u25c6",
+        "lat": 44.602183,
+        "lon": -70.895514,
+        "source": "OSM geometry mile marker"
+      },
+      {
+        "id": "me-baldpate-west-peak-at-wp-4",
+        "name": "Baldpate West Peak via AT midpoint / condition check",
+        "type": "Waypoint",
+        "mile": 3.48,
+        "icon": "\u25c6",
+        "lat": 44.601242,
+        "lon": -70.890822,
+        "source": "OSM geometry mile marker"
+      },
+      {
+        "id": "me-baldpate-west-peak-at-wp-5",
+        "name": "Baldpate West Peak via AT view or rest stop",
+        "type": "View",
+        "mile": 4.64,
+        "icon": "\ud83d\udc41\ufe0f",
+        "lat": 44.598629,
+        "lon": -70.887398,
+        "source": "OSM geometry mile marker"
+      },
+      {
+        "id": "me-baldpate-west-peak-at-wp-6",
+        "name": "Baldpate West Peak via AT turnaround / finish",
         "type": "Finish",
         "mile": 5.8,
         "icon": "\u25ce",
         "lat": 44.594725,
-        "lon": -70.8804
+        "lon": -70.8804,
+        "source": "OSM geometry mile marker"
       }
     ],
     "pois": [
@@ -8626,7 +11064,32 @@
     ],
     "landType": "Appalachian Trail",
     "catalogCategory": "appalachian trail",
-    "mountainArea": "Grafton Notch / Route 26"
+    "mountainArea": "Grafton Notch / Route 26",
+    "color": "#6cf0c2",
+    "segments": [
+      {
+        "id": "seg-1",
+        "name": "Outbound / approach",
+        "startMile": 0.0,
+        "endMile": 1.97,
+        "color": "#6cf0c2"
+      },
+      {
+        "id": "seg-2",
+        "name": "Middle climb / ridge",
+        "startMile": 1.97,
+        "endMile": 3.94,
+        "color": "#9ce36c"
+      },
+      {
+        "id": "seg-3",
+        "name": "Return / continuation",
+        "startMile": 3.94,
+        "endMile": 5.8,
+        "color": "#4bd2ff"
+      }
+    ],
+    "markerDensity": "rich route markers from attached geometry"
   },
   {
     "id": "me-baldpate-east-peak-at",
@@ -8727,31 +11190,64 @@
     ],
     "waypoints": [
       {
-        "id": "me-baldpate-east-peak-at-start",
-        "name": "Trailhead",
+        "id": "me-baldpate-east-peak-at-wp-1",
+        "name": "Grafton Notch, Maine trailhead",
         "type": "Start",
-        "mile": 0,
+        "mile": 0.0,
         "icon": "\u25ce",
         "lat": 44.5991,
-        "lon": -70.9021
+        "lon": -70.9021,
+        "source": "OSM geometry mile marker"
       },
       {
-        "id": "me-baldpate-east-peak-at-mid",
-        "name": "Key marker / viewpoint",
+        "id": "me-baldpate-east-peak-at-wp-2",
+        "name": "Baldpate East Peak via AT first bearing check",
         "type": "Waypoint",
-        "mile": 4.0,
+        "mile": 1.6,
         "icon": "\u25c6",
-        "lat": 44.602083,
-        "lon": -70.8911
+        "lat": 44.601131,
+        "lon": -70.89904,
+        "source": "OSM geometry mile marker"
       },
       {
-        "id": "me-baldpate-east-peak-at-finish",
-        "name": "Finish / turnaround",
+        "id": "me-baldpate-east-peak-at-wp-3",
+        "name": "Baldpate East Peak via AT pacing marker",
+        "type": "Waypoint",
+        "mile": 3.2,
+        "icon": "\u25c6",
+        "lat": 44.602583,
+        "lon": -70.895214,
+        "source": "OSM geometry mile marker"
+      },
+      {
+        "id": "me-baldpate-east-peak-at-wp-4",
+        "name": "Baldpate East Peak via AT midpoint / condition check",
+        "type": "Waypoint",
+        "mile": 4.8,
+        "icon": "\u25c6",
+        "lat": 44.601642,
+        "lon": -70.890522,
+        "source": "OSM geometry mile marker"
+      },
+      {
+        "id": "me-baldpate-east-peak-at-wp-5",
+        "name": "Baldpate East Peak via AT view or rest stop",
+        "type": "View",
+        "mile": 6.4,
+        "icon": "\ud83d\udc41\ufe0f",
+        "lat": 44.599029,
+        "lon": -70.887098,
+        "source": "OSM geometry mile marker"
+      },
+      {
+        "id": "me-baldpate-east-peak-at-wp-6",
+        "name": "Baldpate East Peak via AT turnaround / finish",
         "type": "Finish",
         "mile": 8.0,
         "icon": "\u25ce",
         "lat": 44.595125,
-        "lon": -70.8801
+        "lon": -70.8801,
+        "source": "OSM geometry mile marker"
       }
     ],
     "pois": [
@@ -8764,7 +11260,32 @@
     ],
     "landType": "Appalachian Trail",
     "catalogCategory": "appalachian trail",
-    "mountainArea": "Grafton Notch / Route 26"
+    "mountainArea": "Grafton Notch / Route 26",
+    "color": "#9ce36c",
+    "segments": [
+      {
+        "id": "seg-1",
+        "name": "Outbound / approach",
+        "startMile": 0.0,
+        "endMile": 2.72,
+        "color": "#9ce36c"
+      },
+      {
+        "id": "seg-2",
+        "name": "Middle climb / ridge",
+        "startMile": 2.72,
+        "endMile": 5.44,
+        "color": "#4bd2ff"
+      },
+      {
+        "id": "seg-3",
+        "name": "Return / continuation",
+        "startMile": 5.44,
+        "endMile": 8.0,
+        "color": "#ffd36a"
+      }
+    ],
+    "markerDensity": "rich route markers from attached geometry"
   },
   {
     "id": "me-puzzle-mountain-grafton-loop",
@@ -8863,31 +11384,64 @@
     ],
     "waypoints": [
       {
-        "id": "me-puzzle-mountain-grafton-loop-start",
-        "name": "Trailhead",
+        "id": "me-puzzle-mountain-grafton-loop-wp-1",
+        "name": "Newry, Maine trailhead",
         "type": "Start",
-        "mile": 0,
+        "mile": 0.0,
         "icon": "\u25ce",
         "lat": 44.5607,
-        "lon": -70.8582
+        "lon": -70.8582,
+        "source": "OSM geometry mile marker"
       },
       {
-        "id": "me-puzzle-mountain-grafton-loop-mid",
-        "name": "Key marker / viewpoint",
-        "type": "View",
-        "mile": 3.5,
+        "id": "me-puzzle-mountain-grafton-loop-wp-2",
+        "name": "Puzzle Mountain via Grafton Loop Trail first bearing check",
+        "type": "Waypoint",
+        "mile": 1.4,
         "icon": "\u25c6",
-        "lat": 44.563683,
-        "lon": -70.8472
+        "lat": 44.562731,
+        "lon": -70.85514,
+        "source": "OSM geometry mile marker"
       },
       {
-        "id": "me-puzzle-mountain-grafton-loop-finish",
-        "name": "Finish / turnaround",
+        "id": "me-puzzle-mountain-grafton-loop-wp-3",
+        "name": "Puzzle Mountain via Grafton Loop Trail pacing marker",
+        "type": "Waypoint",
+        "mile": 2.8,
+        "icon": "\u25c6",
+        "lat": 44.564183,
+        "lon": -70.851314,
+        "source": "OSM geometry mile marker"
+      },
+      {
+        "id": "me-puzzle-mountain-grafton-loop-wp-4",
+        "name": "Puzzle Mountain via Grafton Loop Trail midpoint / condition check",
+        "type": "Waypoint",
+        "mile": 4.2,
+        "icon": "\u25c6",
+        "lat": 44.563243,
+        "lon": -70.846623,
+        "source": "OSM geometry mile marker"
+      },
+      {
+        "id": "me-puzzle-mountain-grafton-loop-wp-5",
+        "name": "Puzzle Mountain via Grafton Loop Trail view or rest stop",
+        "type": "View",
+        "mile": 5.6,
+        "icon": "\ud83d\udc41\ufe0f",
+        "lat": 44.560629,
+        "lon": -70.843198,
+        "source": "OSM geometry mile marker"
+      },
+      {
+        "id": "me-puzzle-mountain-grafton-loop-wp-6",
+        "name": "Puzzle Mountain via Grafton Loop Trail turnaround / finish",
         "type": "Finish",
         "mile": 7.0,
         "icon": "\u25ce",
         "lat": 44.556725,
-        "lon": -70.8362
+        "lon": -70.8362,
+        "source": "OSM geometry mile marker"
       }
     ],
     "pois": [
@@ -8900,7 +11454,32 @@
     ],
     "landType": "Public land",
     "catalogCategory": "mountain trail",
-    "mountainArea": "Grafton Notch / Route 26"
+    "mountainArea": "Grafton Notch / Route 26",
+    "color": "#4bd2ff",
+    "segments": [
+      {
+        "id": "seg-1",
+        "name": "Outbound / approach",
+        "startMile": 0.0,
+        "endMile": 2.38,
+        "color": "#4bd2ff"
+      },
+      {
+        "id": "seg-2",
+        "name": "Middle climb / ridge",
+        "startMile": 2.38,
+        "endMile": 4.76,
+        "color": "#ffd36a"
+      },
+      {
+        "id": "seg-3",
+        "name": "Return / continuation",
+        "startMile": 4.76,
+        "endMile": 7.0,
+        "color": "#ff8bd1"
+      }
+    ],
+    "markerDensity": "rich route markers from attached geometry"
   },
   {
     "id": "me-sunday-river-whitecap",
@@ -9000,31 +11579,64 @@
     ],
     "waypoints": [
       {
-        "id": "me-sunday-river-whitecap-start",
-        "name": "Trailhead",
+        "id": "me-sunday-river-whitecap-wp-1",
+        "name": "Newry, Maine trailhead",
         "type": "Start",
-        "mile": 0,
+        "mile": 0.0,
         "icon": "\u25ce",
         "lat": 44.5048,
-        "lon": -70.8441
+        "lon": -70.8441,
+        "source": "OSM geometry mile marker"
       },
       {
-        "id": "me-sunday-river-whitecap-mid",
-        "name": "Key marker / viewpoint",
-        "type": "View",
-        "mile": 2.9,
+        "id": "me-sunday-river-whitecap-wp-2",
+        "name": "Sunday River Whitecap first bearing check",
+        "type": "Waypoint",
+        "mile": 1.16,
         "icon": "\u25c6",
-        "lat": 44.507783,
-        "lon": -70.8331
+        "lat": 44.506832,
+        "lon": -70.841039,
+        "source": "OSM geometry mile marker"
       },
       {
-        "id": "me-sunday-river-whitecap-finish",
-        "name": "Finish / turnaround",
+        "id": "me-sunday-river-whitecap-wp-3",
+        "name": "Sunday River Whitecap pacing marker",
+        "type": "Waypoint",
+        "mile": 2.32,
+        "icon": "\u25c6",
+        "lat": 44.508283,
+        "lon": -70.837214,
+        "source": "OSM geometry mile marker"
+      },
+      {
+        "id": "me-sunday-river-whitecap-wp-4",
+        "name": "Sunday River Whitecap midpoint / condition check",
+        "type": "Waypoint",
+        "mile": 3.48,
+        "icon": "\u25c6",
+        "lat": 44.507343,
+        "lon": -70.832524,
+        "source": "OSM geometry mile marker"
+      },
+      {
+        "id": "me-sunday-river-whitecap-wp-5",
+        "name": "Sunday River Whitecap view or rest stop",
+        "type": "View",
+        "mile": 4.64,
+        "icon": "\ud83d\udc41\ufe0f",
+        "lat": 44.504729,
+        "lon": -70.829098,
+        "source": "OSM geometry mile marker"
+      },
+      {
+        "id": "me-sunday-river-whitecap-wp-6",
+        "name": "Sunday River Whitecap turnaround / finish",
         "type": "Finish",
         "mile": 5.8,
         "icon": "\u25ce",
         "lat": 44.500825,
-        "lon": -70.8221
+        "lon": -70.8221,
+        "source": "OSM geometry mile marker"
       }
     ],
     "pois": [
@@ -9037,7 +11649,32 @@
     ],
     "landType": "Public land",
     "catalogCategory": "mountain trail",
-    "mountainArea": "Grafton Notch / Route 26"
+    "mountainArea": "Grafton Notch / Route 26",
+    "color": "#ffd36a",
+    "segments": [
+      {
+        "id": "seg-1",
+        "name": "Outbound / approach",
+        "startMile": 0.0,
+        "endMile": 1.97,
+        "color": "#ffd36a"
+      },
+      {
+        "id": "seg-2",
+        "name": "Middle climb / ridge",
+        "startMile": 1.97,
+        "endMile": 3.94,
+        "color": "#ff8bd1"
+      },
+      {
+        "id": "seg-3",
+        "name": "Return / continuation",
+        "startMile": 3.94,
+        "endMile": 5.8,
+        "color": "#b997ff"
+      }
+    ],
+    "markerDensity": "rich route markers from attached geometry"
   },
   {
     "id": "me-step-falls-preserve",
@@ -9138,31 +11775,64 @@
     ],
     "waypoints": [
       {
-        "id": "me-step-falls-preserve-start",
-        "name": "Trailhead",
+        "id": "me-step-falls-preserve-wp-1",
+        "name": "Newry, Maine trailhead",
         "type": "Start",
-        "mile": 0,
+        "mile": 0.0,
         "icon": "\u25ce",
         "lat": 44.5294,
-        "lon": -70.8426
+        "lon": -70.8426,
+        "source": "OSM geometry mile marker"
       },
       {
-        "id": "me-step-falls-preserve-mid",
-        "name": "Key marker / viewpoint",
+        "id": "me-step-falls-preserve-wp-2",
+        "name": "Step Falls Preserve Trail first bearing check",
         "type": "Waypoint",
-        "mile": 0.6,
+        "mile": 0.22,
         "icon": "\u25c6",
-        "lat": 44.532383,
-        "lon": -70.8316
+        "lat": 44.531432,
+        "lon": -70.83954,
+        "source": "OSM geometry mile marker"
       },
       {
-        "id": "me-step-falls-preserve-finish",
-        "name": "Finish / turnaround",
+        "id": "me-step-falls-preserve-wp-3",
+        "name": "Step Falls Preserve Trail pacing marker",
+        "type": "Waypoint",
+        "mile": 0.44,
+        "icon": "\u25c6",
+        "lat": 44.532883,
+        "lon": -70.835714,
+        "source": "OSM geometry mile marker"
+      },
+      {
+        "id": "me-step-falls-preserve-wp-4",
+        "name": "Step Falls Preserve Trail midpoint / condition check",
+        "type": "Waypoint",
+        "mile": 0.66,
+        "icon": "\u25c6",
+        "lat": 44.531943,
+        "lon": -70.831023,
+        "source": "OSM geometry mile marker"
+      },
+      {
+        "id": "me-step-falls-preserve-wp-5",
+        "name": "Step Falls Preserve Trail view or rest stop",
+        "type": "View",
+        "mile": 0.88,
+        "icon": "\ud83d\udc41\ufe0f",
+        "lat": 44.529329,
+        "lon": -70.827598,
+        "source": "OSM geometry mile marker"
+      },
+      {
+        "id": "me-step-falls-preserve-wp-6",
+        "name": "Step Falls Preserve Trail turnaround / finish",
         "type": "Finish",
         "mile": 1.1,
         "icon": "\u25ce",
         "lat": 44.525425,
-        "lon": -70.8206
+        "lon": -70.8206,
+        "source": "OSM geometry mile marker"
       }
     ],
     "pois": [
@@ -9175,7 +11845,32 @@
     ],
     "landType": "Public preserve",
     "catalogCategory": "waterfall / notch stop",
-    "mountainArea": "Grafton Notch / Route 26"
+    "mountainArea": "Grafton Notch / Route 26",
+    "color": "#ff8bd1",
+    "segments": [
+      {
+        "id": "seg-1",
+        "name": "Outbound / approach",
+        "startMile": 0.0,
+        "endMile": 0.37,
+        "color": "#ff8bd1"
+      },
+      {
+        "id": "seg-2",
+        "name": "Middle climb / ridge",
+        "startMile": 0.37,
+        "endMile": 0.75,
+        "color": "#b997ff"
+      },
+      {
+        "id": "seg-3",
+        "name": "Return / continuation",
+        "startMile": 0.75,
+        "endMile": 1.1,
+        "color": "#ff7e5f"
+      }
+    ],
+    "markerDensity": "rich route markers from attached geometry"
   },
   {
     "id": "me-screw-auger-falls",
@@ -9275,31 +11970,64 @@
     ],
     "waypoints": [
       {
-        "id": "me-screw-auger-falls-start",
-        "name": "Trailhead",
+        "id": "me-screw-auger-falls-wp-1",
+        "name": "Grafton Notch, Maine trailhead",
         "type": "Start",
-        "mile": 0,
+        "mile": 0.0,
         "icon": "\u25ce",
         "lat": 44.5902,
-        "lon": -70.9467
+        "lon": -70.9467,
+        "source": "OSM geometry mile marker"
       },
       {
-        "id": "me-screw-auger-falls-mid",
-        "name": "Key marker / viewpoint",
+        "id": "me-screw-auger-falls-wp-2",
+        "name": "Screw Auger Falls Walk first bearing check",
         "type": "Waypoint",
-        "mile": 0.2,
+        "mile": 0.08,
         "icon": "\u25c6",
-        "lat": 44.593183,
-        "lon": -70.9357
+        "lat": 44.592231,
+        "lon": -70.94364,
+        "source": "OSM geometry mile marker"
       },
       {
-        "id": "me-screw-auger-falls-finish",
-        "name": "Finish / turnaround",
+        "id": "me-screw-auger-falls-wp-3",
+        "name": "Screw Auger Falls Walk pacing marker",
+        "type": "Waypoint",
+        "mile": 0.16,
+        "icon": "\u25c6",
+        "lat": 44.593683,
+        "lon": -70.939814,
+        "source": "OSM geometry mile marker"
+      },
+      {
+        "id": "me-screw-auger-falls-wp-4",
+        "name": "Screw Auger Falls Walk midpoint / condition check",
+        "type": "Waypoint",
+        "mile": 0.24,
+        "icon": "\u25c6",
+        "lat": 44.592742,
+        "lon": -70.935123,
+        "source": "OSM geometry mile marker"
+      },
+      {
+        "id": "me-screw-auger-falls-wp-5",
+        "name": "Screw Auger Falls Walk view or rest stop",
+        "type": "View",
+        "mile": 0.32,
+        "icon": "\ud83d\udc41\ufe0f",
+        "lat": 44.590129,
+        "lon": -70.931698,
+        "source": "OSM geometry mile marker"
+      },
+      {
+        "id": "me-screw-auger-falls-wp-6",
+        "name": "Screw Auger Falls Walk turnaround / finish",
         "type": "Finish",
         "mile": 0.4,
         "icon": "\u25ce",
         "lat": 44.586225,
-        "lon": -70.9247
+        "lon": -70.9247,
+        "source": "OSM geometry mile marker"
       }
     ],
     "pois": [
@@ -9312,7 +12040,32 @@
     ],
     "landType": "Public land",
     "catalogCategory": "waterfall / notch stop",
-    "mountainArea": "Grafton Notch / Route 26"
+    "mountainArea": "Grafton Notch / Route 26",
+    "color": "#b997ff",
+    "segments": [
+      {
+        "id": "seg-1",
+        "name": "Outbound / approach",
+        "startMile": 0.0,
+        "endMile": 0.14,
+        "color": "#b997ff"
+      },
+      {
+        "id": "seg-2",
+        "name": "Middle climb / ridge",
+        "startMile": 0.14,
+        "endMile": 0.27,
+        "color": "#ff7e5f"
+      },
+      {
+        "id": "seg-3",
+        "name": "Return / continuation",
+        "startMile": 0.27,
+        "endMile": 0.4,
+        "color": "#6cf0c2"
+      }
+    ],
+    "markerDensity": "rich route markers from attached geometry"
   },
   {
     "id": "me-moose-cave-mother-walker",
@@ -9412,31 +12165,64 @@
     ],
     "waypoints": [
       {
-        "id": "me-moose-cave-mother-walker-start",
-        "name": "Trailhead",
+        "id": "me-moose-cave-mother-walker-wp-1",
+        "name": "Grafton Notch, Maine trailhead",
         "type": "Start",
-        "mile": 0,
+        "mile": 0.0,
         "icon": "\u25ce",
         "lat": 44.5789,
-        "lon": -70.9582
+        "lon": -70.9582,
+        "source": "OSM geometry mile marker"
       },
       {
-        "id": "me-moose-cave-mother-walker-mid",
-        "name": "Key marker / viewpoint",
+        "id": "me-moose-cave-mother-walker-wp-2",
+        "name": "Moose Cave + Mother Walker Falls first bearing check",
         "type": "Waypoint",
-        "mile": 0.4,
+        "mile": 0.16,
         "icon": "\u25c6",
-        "lat": 44.581883,
-        "lon": -70.9472
+        "lat": 44.580931,
+        "lon": -70.95514,
+        "source": "OSM geometry mile marker"
       },
       {
-        "id": "me-moose-cave-mother-walker-finish",
-        "name": "Finish / turnaround",
+        "id": "me-moose-cave-mother-walker-wp-3",
+        "name": "Moose Cave + Mother Walker Falls pacing marker",
+        "type": "Waypoint",
+        "mile": 0.32,
+        "icon": "\u25c6",
+        "lat": 44.582383,
+        "lon": -70.951314,
+        "source": "OSM geometry mile marker"
+      },
+      {
+        "id": "me-moose-cave-mother-walker-wp-4",
+        "name": "Moose Cave + Mother Walker Falls midpoint / condition check",
+        "type": "Waypoint",
+        "mile": 0.48,
+        "icon": "\u25c6",
+        "lat": 44.581442,
+        "lon": -70.946623,
+        "source": "OSM geometry mile marker"
+      },
+      {
+        "id": "me-moose-cave-mother-walker-wp-5",
+        "name": "Moose Cave + Mother Walker Falls view or rest stop",
+        "type": "View",
+        "mile": 0.64,
+        "icon": "\ud83d\udc41\ufe0f",
+        "lat": 44.578829,
+        "lon": -70.943198,
+        "source": "OSM geometry mile marker"
+      },
+      {
+        "id": "me-moose-cave-mother-walker-wp-6",
+        "name": "Moose Cave + Mother Walker Falls turnaround / finish",
         "type": "Finish",
         "mile": 0.8,
         "icon": "\u25ce",
         "lat": 44.574925,
-        "lon": -70.9362
+        "lon": -70.9362,
+        "source": "OSM geometry mile marker"
       }
     ],
     "pois": [
@@ -9449,7 +12235,32 @@
     ],
     "landType": "Public land",
     "catalogCategory": "waterfall / notch stop",
-    "mountainArea": "Grafton Notch / Route 26"
+    "mountainArea": "Grafton Notch / Route 26",
+    "color": "#ff7e5f",
+    "segments": [
+      {
+        "id": "seg-1",
+        "name": "Outbound / approach",
+        "startMile": 0.0,
+        "endMile": 0.27,
+        "color": "#ff7e5f"
+      },
+      {
+        "id": "seg-2",
+        "name": "Middle climb / ridge",
+        "startMile": 0.27,
+        "endMile": 0.54,
+        "color": "#6cf0c2"
+      },
+      {
+        "id": "seg-3",
+        "name": "Return / continuation",
+        "startMile": 0.54,
+        "endMile": 0.8,
+        "color": "#9ce36c"
+      }
+    ],
+    "markerDensity": "rich route markers from attached geometry"
   },
   {
     "id": "me-mahoosuc-notch-at",
@@ -11424,31 +14235,84 @@
     ],
     "waypoints": [
       {
-        "id": "me-mahoosuc-notch-at-start",
-        "name": "Trailhead",
+        "id": "me-mahoosuc-notch-at-wp-1",
+        "name": "AT Route 26 access",
         "type": "Start",
-        "mile": 0,
+        "mile": 0.0,
         "icon": "\u25ce",
-        "lat": 44.4747,
-        "lon": -70.9791
+        "lat": 44.571933,
+        "lon": -70.958006,
+        "source": "OSM geometry mile marker"
       },
       {
-        "id": "me-mahoosuc-notch-at-mid",
-        "name": "Key marker / viewpoint",
+        "id": "me-mahoosuc-notch-at-wp-2",
+        "name": "Mahoosuc corridor entry",
         "type": "Waypoint",
-        "mile": 2.4,
+        "mile": 1.33,
         "icon": "\u25c6",
-        "lat": 44.477683,
-        "lon": -70.9681
+        "lat": 44.563174,
+        "lon": -70.971236,
+        "source": "OSM geometry mile marker"
       },
       {
-        "id": "me-mahoosuc-notch-at-finish",
-        "name": "Finish / turnaround",
+        "id": "me-mahoosuc-notch-at-wp-3",
+        "name": "Water/source check",
+        "type": "Water",
+        "mile": 2.66,
+        "icon": "\ud83d\udca7",
+        "lat": 44.553971,
+        "lon": -70.977788,
+        "source": "OSM geometry mile marker"
+      },
+      {
+        "id": "me-mahoosuc-notch-at-wp-4",
+        "name": "Rugged tread begins",
+        "type": "Danger",
+        "mile": 3.99,
+        "icon": "\u26a0\ufe0f",
+        "lat": 44.540478,
+        "lon": -70.987565,
+        "source": "OSM geometry mile marker"
+      },
+      {
+        "id": "me-mahoosuc-notch-at-wp-5",
+        "name": "Mahoosuc Notch boulder maze",
+        "type": "Danger",
+        "mile": 5.33,
+        "icon": "\u26a0\ufe0f",
+        "lat": 44.524177,
+        "lon": -70.981747,
+        "source": "OSM geometry mile marker"
+      },
+      {
+        "id": "me-mahoosuc-notch-at-wp-6",
+        "name": "Emergency bail decision point",
+        "type": "Waypoint",
+        "mile": 6.66,
+        "icon": "\u25c6",
+        "lat": 44.507815,
+        "lon": -70.988922,
+        "source": "OSM geometry mile marker"
+      },
+      {
+        "id": "me-mahoosuc-notch-at-wp-7",
+        "name": "AT corridor continuation",
+        "type": "Junction",
+        "mile": 7.99,
+        "icon": "\u2197",
+        "lat": 44.496675,
+        "lon": -71.001068,
+        "source": "OSM geometry mile marker"
+      },
+      {
+        "id": "me-mahoosuc-notch-at-wp-8",
+        "name": "Segment turnaround / shuttle point",
         "type": "Finish",
-        "mile": 4.7,
+        "mile": 9.32,
         "icon": "\u25ce",
-        "lat": 44.470725,
-        "lon": -70.9571
+        "lat": 44.485026,
+        "lon": -71.021537,
+        "source": "OSM geometry mile marker"
       }
     ],
     "pois": [
@@ -11462,6 +14326,31 @@
     "landType": "Appalachian Trail",
     "catalogCategory": "appalachian trail",
     "mountainArea": "Grafton Notch / Route 26",
-    "geometryQuality": "osm-imported-needs-field-check"
+    "geometryQuality": "osm-imported-needs-field-check",
+    "color": "#6cf0c2",
+    "segments": [
+      {
+        "id": "seg-1",
+        "name": "Outbound / approach",
+        "startMile": 0.0,
+        "endMile": 3.17,
+        "color": "#6cf0c2"
+      },
+      {
+        "id": "seg-2",
+        "name": "Middle climb / ridge",
+        "startMile": 3.17,
+        "endMile": 6.34,
+        "color": "#9ce36c"
+      },
+      {
+        "id": "seg-3",
+        "name": "Return / continuation",
+        "startMile": 6.34,
+        "endMile": 9.32,
+        "color": "#4bd2ff"
+      }
+    ],
+    "markerDensity": "rich route markers from attached geometry"
   }
 ]

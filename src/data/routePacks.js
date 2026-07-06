@@ -23,6 +23,9 @@ export const mapRoutePackToCard = (pack) => ({
   weather: pack.weather,
   geometry: pack.geometry,
   geometryQuality: pack.geometryQuality || pack.geometry?.source || 'seed-planning',
+  color: pack.color,
+  segments: pack.segments,
+  markerDensity: pack.markerDensity,
   mapPreviewPath: pack.mapPreviewPath,
   waypoints: pack.waypoints,
   pois: pack.pois
