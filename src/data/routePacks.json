@@ -1,5 +1,212 @@
 [
   {
+    "id": "nh-speck-pond-success-pond-alt",
+    "schemaVersion": "mappi3.routePack.v1",
+    "name": "Speck Pond via Success Pond Road NH \u2014 alternate approach",
+    "place": "Success Pond Road, New Hampshire",
+    "region": "Mahoosuc / Success Pond New Hampshire",
+    "summary": "Alternate Speck Pond approach from the New Hampshire / Success Pond side. Included so Speck Pond searches show multiple possible approaches and you can avoid choosing the wrong trailhead.",
+    "difficulty": "Hard",
+    "routeType": "Out-and-back",
+    "status": "Ready",
+    "distanceMiles": 4.8,
+    "estimatedTime": "3h 30m",
+    "elevationGainFt": 1800,
+    "storageEstimateMb": 236,
+    "tags": [
+      "alternate approach",
+      "new hampshire",
+      "not route 26",
+      "speck pond",
+      "success pond",
+      "verify before hike"
+    ],
+    "sync": {
+      "state": "local-maine-seed-catalog",
+      "lastSynced": "seed-v1.2.25",
+      "supabaseReady": false
+    },
+    "offline": {
+      "required": false,
+      "tileFormat": "MBTiles",
+      "tileBounds": [
+        -70.9822,
+        44.5606,
+        -70.8922,
+        44.6256
+      ],
+      "minZoom": 10,
+      "maxZoom": 16,
+      "layers": [
+        "trail",
+        "topo",
+        "waypoints",
+        "notes"
+      ]
+    },
+    "weather": {
+      "cachePolicy": "refresh-when-online",
+      "lastForecastLabel": "not cached"
+    },
+    "geometry": {
+      "type": "LineString",
+      "source": "rough alternate approach seed",
+      "coordinates": [
+        [
+          -71.112792,
+          44.574767
+        ],
+        [
+          -71.112553,
+          44.574521
+        ],
+        [
+          -71.111188,
+          44.574764
+        ],
+        [
+          -71.10901,
+          44.574876
+        ],
+        [
+          -71.107173,
+          44.574633
+        ],
+        [
+          -71.10588700000001,
+          44.574624
+        ],
+        [
+          -71.10521700000001,
+          44.574119
+        ],
+        [
+          -71.103065,
+          44.573474
+        ],
+        [
+          -71.101805,
+          44.573708
+        ],
+        [
+          -71.100086,
+          44.573754
+        ],
+        [
+          -71.099142,
+          44.573315
+        ],
+        [
+          -71.098223,
+          44.573072
+        ]
+      ]
+    },
+    "mapPreviewPath": [
+      [
+        30,
+        171
+      ],
+      [
+        105,
+        128
+      ],
+      [
+        180,
+        110
+      ],
+      [
+        255,
+        189
+      ],
+      [
+        330,
+        232
+      ]
+    ],
+    "waypoints": [
+      {
+        "id": "nh-speck-success-wp-1",
+        "name": "Success Pond Road trailhead candidate",
+        "type": "Start",
+        "mile": 0,
+        "icon": "\u25ce",
+        "lat": 44.574767,
+        "lon": -71.112792,
+        "source": "rough approach seed"
+      },
+      {
+        "id": "nh-speck-success-wp-2",
+        "name": "Verify trailhead/signage before hiking",
+        "type": "Danger",
+        "mile": 0.4,
+        "icon": "\u26a0\ufe0f",
+        "lat": 44.574521,
+        "lon": -71.112553,
+        "source": "rough approach seed"
+      },
+      {
+        "id": "nh-speck-success-wp-3",
+        "name": "Speck Pond approach / verify GPX",
+        "type": "Waypoint",
+        "mile": 2.4,
+        "icon": "\u25c6",
+        "lat": 44.573315,
+        "lon": -71.099142,
+        "source": "rough approach seed"
+      },
+      {
+        "id": "nh-speck-success-wp-4",
+        "name": "Speck Pond destination area",
+        "type": "Finish",
+        "mile": 4.8,
+        "icon": "\u25ce",
+        "lat": 44.573072,
+        "lon": -71.098223,
+        "source": "rough approach seed"
+      }
+    ],
+    "pois": [
+      {
+        "id": "me-speck-pond-route26-at-poi",
+        "type": "speck pond",
+        "label": "Next-hike candidate: Route 26 Appalachian Trail climb toward Speck Pond with strict timing",
+        "mile": 3.8
+      }
+    ],
+    "landType": "Appalachian Trail",
+    "catalogCategory": "appalachian trail",
+    "mountainArea": "Speck Pond alternate approaches",
+    "geometryQuality": "rough alternate approach marker \u2014 import verified GPX/OSM before relying on this route",
+    "color": "#4bd2ff",
+    "segments": [
+      {
+        "id": "seg-1",
+        "name": "Success Pond approach",
+        "startMile": 0,
+        "endMile": 1.6,
+        "color": "#4bd2ff"
+      },
+      {
+        "id": "seg-2",
+        "name": "Speck Pond climb",
+        "startMile": 1.6,
+        "endMile": 3.3,
+        "color": "#ffd36a"
+      },
+      {
+        "id": "seg-3",
+        "name": "Pond / return decision",
+        "startMile": 3.3,
+        "endMile": 4.8,
+        "color": "#ff8bd1"
+      }
+    ],
+    "markerDensity": "rich route markers from attached geometry",
+    "routeFamily": "speck-pond",
+    "approach": "Success Pond Road New Hampshire"
+  },
+  {
     "id": "hh-ridge",
     "schemaVersion": "mappi3.routePack.v1",
     "name": "Hocking Hills Ridge Loop",
@@ -7897,10 +8104,10 @@
   {
     "id": "me-speck-pond-route26-at",
     "schemaVersion": "mappi3.routePack.v1",
-    "name": "Speck Pond via Route 26 AT",
-    "place": "Grafton Notch, Maine",
-    "region": "Grafton Notch / Route 26 Maine",
-    "summary": "OSM-sourced Speck Pond Trail geometry for next-hike planning. This is a real OSM trail line, but Route 26-to-Speck-Pond connection still needs a verified full GPX/AT segment before field reliance.",
+    "name": "Speck Pond via Route 26 Newry / Grafton Notch AT",
+    "place": "Route 26 trailhead near Table Rock, Newry, Maine",
+    "region": "Grafton Notch / Route 26 Newry Maine",
+    "summary": "Route 26 Newry/Grafton Notch approach toward Speck Pond on the Appalachian Trail near the Table Rock trailhead area. Do not confuse with the New Hampshire Success Pond approach.",
     "difficulty": "Hard",
     "routeType": "Out-and-back",
     "status": "Ready",
@@ -7912,12 +8119,16 @@
       "appalachian trail",
       "at",
       "grafton notch",
+      "grafton notch route 26",
       "hard",
+      "newry maine",
       "next hike",
+      "not success pond",
       "osm geometry",
       "route 26",
       "spec pond",
       "speck pond",
+      "table rock area",
       "verify current conditions",
       "water"
     ],
@@ -8306,7 +8517,9 @@
         "color": "#b997ff"
       }
     ],
-    "markerDensity": "rich route markers from attached geometry"
+    "markerDensity": "rich route markers from attached geometry",
+    "routeFamily": "speck-pond",
+    "approach": "Route 26 Newry/Grafton Notch Maine"
   },
   {
     "id": "me-old-speck-at-route26",

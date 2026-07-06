@@ -87,20 +87,21 @@ export default function LiveLeafletMap({ trace = [], center = defaultCenter, act
       } else {
         layerRef.current.route = L.polyline(routePoints, { color: route?.color || '#9ce36c', weight: 6, opacity: 0.78 }).addTo(map);
       }
-      (waypoints || []).forEach(point => {
-        const marker = L.marker([point.lat, point.lon], { icon: iconFor(point), draggable: Boolean(point.custom && onWaypointMove) })
-          .bindTooltip(`${point.name} · ${point.type || 'Waypoint'} · ${point.mile} mi${point.custom ? ' · custom' : ''}`, { direction: 'top' })
-          .addTo(map);
-        marker.bindPopup(`<strong>${point.name}</strong><br>${point.type || 'Waypoint'} · ${point.mile} mi${point.notes ? `<br>${point.notes}` : ''}`);
-        if (point.custom && onWaypointMove) {
-          marker.on('dragend', event => {
-            const latlng = event.target.getLatLng();
-            onWaypointMove(point.id, { lat: latlng.lat, lon: latlng.lng });
-          });
-        }
-        layerRef.current.waypoints.push(marker);
-      });
     }
+
+    (waypoints || []).filter(point => Number.isFinite(point.lat) && Number.isFinite(point.lon)).forEach(point => {
+      const marker = L.marker([point.lat, point.lon], { icon: iconFor(point), draggable: Boolean(point.custom && onWaypointMove) })
+        .bindTooltip(`${point.name} · ${point.type || 'Waypoint'} · ${point.mile ?? '—'} mi${point.custom ? ' · custom' : ''}`, { direction: 'top' })
+        .addTo(map);
+      marker.bindPopup(`<strong>${point.name}</strong><br>${point.type || 'Waypoint'} · ${point.mile ?? '—'} mi${point.notes ? `<br>${point.notes}` : ''}`);
+      if (point.custom && onWaypointMove) {
+        marker.on('dragend', event => {
+          const latlng = event.target.getLatLng();
+          onWaypointMove(point.id, { lat: latlng.lat, lon: latlng.lng });
+        });
+      }
+      layerRef.current.waypoints.push(marker);
+    });
 
     if (tracePoints.length > 1) layerRef.current.line = L.polyline(tracePoints, { color: '#4bd2ff', weight: 6, opacity: 0.9 }).addTo(map);
     else layerRef.current.line = L.polyline(points, { color: '#4bd2ff', weight: 4, opacity: 0.4 }).addTo(map);
@@ -112,7 +113,8 @@ export default function LiveLeafletMap({ trace = [], center = defaultCenter, act
       fillOpacity: 0.9
     }).addTo(map);
 
-    const boundsPoints = [...routePoints, ...tracePoints];
+    const waypointPoints = (waypoints || []).filter(point => Number.isFinite(point.lat) && Number.isFinite(point.lon)).map(point => [point.lat, point.lon]);
+    const boundsPoints = [...routePoints, ...tracePoints, ...waypointPoints];
     if (boundsPoints.length > 1) map.fitBounds(L.latLngBounds(boundsPoints), { padding: [24, 24], maxZoom: 17 });
     else map.setView(latest, 15);
   }, [points, tracePoints, routePoints, routeMiles, waypoints, center, active, onWaypointMove, route]);
