@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { useEffect, useMemo, useRef } from 'react';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 
@@ -29,7 +29,6 @@ function segmentSlice(routePoints, routeMiles, segment) {
 }
 
 export default function LiveLeafletMap({ trace = [], center = defaultCenter, active = false, route = null, waypoints = [], onMapClick = null, onWaypointMove = null }) {
-  const [fullScreen, setFullScreen] = useState(false);
   const mapRef = useRef(null);
   const containerRef = useRef(null);
   const layerRef = useRef({ marker: null, line: null, route: null, segments: [], waypoints: [] });
@@ -101,6 +100,7 @@ export default function LiveLeafletMap({ trace = [], center = defaultCenter, act
           onWaypointMove(point.id, { lat: latlng.lat, lon: latlng.lng });
         });
       }
+      if (point.focused) setTimeout(() => marker.openPopup(), 80);
       layerRef.current.waypoints.push(marker);
     });
 
@@ -120,7 +120,5 @@ export default function LiveLeafletMap({ trace = [], center = defaultCenter, act
     else map.setView(latest, 15);
   }, [points, tracePoints, routePoints, routeMiles, waypoints, center, active, onWaypointMove, route]);
 
-  useEffect(() => { if (mapRef.current) setTimeout(() => mapRef.current.invalidateSize(), 120); }, [fullScreen]);
-
-  return <div className={`leaflet-shell ${fullScreen ? 'map-fullscreen' : ''}`}><button type="button" className="map-fullscreen-toggle" onClick={() => setFullScreen(v => !v)}>{fullScreen ? 'Exit full screen' : 'Full screen map'}</button><div ref={containerRef} className="leaflet-map" /></div>;
+  return <div className="leaflet-shell"><div ref={containerRef} className="leaflet-map" /></div>;
 }
