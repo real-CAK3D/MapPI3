@@ -10,3 +10,4 @@ coverage/
 *.ts.net.crt
 *.ts.net.key
 .vercel
+local-pi-imager/
