@@ -1,0 +1,8 @@
+{
+  "id": "weather-survival",
+  "name": "Weather Survival",
+  "status": "planned",
+  "install": "install.sh",
+  "uninstall": "uninstall.sh",
+  "nested_features": true
+}

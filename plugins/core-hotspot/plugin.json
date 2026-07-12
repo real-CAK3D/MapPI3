@@ -1,0 +1,8 @@
+{
+  "id": "core-hotspot",
+  "name": "Core Hotspot",
+  "status": "planned",
+  "install": "install.sh",
+  "uninstall": "uninstall.sh",
+  "nested_features": true
+}

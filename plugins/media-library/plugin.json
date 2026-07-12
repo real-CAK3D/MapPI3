@@ -1,0 +1,7 @@
+{
+  "id": "media-library",
+  "name": "Media Library",
+  "status": "planned",
+  "install": "install.sh",
+  "uninstall": "uninstall.sh"
+}

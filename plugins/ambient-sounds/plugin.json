@@ -1,0 +1,7 @@
+{
+  "id": "ambient-sounds",
+  "name": "Ambient Sounds",
+  "status": "planned",
+  "install": "install.sh",
+  "uninstall": "uninstall.sh"
+}

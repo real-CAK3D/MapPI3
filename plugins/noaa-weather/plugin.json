@@ -1,0 +1,7 @@
+{
+  "id": "noaa-weather",
+  "name": "Noaa Weather",
+  "status": "planned",
+  "install": "install.sh",
+  "uninstall": "uninstall.sh"
+}

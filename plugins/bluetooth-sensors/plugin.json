@@ -1,0 +1,8 @@
+{
+  "id": "bluetooth-sensors",
+  "name": "Bluetooth Sensors",
+  "status": "planned",
+  "install": "install.sh",
+  "uninstall": "uninstall.sh",
+  "nested_features": true
+}

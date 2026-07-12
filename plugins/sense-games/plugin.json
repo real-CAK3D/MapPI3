@@ -1,0 +1,7 @@
+{
+  "id": "sense-games",
+  "name": "Sense Games",
+  "status": "planned",
+  "install": "install.sh",
+  "uninstall": "uninstall.sh"
+}

@@ -1,0 +1,8 @@
+{
+  "id": "debug-vnc",
+  "name": "Debug Vnc",
+  "status": "planned",
+  "install": "install.sh",
+  "uninstall": "uninstall.sh",
+  "nested_features": true
+}

@@ -1,0 +1,8 @@
+{
+  "id": "gps-navigation",
+  "name": "Gps Navigation",
+  "status": "planned",
+  "install": "install.sh",
+  "uninstall": "uninstall.sh",
+  "nested_features": true
+}

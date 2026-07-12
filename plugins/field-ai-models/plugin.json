@@ -1,0 +1,7 @@
+{
+  "id": "field-ai-models",
+  "name": "Field Ai Models",
+  "status": "planned",
+  "install": "install.sh",
+  "uninstall": "uninstall.sh"
+}

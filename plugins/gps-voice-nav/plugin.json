@@ -1,0 +1,7 @@
+{
+  "id": "gps-voice-nav",
+  "name": "Gps Voice Nav",
+  "status": "planned",
+  "install": "install.sh",
+  "uninstall": "uninstall.sh"
+}
