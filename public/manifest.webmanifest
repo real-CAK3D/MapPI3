@@ -1,0 +1,1 @@
+{"name":"MapPI3 Trail Buddy","short_name":"MapPI3","start_url":"/","scope":"/","display":"standalone","background_color":"#07130d","theme_color":"#0b3d22","description":"Offline-first trail buddy for Pi hotspot field navigation, weather, pack planning, and Sense HAT controls.","icons":[{"src":"/icon.svg","sizes":"any","type":"image/svg+xml"}]}

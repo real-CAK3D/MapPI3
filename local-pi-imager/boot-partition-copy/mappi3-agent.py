@@ -3,8 +3,8 @@ import base64, fcntl, hashlib, http.server, io, json, math, os, pathlib, random,
 APP_DIR = pathlib.Path('/opt/mappi3/app')
 STATE = pathlib.Path('/var/lib/mappi3/state.json')
 PORT = int(os.environ.get('MAPPI3_PORT','5050'))
-SENSE_MODES = ['compass','liquid','weather','fire','flashlight','sos','message','boot','sun','gps','clock','progress','beacon','stars','temp','humidity','pressure']
-ALLOWED = {'status','restart-web','reboot','shutdown','update-app','gps-sample','toggle-hotspot','connect-home-wifi','sense-mode','calibrate','harden-hotspot','plugin-update','vnc-setup','vnc-disable','weather-refresh','online-maintenance','gps-diagnose','field-ai-verify'}
+SENSE_MODES = ['compass','liquid','weather','fire','flashlight','sos','message','boot','sun','gps','clock','progress','beacon','stars','temp','humidity','pressure','custom','border','magic8','water','snake']
+ALLOWED = {'status','restart-web','reboot','shutdown','update-app','gps-sample','toggle-hotspot','connect-home-wifi','sense-mode','calibrate','harden-hotspot','plugin-update','vnc-setup','vnc-disable','weather-refresh','online-maintenance','gps-diagnose','field-ai-verify','captive-setup','captive-disable','captive-status'}
 SENSE_CACHE = {'ok': False, 'mode': 'compass', 'message': 'Sense HAT display loop starting', 'updated': 0, 'joystick': {'seq': 0, 'direction': '', 'pressed': False, 'updated': 0}}
 SENSE_LOCK = threading.Lock()
 KEY_NAMES = {103:'up',108:'down',105:'left',106:'right',28:'press'}
@@ -121,6 +121,9 @@ def set_sense_mode(mode, payload=None):
     if 'message' in payload: st['sense_message'] = str(payload.get('message') or '')[:96]
     if 'brightness' in payload: st['sense_brightness'] = payload.get('brightness')
     if 'scrollSpeed' in payload: st['sense_scroll_speed'] = payload.get('scrollSpeed')
+    if 'senseColor' in payload: st['sense_color'] = str(payload.get('senseColor') or '#00aa55')[:16]
+    if 'borderOnly' in payload: st['sense_border_only'] = bool(payload.get('borderOnly'))
+    if 'hydrationAlarm' in payload and isinstance(payload.get('hydrationAlarm'), dict): st['hydration_alarm'] = payload.get('hydrationAlarm')
     if 'features' in payload and isinstance(payload.get('features'), dict): st['features'] = payload.get('features')
     write_state(st)
     with SENSE_LOCK:
@@ -197,6 +200,37 @@ def draw_bar(sense, value, color):
     for i in range(n): pixels[63-i]=list(color)
     sense.set_pixels(pixels)
 
+def parse_color(value, default=(0,140,80)):
+    try:
+        s=str(value or '').strip()
+        if s.startswith('#') and len(s)==7: return tuple(int(s[i:i+2],16) for i in (1,3,5))
+    except Exception: pass
+    return default
+
+def draw_border(sense, color):
+    pixels=[[0,0,0] for _ in range(64)]
+    for y in range(8):
+        for x in range(8):
+            if x in (0,7) or y in (0,7): pixels[y*8+x]=list(color)
+    sense.set_pixels(pixels)
+
+def draw_water_icon(sense, color=(0,80,220)):
+    put_pixels(sense, [(3,0),(4,0),(2,1),(5,1),(2,2),(5,2),(1,3),(6,3),(1,4),(6,4),(2,5),(5,5),(3,6),(4,6),(3,7),(4,7)], color)
+
+def draw_snake_frame(sense, tick, color=(0,220,70)):
+    pixels=[[0,0,0] for _ in range(64)]
+    path=[(x,1) for x in range(1,7)] + [(6,y) for y in range(2,7)] + [(x,6) for x in range(5,0,-1)] + [(1,y) for y in range(5,1,-1)]
+    for i in range(7):
+        x,y=path[(tick+i)%len(path)]; pixels[y*8+x]=list(color)
+    hx,hy=path[(tick+6)%len(path)]; pixels[hy*8+hx]=[255,255,255]
+    sense.set_pixels(pixels)
+
+def sense_alarm_due(st):
+    alarm=st.get('hydration_alarm') or {}
+    if not alarm.get('enabled'): return False
+    now=time.time(); last=float(alarm.get('lastFiredAt') or 0); minutes=float(alarm.get('intervalMinutes') or 0)
+    return minutes > 0 and now-last >= minutes*60
+
 def sense_loop():
     tick=0; last_text=0
     try:
@@ -232,6 +266,15 @@ def sense_loop():
                 elif mode=='temp': draw_bar(sense, max(0,min(64,(temp_f-20)/80*64)), (180 if temp_f>80 else 0,120,180 if temp_f<50 else 0))
                 elif mode=='humidity': draw_bar(sense, hum/100*64, (0,60,180))
                 elif mode=='pressure': draw_bar(sense, max(0,min(64,(pressure-970)/80*64)), (120,80,180))
+                elif mode=='custom':
+                    color=parse_color(st.get('sense_color'), (0,170,85)); draw_border(sense,color) if st.get('sense_border_only') else sense.clear(*color)
+                elif mode=='border': draw_border(sense, parse_color(st.get('sense_color'), (0,170,85)))
+                elif mode=='magic8':
+                    if time.time()-last_text>7: text_once(sense, random.choice(['YES','NO','MAYBE','TRAIL SAYS YES','ASK AGAIN','WATCH WEATHER','DRINK WATER']), parse_color(st.get('sense_color'), (80,0,180)), sense_scroll_speed(st)); last_text=time.time()
+                elif mode=='water': draw_water_icon(sense, parse_color(st.get('sense_color'), (0,90,220)))
+                elif mode=='snake': draw_snake_frame(sense,tick,parse_color(st.get('sense_color'), (0,220,70)))
+                if sense_alarm_due(st):
+                    draw_water_icon(sense, (0,120,255)); text_once(sense, 'DRINK 8OZ WATER', (0,120,255), sense_scroll_speed(st)); alarm=st.get('hydration_alarm') or {}; alarm['lastFiredAt']=time.time(); st['hydration_alarm']=alarm; write_state(st)
                 with SENSE_LOCK: SENSE_CACHE.update({'ok': True, 'mode': mode, 'available_modes': SENSE_MODES, 'orientation': orient, 'compass': yaw, 'temp': temp_f, 'humidity': hum, 'pressure': pressure, 'gps': gps, 'message': f'{mode} display active', 'updated': time.time()})
             except Exception as e:
                 with SENSE_LOCK: SENSE_CACHE.update({'ok': False, 'mode': mode, 'message': f'Sense HAT read/display error: {e}', 'updated': time.time()})
@@ -683,6 +726,26 @@ def plugin_update(payload):
     features[key]=enabled; st['features']=features; st['features_updated_at']=time.time(); write_state(st)
     return {'ok': True, 'features': features}
 
+def captive_status():
+    active=sh('systemctl is-active mappi3-captive.service 2>/dev/null || true', timeout=5)['output'].strip()
+    enabled=sh('systemctl is-enabled mappi3-captive.service 2>/dev/null || true', timeout=5)['output'].strip()
+    port=sh("ss -lntp | grep ':80 ' || true", timeout=5)['output'].strip()
+    return {'ok': active == 'active', 'active': active or 'unknown', 'enabled': enabled or 'unknown', 'port80': bool(port), 'summary': 'phone stay-connected portal active' if active=='active' else 'not active'}
+
+def setup_captive(payload=None):
+    script=pathlib.Path('/usr/local/bin/mappi3-captive.py')
+    script.write_text('#!/usr/bin/env python3\nimport http.server, urllib.parse, time\nAPP=\'http://10.42.0.1:5050/\'\nPROBES={\'/generate_204\':(204,\'text/plain\',\'\'),\'/gen_204\':(204,\'text/plain\',\'\'),\'/hotspot-detect.html\':(200,\'text/html\',\'<HTML><HEAD><TITLE>Success</TITLE></HEAD><BODY>Success<br><a href="%s">Open MapPI3</a></BODY></HTML>\'%APP),\'/connecttest.txt\':(200,\'text/plain\',\'Microsoft Connect Test\'),\'/ncsi.txt\':(200,\'text/plain\',\'Microsoft NCSI\'),\'/canonical.html\':(200,\'text/html\',\'<meta http-equiv="refresh" content="0; url=%s">\'%APP)}\nclass H(http.server.BaseHTTPRequestHandler):\n    def _send(self,code,ctype,body):\n        raw=body.encode(); self.send_response(code); self.send_header(\'Content-Type\',ctype); self.send_header(\'Cache-Control\',\'no-store\'); self.send_header(\'Content-Length\',str(len(raw))); self.end_headers(); self.wfile.write(raw)\n    def do_GET(self):\n        p=urllib.parse.urlparse(self.path).path\n        if p in PROBES:\n            code,ctype,body=PROBES[p]; self._send(code,ctype,body); return\n        if p in (\'/\',\'/index.html\',\'/map\',\'/login\'):\n            self._send(200,\'text/html\',\'<!doctype html><meta name="viewport" content="width=device-width,initial-scale=1"><title>MapPI3</title><style>body{font-family:sans-serif;background:#07130d;color:#eaffef;padding:24px}a{color:#70f0a0;font-size:1.2rem}</style><h1>MapPI3 Trail Buddy</h1><p>No internet required. Stay on this Wi-Fi and open the trail app.</p><p><a href="\'+APP+\'">Open MapPI3 app</a></p><small>\'+time.ctime()+\'</small>\'); return\n        self.send_response(302); self.send_header(\'Location\',APP); self.end_headers()\n    def log_message(self,*a): pass\nhttp.server.ThreadingHTTPServer((\'0.0.0.0\',80),H).serve_forever()\n')
+    os.chmod(script,0o755)
+    service=pathlib.Path('/etc/systemd/system/mappi3-captive.service')
+    service.write_text('[Unit]\nDescription=MapPI3 phone stay-connected captive helper\nAfter=network.target mappi3-web.service\n\n[Service]\nType=simple\nExecStart=/usr/bin/python3 /usr/local/bin/mappi3-captive.py\nRestart=on-failure\nRestartSec=2\n\n[Install]\nWantedBy=multi-user.target\n')
+    out=sh('systemctl daemon-reload && systemctl enable --now mappi3-captive.service && systemctl status --no-pager mappi3-captive.service | sed -n "1,12p"', timeout=30)
+    st=read_state(); st['captive_portal_enabled_at']=time.time(); write_state(st)
+    return {'ok': out.get('ok'), 'message':'Phone stay-connected captive portal enabled on port 80', 'status': captive_status(), 'output': out.get('output','')[-1200:]}
+
+def disable_captive():
+    out=sh('systemctl disable --now mappi3-captive.service || true', timeout=20)
+    return {'ok': True, 'message':'Phone stay-connected captive portal disabled', 'status': captive_status(), 'output': out.get('output','')[-800:]}
+
 def command(name, payload=None):
     payload=payload or {}
     if name not in ALLOWED: return {'ok': False, 'error': 'unknown command'}
@@ -698,6 +761,9 @@ def command(name, payload=None):
     if name=='online-maintenance': return start_online_maintenance(payload)
     if name=='gps-diagnose': return gps_diagnose()
     if name=='field-ai-verify': return field_ai_verify(payload)
+    if name=='captive-setup': return setup_captive(payload)
+    if name=='captive-disable': return disable_captive()
+    if name=='captive-status': return captive_status()
     if name=='restart-web': return sh('systemctl restart mappi3-web.service', timeout=10)
     if name=='reboot': return sh('systemctl reboot', timeout=3)
     if name=='shutdown': return sh('systemctl poweroff', timeout=3)
@@ -729,6 +795,7 @@ class Handler(http.server.SimpleHTTPRequestHandler):
         if self.path.startswith('/api/field-ai/status'): self.json_response(field_ai_status()); return
         if self.path.startswith('/api/field-ai/history'): self.json_response(field_ai_history()); return
         if self.path.startswith('/api/vnc/status'): self.json_response(vnc_status()); return
+        if self.path.startswith('/api/captive/status'): self.json_response(captive_status()); return
         if self.path.startswith('/api/weather'):
             qs=urllib.parse.parse_qs(urllib.parse.urlparse(self.path).query); self.json_response(pi_weather({k:v[-1] for k,v in qs.items()})); return
         if self.path.startswith('/api/online-maintenance/log'): self.json_response(online_maintenance_log()); return
