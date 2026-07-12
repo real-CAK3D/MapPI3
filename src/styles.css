@@ -101,3 +101,29 @@ body[data-theme="forest-dawn"]{background:radial-gradient(circle at top,#d9f5bd 
 .offline-readiness{display:flex;flex-wrap:wrap;gap:7px;margin:10px 0;padding:10px;border:1px solid rgba(255,255,255,.12);border-radius:14px;background:rgba(255,255,255,.04)}
 .offline-readiness span{font-size:.82rem;border:1px solid rgba(255,255,255,.12);border-radius:999px;padding:4px 8px}.offline-readiness .ok{color:#a9f5c6}.offline-readiness .warn{color:#ffd27d}
 .model-result-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:8px;margin:10px 0}.model-result-grid div{border:1px solid rgba(255,255,255,.12);border-radius:12px;padding:8px;background:rgba(0,0,0,.16);display:grid;gap:3px}.model-result-grid span{color:#9fe7ff}.model-result-grid small{color:var(--muted)}
+
+
+/* Theme plugin: Nature Organic */
+body[data-theme="nature-organic"]{
+  --organic-ink:#f5f1e6; --organic-muted:#d8d2bd; --organic-card:rgba(20,34,24,.72); --organic-line:rgba(232,222,190,.22);
+  min-height:100vh;color:var(--organic-ink);background:#10170f;position:relative;overflow-x:hidden;
+  background-image:linear-gradient(180deg,rgba(9,18,12,.22),rgba(9,14,8,.92)),radial-gradient(circle at 20% 12%,rgba(203,171,113,.30),transparent 28%),radial-gradient(circle at 82% 8%,rgba(101,132,83,.34),transparent 34%),linear-gradient(135deg,#53613d 0%,#1f3324 44%,#0c130c 100%);
+}
+body[data-theme="nature-organic"]::before{content:"";position:fixed;inset:0;pointer-events:none;z-index:-2;background:linear-gradient(180deg,rgba(222,230,208,.18),transparent 34%),repeating-linear-gradient(118deg,rgba(255,255,255,.035) 0 1px,transparent 1px 8px);mix-blend-mode:screen;opacity:.72;animation:organic-sun 16s ease-in-out infinite alternate}
+body[data-theme="nature-organic"]::after{content:"";position:fixed;inset:-10%;pointer-events:none;z-index:-1;background:radial-gradient(ellipse at 78% 22%,rgba(227,207,158,.24),transparent 22%),radial-gradient(ellipse at 18% 76%,rgba(90,122,63,.30),transparent 30%),linear-gradient(105deg,transparent 0 44%,rgba(0,0,0,.14) 46% 48%,transparent 50%);filter:blur(.2px);opacity:.85;animation:organic-leaves 22s ease-in-out infinite alternate}
+body[data-theme="nature-organic"] .app-shell{max-width:1040px;padding-top:22px}
+body[data-theme="nature-organic"] .hero-card,body[data-theme="nature-organic"] .map-card,body[data-theme="nature-organic"] .panel,body[data-theme="nature-organic"] .mini-panel{background:linear-gradient(155deg,rgba(248,243,225,.16),rgba(28,48,32,.62));border-color:var(--organic-line);border-radius:34px;box-shadow:0 22px 70px rgba(2,8,4,.42),inset 0 1px 0 rgba(255,255,255,.08);backdrop-filter:blur(22px) saturate(1.12)}
+body[data-theme="nature-organic"] .hero-card{background:linear-gradient(180deg,rgba(12,30,19,.18),rgba(6,12,8,.74)),radial-gradient(ellipse at 50% 0%,rgba(234,231,203,.30),transparent 28%),repeating-linear-gradient(92deg,rgba(26,54,35,.38) 0 3px,transparent 3px 38px),linear-gradient(160deg,#5e694a,#1f3625 46%,#0b120c);border-radius:38px;min-height:220px;display:grid;align-content:end}
+body[data-theme="nature-organic"] .brand-mark{background:linear-gradient(145deg,#d8c894,#6f8a54);color:#162214;border-radius:22px;box-shadow:0 12px 34px rgba(0,0,0,.28)}
+body[data-theme="nature-organic"] h1,body[data-theme="nature-organic"] h2{letter-spacing:-.04em;text-shadow:0 2px 18px rgba(0,0,0,.35)}
+body[data-theme="nature-organic"] .muted,body[data-theme="nature-organic"] .top-line p,body[data-theme="nature-organic"] .live-row span,body[data-theme="nature-organic"] .route-card p,body[data-theme="nature-organic"] .kit-card p{color:var(--organic-muted)}
+body[data-theme="nature-organic"] .tabs-grid,body[data-theme="nature-organic"] .bottom-tabs{background:rgba(12,19,12,.72);border:1px solid rgba(228,216,184,.16);box-shadow:0 16px 44px rgba(0,0,0,.32);backdrop-filter:blur(22px)}
+body[data-theme="nature-organic"] button,body[data-theme="nature-organic"] .tabs-grid button{border-radius:999px}
+body[data-theme="nature-organic"] .tabs-grid button.active,body[data-theme="nature-organic"] button.primary,body[data-theme="nature-organic"] .water-controls button{background:linear-gradient(135deg,#d6c58e,#78975b);color:#132012;border-color:rgba(255,255,255,.22);box-shadow:0 10px 26px rgba(80,99,53,.26)}
+body[data-theme="nature-organic"] .route-card,body[data-theme="nature-organic"] .weather-day-card,body[data-theme="nature-organic"] .plugin-pack-card,body[data-theme="nature-organic"] .nature-card,body[data-theme="nature-organic"] .health-card{background:linear-gradient(160deg,rgba(255,248,224,.09),rgba(8,18,12,.26));border-color:rgba(232,222,190,.16);border-radius:26px}
+body[data-theme="nature-organic"] .search-box,body[data-theme="nature-organic"] input,body[data-theme="nature-organic"] select,body[data-theme="nature-organic"] textarea{background:rgba(247,240,219,.94)!important;color:#172418!important;border-color:rgba(84,101,66,.28)!important;border-radius:18px!important}
+body[data-theme="nature-organic"] .pill{border-color:rgba(232,222,190,.24);background:rgba(9,18,11,.30)}
+body[data-theme="nature-organic"] .pill.online{background:rgba(75,105,53,.45);color:#f3ffd8}.pill.warn{background:#493e18;color:#ffe28a}
+@keyframes organic-sun{from{transform:translate3d(-1%,0,0);opacity:.48}to{transform:translate3d(2%,1%,0);opacity:.86}}
+@keyframes organic-leaves{from{transform:translate3d(-1.5%,-.5%,0) rotate(-1deg)}to{transform:translate3d(1.5%,.5%,0) rotate(1deg)}}
+@media(max-width:760px){body[data-theme="nature-organic"] .hero-card{min-height:260px;border-radius:32px}body[data-theme="nature-organic"] .panel,body[data-theme="nature-organic"] .mini-panel{border-radius:28px}}
