@@ -787,10 +787,43 @@ def command(name, payload=None):
     if name=='toggle-hotspot':
         st=read_state(); st['hotspot_enabled']=not st.get('hotspot_enabled', True); write_state(st); return sh('/usr/local/bin/mappi3-hotspot.sh', timeout=40)
 
+
+MEDIA_ROOT = pathlib.Path('/var/lib/mappi3/media')
+MEDIA_EXTS = {'.mp3':'audio/mpeg','.ogg':'audio/ogg','.wav':'audio/wav','.m4a':'audio/mp4','.flac':'audio/flac','.mp4':'video/mp4','.webm':'video/webm','.mov':'video/quicktime'}
+
+def media_library_status():
+    MEDIA_ROOT.mkdir(parents=True, exist_ok=True)
+    items=[]; total=0
+    for p in MEDIA_ROOT.rglob('*'):
+        try:
+            if not p.is_file() or p.suffix.lower() not in MEDIA_EXTS: continue
+            st=p.stat(); total += st.st_size
+            rel=p.relative_to(MEDIA_ROOT).as_posix()
+            kind='video' if MEDIA_EXTS[p.suffix.lower()].startswith('video') else 'audio'
+            items.append({'id': hashlib.sha1(rel.encode()).hexdigest()[:12], 'name': p.stem.replace('_',' ').replace('-',' '), 'file': rel, 'url': '/media/'+urllib.parse.quote(rel), 'kind': kind, 'size_bytes': st.st_size, 'size_mb': round(st.st_size/1024/1024,2), 'modified': st.st_mtime, 'content_type': MEDIA_EXTS[p.suffix.lower()]})
+        except Exception: pass
+    items=sorted(items, key=lambda x:(x['kind'], x['name'].lower()))[:500]
+    return {'ok': True, 'root': str(MEDIA_ROOT), 'count': len(items), 'total_mb': round(total/1024/1024,2), 'items': items, 'supported': sorted(MEDIA_EXTS.keys()), 'hint': 'Copy music/videos to /var/lib/mappi3/media on larger SD cards; stream them over the MapPI3 hotspot.'}
+
+def media_manifest():
+    data=media_library_status()
+    if not data['items']:
+        data['starter_collections']=[
+            {'name':'Ambient starters','items':['rain','creek','forest','night insects','campfire','white noise'], 'note':'Generated in browser until real audio loops are installed.'},
+            {'name':'Trail media folder','path':str(MEDIA_ROOT), 'note':'Add MP3/OGG/WAV/MP4/WEBM files here.'}
+        ]
+    return data
+
 class Handler(http.server.SimpleHTTPRequestHandler):
     def translate_path(self, path):
         path=urllib.parse.urlparse(path).path
         if path.startswith('/api/'): return str(APP_DIR/'index.html')
+        if path.startswith('/media/'):
+            rel=urllib.parse.unquote(path[len('/media/'):]).lstrip('/'); target=(MEDIA_ROOT/rel).resolve()
+            try:
+                if str(target).startswith(str(MEDIA_ROOT.resolve())) and target.is_file(): return str(target)
+            except Exception: pass
+            return str(APP_DIR/'index.html')
         p=APP_DIR/path.lstrip('/')
         if p.is_dir(): p=p/'index.html'
         if not p.exists(): p=APP_DIR/'index.html'
@@ -815,6 +848,7 @@ class Handler(http.server.SimpleHTTPRequestHandler):
         if self.path.startswith('/api/weather'):
             qs=urllib.parse.parse_qs(urllib.parse.urlparse(self.path).query); self.json_response(pi_weather({k:v[-1] for k,v in qs.items()})); return
         if self.path.startswith('/api/online-maintenance/log'): self.json_response(online_maintenance_log()); return
+        if self.path.startswith('/api/media/library'): self.json_response(media_manifest()); return
         if self.path.startswith('/api/sense'): self.json_response({'ok': True, 'sense': sense_snapshot(), 'state': read_state(), 'available_modes': SENSE_MODES, 'time': time.time()}); return
         return super().do_GET()
     def do_DELETE(self):

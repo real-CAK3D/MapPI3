@@ -1,3 +1,3 @@
 #!/usr/bin/env bash
 set -euo pipefail
-echo "MapPI3 plugin media-library uninstall scaffold only."
+echo "Media library plugin disabled. User media under /var/lib/mappi3/media is preserved; remove manually if desired."
