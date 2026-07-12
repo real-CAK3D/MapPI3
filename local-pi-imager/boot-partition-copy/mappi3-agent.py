@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-import base64, fcntl, hashlib, http.server, json, math, os, pathlib, random, shutil, socket, sqlite3, struct, subprocess, threading, time, urllib.parse, urllib.request, uuid
+import base64, fcntl, hashlib, http.server, io, json, math, os, pathlib, random, shutil, socket, sqlite3, struct, subprocess, threading, time, urllib.parse, urllib.request, uuid
 APP_DIR = pathlib.Path('/opt/mappi3/app')
 STATE = pathlib.Path('/var/lib/mappi3/state.json')
 PORT = int(os.environ.get('MAPPI3_PORT','5050'))
@@ -295,6 +295,43 @@ BUILTIN_JSON_MODELS = {
             {'name':'Pale mushroom-like color cue','vector':[0.03,0.04,0.04,0.12,0.48,0.28],'safety':'Deadly mushrooms can be pale. Need underside, stem, base, spore print, expert ID.'},
             {'name':'Dark/woodland fungi-like cue','vector':[0.08,0.03,0.08,0.45,0.10,0.42],'safety':'Mushroom/wood texture cue only; do not consume.'}
         ]
+    },
+    'animal-track-prototypes-v1.json': {
+        'id':'animal-track-prototypes-v1','kind':'prototype-classifier','version':'1.0','features':['green_ratio','blue_ratio','orange_ratio','dark_ratio','bright_ratio','edge_mean_scaled'],
+        'labels':[
+            {'name':'Animal/fur/low-light texture cue','vector':[0.10,0.04,0.10,0.42,0.12,0.44],'safety':'Wildlife cue only. Keep distance and verify with tracks/sound/context.'},
+            {'name':'Track/scat contrast cue','vector':[0.06,0.03,0.12,0.36,0.18,0.58],'safety':'Track/scat cue only; use scale, stride, habitat, and freshness.'},
+            {'name':'Bird/sky silhouette cue','vector':[0.03,0.30,0.02,0.25,0.30,0.50],'safety':'Bird/silhouette cue only; do not disturb nests or wildlife.'}
+        ]
+    },
+    'insect-closeup-prototypes-v1.json': {
+        'id':'insect-closeup-prototypes-v1','kind':'prototype-classifier','version':'1.0','features':['green_ratio','blue_ratio','orange_ratio','dark_ratio','bright_ratio','edge_mean_scaled'],
+        'labels':[
+            {'name':'Bug/spider close-up texture cue','vector':[0.12,0.04,0.16,0.35,0.12,0.70],'safety':'Bite/sting risk varies; do not handle unknown bugs/spiders.'},
+            {'name':'Tick-like dark small-object cue','vector':[0.04,0.02,0.04,0.55,0.05,0.62],'safety':'If attached tick: remove properly, save/photo, monitor symptoms.'}
+        ]
+    },
+    'rock-mineral-prototypes-v1.json': {
+        'id':'rock-mineral-prototypes-v1','kind':'prototype-classifier','version':'1.0','features':['green_ratio','blue_ratio','orange_ratio','dark_ratio','bright_ratio','edge_mean_scaled'],
+        'labels':[
+            {'name':'Gray rock/mineral texture cue','vector':[0.05,0.05,0.04,0.28,0.22,0.50],'safety':'Geology cue only. Do not rely on app for mine/slope/cave safety.'},
+            {'name':'Quartz/light mineral cue','vector':[0.02,0.04,0.02,0.08,0.58,0.42],'safety':'Light mineral cue only; verify hardness/streak/context.'},
+            {'name':'Iron/orange mineral cue','vector':[0.04,0.03,0.34,0.18,0.18,0.40],'safety':'Oxide/rust cue only; do not taste/ingest minerals.'}
+        ]
+    },
+    'barcode-ocr-prototypes-v1.json': {
+        'id':'barcode-ocr-prototypes-v1','kind':'prototype-classifier','version':'1.0','features':['green_ratio','blue_ratio','orange_ratio','dark_ratio','bright_ratio','edge_mean_scaled'],
+        'labels':[
+            {'name':'High-contrast code/text-like cue','vector':[0.01,0.01,0.01,0.48,0.42,0.80],'safety':'Barcode/OCR cue only until ZXing/Tesseract plugin is installed.'},
+            {'name':'Low-contrast label/text cue','vector':[0.02,0.02,0.02,0.22,0.35,0.55],'safety':'Text cue only; verify labels manually.'}
+        ]
+    },
+    'injury-safety-prototypes-v1.json': {
+        'id':'injury-safety-prototypes-v1','kind':'safety-router','version':'1.0','features':['green_ratio','blue_ratio','orange_ratio','dark_ratio','bright_ratio','edge_mean_scaled'],
+        'labels':[
+            {'name':'Skin/injury image safety router','vector':[0.02,0.02,0.22,0.18,0.26,0.36],'safety':'Do not diagnose from image. Use first aid decision tree and seek care for serious symptoms.'},
+            {'name':'Bite/sting/rash safety router','vector':[0.04,0.02,0.18,0.24,0.22,0.42],'safety':'Monitor swelling, breathing, fever, spreading redness; emergency care if severe.'}
+        ]
     }
 }
 
@@ -398,7 +435,7 @@ def basic_image_model(image_path, category):
 
 def prototype_model_match(category, vision):
     ensure_builtin_models()
-    fmap={'cloud':'cloud-color-prototypes-v1.json','plant':'plant-green-prototypes-v1.json','auto':'plant-green-prototypes-v1.json','mushroom':'fungi-color-prototypes-v1.json'}
+    fmap={'cloud':'cloud-color-prototypes-v1.json','plant':'plant-green-prototypes-v1.json','auto':'plant-green-prototypes-v1.json','mushroom':'fungi-color-prototypes-v1.json','animal':'animal-track-prototypes-v1.json','track':'animal-track-prototypes-v1.json','bug':'insect-closeup-prototypes-v1.json','rock':'rock-mineral-prototypes-v1.json','barcode':'barcode-ocr-prototypes-v1.json','ocr':'barcode-ocr-prototypes-v1.json','injury':'injury-safety-prototypes-v1.json'}
     name=fmap.get(category)
     if not name or not vision or not isinstance(vision.get('features'), dict): return None
     try:
@@ -534,10 +571,30 @@ def gps_diagnose():
 def field_ai_verify(payload=None):
     payload=payload or {}; ensure_builtin_models()
     status_info=field_ai_status()
-    # 1x1 green PNG exercises Pillow/prototype path with tiny payload.
-    sample='iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAIAAACQd1PeAAAADElEQVR4nGNgaGD4DwABBAEAgh1Y6QAAAABJRU5ErkJggg=='
-    result=field_ai_analyze({'category': payload.get('category') or 'plant', 'image': sample, 'notes':'MapPI3 self-test observation'})
-    return {'ok': bool(result.get('ok')), 'status': status_info, 'sample': {'vision_model': result.get('vision_model'), 'prototype_model': result.get('prototype_model'), 'possible_identification': result.get('possible_identification'), 'observation_id': result.get('observation_id')}}
+    colors={'plant':(30,180,45),'cloud':(245,245,245),'mushroom':(220,130,35),'animal':(55,48,42),'bug':(18,18,18),'track':(85,70,55),'rock':(145,145,145),'barcode':(0,0,0),'injury':(205,115,95)}
+    def sample_png(color):
+        try:
+            from PIL import Image, ImageDraw
+            img=Image.new('RGB',(24,24),color)
+            draw=ImageDraw.Draw(img)
+            if color==(0,0,0):
+                img=Image.new('RGB',(24,24),(255,255,255)); draw=ImageDraw.Draw(img)
+                for x in range(0,24,4): draw.rectangle([x,0,x+1,23], fill=(0,0,0))
+            else:
+                draw.line((0,0,23,23), fill=tuple(max(0,c-45) for c in color), width=2)
+                draw.line((23,0,0,23), fill=tuple(min(255,c+45) for c in color), width=2)
+            buf=io.BytesIO(); img.save(buf, format='PNG')
+            return base64.b64encode(buf.getvalue()).decode()
+        except Exception:
+            return 'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAIAAACQd1PeAAAADElEQVR4nGNgaGD4DwABBAEAgh1Y6QAAAABJRU5ErkJggg=='
+    samples={k:sample_png(v) for k,v in colors.items()}
+    requested=payload.get('category')
+    cats=[requested] if requested and requested!='all' else list(samples.keys())
+    results={}
+    for cat in cats:
+        result=field_ai_analyze({'category': cat, 'image': samples.get(cat) or samples['plant'], 'notes':'MapPI3 multi-model self-test observation'})
+        results[cat]={'ok': bool(result.get('ok')), 'vision_model': result.get('vision_model'), 'prototype_model': result.get('prototype_model'), 'possible_identification': result.get('possible_identification'), 'observation_id': result.get('observation_id')}
+    return {'ok': all(v.get('ok') and v.get('prototype_model') for v in results.values()), 'status': status_info, 'results': results, 'sample': next(iter(results.values()), {})}
 
 def start_online_maintenance(payload=None):
     payload=payload or {}

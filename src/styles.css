@@ -95,3 +95,9 @@ body[data-theme="forest-dawn"]{background:radial-gradient(circle at top,#d9f5bd 
 
 /* Weather center */
 .weather-tabs{display:flex;gap:8px;overflow:auto;margin:10px 0}.weather-tabs button.active{border-color:rgba(75,210,255,.65);background:rgba(75,210,255,.12)}.weather-summary .stat{min-width:130px}.weather-day-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:12px;margin:12px 0}.weather-day-card{border:1px solid rgba(255,255,255,.12);border-radius:18px;background:rgba(255,255,255,.05);padding:12px;display:grid;gap:10px}.weather-day-card.warn{border-color:rgba(255,191,87,.55);background:rgba(255,191,87,.1)}.weather-big-icon{font-size:2rem}.mini-bars{display:grid;gap:6px}.hour-strip{display:flex;gap:8px;overflow:auto;padding-bottom:8px}.hour-strip div{min-width:105px;border:1px solid rgba(255,255,255,.12);border-radius:14px;background:rgba(0,0,0,.14);padding:8px;display:grid;gap:4px}.weather-page pre{white-space:pre-wrap;max-height:280px;overflow:auto;background:rgba(0,0,0,.22);border-radius:12px;padding:10px}
+
+
+/* Prepared-before-GPS readiness/model panels */
+.offline-readiness{display:flex;flex-wrap:wrap;gap:7px;margin:10px 0;padding:10px;border:1px solid rgba(255,255,255,.12);border-radius:14px;background:rgba(255,255,255,.04)}
+.offline-readiness span{font-size:.82rem;border:1px solid rgba(255,255,255,.12);border-radius:999px;padding:4px 8px}.offline-readiness .ok{color:#a9f5c6}.offline-readiness .warn{color:#ffd27d}
+.model-result-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:8px;margin:10px 0}.model-result-grid div{border:1px solid rgba(255,255,255,.12);border-radius:12px;padding:8px;background:rgba(0,0,0,.16);display:grid;gap:3px}.model-result-grid span{color:#9fe7ff}.model-result-grid small{color:var(--muted)}
