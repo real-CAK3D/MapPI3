@@ -416,6 +416,7 @@ def field_ai_db():
     conn=sqlite3.connect(str(FIELD_AI_DB)); conn.row_factory=sqlite3.Row
     conn.execute('''CREATE TABLE IF NOT EXISTS species (id TEXT PRIMARY KEY, common_name TEXT, scientific_name TEXT, category TEXT, description TEXT, identification_features TEXT, habitat TEXT, geographic_range TEXT, seasonal_information TEXT, toxicity TEXT, edibility TEXT, dangerous_lookalikes TEXT, handling_warnings TEXT, first_aid_instructions TEXT, survival_notes TEXT, additional_photo_requirements TEXT, confidence_threshold REAL, source TEXT)''')
     conn.execute('''CREATE TABLE IF NOT EXISTS observations (id TEXT PRIMARY KEY, created_at REAL, category TEXT, image_path TEXT, result_json TEXT, notes TEXT)''')
+    conn.execute('''CREATE TABLE IF NOT EXISTS corrections (id TEXT PRIMARY KEY, created_at REAL, observation_id TEXT, category TEXT, ai_guess TEXT, correction TEXT, evidence TEXT, source TEXT, votes INTEGER DEFAULT 0, public INTEGER DEFAULT 0)''')
     conn.execute('''CREATE TABLE IF NOT EXISTS plugins (id TEXT PRIMARY KEY, kind TEXT, label TEXT, path TEXT, enabled INTEGER, config_json TEXT)''')
     for row in FIELD_GUIDE_SEED:
         conn.execute('INSERT OR IGNORE INTO species VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)', row)
@@ -428,11 +429,11 @@ def field_ai_categories():
     return {'ok': True, 'categories': FIELD_AI_CATEGORIES, 'plugins': rows, 'offline': True, 'model_policy': 'load-one-specialist-at-a-time; TensorFlow Lite/NCNN INT8 preferred; current build uses safe offline reference fallback until model files are installed'}
 
 def field_ai_status():
-    ensure_builtin_models(); conn=field_ai_db(); species=conn.execute('SELECT COUNT(*) c FROM species').fetchone()['c']; obs=conn.execute('SELECT COUNT(*) c FROM observations').fetchone()['c']; plugins=[dict(r) for r in conn.execute('SELECT * FROM plugins ORDER BY id')]; conn.close()
+    ensure_builtin_models(); conn=field_ai_db(); species=conn.execute('SELECT COUNT(*) c FROM species').fetchone()['c']; obs=conn.execute('SELECT COUNT(*) c FROM observations').fetchone()['c']; corrections=conn.execute('SELECT COUNT(*) c FROM corrections').fetchone()['c']; plugins=[dict(r) for r in conn.execute('SELECT * FROM plugins ORDER BY id')]; conn.close()
     model_dir=pathlib.Path('/opt/mappi3/models')
     installed=[]
     if model_dir.exists(): installed=[p.name for p in model_dir.glob('*') if p.is_file()]
-    return {'ok': True, 'offline': True, 'database': str(FIELD_AI_DB), 'species_records': species, 'observations': obs, 'model_dir': str(model_dir), 'installed_models': installed, 'plugins': plugins, 'memory_policy': 'Zero 2 W: one model loaded at a time; image resize target 224/320; avoid PyTorch on Pi'}
+    return {'ok': True, 'offline': True, 'database': str(FIELD_AI_DB), 'species_records': species, 'observations': obs, 'corrections': corrections, 'model_dir': str(model_dir), 'installed_models': installed, 'plugins': plugins, 'memory_policy': 'Zero 2 W: one model loaded at a time; image resize target 224/320; avoid PyTorch on Pi'}
 
 def _species_by_category(conn, category):
     if category in ('auto','survival'):
@@ -528,6 +529,20 @@ def field_ai_analyze(payload):
 
 def field_ai_history():
     conn=field_ai_db(); rows=[dict(r) for r in conn.execute('SELECT id, created_at, category, image_path, notes FROM observations ORDER BY created_at DESC LIMIT 50')]; conn.close(); return {'ok': True, 'history': rows}
+
+def field_ai_corrections():
+    conn=field_ai_db(); rows=[dict(r) for r in conn.execute('SELECT * FROM corrections ORDER BY votes DESC, created_at DESC LIMIT 100')]; conn.close(); return {'ok': True, 'corrections': rows, 'policy': 'Local first. Public/wiki sync later should require source/evidence, votes, and review flags.'}
+
+def field_ai_add_correction(payload):
+    conn=field_ai_db(); cid='corr-'+uuid.uuid4().hex[:12]
+    row=(cid,time.time(),str(payload.get('observation_id') or '')[:80],str(payload.get('category') or 'unknown')[:40],str(payload.get('ai_guess') or '')[:200],str(payload.get('correction') or '')[:1000],str(payload.get('evidence') or '')[:1000],str(payload.get('source') or 'local user note')[:200],0,1 if payload.get('public') else 0)
+    conn.execute('INSERT INTO corrections VALUES (?,?,?,?,?,?,?,?,?,?)', row); conn.commit(); conn.close()
+    return {'ok': True, 'correction_id': cid, 'message': 'Correction saved locally; future public sync can publish it as a fact-check note.'}
+
+def field_ai_vote_correction(payload):
+    cid=str(payload.get('id') or '')[:80]; delta=1 if int(payload.get('delta') or 0)>0 else -1
+    conn=field_ai_db(); conn.execute('UPDATE corrections SET votes=COALESCE(votes,0)+? WHERE id=?', (delta,cid)); conn.commit(); conn.close()
+    return field_ai_corrections()
 
 def field_ai_clear_history():
     conn=field_ai_db(); conn.execute('DELETE FROM observations'); conn.commit(); conn.close(); return {'ok': True, 'message': 'Field AI observation history cleared.'}
@@ -794,6 +809,7 @@ class Handler(http.server.SimpleHTTPRequestHandler):
         if self.path.startswith('/api/field-ai/categories'): self.json_response(field_ai_categories()); return
         if self.path.startswith('/api/field-ai/status'): self.json_response(field_ai_status()); return
         if self.path.startswith('/api/field-ai/history'): self.json_response(field_ai_history()); return
+        if self.path.startswith('/api/field-ai/corrections'): self.json_response(field_ai_corrections()); return
         if self.path.startswith('/api/vnc/status'): self.json_response(vnc_status()); return
         if self.path.startswith('/api/captive/status'): self.json_response(captive_status()); return
         if self.path.startswith('/api/weather'):
@@ -810,6 +826,8 @@ class Handler(http.server.SimpleHTTPRequestHandler):
         if self.path.startswith('/api/sense-mode'): self.json_response(set_sense_mode(payload.get('mode') or payload.get('sense_mode') or 'compass', payload)); return
         if self.path.startswith('/api/calibrate'): self.json_response(calibrate(payload.get('target') or 'all')); return
         if self.path.startswith('/api/field-ai/analyze'): self.json_response(field_ai_analyze(payload)); return
+        if self.path.startswith('/api/field-ai/corrections/vote'): self.json_response(field_ai_vote_correction(payload)); return
+        if self.path.startswith('/api/field-ai/corrections'): self.json_response(field_ai_add_correction(payload)); return
         if self.path.startswith('/api/command/'): self.json_response(command(self.path.rsplit('/',1)[-1], payload)); return
         self.send_error(404)
 
