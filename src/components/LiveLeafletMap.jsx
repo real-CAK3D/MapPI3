@@ -90,12 +90,14 @@ export default function LiveLeafletMap({ trace = [], center = defaultCenter, act
     }
 
     (waypoints || []).filter(point => Number.isFinite(point.lat) && Number.isFinite(point.lon)).forEach(point => {
-      const marker = L.marker([point.lat, point.lon], { icon: iconFor(point), draggable: Boolean(point.custom && onWaypointMove) })
-        .bindTooltip(`${point.name} · ${point.type || 'Waypoint'} · ${point.mile ?? '—'} mi${point.custom ? ' · custom' : ''}`, { direction: 'top' })
+      const marker = L.marker([point.lat, point.lon], { icon: iconFor(point), draggable: Boolean((point.custom || point.editable) && onWaypointMove), keyboard: false, autoPan: true })
+        .bindTooltip(`${point.name} · ${point.type || 'Waypoint'} · ${point.mile ?? '—'} mi${point.custom || point.editable ? ' · drag to move' : ''}`, { direction: 'top' })
         .addTo(map);
-      marker.bindPopup(`<strong>${point.name}</strong><br>${point.type || 'Waypoint'} · ${point.mile ?? '—'} mi${point.notes ? `<br>${point.notes}` : ''}`);
-      if (point.custom && onWaypointMove) {
+      marker.bindPopup(`<strong>${point.name}</strong><br>${point.type || 'Waypoint'} · ${point.mile ?? '—'} mi${point.notes ? `<br>${point.notes}` : ''}${point.custom || point.editable ? '<br><em>Drag this marker to move it.</em>' : ''}`);
+      if ((point.custom || point.editable) && onWaypointMove) {
+        marker.on('dragstart', () => map.dragging.disable());
         marker.on('dragend', event => {
+          map.dragging.enable();
           const latlng = event.target.getLatLng();
           onWaypointMove(point.id, { lat: latlng.lat, lon: latlng.lng });
         });

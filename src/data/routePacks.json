@@ -14565,5 +14565,7521 @@
       }
     ],
     "markerDensity": "rich route markers from attached geometry"
+  },
+  {
+    "id": "me-popham-morse-mountain",
+    "schemaVersion": "mappi3.routePack.v1",
+    "name": "Morse Mountain to Seawall Beach",
+    "place": "Phippsburg, Maine",
+    "region": "Maine coast",
+    "summary": "Seed planning route for Morse Mountain to Seawall Beach. Added to broaden MapPI3 route choices; verify current access and replace with GPX/OSM before field reliance.",
+    "difficulty": "Moderate",
+    "routeType": "Out-and-back",
+    "status": "Ready",
+    "distanceMiles": 3.8,
+    "estimatedTime": "2h 53m",
+    "elevationGainFt": 804,
+    "storageEstimateMb": 105,
+    "tags": [
+      "maine",
+      "coast",
+      "beach",
+      "day hike",
+      "seed-planning"
+    ],
+    "sync": {
+      "state": "local-seed-catalog",
+      "lastSynced": "seed-v1.2.25",
+      "supabaseReady": false
+    },
+    "offline": {
+      "required": false,
+      "tileFormat": "MBTiles",
+      "tileBounds": [
+        -69.88701,
+        43.70283,
+        -69.78819,
+        43.78277
+      ],
+      "minZoom": 10,
+      "maxZoom": 16,
+      "layers": [
+        "trail",
+        "topo",
+        "waypoints"
+      ]
+    },
+    "weather": {
+      "cachePolicy": "refresh-when-online",
+      "lastForecastLabel": "not cached"
+    },
+    "geometry": {
+      "type": "LineString",
+      "coordinates": [
+        [
+          -69.857014,
+          43.732831
+        ],
+        [
+          -69.843989,
+          43.738922
+        ],
+        [
+          -69.838232,
+          43.742106
+        ],
+        [
+          -69.836968,
+          43.743494
+        ],
+        [
+          -69.831211,
+          43.746678
+        ],
+        [
+          -69.818186,
+          43.752769
+        ]
+      ]
+    },
+    "mapPreviewPath": [
+      [
+        30,
+        120
+      ],
+      [
+        80,
+        170
+      ],
+      [
+        130,
+        174
+      ],
+      [
+        180,
+        128
+      ],
+      [
+        230,
+        75
+      ],
+      [
+        280,
+        63
+      ]
+    ],
+    "waypoints": [
+      {
+        "id": "me-popham-morse-mountain-wp-1",
+        "name": "Morse Mountain to Seawall Beach start",
+        "type": "Start",
+        "mile": 0.0,
+        "icon": "\u25ce",
+        "lat": 43.732831,
+        "lon": -69.857014,
+        "source": "MapPI3 seed planning marker \u2014 verify against GPX/OSM"
+      },
+      {
+        "id": "me-popham-morse-mountain-wp-2",
+        "name": "Morse Mountain to Seawall Beach bearing check",
+        "type": "Waypoint",
+        "mile": 0.95,
+        "icon": "\u25c6",
+        "lat": 43.738922,
+        "lon": -69.843989,
+        "source": "MapPI3 seed planning marker \u2014 verify against GPX/OSM"
+      },
+      {
+        "id": "me-popham-morse-mountain-wp-3",
+        "name": "Morse Mountain to Seawall Beach pacing marker",
+        "type": "Waypoint",
+        "mile": 1.9,
+        "icon": "\u25c6",
+        "lat": 43.743494,
+        "lon": -69.836968,
+        "source": "MapPI3 seed planning marker \u2014 verify against GPX/OSM"
+      },
+      {
+        "id": "me-popham-morse-mountain-wp-4",
+        "name": "Morse Mountain to Seawall Beach view / rest",
+        "type": "Waypoint",
+        "mile": 2.85,
+        "icon": "\ud83d\udc41\ufe0f",
+        "lat": 43.746678,
+        "lon": -69.831211,
+        "source": "MapPI3 seed planning marker \u2014 verify against GPX/OSM"
+      },
+      {
+        "id": "me-popham-morse-mountain-wp-5",
+        "name": "Morse Mountain to Seawall Beach turnaround / finish",
+        "type": "Finish",
+        "mile": 3.8,
+        "icon": "\u25ce",
+        "lat": 43.752769,
+        "lon": -69.818186,
+        "source": "MapPI3 seed planning marker \u2014 verify against GPX/OSM"
+      }
+    ],
+    "pois": [
+      {
+        "id": "me-popham-morse-mountain-poi",
+        "type": "verification",
+        "label": "Seed geometry: verify trailhead/access/closures and import GPX before field navigation.",
+        "mile": 0.1
+      }
+    ],
+    "landType": "Public trail / verify local rules",
+    "catalogCategory": "regional seed catalog",
+    "mountainArea": "Maine coast",
+    "geometryQuality": "rough seed geometry \u2014 import verified GPX/OSM before relying on this path",
+    "color": "#9ce36c",
+    "segments": [
+      {
+        "id": "me-popham-morse-mountain-seg-1",
+        "name": "Seed route line",
+        "startMile": 0,
+        "endMile": 3.8,
+        "color": "#9ce36c"
+      }
+    ],
+    "markerDensity": "seed route markers from approximate geometry"
+  },
+  {
+    "id": "me-bald-pate-preserve",
+    "schemaVersion": "mappi3.routePack.v1",
+    "name": "Bald Pate Mountain Preserve Loop",
+    "place": "Bridgton, Maine",
+    "region": "Western Maine",
+    "summary": "Seed planning route for Bald Pate Mountain Preserve Loop. Added to broaden MapPI3 route choices; verify current access and replace with GPX/OSM before field reliance.",
+    "difficulty": "Moderate",
+    "routeType": "Loop",
+    "status": "Ready",
+    "distanceMiles": 2.6,
+    "estimatedTime": "1h 18m",
+    "elevationGainFt": 588,
+    "storageEstimateMb": 86,
+    "tags": [
+      "maine",
+      "summit",
+      "pond",
+      "loop",
+      "seed-planning"
+    ],
+    "sync": {
+      "state": "local-seed-catalog",
+      "lastSynced": "seed-v1.2.25",
+      "supabaseReady": false
+    },
+    "offline": {
+      "required": false,
+      "tileFormat": "MBTiles",
+      "tileBounds": [
+        -70.83161,
+        44.0081,
+        -70.7419,
+        44.0863
+      ],
+      "minZoom": 10,
+      "maxZoom": 16,
+      "layers": [
+        "trail",
+        "topo",
+        "waypoints"
+      ]
+    },
+    "weather": {
+      "cachePolicy": "refresh-when-online",
+      "lastForecastLabel": "not cached"
+    },
+    "geometry": {
+      "type": "LineString",
+      "coordinates": [
+        [
+          -70.7719,
+          44.0472
+        ],
+        [
+          -70.777664,
+          44.056304
+        ],
+        [
+          -70.795459,
+          44.056304
+        ],
+        [
+          -70.801615,
+          44.0472
+        ],
+        [
+          -70.792419,
+          44.038096
+        ],
+        [
+          -70.78095,
+          44.038096
+        ],
+        [
+          -70.77292,
+          44.0472
+        ]
+      ]
+    },
+    "mapPreviewPath": [
+      [
+        30,
+        120
+      ],
+      [
+        80,
+        170
+      ],
+      [
+        130,
+        174
+      ],
+      [
+        180,
+        128
+      ],
+      [
+        230,
+        75
+      ],
+      [
+        280,
+        63
+      ],
+      [
+        330,
+        104
+      ]
+    ],
+    "waypoints": [
+      {
+        "id": "me-bald-pate-preserve-wp-1",
+        "name": "Bald Pate Mountain Preserve Loop start",
+        "type": "Start",
+        "mile": 0.0,
+        "icon": "\u25ce",
+        "lat": 44.0472,
+        "lon": -70.7719,
+        "source": "MapPI3 seed planning marker \u2014 verify against GPX/OSM"
+      },
+      {
+        "id": "me-bald-pate-preserve-wp-2",
+        "name": "Bald Pate Mountain Preserve Loop bearing check",
+        "type": "Waypoint",
+        "mile": 0.65,
+        "icon": "\u25c6",
+        "lat": 44.056304,
+        "lon": -70.777664,
+        "source": "MapPI3 seed planning marker \u2014 verify against GPX/OSM"
+      },
+      {
+        "id": "me-bald-pate-preserve-wp-3",
+        "name": "Bald Pate Mountain Preserve Loop pacing marker",
+        "type": "Waypoint",
+        "mile": 1.3,
+        "icon": "\u25c6",
+        "lat": 44.0472,
+        "lon": -70.801615,
+        "source": "MapPI3 seed planning marker \u2014 verify against GPX/OSM"
+      },
+      {
+        "id": "me-bald-pate-preserve-wp-4",
+        "name": "Bald Pate Mountain Preserve Loop view / rest",
+        "type": "Waypoint",
+        "mile": 1.95,
+        "icon": "\ud83d\udc41\ufe0f",
+        "lat": 44.038096,
+        "lon": -70.78095,
+        "source": "MapPI3 seed planning marker \u2014 verify against GPX/OSM"
+      },
+      {
+        "id": "me-bald-pate-preserve-wp-5",
+        "name": "Bald Pate Mountain Preserve Loop turnaround / finish",
+        "type": "Finish",
+        "mile": 2.6,
+        "icon": "\u25ce",
+        "lat": 44.0472,
+        "lon": -70.77292,
+        "source": "MapPI3 seed planning marker \u2014 verify against GPX/OSM"
+      }
+    ],
+    "pois": [
+      {
+        "id": "me-bald-pate-preserve-poi",
+        "type": "verification",
+        "label": "Seed geometry: verify trailhead/access/closures and import GPX before field navigation.",
+        "mile": 0.1
+      }
+    ],
+    "landType": "Public trail / verify local rules",
+    "catalogCategory": "regional seed catalog",
+    "mountainArea": "Western Maine",
+    "geometryQuality": "rough seed geometry \u2014 import verified GPX/OSM before relying on this path",
+    "color": "#9ce36c",
+    "segments": [
+      {
+        "id": "me-bald-pate-preserve-seg-1",
+        "name": "Seed route line",
+        "startMile": 0,
+        "endMile": 2.6,
+        "color": "#9ce36c"
+      }
+    ],
+    "markerDensity": "seed route markers from approximate geometry"
+  },
+  {
+    "id": "me-morse-baldwin-hill",
+    "schemaVersion": "mappi3.routePack.v1",
+    "name": "Baldwin Hill Conservation Loop",
+    "place": "Fayette, Maine",
+    "region": "Kennebec Maine",
+    "summary": "Seed planning route for Baldwin Hill Conservation Loop. Added to broaden MapPI3 route choices; verify current access and replace with GPX/OSM before field reliance.",
+    "difficulty": "Easy",
+    "routeType": "Loop",
+    "status": "Ready",
+    "distanceMiles": 1.9,
+    "estimatedTime": "1h 57m",
+    "elevationGainFt": 462,
+    "storageEstimateMb": 75,
+    "tags": [
+      "maine",
+      "easy",
+      "local",
+      "view",
+      "seed-planning"
+    ],
+    "sync": {
+      "state": "local-seed-catalog",
+      "lastSynced": "seed-v1.2.25",
+      "supabaseReady": false
+    },
+    "offline": {
+      "required": false,
+      "tileFormat": "MBTiles",
+      "tileBounds": [
+        -70.09689,
+        44.36973,
+        -70.0086,
+        44.44707
+      ],
+      "minZoom": 10,
+      "maxZoom": 16,
+      "layers": [
+        "trail",
+        "topo",
+        "waypoints"
+      ]
+    },
+    "weather": {
+      "cachePolicy": "refresh-when-online",
+      "lastForecastLabel": "not cached"
+    },
+    "geometry": {
+      "type": "LineString",
+      "coordinates": [
+        [
+          -70.0386,
+          44.4084
+        ],
+        [
+          -70.044088,
+          44.417067
+        ],
+        [
+          -70.06103,
+          44.417067
+        ],
+        [
+          -70.06689,
+          44.4084
+        ],
+        [
+          -70.058135,
+          44.399733
+        ],
+        [
+          -70.047216,
+          44.399733
+        ],
+        [
+          -70.039571,
+          44.4084
+        ]
+      ]
+    },
+    "mapPreviewPath": [
+      [
+        30,
+        120
+      ],
+      [
+        80,
+        170
+      ],
+      [
+        130,
+        174
+      ],
+      [
+        180,
+        128
+      ],
+      [
+        230,
+        75
+      ],
+      [
+        280,
+        63
+      ],
+      [
+        330,
+        104
+      ]
+    ],
+    "waypoints": [
+      {
+        "id": "me-morse-baldwin-hill-wp-1",
+        "name": "Baldwin Hill Conservation Loop start",
+        "type": "Start",
+        "mile": 0.0,
+        "icon": "\u25ce",
+        "lat": 44.4084,
+        "lon": -70.0386,
+        "source": "MapPI3 seed planning marker \u2014 verify against GPX/OSM"
+      },
+      {
+        "id": "me-morse-baldwin-hill-wp-2",
+        "name": "Baldwin Hill Conservation Loop bearing check",
+        "type": "Waypoint",
+        "mile": 0.47,
+        "icon": "\u25c6",
+        "lat": 44.417067,
+        "lon": -70.044088,
+        "source": "MapPI3 seed planning marker \u2014 verify against GPX/OSM"
+      },
+      {
+        "id": "me-morse-baldwin-hill-wp-3",
+        "name": "Baldwin Hill Conservation Loop pacing marker",
+        "type": "Waypoint",
+        "mile": 0.95,
+        "icon": "\u25c6",
+        "lat": 44.4084,
+        "lon": -70.06689,
+        "source": "MapPI3 seed planning marker \u2014 verify against GPX/OSM"
+      },
+      {
+        "id": "me-morse-baldwin-hill-wp-4",
+        "name": "Baldwin Hill Conservation Loop view / rest",
+        "type": "Waypoint",
+        "mile": 1.42,
+        "icon": "\ud83d\udc41\ufe0f",
+        "lat": 44.399733,
+        "lon": -70.047216,
+        "source": "MapPI3 seed planning marker \u2014 verify against GPX/OSM"
+      },
+      {
+        "id": "me-morse-baldwin-hill-wp-5",
+        "name": "Baldwin Hill Conservation Loop turnaround / finish",
+        "type": "Finish",
+        "mile": 1.9,
+        "icon": "\u25ce",
+        "lat": 44.4084,
+        "lon": -70.039571,
+        "source": "MapPI3 seed planning marker \u2014 verify against GPX/OSM"
+      }
+    ],
+    "pois": [
+      {
+        "id": "me-morse-baldwin-hill-poi",
+        "type": "verification",
+        "label": "Seed geometry: verify trailhead/access/closures and import GPX before field navigation.",
+        "mile": 0.1
+      }
+    ],
+    "landType": "Public trail / verify local rules",
+    "catalogCategory": "regional seed catalog",
+    "mountainArea": "Kennebec Maine",
+    "geometryQuality": "rough seed geometry \u2014 import verified GPX/OSM before relying on this path",
+    "color": "#9ce36c",
+    "segments": [
+      {
+        "id": "me-morse-baldwin-hill-seg-1",
+        "name": "Seed route line",
+        "startMile": 0,
+        "endMile": 1.9,
+        "color": "#9ce36c"
+      }
+    ],
+    "markerDensity": "seed route markers from approximate geometry"
+  },
+  {
+    "id": "me-blueberry-mountain",
+    "schemaVersion": "mappi3.routePack.v1",
+    "name": "Blueberry Mountain via Stone House Trail",
+    "place": "Evans Notch, Maine",
+    "region": "Evans Notch",
+    "summary": "Seed planning route for Blueberry Mountain via Stone House Trail. Added to broaden MapPI3 route choices; verify current access and replace with GPX/OSM before field reliance.",
+    "difficulty": "Moderate",
+    "routeType": "Out-and-back",
+    "status": "Ready",
+    "distanceMiles": 4.4,
+    "estimatedTime": "2h 12m",
+    "elevationGainFt": 912,
+    "storageEstimateMb": 115,
+    "tags": [
+      "maine",
+      "evans notch",
+      "waterfall",
+      "summit",
+      "seed-planning"
+    ],
+    "sync": {
+      "state": "local-seed-catalog",
+      "lastSynced": "seed-v1.2.25",
+      "supabaseReady": false
+    },
+    "offline": {
+      "required": false,
+      "tileFormat": "MBTiles",
+      "tileBounds": [
+        -71.01963,
+        44.2226,
+        -70.95077,
+        44.3186
+      ],
+      "minZoom": 10,
+      "maxZoom": 16,
+      "layers": [
+        "trail",
+        "topo",
+        "waypoints"
+      ]
+    },
+    "weather": {
+      "cachePolicy": "refresh-when-online",
+      "lastForecastLabel": "not cached"
+    },
+    "geometry": {
+      "type": "LineString",
+      "coordinates": [
+        [
+          -70.986916,
+          44.252604
+        ],
+        [
+          -70.980771,
+          44.261986
+        ],
+        [
+          -70.982169,
+          44.26835
+        ],
+        [
+          -70.988231,
+          44.27285
+        ],
+        [
+          -70.989629,
+          44.279214
+        ],
+        [
+          -70.983484,
+          44.288596
+        ]
+      ]
+    },
+    "mapPreviewPath": [
+      [
+        30,
+        120
+      ],
+      [
+        80,
+        170
+      ],
+      [
+        130,
+        174
+      ],
+      [
+        180,
+        128
+      ],
+      [
+        230,
+        75
+      ],
+      [
+        280,
+        63
+      ]
+    ],
+    "waypoints": [
+      {
+        "id": "me-blueberry-mountain-wp-1",
+        "name": "Blueberry Mountain via Stone House Trail start",
+        "type": "Start",
+        "mile": 0.0,
+        "icon": "\u25ce",
+        "lat": 44.252604,
+        "lon": -70.986916,
+        "source": "MapPI3 seed planning marker \u2014 verify against GPX/OSM"
+      },
+      {
+        "id": "me-blueberry-mountain-wp-2",
+        "name": "Blueberry Mountain via Stone House Trail bearing check",
+        "type": "Waypoint",
+        "mile": 1.1,
+        "icon": "\u25c6",
+        "lat": 44.261986,
+        "lon": -70.980771,
+        "source": "MapPI3 seed planning marker \u2014 verify against GPX/OSM"
+      },
+      {
+        "id": "me-blueberry-mountain-wp-3",
+        "name": "Blueberry Mountain via Stone House Trail pacing marker",
+        "type": "Waypoint",
+        "mile": 2.2,
+        "icon": "\u25c6",
+        "lat": 44.27285,
+        "lon": -70.988231,
+        "source": "MapPI3 seed planning marker \u2014 verify against GPX/OSM"
+      },
+      {
+        "id": "me-blueberry-mountain-wp-4",
+        "name": "Blueberry Mountain via Stone House Trail view / rest",
+        "type": "Waypoint",
+        "mile": 3.3,
+        "icon": "\ud83d\udc41\ufe0f",
+        "lat": 44.279214,
+        "lon": -70.989629,
+        "source": "MapPI3 seed planning marker \u2014 verify against GPX/OSM"
+      },
+      {
+        "id": "me-blueberry-mountain-wp-5",
+        "name": "Blueberry Mountain via Stone House Trail turnaround / finish",
+        "type": "Finish",
+        "mile": 4.4,
+        "icon": "\u25ce",
+        "lat": 44.288596,
+        "lon": -70.983484,
+        "source": "MapPI3 seed planning marker \u2014 verify against GPX/OSM"
+      }
+    ],
+    "pois": [
+      {
+        "id": "me-blueberry-mountain-poi",
+        "type": "verification",
+        "label": "Seed geometry: verify trailhead/access/closures and import GPX before field navigation.",
+        "mile": 0.1
+      }
+    ],
+    "landType": "Public trail / verify local rules",
+    "catalogCategory": "regional seed catalog",
+    "mountainArea": "Evans Notch",
+    "geometryQuality": "rough seed geometry \u2014 import verified GPX/OSM before relying on this path",
+    "color": "#9ce36c",
+    "segments": [
+      {
+        "id": "me-blueberry-mountain-seg-1",
+        "name": "Seed route line",
+        "startMile": 0,
+        "endMile": 4.4,
+        "color": "#9ce36c"
+      }
+    ],
+    "markerDensity": "seed route markers from approximate geometry"
+  },
+  {
+    "id": "me-caribou-speckled",
+    "schemaVersion": "mappi3.routePack.v1",
+    "name": "Caribou Mountain Loop",
+    "place": "Evans Notch, Maine",
+    "region": "Evans Notch",
+    "summary": "Seed planning route for Caribou Mountain Loop. Added to broaden MapPI3 route choices; verify current access and replace with GPX/OSM before field reliance.",
+    "difficulty": "Hard",
+    "routeType": "Loop",
+    "status": "Ready",
+    "distanceMiles": 6.8,
+    "estimatedTime": "3h 23m",
+    "elevationGainFt": 2154,
+    "storageEstimateMb": 153,
+    "tags": [
+      "maine",
+      "evans notch",
+      "loop",
+      "summit",
+      "seed-planning"
+    ],
+    "sync": {
+      "state": "local-seed-catalog",
+      "lastSynced": "seed-v1.2.25",
+      "supabaseReady": false
+    },
+    "offline": {
+      "required": false,
+      "tileFormat": "MBTiles",
+      "tileBounds": [
+        -71.00396,
+        44.22748,
+        -70.9057,
+        44.31092
+      ],
+      "minZoom": 10,
+      "maxZoom": 16,
+      "layers": [
+        "trail",
+        "topo",
+        "waypoints"
+      ]
+    },
+    "weather": {
+      "cachePolicy": "refresh-when-online",
+      "lastForecastLabel": "not cached"
+    },
+    "geometry": {
+      "type": "LineString",
+      "coordinates": [
+        [
+          -70.9357,
+          44.2692
+        ],
+        [
+          -70.943123,
+          44.280923
+        ],
+        [
+          -70.966037,
+          44.280923
+        ],
+        [
+          -70.973963,
+          44.2692
+        ],
+        [
+          -70.962122,
+          44.257477
+        ],
+        [
+          -70.947353,
+          44.257477
+        ],
+        [
+          -70.937013,
+          44.2692
+        ]
+      ]
+    },
+    "mapPreviewPath": [
+      [
+        30,
+        120
+      ],
+      [
+        80,
+        170
+      ],
+      [
+        130,
+        174
+      ],
+      [
+        180,
+        128
+      ],
+      [
+        230,
+        75
+      ],
+      [
+        280,
+        63
+      ],
+      [
+        330,
+        104
+      ]
+    ],
+    "waypoints": [
+      {
+        "id": "me-caribou-speckled-wp-1",
+        "name": "Caribou Mountain Loop start",
+        "type": "Start",
+        "mile": 0.0,
+        "icon": "\u25ce",
+        "lat": 44.2692,
+        "lon": -70.9357,
+        "source": "MapPI3 seed planning marker \u2014 verify against GPX/OSM"
+      },
+      {
+        "id": "me-caribou-speckled-wp-2",
+        "name": "Caribou Mountain Loop bearing check",
+        "type": "Waypoint",
+        "mile": 1.7,
+        "icon": "\u25c6",
+        "lat": 44.280923,
+        "lon": -70.943123,
+        "source": "MapPI3 seed planning marker \u2014 verify against GPX/OSM"
+      },
+      {
+        "id": "me-caribou-speckled-wp-3",
+        "name": "Caribou Mountain Loop pacing marker",
+        "type": "Waypoint",
+        "mile": 3.4,
+        "icon": "\u25c6",
+        "lat": 44.2692,
+        "lon": -70.973963,
+        "source": "MapPI3 seed planning marker \u2014 verify against GPX/OSM"
+      },
+      {
+        "id": "me-caribou-speckled-wp-4",
+        "name": "Caribou Mountain Loop view / rest",
+        "type": "Waypoint",
+        "mile": 5.1,
+        "icon": "\ud83d\udc41\ufe0f",
+        "lat": 44.257477,
+        "lon": -70.947353,
+        "source": "MapPI3 seed planning marker \u2014 verify against GPX/OSM"
+      },
+      {
+        "id": "me-caribou-speckled-wp-5",
+        "name": "Caribou Mountain Loop turnaround / finish",
+        "type": "Finish",
+        "mile": 6.8,
+        "icon": "\u25ce",
+        "lat": 44.2692,
+        "lon": -70.937013,
+        "source": "MapPI3 seed planning marker \u2014 verify against GPX/OSM"
+      }
+    ],
+    "pois": [
+      {
+        "id": "me-caribou-speckled-poi",
+        "type": "verification",
+        "label": "Seed geometry: verify trailhead/access/closures and import GPX before field navigation.",
+        "mile": 0.1
+      }
+    ],
+    "landType": "Public trail / verify local rules",
+    "catalogCategory": "regional seed catalog",
+    "mountainArea": "Evans Notch",
+    "geometryQuality": "rough seed geometry \u2014 import verified GPX/OSM before relying on this path",
+    "color": "#9ce36c",
+    "segments": [
+      {
+        "id": "me-caribou-speckled-seg-1",
+        "name": "Seed route line",
+        "startMile": 0,
+        "endMile": 6.8,
+        "color": "#9ce36c"
+      }
+    ],
+    "markerDensity": "seed route markers from approximate geometry"
+  },
+  {
+    "id": "me-bigelow-avery",
+    "schemaVersion": "mappi3.routePack.v1",
+    "name": "Bigelow Avery Peak Approach",
+    "place": "Stratton, Maine",
+    "region": "Bigelow Preserve",
+    "summary": "Seed planning route for Bigelow Avery Peak Approach. Added to broaden MapPI3 route choices; verify current access and replace with GPX/OSM before field reliance.",
+    "difficulty": "Hard",
+    "routeType": "Out-and-back",
+    "status": "Ready",
+    "distanceMiles": 8.2,
+    "estimatedTime": "4h 05m",
+    "elevationGainFt": 2546,
+    "storageEstimateMb": 176,
+    "tags": [
+      "maine",
+      "bigelow",
+      "at",
+      "hard",
+      "seed-planning"
+    ],
+    "sync": {
+      "state": "local-seed-catalog",
+      "lastSynced": "seed-v1.2.25",
+      "supabaseReady": false
+    },
+    "offline": {
+      "required": false,
+      "tileFormat": "MBTiles",
+      "tileBounds": [
+        -70.33081,
+        45.08776,
+        -70.23919,
+        45.18624
+      ],
+      "minZoom": 10,
+      "maxZoom": 16,
+      "layers": [
+        "trail",
+        "topo",
+        "waypoints"
+      ]
+    },
+    "weather": {
+      "cachePolicy": "refresh-when-online",
+      "lastForecastLabel": "not cached"
+    },
+    "geometry": {
+      "type": "LineString",
+      "coordinates": [
+        [
+          -70.26985,
+          45.117757
+        ],
+        [
+          -70.269186,
+          45.128144
+        ],
+        [
+          -70.277814,
+          45.134814
+        ],
+        [
+          -70.292186,
+          45.139186
+        ],
+        [
+          -70.300814,
+          45.145856
+        ],
+        [
+          -70.30015,
+          45.156243
+        ]
+      ]
+    },
+    "mapPreviewPath": [
+      [
+        30,
+        120
+      ],
+      [
+        80,
+        170
+      ],
+      [
+        130,
+        174
+      ],
+      [
+        180,
+        128
+      ],
+      [
+        230,
+        75
+      ],
+      [
+        280,
+        63
+      ]
+    ],
+    "waypoints": [
+      {
+        "id": "me-bigelow-avery-wp-1",
+        "name": "Bigelow Avery Peak Approach start",
+        "type": "Start",
+        "mile": 0.0,
+        "icon": "\u25ce",
+        "lat": 45.117757,
+        "lon": -70.26985,
+        "source": "MapPI3 seed planning marker \u2014 verify against GPX/OSM"
+      },
+      {
+        "id": "me-bigelow-avery-wp-2",
+        "name": "Bigelow Avery Peak Approach bearing check",
+        "type": "Waypoint",
+        "mile": 2.05,
+        "icon": "\u25c6",
+        "lat": 45.128144,
+        "lon": -70.269186,
+        "source": "MapPI3 seed planning marker \u2014 verify against GPX/OSM"
+      },
+      {
+        "id": "me-bigelow-avery-wp-3",
+        "name": "Bigelow Avery Peak Approach pacing marker",
+        "type": "Waypoint",
+        "mile": 4.1,
+        "icon": "\u25c6",
+        "lat": 45.139186,
+        "lon": -70.292186,
+        "source": "MapPI3 seed planning marker \u2014 verify against GPX/OSM"
+      },
+      {
+        "id": "me-bigelow-avery-wp-4",
+        "name": "Bigelow Avery Peak Approach view / rest",
+        "type": "Waypoint",
+        "mile": 6.15,
+        "icon": "\ud83d\udc41\ufe0f",
+        "lat": 45.145856,
+        "lon": -70.300814,
+        "source": "MapPI3 seed planning marker \u2014 verify against GPX/OSM"
+      },
+      {
+        "id": "me-bigelow-avery-wp-5",
+        "name": "Bigelow Avery Peak Approach turnaround / finish",
+        "type": "Finish",
+        "mile": 8.2,
+        "icon": "\u25ce",
+        "lat": 45.156243,
+        "lon": -70.30015,
+        "source": "MapPI3 seed planning marker \u2014 verify against GPX/OSM"
+      }
+    ],
+    "pois": [
+      {
+        "id": "me-bigelow-avery-poi",
+        "type": "verification",
+        "label": "Seed geometry: verify trailhead/access/closures and import GPX before field navigation.",
+        "mile": 0.1
+      }
+    ],
+    "landType": "Public trail / verify local rules",
+    "catalogCategory": "regional seed catalog",
+    "mountainArea": "Bigelow Preserve",
+    "geometryQuality": "rough seed geometry \u2014 import verified GPX/OSM before relying on this path",
+    "color": "#9ce36c",
+    "segments": [
+      {
+        "id": "me-bigelow-avery-seg-1",
+        "name": "Seed route line",
+        "startMile": 0,
+        "endMile": 8.2,
+        "color": "#9ce36c"
+      }
+    ],
+    "markerDensity": "seed route markers from approximate geometry"
+  },
+  {
+    "id": "me-cutler-coast",
+    "schemaVersion": "mappi3.routePack.v1",
+    "name": "Cutler Bold Coast Trail",
+    "place": "Cutler, Maine",
+    "region": "Downeast Maine",
+    "summary": "Seed planning route for Cutler Bold Coast Trail. Added to broaden MapPI3 route choices; verify current access and replace with GPX/OSM before field reliance.",
+    "difficulty": "Hard",
+    "routeType": "Loop",
+    "status": "Ready",
+    "distanceMiles": 9.2,
+    "estimatedTime": "5h 35m",
+    "elevationGainFt": 2826,
+    "storageEstimateMb": 192,
+    "tags": [
+      "maine",
+      "coast",
+      "overnight",
+      "cliffs",
+      "seed-planning"
+    ],
+    "sync": {
+      "state": "local-seed-catalog",
+      "lastSynced": "seed-v1.2.25",
+      "supabaseReady": false
+    },
+    "offline": {
+      "required": false,
+      "tileFormat": "MBTiles",
+      "tileBounds": [
+        -67.25874,
+        44.61391,
+        -67.156,
+        44.70009
+      ],
+      "minZoom": 10,
+      "maxZoom": 16,
+      "layers": [
+        "trail",
+        "topo",
+        "waypoints"
+      ]
+    },
+    "weather": {
+      "cachePolicy": "refresh-when-online",
+      "lastForecastLabel": "not cached"
+    },
+    "geometry": {
+      "type": "LineString",
+      "coordinates": [
+        [
+          -67.186,
+          44.657
+        ],
+        [
+          -67.194291,
+          44.670094
+        ],
+        [
+          -67.219887,
+          44.670094
+        ],
+        [
+          -67.228741,
+          44.657
+        ],
+        [
+          -67.215513,
+          44.643906
+        ],
+        [
+          -67.199017,
+          44.643906
+        ],
+        [
+          -67.187467,
+          44.657
+        ]
+      ]
+    },
+    "mapPreviewPath": [
+      [
+        30,
+        120
+      ],
+      [
+        80,
+        170
+      ],
+      [
+        130,
+        174
+      ],
+      [
+        180,
+        128
+      ],
+      [
+        230,
+        75
+      ],
+      [
+        280,
+        63
+      ],
+      [
+        330,
+        104
+      ]
+    ],
+    "waypoints": [
+      {
+        "id": "me-cutler-coast-wp-1",
+        "name": "Cutler Bold Coast Trail start",
+        "type": "Start",
+        "mile": 0.0,
+        "icon": "\u25ce",
+        "lat": 44.657,
+        "lon": -67.186,
+        "source": "MapPI3 seed planning marker \u2014 verify against GPX/OSM"
+      },
+      {
+        "id": "me-cutler-coast-wp-2",
+        "name": "Cutler Bold Coast Trail bearing check",
+        "type": "Waypoint",
+        "mile": 2.3,
+        "icon": "\u25c6",
+        "lat": 44.670094,
+        "lon": -67.194291,
+        "source": "MapPI3 seed planning marker \u2014 verify against GPX/OSM"
+      },
+      {
+        "id": "me-cutler-coast-wp-3",
+        "name": "Cutler Bold Coast Trail pacing marker",
+        "type": "Waypoint",
+        "mile": 4.6,
+        "icon": "\u25c6",
+        "lat": 44.657,
+        "lon": -67.228741,
+        "source": "MapPI3 seed planning marker \u2014 verify against GPX/OSM"
+      },
+      {
+        "id": "me-cutler-coast-wp-4",
+        "name": "Cutler Bold Coast Trail view / rest",
+        "type": "Waypoint",
+        "mile": 6.9,
+        "icon": "\ud83d\udc41\ufe0f",
+        "lat": 44.643906,
+        "lon": -67.199017,
+        "source": "MapPI3 seed planning marker \u2014 verify against GPX/OSM"
+      },
+      {
+        "id": "me-cutler-coast-wp-5",
+        "name": "Cutler Bold Coast Trail turnaround / finish",
+        "type": "Finish",
+        "mile": 9.2,
+        "icon": "\u25ce",
+        "lat": 44.657,
+        "lon": -67.187467,
+        "source": "MapPI3 seed planning marker \u2014 verify against GPX/OSM"
+      }
+    ],
+    "pois": [
+      {
+        "id": "me-cutler-coast-poi",
+        "type": "verification",
+        "label": "Seed geometry: verify trailhead/access/closures and import GPX before field navigation.",
+        "mile": 0.1
+      }
+    ],
+    "landType": "Public trail / verify local rules",
+    "catalogCategory": "regional seed catalog",
+    "mountainArea": "Downeast Maine",
+    "geometryQuality": "rough seed geometry \u2014 import verified GPX/OSM before relying on this path",
+    "color": "#9ce36c",
+    "segments": [
+      {
+        "id": "me-cutler-coast-seg-1",
+        "name": "Seed route line",
+        "startMile": 0,
+        "endMile": 9.2,
+        "color": "#9ce36c"
+      }
+    ],
+    "markerDensity": "seed route markers from approximate geometry"
+  },
+  {
+    "id": "me-gulf-hagas",
+    "schemaVersion": "mappi3.routePack.v1",
+    "name": "Gulf Hagas Rim Trail",
+    "place": "Brownville, Maine",
+    "region": "100-Mile Wilderness",
+    "summary": "Seed planning route for Gulf Hagas Rim Trail. Added to broaden MapPI3 route choices; verify current access and replace with GPX/OSM before field reliance.",
+    "difficulty": "Hard",
+    "routeType": "Loop",
+    "status": "Ready",
+    "distanceMiles": 8.6,
+    "estimatedTime": "4h 17m",
+    "elevationGainFt": 2658,
+    "storageEstimateMb": 182,
+    "tags": [
+      "maine",
+      "waterfall",
+      "at",
+      "remote",
+      "seed-planning"
+    ],
+    "sync": {
+      "state": "local-seed-catalog",
+      "lastSynced": "seed-v1.2.25",
+      "supabaseReady": false
+    },
+    "offline": {
+      "required": false,
+      "tileFormat": "MBTiles",
+      "tileBounds": [
+        -69.36433,
+        45.43115,
+        -69.2624,
+        45.51685
+      ],
+      "minZoom": 10,
+      "maxZoom": 16,
+      "layers": [
+        "trail",
+        "topo",
+        "waypoints"
+      ]
+    },
+    "weather": {
+      "cachePolicy": "refresh-when-online",
+      "lastForecastLabel": "not cached"
+    },
+    "geometry": {
+      "type": "LineString",
+      "coordinates": [
+        [
+          -69.2924,
+          45.474
+        ],
+        [
+          -69.300533,
+          45.486845
+        ],
+        [
+          -69.325641,
+          45.486845
+        ],
+        [
+          -69.334327,
+          45.474
+        ],
+        [
+          -69.321351,
+          45.461155
+        ],
+        [
+          -69.305169,
+          45.461155
+        ],
+        [
+          -69.293839,
+          45.474
+        ]
+      ]
+    },
+    "mapPreviewPath": [
+      [
+        30,
+        120
+      ],
+      [
+        80,
+        170
+      ],
+      [
+        130,
+        174
+      ],
+      [
+        180,
+        128
+      ],
+      [
+        230,
+        75
+      ],
+      [
+        280,
+        63
+      ],
+      [
+        330,
+        104
+      ]
+    ],
+    "waypoints": [
+      {
+        "id": "me-gulf-hagas-wp-1",
+        "name": "Gulf Hagas Rim Trail start",
+        "type": "Start",
+        "mile": 0.0,
+        "icon": "\u25ce",
+        "lat": 45.474,
+        "lon": -69.2924,
+        "source": "MapPI3 seed planning marker \u2014 verify against GPX/OSM"
+      },
+      {
+        "id": "me-gulf-hagas-wp-2",
+        "name": "Gulf Hagas Rim Trail bearing check",
+        "type": "Waypoint",
+        "mile": 2.15,
+        "icon": "\u25c6",
+        "lat": 45.486845,
+        "lon": -69.300533,
+        "source": "MapPI3 seed planning marker \u2014 verify against GPX/OSM"
+      },
+      {
+        "id": "me-gulf-hagas-wp-3",
+        "name": "Gulf Hagas Rim Trail pacing marker",
+        "type": "Waypoint",
+        "mile": 4.3,
+        "icon": "\u25c6",
+        "lat": 45.474,
+        "lon": -69.334327,
+        "source": "MapPI3 seed planning marker \u2014 verify against GPX/OSM"
+      },
+      {
+        "id": "me-gulf-hagas-wp-4",
+        "name": "Gulf Hagas Rim Trail view / rest",
+        "type": "Waypoint",
+        "mile": 6.45,
+        "icon": "\ud83d\udc41\ufe0f",
+        "lat": 45.461155,
+        "lon": -69.305169,
+        "source": "MapPI3 seed planning marker \u2014 verify against GPX/OSM"
+      },
+      {
+        "id": "me-gulf-hagas-wp-5",
+        "name": "Gulf Hagas Rim Trail turnaround / finish",
+        "type": "Finish",
+        "mile": 8.6,
+        "icon": "\u25ce",
+        "lat": 45.474,
+        "lon": -69.293839,
+        "source": "MapPI3 seed planning marker \u2014 verify against GPX/OSM"
+      }
+    ],
+    "pois": [
+      {
+        "id": "me-gulf-hagas-poi",
+        "type": "verification",
+        "label": "Seed geometry: verify trailhead/access/closures and import GPX before field navigation.",
+        "mile": 0.1
+      }
+    ],
+    "landType": "Public trail / verify local rules",
+    "catalogCategory": "regional seed catalog",
+    "mountainArea": "100-Mile Wilderness",
+    "geometryQuality": "rough seed geometry \u2014 import verified GPX/OSM before relying on this path",
+    "color": "#9ce36c",
+    "segments": [
+      {
+        "id": "me-gulf-hagas-seg-1",
+        "name": "Seed route line",
+        "startMile": 0,
+        "endMile": 8.6,
+        "color": "#9ce36c"
+      }
+    ],
+    "markerDensity": "seed route markers from approximate geometry"
+  },
+  {
+    "id": "me-deb-sconeag",
+    "schemaVersion": "mappi3.routePack.v1",
+    "name": "Deboullie Mountain Loop",
+    "place": "T15 R9 WELS, Maine",
+    "region": "Aroostook Maine",
+    "summary": "Seed planning route for Deboullie Mountain Loop. Added to broaden MapPI3 route choices; verify current access and replace with GPX/OSM before field reliance.",
+    "difficulty": "Moderate",
+    "routeType": "Loop",
+    "status": "Ready",
+    "distanceMiles": 5.8,
+    "estimatedTime": "3h 53m",
+    "elevationGainFt": 1164,
+    "storageEstimateMb": 137,
+    "tags": [
+      "maine",
+      "remote",
+      "pond",
+      "firetower",
+      "seed-planning"
+    ],
+    "sync": {
+      "state": "local-seed-catalog",
+      "lastSynced": "seed-v1.2.25",
+      "supabaseReady": false
+    },
+    "offline": {
+      "required": false,
+      "tileFormat": "MBTiles",
+      "tileBounds": [
+        -68.88743,
+        46.9009,
+        -68.7912,
+        46.9831
+      ],
+      "minZoom": 10,
+      "maxZoom": 16,
+      "layers": [
+        "trail",
+        "topo",
+        "waypoints"
+      ]
+    },
+    "weather": {
+      "cachePolicy": "refresh-when-online",
+      "lastForecastLabel": "not cached"
+    },
+    "geometry": {
+      "type": "LineString",
+      "coordinates": [
+        [
+          -68.8212,
+          46.942
+        ],
+        [
+          -68.828228,
+          46.953099
+        ],
+        [
+          -68.849923,
+          46.953099
+        ],
+        [
+          -68.857428,
+          46.942
+        ],
+        [
+          -68.846216,
+          46.930901
+        ],
+        [
+          -68.832234,
+          46.930901
+        ],
+        [
+          -68.822443,
+          46.942
+        ]
+      ]
+    },
+    "mapPreviewPath": [
+      [
+        30,
+        120
+      ],
+      [
+        80,
+        170
+      ],
+      [
+        130,
+        174
+      ],
+      [
+        180,
+        128
+      ],
+      [
+        230,
+        75
+      ],
+      [
+        280,
+        63
+      ],
+      [
+        330,
+        104
+      ]
+    ],
+    "waypoints": [
+      {
+        "id": "me-deb-sconeag-wp-1",
+        "name": "Deboullie Mountain Loop start",
+        "type": "Start",
+        "mile": 0.0,
+        "icon": "\u25ce",
+        "lat": 46.942,
+        "lon": -68.8212,
+        "source": "MapPI3 seed planning marker \u2014 verify against GPX/OSM"
+      },
+      {
+        "id": "me-deb-sconeag-wp-2",
+        "name": "Deboullie Mountain Loop bearing check",
+        "type": "Waypoint",
+        "mile": 1.45,
+        "icon": "\u25c6",
+        "lat": 46.953099,
+        "lon": -68.828228,
+        "source": "MapPI3 seed planning marker \u2014 verify against GPX/OSM"
+      },
+      {
+        "id": "me-deb-sconeag-wp-3",
+        "name": "Deboullie Mountain Loop pacing marker",
+        "type": "Waypoint",
+        "mile": 2.9,
+        "icon": "\u25c6",
+        "lat": 46.942,
+        "lon": -68.857428,
+        "source": "MapPI3 seed planning marker \u2014 verify against GPX/OSM"
+      },
+      {
+        "id": "me-deb-sconeag-wp-4",
+        "name": "Deboullie Mountain Loop view / rest",
+        "type": "Waypoint",
+        "mile": 4.35,
+        "icon": "\ud83d\udc41\ufe0f",
+        "lat": 46.930901,
+        "lon": -68.832234,
+        "source": "MapPI3 seed planning marker \u2014 verify against GPX/OSM"
+      },
+      {
+        "id": "me-deb-sconeag-wp-5",
+        "name": "Deboullie Mountain Loop turnaround / finish",
+        "type": "Finish",
+        "mile": 5.8,
+        "icon": "\u25ce",
+        "lat": 46.942,
+        "lon": -68.822443,
+        "source": "MapPI3 seed planning marker \u2014 verify against GPX/OSM"
+      }
+    ],
+    "pois": [
+      {
+        "id": "me-deb-sconeag-poi",
+        "type": "verification",
+        "label": "Seed geometry: verify trailhead/access/closures and import GPX before field navigation.",
+        "mile": 0.1
+      }
+    ],
+    "landType": "Public trail / verify local rules",
+    "catalogCategory": "regional seed catalog",
+    "mountainArea": "Aroostook Maine",
+    "geometryQuality": "rough seed geometry \u2014 import verified GPX/OSM before relying on this path",
+    "color": "#9ce36c",
+    "segments": [
+      {
+        "id": "me-deb-sconeag-seg-1",
+        "name": "Seed route line",
+        "startMile": 0,
+        "endMile": 5.8,
+        "color": "#9ce36c"
+      }
+    ],
+    "markerDensity": "seed route markers from approximate geometry"
+  },
+  {
+    "id": "me-mount-kineo",
+    "schemaVersion": "mappi3.routePack.v1",
+    "name": "Mount Kineo Indian Trail",
+    "place": "Moosehead Lake, Maine",
+    "region": "Moosehead Lake",
+    "summary": "Seed planning route for Mount Kineo Indian Trail. Added to broaden MapPI3 route choices; verify current access and replace with GPX/OSM before field reliance.",
+    "difficulty": "Moderate",
+    "routeType": "Loop",
+    "status": "Ready",
+    "distanceMiles": 3.4,
+    "estimatedTime": "2h 42m",
+    "elevationGainFt": 732,
+    "storageEstimateMb": 99,
+    "tags": [
+      "maine",
+      "moosehead",
+      "cliffs",
+      "view",
+      "seed-planning"
+    ],
+    "sync": {
+      "state": "local-seed-catalog",
+      "lastSynced": "seed-v1.2.25",
+      "supabaseReady": false
+    },
+    "offline": {
+      "required": false,
+      "tileFormat": "MBTiles",
+      "tileBounds": [
+        -69.78094,
+        45.6594,
+        -69.6896,
+        45.7386
+      ],
+      "minZoom": 10,
+      "maxZoom": 16,
+      "layers": [
+        "trail",
+        "topo",
+        "waypoints"
+      ]
+    },
+    "weather": {
+      "cachePolicy": "refresh-when-online",
+      "lastForecastLabel": "not cached"
+    },
+    "geometry": {
+      "type": "LineString",
+      "coordinates": [
+        [
+          -69.7196,
+          45.699
+        ],
+        [
+          -69.72568,
+          45.708602
+        ],
+        [
+          -69.74445,
+          45.708602
+        ],
+        [
+          -69.750943,
+          45.699
+        ],
+        [
+          -69.741243,
+          45.689398
+        ],
+        [
+          -69.729146,
+          45.689398
+        ],
+        [
+          -69.720676,
+          45.699
+        ]
+      ]
+    },
+    "mapPreviewPath": [
+      [
+        30,
+        120
+      ],
+      [
+        80,
+        170
+      ],
+      [
+        130,
+        174
+      ],
+      [
+        180,
+        128
+      ],
+      [
+        230,
+        75
+      ],
+      [
+        280,
+        63
+      ],
+      [
+        330,
+        104
+      ]
+    ],
+    "waypoints": [
+      {
+        "id": "me-mount-kineo-wp-1",
+        "name": "Mount Kineo Indian Trail start",
+        "type": "Start",
+        "mile": 0.0,
+        "icon": "\u25ce",
+        "lat": 45.699,
+        "lon": -69.7196,
+        "source": "MapPI3 seed planning marker \u2014 verify against GPX/OSM"
+      },
+      {
+        "id": "me-mount-kineo-wp-2",
+        "name": "Mount Kineo Indian Trail bearing check",
+        "type": "Waypoint",
+        "mile": 0.85,
+        "icon": "\u25c6",
+        "lat": 45.708602,
+        "lon": -69.72568,
+        "source": "MapPI3 seed planning marker \u2014 verify against GPX/OSM"
+      },
+      {
+        "id": "me-mount-kineo-wp-3",
+        "name": "Mount Kineo Indian Trail pacing marker",
+        "type": "Waypoint",
+        "mile": 1.7,
+        "icon": "\u25c6",
+        "lat": 45.699,
+        "lon": -69.750943,
+        "source": "MapPI3 seed planning marker \u2014 verify against GPX/OSM"
+      },
+      {
+        "id": "me-mount-kineo-wp-4",
+        "name": "Mount Kineo Indian Trail view / rest",
+        "type": "Waypoint",
+        "mile": 2.55,
+        "icon": "\ud83d\udc41\ufe0f",
+        "lat": 45.689398,
+        "lon": -69.729146,
+        "source": "MapPI3 seed planning marker \u2014 verify against GPX/OSM"
+      },
+      {
+        "id": "me-mount-kineo-wp-5",
+        "name": "Mount Kineo Indian Trail turnaround / finish",
+        "type": "Finish",
+        "mile": 3.4,
+        "icon": "\u25ce",
+        "lat": 45.699,
+        "lon": -69.720676,
+        "source": "MapPI3 seed planning marker \u2014 verify against GPX/OSM"
+      }
+    ],
+    "pois": [
+      {
+        "id": "me-mount-kineo-poi",
+        "type": "verification",
+        "label": "Seed geometry: verify trailhead/access/closures and import GPX before field navigation.",
+        "mile": 0.1
+      }
+    ],
+    "landType": "Public trail / verify local rules",
+    "catalogCategory": "regional seed catalog",
+    "mountainArea": "Moosehead Lake",
+    "geometryQuality": "rough seed geometry \u2014 import verified GPX/OSM before relying on this path",
+    "color": "#9ce36c",
+    "segments": [
+      {
+        "id": "me-mount-kineo-seg-1",
+        "name": "Seed route line",
+        "startMile": 0,
+        "endMile": 3.4,
+        "color": "#9ce36c"
+      }
+    ],
+    "markerDensity": "seed route markers from approximate geometry"
+  },
+  {
+    "id": "nh-lonesome-lake",
+    "schemaVersion": "mappi3.routePack.v1",
+    "name": "Lonesome Lake Loop",
+    "place": "Franconia Notch, New Hampshire",
+    "region": "White Mountains",
+    "summary": "Seed planning route for Lonesome Lake Loop. Added to broaden MapPI3 route choices; verify current access and replace with GPX/OSM before field reliance.",
+    "difficulty": "Moderate",
+    "routeType": "Loop",
+    "status": "Ready",
+    "distanceMiles": 3.2,
+    "estimatedTime": "2h 36m",
+    "elevationGainFt": 696,
+    "storageEstimateMb": 96,
+    "tags": [
+      "nh",
+      "hut",
+      "lake",
+      "family",
+      "seed-planning"
+    ],
+    "sync": {
+      "state": "local-seed-catalog",
+      "lastSynced": "seed-v1.2.25",
+      "supabaseReady": false
+    },
+    "offline": {
+      "required": false,
+      "tileFormat": "MBTiles",
+      "tileBounds": [
+        -71.72674,
+        44.10152,
+        -71.6358,
+        44.18048
+      ],
+      "minZoom": 10,
+      "maxZoom": 16,
+      "layers": [
+        "trail",
+        "topo",
+        "waypoints"
+      ]
+    },
+    "weather": {
+      "cachePolicy": "refresh-when-online",
+      "lastForecastLabel": "not cached"
+    },
+    "geometry": {
+      "type": "LineString",
+      "coordinates": [
+        [
+          -71.6658,
+          44.141
+        ],
+        [
+          -71.671801,
+          44.150478
+        ],
+        [
+          -71.690328,
+          44.150478
+        ],
+        [
+          -71.696736,
+          44.141
+        ],
+        [
+          -71.687162,
+          44.131522
+        ],
+        [
+          -71.675222,
+          44.131522
+        ],
+        [
+          -71.666862,
+          44.141
+        ]
+      ]
+    },
+    "mapPreviewPath": [
+      [
+        30,
+        120
+      ],
+      [
+        80,
+        170
+      ],
+      [
+        130,
+        174
+      ],
+      [
+        180,
+        128
+      ],
+      [
+        230,
+        75
+      ],
+      [
+        280,
+        63
+      ],
+      [
+        330,
+        104
+      ]
+    ],
+    "waypoints": [
+      {
+        "id": "nh-lonesome-lake-wp-1",
+        "name": "Lonesome Lake Loop start",
+        "type": "Start",
+        "mile": 0.0,
+        "icon": "\u25ce",
+        "lat": 44.141,
+        "lon": -71.6658,
+        "source": "MapPI3 seed planning marker \u2014 verify against GPX/OSM"
+      },
+      {
+        "id": "nh-lonesome-lake-wp-2",
+        "name": "Lonesome Lake Loop bearing check",
+        "type": "Waypoint",
+        "mile": 0.8,
+        "icon": "\u25c6",
+        "lat": 44.150478,
+        "lon": -71.671801,
+        "source": "MapPI3 seed planning marker \u2014 verify against GPX/OSM"
+      },
+      {
+        "id": "nh-lonesome-lake-wp-3",
+        "name": "Lonesome Lake Loop pacing marker",
+        "type": "Waypoint",
+        "mile": 1.6,
+        "icon": "\u25c6",
+        "lat": 44.141,
+        "lon": -71.696736,
+        "source": "MapPI3 seed planning marker \u2014 verify against GPX/OSM"
+      },
+      {
+        "id": "nh-lonesome-lake-wp-4",
+        "name": "Lonesome Lake Loop view / rest",
+        "type": "Waypoint",
+        "mile": 2.4,
+        "icon": "\ud83d\udc41\ufe0f",
+        "lat": 44.131522,
+        "lon": -71.675222,
+        "source": "MapPI3 seed planning marker \u2014 verify against GPX/OSM"
+      },
+      {
+        "id": "nh-lonesome-lake-wp-5",
+        "name": "Lonesome Lake Loop turnaround / finish",
+        "type": "Finish",
+        "mile": 3.2,
+        "icon": "\u25ce",
+        "lat": 44.141,
+        "lon": -71.666862,
+        "source": "MapPI3 seed planning marker \u2014 verify against GPX/OSM"
+      }
+    ],
+    "pois": [
+      {
+        "id": "nh-lonesome-lake-poi",
+        "type": "verification",
+        "label": "Seed geometry: verify trailhead/access/closures and import GPX before field navigation.",
+        "mile": 0.1
+      }
+    ],
+    "landType": "Public trail / verify local rules",
+    "catalogCategory": "regional seed catalog",
+    "mountainArea": "White Mountains",
+    "geometryQuality": "rough seed geometry \u2014 import verified GPX/OSM before relying on this path",
+    "color": "#9ce36c",
+    "segments": [
+      {
+        "id": "nh-lonesome-lake-seg-1",
+        "name": "Seed route line",
+        "startMile": 0,
+        "endMile": 3.2,
+        "color": "#9ce36c"
+      }
+    ],
+    "markerDensity": "seed route markers from approximate geometry"
+  },
+  {
+    "id": "nh-mount-willard",
+    "schemaVersion": "mappi3.routePack.v1",
+    "name": "Mount Willard Trail",
+    "place": "Crawford Notch, New Hampshire",
+    "region": "White Mountains",
+    "summary": "Seed planning route for Mount Willard Trail. Added to broaden MapPI3 route choices; verify current access and replace with GPX/OSM before field reliance.",
+    "difficulty": "Moderate",
+    "routeType": "Out-and-back",
+    "status": "Ready",
+    "distanceMiles": 3.1,
+    "estimatedTime": "2h 33m",
+    "elevationGainFt": 678,
+    "storageEstimateMb": 94,
+    "tags": [
+      "nh",
+      "view",
+      "notch",
+      "day hike",
+      "seed-planning"
+    ],
+    "sync": {
+      "state": "local-seed-catalog",
+      "lastSynced": "seed-v1.2.25",
+      "supabaseReady": false
+    },
+    "offline": {
+      "required": false,
+      "tileFormat": "MBTiles",
+      "tileBounds": [
+        -71.44885,
+        44.17175,
+        -71.37315,
+        44.26425
+      ],
+      "minZoom": 10,
+      "maxZoom": 16,
+      "layers": [
+        "trail",
+        "topo",
+        "waypoints"
+      ]
+    },
+    "weather": {
+      "cachePolicy": "refresh-when-online",
+      "lastForecastLabel": "not cached"
+    },
+    "geometry": {
+      "type": "LineString",
+      "coordinates": [
+        [
+          -71.406291,
+          44.201753
+        ],
+        [
+          -71.403148,
+          44.210262
+        ],
+        [
+          -71.406952,
+          44.215993
+        ],
+        [
+          -71.415048,
+          44.220007
+        ],
+        [
+          -71.418852,
+          44.225738
+        ],
+        [
+          -71.415709,
+          44.234247
+        ]
+      ]
+    },
+    "mapPreviewPath": [
+      [
+        30,
+        120
+      ],
+      [
+        80,
+        170
+      ],
+      [
+        130,
+        174
+      ],
+      [
+        180,
+        128
+      ],
+      [
+        230,
+        75
+      ],
+      [
+        280,
+        63
+      ]
+    ],
+    "waypoints": [
+      {
+        "id": "nh-mount-willard-wp-1",
+        "name": "Mount Willard Trail start",
+        "type": "Start",
+        "mile": 0.0,
+        "icon": "\u25ce",
+        "lat": 44.201753,
+        "lon": -71.406291,
+        "source": "MapPI3 seed planning marker \u2014 verify against GPX/OSM"
+      },
+      {
+        "id": "nh-mount-willard-wp-2",
+        "name": "Mount Willard Trail bearing check",
+        "type": "Waypoint",
+        "mile": 0.78,
+        "icon": "\u25c6",
+        "lat": 44.210262,
+        "lon": -71.403148,
+        "source": "MapPI3 seed planning marker \u2014 verify against GPX/OSM"
+      },
+      {
+        "id": "nh-mount-willard-wp-3",
+        "name": "Mount Willard Trail pacing marker",
+        "type": "Waypoint",
+        "mile": 1.55,
+        "icon": "\u25c6",
+        "lat": 44.220007,
+        "lon": -71.415048,
+        "source": "MapPI3 seed planning marker \u2014 verify against GPX/OSM"
+      },
+      {
+        "id": "nh-mount-willard-wp-4",
+        "name": "Mount Willard Trail view / rest",
+        "type": "Waypoint",
+        "mile": 2.33,
+        "icon": "\ud83d\udc41\ufe0f",
+        "lat": 44.225738,
+        "lon": -71.418852,
+        "source": "MapPI3 seed planning marker \u2014 verify against GPX/OSM"
+      },
+      {
+        "id": "nh-mount-willard-wp-5",
+        "name": "Mount Willard Trail turnaround / finish",
+        "type": "Finish",
+        "mile": 3.1,
+        "icon": "\u25ce",
+        "lat": 44.234247,
+        "lon": -71.415709,
+        "source": "MapPI3 seed planning marker \u2014 verify against GPX/OSM"
+      }
+    ],
+    "pois": [
+      {
+        "id": "nh-mount-willard-poi",
+        "type": "verification",
+        "label": "Seed geometry: verify trailhead/access/closures and import GPX before field navigation.",
+        "mile": 0.1
+      }
+    ],
+    "landType": "Public trail / verify local rules",
+    "catalogCategory": "regional seed catalog",
+    "mountainArea": "White Mountains",
+    "geometryQuality": "rough seed geometry \u2014 import verified GPX/OSM before relying on this path",
+    "color": "#9ce36c",
+    "segments": [
+      {
+        "id": "nh-mount-willard-seg-1",
+        "name": "Seed route line",
+        "startMile": 0,
+        "endMile": 3.1,
+        "color": "#9ce36c"
+      }
+    ],
+    "markerDensity": "seed route markers from approximate geometry"
+  },
+  {
+    "id": "nh-cardigan-west-ridge",
+    "schemaVersion": "mappi3.routePack.v1",
+    "name": "Mount Cardigan West Ridge",
+    "place": "Orange, New Hampshire",
+    "region": "New Hampshire",
+    "summary": "Seed planning route for Mount Cardigan West Ridge. Added to broaden MapPI3 route choices; verify current access and replace with GPX/OSM before field reliance.",
+    "difficulty": "Moderate",
+    "routeType": "Out-and-back",
+    "status": "Ready",
+    "distanceMiles": 3.0,
+    "estimatedTime": "2h 30m",
+    "elevationGainFt": 660,
+    "storageEstimateMb": 93,
+    "tags": [
+      "nh",
+      "firetower",
+      "summit",
+      "seed-planning"
+    ],
+    "sync": {
+      "state": "local-seed-catalog",
+      "lastSynced": "seed-v1.2.25",
+      "supabaseReady": false
+    },
+    "offline": {
+      "required": false,
+      "tileFormat": "MBTiles",
+      "tileBounds": [
+        -71.95554,
+        43.60457,
+        -71.87246,
+        43.69343
+      ],
+      "minZoom": 10,
+      "maxZoom": 16,
+      "layers": [
+        "trail",
+        "topo",
+        "waypoints"
+      ]
+    },
+    "weather": {
+      "cachePolicy": "refresh-when-online",
+      "lastForecastLabel": "not cached"
+    },
+    "geometry": {
+      "type": "LineString",
+      "coordinates": [
+        [
+          -71.903092,
+          43.634569
+        ],
+        [
+          -71.902462,
+          43.642338
+        ],
+        [
+          -71.908732,
+          43.647348
+        ],
+        [
+          -71.919268,
+          43.650652
+        ],
+        [
+          -71.925538,
+          43.655662
+        ],
+        [
+          -71.924908,
+          43.663431
+        ]
+      ]
+    },
+    "mapPreviewPath": [
+      [
+        30,
+        120
+      ],
+      [
+        80,
+        170
+      ],
+      [
+        130,
+        174
+      ],
+      [
+        180,
+        128
+      ],
+      [
+        230,
+        75
+      ],
+      [
+        280,
+        63
+      ]
+    ],
+    "waypoints": [
+      {
+        "id": "nh-cardigan-west-ridge-wp-1",
+        "name": "Mount Cardigan West Ridge start",
+        "type": "Start",
+        "mile": 0.0,
+        "icon": "\u25ce",
+        "lat": 43.634569,
+        "lon": -71.903092,
+        "source": "MapPI3 seed planning marker \u2014 verify against GPX/OSM"
+      },
+      {
+        "id": "nh-cardigan-west-ridge-wp-2",
+        "name": "Mount Cardigan West Ridge bearing check",
+        "type": "Waypoint",
+        "mile": 0.75,
+        "icon": "\u25c6",
+        "lat": 43.642338,
+        "lon": -71.902462,
+        "source": "MapPI3 seed planning marker \u2014 verify against GPX/OSM"
+      },
+      {
+        "id": "nh-cardigan-west-ridge-wp-3",
+        "name": "Mount Cardigan West Ridge pacing marker",
+        "type": "Waypoint",
+        "mile": 1.5,
+        "icon": "\u25c6",
+        "lat": 43.650652,
+        "lon": -71.919268,
+        "source": "MapPI3 seed planning marker \u2014 verify against GPX/OSM"
+      },
+      {
+        "id": "nh-cardigan-west-ridge-wp-4",
+        "name": "Mount Cardigan West Ridge view / rest",
+        "type": "Waypoint",
+        "mile": 2.25,
+        "icon": "\ud83d\udc41\ufe0f",
+        "lat": 43.655662,
+        "lon": -71.925538,
+        "source": "MapPI3 seed planning marker \u2014 verify against GPX/OSM"
+      },
+      {
+        "id": "nh-cardigan-west-ridge-wp-5",
+        "name": "Mount Cardigan West Ridge turnaround / finish",
+        "type": "Finish",
+        "mile": 3.0,
+        "icon": "\u25ce",
+        "lat": 43.663431,
+        "lon": -71.924908,
+        "source": "MapPI3 seed planning marker \u2014 verify against GPX/OSM"
+      }
+    ],
+    "pois": [
+      {
+        "id": "nh-cardigan-west-ridge-poi",
+        "type": "verification",
+        "label": "Seed geometry: verify trailhead/access/closures and import GPX before field navigation.",
+        "mile": 0.1
+      }
+    ],
+    "landType": "Public trail / verify local rules",
+    "catalogCategory": "regional seed catalog",
+    "mountainArea": "New Hampshire",
+    "geometryQuality": "rough seed geometry \u2014 import verified GPX/OSM before relying on this path",
+    "color": "#9ce36c",
+    "segments": [
+      {
+        "id": "nh-cardigan-west-ridge-seg-1",
+        "name": "Seed route line",
+        "startMile": 0,
+        "endMile": 3.0,
+        "color": "#9ce36c"
+      }
+    ],
+    "markerDensity": "seed route markers from approximate geometry"
+  },
+  {
+    "id": "nh-welch-dickey",
+    "schemaVersion": "mappi3.routePack.v1",
+    "name": "Welch-Dickey Loop",
+    "place": "Thornton, New Hampshire",
+    "region": "White Mountains",
+    "summary": "Seed planning route for Welch-Dickey Loop. Added to broaden MapPI3 route choices; verify current access and replace with GPX/OSM before field reliance.",
+    "difficulty": "Moderate",
+    "routeType": "Loop",
+    "status": "Ready",
+    "distanceMiles": 4.4,
+    "estimatedTime": "2h 12m",
+    "elevationGainFt": 912,
+    "storageEstimateMb": 115,
+    "tags": [
+      "nh",
+      "ledge",
+      "loop",
+      "view",
+      "seed-planning"
+    ],
+    "sync": {
+      "state": "local-seed-catalog",
+      "lastSynced": "seed-v1.2.25",
+      "supabaseReady": false
+    },
+    "offline": {
+      "required": false,
+      "tileFormat": "MBTiles",
+      "tileBounds": [
+        -71.63498,
+        43.86377,
+        -71.5416,
+        43.94423
+      ],
+      "minZoom": 10,
+      "maxZoom": 16,
+      "layers": [
+        "trail",
+        "topo",
+        "waypoints"
+      ]
+    },
+    "weather": {
+      "cachePolicy": "refresh-when-online",
+      "lastForecastLabel": "not cached"
+    },
+    "geometry": {
+      "type": "LineString",
+      "coordinates": [
+        [
+          -71.5716,
+          43.904
+        ],
+        [
+          -71.578075,
+          43.914226
+        ],
+        [
+          -71.598064,
+          43.914226
+        ],
+        [
+          -71.604979,
+          43.904
+        ],
+        [
+          -71.594649,
+          43.893774
+        ],
+        [
+          -71.581766,
+          43.893774
+        ],
+        [
+          -71.572746,
+          43.904
+        ]
+      ]
+    },
+    "mapPreviewPath": [
+      [
+        30,
+        120
+      ],
+      [
+        80,
+        170
+      ],
+      [
+        130,
+        174
+      ],
+      [
+        180,
+        128
+      ],
+      [
+        230,
+        75
+      ],
+      [
+        280,
+        63
+      ],
+      [
+        330,
+        104
+      ]
+    ],
+    "waypoints": [
+      {
+        "id": "nh-welch-dickey-wp-1",
+        "name": "Welch-Dickey Loop start",
+        "type": "Start",
+        "mile": 0.0,
+        "icon": "\u25ce",
+        "lat": 43.904,
+        "lon": -71.5716,
+        "source": "MapPI3 seed planning marker \u2014 verify against GPX/OSM"
+      },
+      {
+        "id": "nh-welch-dickey-wp-2",
+        "name": "Welch-Dickey Loop bearing check",
+        "type": "Waypoint",
+        "mile": 1.1,
+        "icon": "\u25c6",
+        "lat": 43.914226,
+        "lon": -71.578075,
+        "source": "MapPI3 seed planning marker \u2014 verify against GPX/OSM"
+      },
+      {
+        "id": "nh-welch-dickey-wp-3",
+        "name": "Welch-Dickey Loop pacing marker",
+        "type": "Waypoint",
+        "mile": 2.2,
+        "icon": "\u25c6",
+        "lat": 43.904,
+        "lon": -71.604979,
+        "source": "MapPI3 seed planning marker \u2014 verify against GPX/OSM"
+      },
+      {
+        "id": "nh-welch-dickey-wp-4",
+        "name": "Welch-Dickey Loop view / rest",
+        "type": "Waypoint",
+        "mile": 3.3,
+        "icon": "\ud83d\udc41\ufe0f",
+        "lat": 43.893774,
+        "lon": -71.581766,
+        "source": "MapPI3 seed planning marker \u2014 verify against GPX/OSM"
+      },
+      {
+        "id": "nh-welch-dickey-wp-5",
+        "name": "Welch-Dickey Loop turnaround / finish",
+        "type": "Finish",
+        "mile": 4.4,
+        "icon": "\u25ce",
+        "lat": 43.904,
+        "lon": -71.572746,
+        "source": "MapPI3 seed planning marker \u2014 verify against GPX/OSM"
+      }
+    ],
+    "pois": [
+      {
+        "id": "nh-welch-dickey-poi",
+        "type": "verification",
+        "label": "Seed geometry: verify trailhead/access/closures and import GPX before field navigation.",
+        "mile": 0.1
+      }
+    ],
+    "landType": "Public trail / verify local rules",
+    "catalogCategory": "regional seed catalog",
+    "mountainArea": "White Mountains",
+    "geometryQuality": "rough seed geometry \u2014 import verified GPX/OSM before relying on this path",
+    "color": "#9ce36c",
+    "segments": [
+      {
+        "id": "nh-welch-dickey-seg-1",
+        "name": "Seed route line",
+        "startMile": 0,
+        "endMile": 4.4,
+        "color": "#9ce36c"
+      }
+    ],
+    "markerDensity": "seed route markers from approximate geometry"
+  },
+  {
+    "id": "nh-chocorua-piper",
+    "schemaVersion": "mappi3.routePack.v1",
+    "name": "Mount Chocorua via Piper Trail",
+    "place": "Albany, New Hampshire",
+    "region": "White Mountains",
+    "summary": "Seed planning route for Mount Chocorua via Piper Trail. Added to broaden MapPI3 route choices; verify current access and replace with GPX/OSM before field reliance.",
+    "difficulty": "Hard",
+    "routeType": "Out-and-back",
+    "status": "Ready",
+    "distanceMiles": 7.8,
+    "estimatedTime": "4h 53m",
+    "elevationGainFt": 2434,
+    "storageEstimateMb": 169,
+    "tags": [
+      "nh",
+      "summit",
+      "hard",
+      "view",
+      "seed-planning"
+    ],
+    "sync": {
+      "state": "local-seed-catalog",
+      "lastSynced": "seed-v1.2.25",
+      "supabaseReady": false
+    },
+    "offline": {
+      "required": false,
+      "tileFormat": "MBTiles",
+      "tileBounds": [
+        -71.33046,
+        43.91411,
+        -71.21754,
+        43.99389
+      ],
+      "minZoom": 10,
+      "maxZoom": 16,
+      "layers": [
+        "trail",
+        "topo",
+        "waypoints"
+      ]
+    },
+    "weather": {
+      "cachePolicy": "refresh-when-online",
+      "lastForecastLabel": "not cached"
+    },
+    "geometry": {
+      "type": "LineString",
+      "coordinates": [
+        [
+          -71.247537,
+          43.944112
+        ],
+        [
+          -71.251531,
+          43.950704
+        ],
+        [
+          -71.264634,
+          43.953652
+        ],
+        [
+          -71.283366,
+          43.954348
+        ],
+        [
+          -71.296469,
+          43.957296
+        ],
+        [
+          -71.300463,
+          43.963888
+        ]
+      ]
+    },
+    "mapPreviewPath": [
+      [
+        30,
+        120
+      ],
+      [
+        80,
+        170
+      ],
+      [
+        130,
+        174
+      ],
+      [
+        180,
+        128
+      ],
+      [
+        230,
+        75
+      ],
+      [
+        280,
+        63
+      ]
+    ],
+    "waypoints": [
+      {
+        "id": "nh-chocorua-piper-wp-1",
+        "name": "Mount Chocorua via Piper Trail start",
+        "type": "Start",
+        "mile": 0.0,
+        "icon": "\u25ce",
+        "lat": 43.944112,
+        "lon": -71.247537,
+        "source": "MapPI3 seed planning marker \u2014 verify against GPX/OSM"
+      },
+      {
+        "id": "nh-chocorua-piper-wp-2",
+        "name": "Mount Chocorua via Piper Trail bearing check",
+        "type": "Waypoint",
+        "mile": 1.95,
+        "icon": "\u25c6",
+        "lat": 43.950704,
+        "lon": -71.251531,
+        "source": "MapPI3 seed planning marker \u2014 verify against GPX/OSM"
+      },
+      {
+        "id": "nh-chocorua-piper-wp-3",
+        "name": "Mount Chocorua via Piper Trail pacing marker",
+        "type": "Waypoint",
+        "mile": 3.9,
+        "icon": "\u25c6",
+        "lat": 43.954348,
+        "lon": -71.283366,
+        "source": "MapPI3 seed planning marker \u2014 verify against GPX/OSM"
+      },
+      {
+        "id": "nh-chocorua-piper-wp-4",
+        "name": "Mount Chocorua via Piper Trail view / rest",
+        "type": "Waypoint",
+        "mile": 5.85,
+        "icon": "\ud83d\udc41\ufe0f",
+        "lat": 43.957296,
+        "lon": -71.296469,
+        "source": "MapPI3 seed planning marker \u2014 verify against GPX/OSM"
+      },
+      {
+        "id": "nh-chocorua-piper-wp-5",
+        "name": "Mount Chocorua via Piper Trail turnaround / finish",
+        "type": "Finish",
+        "mile": 7.8,
+        "icon": "\u25ce",
+        "lat": 43.963888,
+        "lon": -71.300463,
+        "source": "MapPI3 seed planning marker \u2014 verify against GPX/OSM"
+      }
+    ],
+    "pois": [
+      {
+        "id": "nh-chocorua-piper-poi",
+        "type": "verification",
+        "label": "Seed geometry: verify trailhead/access/closures and import GPX before field navigation.",
+        "mile": 0.1
+      }
+    ],
+    "landType": "Public trail / verify local rules",
+    "catalogCategory": "regional seed catalog",
+    "mountainArea": "White Mountains",
+    "geometryQuality": "rough seed geometry \u2014 import verified GPX/OSM before relying on this path",
+    "color": "#9ce36c",
+    "segments": [
+      {
+        "id": "nh-chocorua-piper-seg-1",
+        "name": "Seed route line",
+        "startMile": 0,
+        "endMile": 7.8,
+        "color": "#9ce36c"
+      }
+    ],
+    "markerDensity": "seed route markers from approximate geometry"
+  },
+  {
+    "id": "vt-mount-pisgah",
+    "schemaVersion": "mappi3.routePack.v1",
+    "name": "Mount Pisgah South Trail",
+    "place": "Westmore, Vermont",
+    "region": "Northeast Kingdom",
+    "summary": "Seed planning route for Mount Pisgah South Trail. Added to broaden MapPI3 route choices; verify current access and replace with GPX/OSM before field reliance.",
+    "difficulty": "Moderate",
+    "routeType": "Out-and-back",
+    "status": "Ready",
+    "distanceMiles": 4.0,
+    "estimatedTime": "2h 00m",
+    "elevationGainFt": 840,
+    "storageEstimateMb": 109,
+    "tags": [
+      "vt",
+      "lake",
+      "cliff",
+      "view",
+      "seed-planning"
+    ],
+    "sync": {
+      "state": "local-seed-catalog",
+      "lastSynced": "seed-v1.2.25",
+      "supabaseReady": false
+    },
+    "offline": {
+      "required": false,
+      "tileFormat": "MBTiles",
+      "tileBounds": [
+        -72.09243,
+        44.72752,
+        -72.00157,
+        44.81448
+      ],
+      "minZoom": 10,
+      "maxZoom": 16,
+      "layers": [
+        "trail",
+        "topo",
+        "waypoints"
+      ]
+    },
+    "weather": {
+      "cachePolicy": "refresh-when-online",
+      "lastForecastLabel": "not cached"
+    },
+    "geometry": {
+      "type": "LineString",
+      "coordinates": [
+        [
+          -72.062427,
+          44.757518
+        ],
+        [
+          -72.05093,
+          44.765041
+        ],
+        [
+          -72.046794,
+          44.76962
+        ],
+        [
+          -72.047206,
+          44.77238
+        ],
+        [
+          -72.04307,
+          44.776959
+        ],
+        [
+          -72.031573,
+          44.784482
+        ]
+      ]
+    },
+    "mapPreviewPath": [
+      [
+        30,
+        120
+      ],
+      [
+        80,
+        170
+      ],
+      [
+        130,
+        174
+      ],
+      [
+        180,
+        128
+      ],
+      [
+        230,
+        75
+      ],
+      [
+        280,
+        63
+      ]
+    ],
+    "waypoints": [
+      {
+        "id": "vt-mount-pisgah-wp-1",
+        "name": "Mount Pisgah South Trail start",
+        "type": "Start",
+        "mile": 0.0,
+        "icon": "\u25ce",
+        "lat": 44.757518,
+        "lon": -72.062427,
+        "source": "MapPI3 seed planning marker \u2014 verify against GPX/OSM"
+      },
+      {
+        "id": "vt-mount-pisgah-wp-2",
+        "name": "Mount Pisgah South Trail bearing check",
+        "type": "Waypoint",
+        "mile": 1.0,
+        "icon": "\u25c6",
+        "lat": 44.765041,
+        "lon": -72.05093,
+        "source": "MapPI3 seed planning marker \u2014 verify against GPX/OSM"
+      },
+      {
+        "id": "vt-mount-pisgah-wp-3",
+        "name": "Mount Pisgah South Trail pacing marker",
+        "type": "Waypoint",
+        "mile": 2.0,
+        "icon": "\u25c6",
+        "lat": 44.77238,
+        "lon": -72.047206,
+        "source": "MapPI3 seed planning marker \u2014 verify against GPX/OSM"
+      },
+      {
+        "id": "vt-mount-pisgah-wp-4",
+        "name": "Mount Pisgah South Trail view / rest",
+        "type": "Waypoint",
+        "mile": 3.0,
+        "icon": "\ud83d\udc41\ufe0f",
+        "lat": 44.776959,
+        "lon": -72.04307,
+        "source": "MapPI3 seed planning marker \u2014 verify against GPX/OSM"
+      },
+      {
+        "id": "vt-mount-pisgah-wp-5",
+        "name": "Mount Pisgah South Trail turnaround / finish",
+        "type": "Finish",
+        "mile": 4.0,
+        "icon": "\u25ce",
+        "lat": 44.784482,
+        "lon": -72.031573,
+        "source": "MapPI3 seed planning marker \u2014 verify against GPX/OSM"
+      }
+    ],
+    "pois": [
+      {
+        "id": "vt-mount-pisgah-poi",
+        "type": "verification",
+        "label": "Seed geometry: verify trailhead/access/closures and import GPX before field navigation.",
+        "mile": 0.1
+      }
+    ],
+    "landType": "Public trail / verify local rules",
+    "catalogCategory": "regional seed catalog",
+    "mountainArea": "Northeast Kingdom",
+    "geometryQuality": "rough seed geometry \u2014 import verified GPX/OSM before relying on this path",
+    "color": "#9ce36c",
+    "segments": [
+      {
+        "id": "vt-mount-pisgah-seg-1",
+        "name": "Seed route line",
+        "startMile": 0,
+        "endMile": 4.0,
+        "color": "#9ce36c"
+      }
+    ],
+    "markerDensity": "seed route markers from approximate geometry"
+  },
+  {
+    "id": "vt-sterling-pond",
+    "schemaVersion": "mappi3.routePack.v1",
+    "name": "Sterling Pond Trail",
+    "place": "Stowe, Vermont",
+    "region": "Green Mountains",
+    "summary": "Seed planning route for Sterling Pond Trail. Added to broaden MapPI3 route choices; verify current access and replace with GPX/OSM before field reliance.",
+    "difficulty": "Moderate",
+    "routeType": "Out-and-back",
+    "status": "Ready",
+    "distanceMiles": 2.3,
+    "estimatedTime": "1h 08m",
+    "elevationGainFt": 534,
+    "storageEstimateMb": 81,
+    "tags": [
+      "vt",
+      "pond",
+      "short",
+      "stowe",
+      "seed-planning"
+    ],
+    "sync": {
+      "state": "local-seed-catalog",
+      "lastSynced": "seed-v1.2.25",
+      "supabaseReady": false
+    },
+    "offline": {
+      "required": false,
+      "tileFormat": "MBTiles",
+      "tileBounds": [
+        -72.79838,
+        44.51352,
+        -72.72162,
+        44.60248
+      ],
+      "minZoom": 10,
+      "maxZoom": 16,
+      "layers": [
+        "trail",
+        "topo",
+        "waypoints"
+      ]
+    },
+    "weather": {
+      "cachePolicy": "refresh-when-online",
+      "lastForecastLabel": "not cached"
+    },
+    "geometry": {
+      "type": "LineString",
+      "coordinates": [
+        [
+          -72.768381,
+          44.54352
+        ],
+        [
+          -72.760269,
+          44.551216
+        ],
+        [
+          -72.758734,
+          44.556281
+        ],
+        [
+          -72.761266,
+          44.559719
+        ],
+        [
+          -72.759731,
+          44.564784
+        ],
+        [
+          -72.751619,
+          44.57248
+        ]
+      ]
+    },
+    "mapPreviewPath": [
+      [
+        30,
+        120
+      ],
+      [
+        80,
+        170
+      ],
+      [
+        130,
+        174
+      ],
+      [
+        180,
+        128
+      ],
+      [
+        230,
+        75
+      ],
+      [
+        280,
+        63
+      ]
+    ],
+    "waypoints": [
+      {
+        "id": "vt-sterling-pond-wp-1",
+        "name": "Sterling Pond Trail start",
+        "type": "Start",
+        "mile": 0.0,
+        "icon": "\u25ce",
+        "lat": 44.54352,
+        "lon": -72.768381,
+        "source": "MapPI3 seed planning marker \u2014 verify against GPX/OSM"
+      },
+      {
+        "id": "vt-sterling-pond-wp-2",
+        "name": "Sterling Pond Trail bearing check",
+        "type": "Waypoint",
+        "mile": 0.57,
+        "icon": "\u25c6",
+        "lat": 44.551216,
+        "lon": -72.760269,
+        "source": "MapPI3 seed planning marker \u2014 verify against GPX/OSM"
+      },
+      {
+        "id": "vt-sterling-pond-wp-3",
+        "name": "Sterling Pond Trail pacing marker",
+        "type": "Waypoint",
+        "mile": 1.15,
+        "icon": "\u25c6",
+        "lat": 44.559719,
+        "lon": -72.761266,
+        "source": "MapPI3 seed planning marker \u2014 verify against GPX/OSM"
+      },
+      {
+        "id": "vt-sterling-pond-wp-4",
+        "name": "Sterling Pond Trail view / rest",
+        "type": "Waypoint",
+        "mile": 1.72,
+        "icon": "\ud83d\udc41\ufe0f",
+        "lat": 44.564784,
+        "lon": -72.759731,
+        "source": "MapPI3 seed planning marker \u2014 verify against GPX/OSM"
+      },
+      {
+        "id": "vt-sterling-pond-wp-5",
+        "name": "Sterling Pond Trail turnaround / finish",
+        "type": "Finish",
+        "mile": 2.3,
+        "icon": "\u25ce",
+        "lat": 44.57248,
+        "lon": -72.751619,
+        "source": "MapPI3 seed planning marker \u2014 verify against GPX/OSM"
+      }
+    ],
+    "pois": [
+      {
+        "id": "vt-sterling-pond-poi",
+        "type": "verification",
+        "label": "Seed geometry: verify trailhead/access/closures and import GPX before field navigation.",
+        "mile": 0.1
+      }
+    ],
+    "landType": "Public trail / verify local rules",
+    "catalogCategory": "regional seed catalog",
+    "mountainArea": "Green Mountains",
+    "geometryQuality": "rough seed geometry \u2014 import verified GPX/OSM before relying on this path",
+    "color": "#9ce36c",
+    "segments": [
+      {
+        "id": "vt-sterling-pond-seg-1",
+        "name": "Seed route line",
+        "startMile": 0,
+        "endMile": 2.3,
+        "color": "#9ce36c"
+      }
+    ],
+    "markerDensity": "seed route markers from approximate geometry"
+  },
+  {
+    "id": "ma-blue-hills-skyline",
+    "schemaVersion": "mappi3.routePack.v1",
+    "name": "Blue Hills Skyline Section",
+    "place": "Milton, Massachusetts",
+    "region": "Eastern Massachusetts",
+    "summary": "Seed planning route for Blue Hills Skyline Section. Added to broaden MapPI3 route choices; verify current access and replace with GPX/OSM before field reliance.",
+    "difficulty": "Moderate",
+    "routeType": "Point-to-point",
+    "status": "Ready",
+    "distanceMiles": 5.4,
+    "estimatedTime": "3h 42m",
+    "elevationGainFt": 1092,
+    "storageEstimateMb": 131,
+    "tags": [
+      "ma",
+      "urban",
+      "skyline",
+      "day hike",
+      "seed-planning"
+    ],
+    "sync": {
+      "state": "local-seed-catalog",
+      "lastSynced": "seed-v1.2.25",
+      "supabaseReady": false
+    },
+    "offline": {
+      "required": false,
+      "tileFormat": "MBTiles",
+      "tileBounds": [
+        -71.12915,
+        42.16497,
+        -71.06085,
+        42.26304
+      ],
+      "minZoom": 10,
+      "maxZoom": 16,
+      "layers": [
+        "trail",
+        "topo",
+        "waypoints"
+      ]
+    },
+    "weather": {
+      "cachePolicy": "refresh-when-online",
+      "lastForecastLabel": "not cached"
+    },
+    "geometry": {
+      "type": "LineString",
+      "coordinates": [
+        [
+          -71.097728,
+          42.194965
+        ],
+        [
+          -71.090845,
+          42.204896
+        ],
+        [
+          -71.091966,
+          42.211625
+        ],
+        [
+          -71.098034,
+          42.216375
+        ],
+        [
+          -71.099155,
+          42.223104
+        ],
+        [
+          -71.092272,
+          42.233035
+        ]
+      ]
+    },
+    "mapPreviewPath": [
+      [
+        30,
+        120
+      ],
+      [
+        80,
+        170
+      ],
+      [
+        130,
+        174
+      ],
+      [
+        180,
+        128
+      ],
+      [
+        230,
+        75
+      ],
+      [
+        280,
+        63
+      ]
+    ],
+    "waypoints": [
+      {
+        "id": "ma-blue-hills-skyline-wp-1",
+        "name": "Blue Hills Skyline Section start",
+        "type": "Start",
+        "mile": 0.0,
+        "icon": "\u25ce",
+        "lat": 42.194965,
+        "lon": -71.097728,
+        "source": "MapPI3 seed planning marker \u2014 verify against GPX/OSM"
+      },
+      {
+        "id": "ma-blue-hills-skyline-wp-2",
+        "name": "Blue Hills Skyline Section bearing check",
+        "type": "Waypoint",
+        "mile": 1.35,
+        "icon": "\u25c6",
+        "lat": 42.204896,
+        "lon": -71.090845,
+        "source": "MapPI3 seed planning marker \u2014 verify against GPX/OSM"
+      },
+      {
+        "id": "ma-blue-hills-skyline-wp-3",
+        "name": "Blue Hills Skyline Section pacing marker",
+        "type": "Waypoint",
+        "mile": 2.7,
+        "icon": "\u25c6",
+        "lat": 42.216375,
+        "lon": -71.098034,
+        "source": "MapPI3 seed planning marker \u2014 verify against GPX/OSM"
+      },
+      {
+        "id": "ma-blue-hills-skyline-wp-4",
+        "name": "Blue Hills Skyline Section view / rest",
+        "type": "Waypoint",
+        "mile": 4.05,
+        "icon": "\ud83d\udc41\ufe0f",
+        "lat": 42.223104,
+        "lon": -71.099155,
+        "source": "MapPI3 seed planning marker \u2014 verify against GPX/OSM"
+      },
+      {
+        "id": "ma-blue-hills-skyline-wp-5",
+        "name": "Blue Hills Skyline Section turnaround / finish",
+        "type": "Finish",
+        "mile": 5.4,
+        "icon": "\u25ce",
+        "lat": 42.233035,
+        "lon": -71.092272,
+        "source": "MapPI3 seed planning marker \u2014 verify against GPX/OSM"
+      }
+    ],
+    "pois": [
+      {
+        "id": "ma-blue-hills-skyline-poi",
+        "type": "verification",
+        "label": "Seed geometry: verify trailhead/access/closures and import GPX before field navigation.",
+        "mile": 0.1
+      }
+    ],
+    "landType": "Public trail / verify local rules",
+    "catalogCategory": "regional seed catalog",
+    "mountainArea": "Eastern Massachusetts",
+    "geometryQuality": "rough seed geometry \u2014 import verified GPX/OSM before relying on this path",
+    "color": "#9ce36c",
+    "segments": [
+      {
+        "id": "ma-blue-hills-skyline-seg-1",
+        "name": "Seed route line",
+        "startMile": 0,
+        "endMile": 5.4,
+        "color": "#9ce36c"
+      }
+    ],
+    "markerDensity": "seed route markers from approximate geometry"
+  },
+  {
+    "id": "ma-mount-greylock",
+    "schemaVersion": "mappi3.routePack.v1",
+    "name": "Mount Greylock Cheshire Harbor",
+    "place": "Adams, Massachusetts",
+    "region": "Berkshires",
+    "summary": "Seed planning route for Mount Greylock Cheshire Harbor. Added to broaden MapPI3 route choices; verify current access and replace with GPX/OSM before field reliance.",
+    "difficulty": "Hard",
+    "routeType": "Out-and-back",
+    "status": "Ready",
+    "distanceMiles": 6.2,
+    "estimatedTime": "3h 06m",
+    "elevationGainFt": 1986,
+    "storageEstimateMb": 144,
+    "tags": [
+      "ma",
+      "berkshires",
+      "summit",
+      "at",
+      "seed-planning"
+    ],
+    "sync": {
+      "state": "local-seed-catalog",
+      "lastSynced": "seed-v1.2.25",
+      "supabaseReady": false
+    },
+    "offline": {
+      "required": false,
+      "tileFormat": "MBTiles",
+      "tileBounds": [
+        -73.20518,
+        42.58835,
+        -73.12682,
+        42.68765
+      ],
+      "minZoom": 10,
+      "maxZoom": 16,
+      "layers": [
+        "trail",
+        "topo",
+        "waypoints"
+      ]
+    },
+    "weather": {
+      "cachePolicy": "refresh-when-online",
+      "lastForecastLabel": "not cached"
+    },
+    "geometry": {
+      "type": "LineString",
+      "coordinates": [
+        [
+          -73.160791,
+          42.618348
+        ],
+        [
+          -73.156816,
+          42.628632
+        ],
+        [
+          -73.161214,
+          42.635567
+        ],
+        [
+          -73.170786,
+          42.640433
+        ],
+        [
+          -73.175184,
+          42.647368
+        ],
+        [
+          -73.171209,
+          42.657652
+        ]
+      ]
+    },
+    "mapPreviewPath": [
+      [
+        30,
+        120
+      ],
+      [
+        80,
+        170
+      ],
+      [
+        130,
+        174
+      ],
+      [
+        180,
+        128
+      ],
+      [
+        230,
+        75
+      ],
+      [
+        280,
+        63
+      ]
+    ],
+    "waypoints": [
+      {
+        "id": "ma-mount-greylock-wp-1",
+        "name": "Mount Greylock Cheshire Harbor start",
+        "type": "Start",
+        "mile": 0.0,
+        "icon": "\u25ce",
+        "lat": 42.618348,
+        "lon": -73.160791,
+        "source": "MapPI3 seed planning marker \u2014 verify against GPX/OSM"
+      },
+      {
+        "id": "ma-mount-greylock-wp-2",
+        "name": "Mount Greylock Cheshire Harbor bearing check",
+        "type": "Waypoint",
+        "mile": 1.55,
+        "icon": "\u25c6",
+        "lat": 42.628632,
+        "lon": -73.156816,
+        "source": "MapPI3 seed planning marker \u2014 verify against GPX/OSM"
+      },
+      {
+        "id": "ma-mount-greylock-wp-3",
+        "name": "Mount Greylock Cheshire Harbor pacing marker",
+        "type": "Waypoint",
+        "mile": 3.1,
+        "icon": "\u25c6",
+        "lat": 42.640433,
+        "lon": -73.170786,
+        "source": "MapPI3 seed planning marker \u2014 verify against GPX/OSM"
+      },
+      {
+        "id": "ma-mount-greylock-wp-4",
+        "name": "Mount Greylock Cheshire Harbor view / rest",
+        "type": "Waypoint",
+        "mile": 4.65,
+        "icon": "\ud83d\udc41\ufe0f",
+        "lat": 42.647368,
+        "lon": -73.175184,
+        "source": "MapPI3 seed planning marker \u2014 verify against GPX/OSM"
+      },
+      {
+        "id": "ma-mount-greylock-wp-5",
+        "name": "Mount Greylock Cheshire Harbor turnaround / finish",
+        "type": "Finish",
+        "mile": 6.2,
+        "icon": "\u25ce",
+        "lat": 42.657652,
+        "lon": -73.171209,
+        "source": "MapPI3 seed planning marker \u2014 verify against GPX/OSM"
+      }
+    ],
+    "pois": [
+      {
+        "id": "ma-mount-greylock-poi",
+        "type": "verification",
+        "label": "Seed geometry: verify trailhead/access/closures and import GPX before field navigation.",
+        "mile": 0.1
+      }
+    ],
+    "landType": "Public trail / verify local rules",
+    "catalogCategory": "regional seed catalog",
+    "mountainArea": "Berkshires",
+    "geometryQuality": "rough seed geometry \u2014 import verified GPX/OSM before relying on this path",
+    "color": "#9ce36c",
+    "segments": [
+      {
+        "id": "ma-mount-greylock-seg-1",
+        "name": "Seed route line",
+        "startMile": 0,
+        "endMile": 6.2,
+        "color": "#9ce36c"
+      }
+    ],
+    "markerDensity": "seed route markers from approximate geometry"
+  },
+  {
+    "id": "ny-adk-cascade-porter",
+    "schemaVersion": "mappi3.routePack.v1",
+    "name": "Cascade and Porter Mountains",
+    "place": "Lake Placid, New York",
+    "region": "Adirondacks",
+    "summary": "Seed planning route for Cascade and Porter Mountains. Added to broaden MapPI3 route choices; verify current access and replace with GPX/OSM before field reliance.",
+    "difficulty": "Hard",
+    "routeType": "Out-and-back",
+    "status": "Ready",
+    "distanceMiles": 6.0,
+    "estimatedTime": "3h 00m",
+    "elevationGainFt": 1930,
+    "storageEstimateMb": 141,
+    "tags": [
+      "ny",
+      "adirondack",
+      "46er",
+      "summit",
+      "seed-planning"
+    ],
+    "sync": {
+      "state": "local-seed-catalog",
+      "lastSynced": "seed-v1.2.25",
+      "supabaseReady": false
+    },
+    "offline": {
+      "required": false,
+      "tileFormat": "MBTiles",
+      "tileBounds": [
+        -73.9046,
+        44.17052,
+        -73.8174,
+        44.26548
+      ],
+      "minZoom": 10,
+      "maxZoom": 16,
+      "layers": [
+        "trail",
+        "topo",
+        "waypoints"
+      ]
+    },
+    "weather": {
+      "cachePolicy": "refresh-when-online",
+      "lastForecastLabel": "not cached"
+    },
+    "geometry": {
+      "type": "LineString",
+      "coordinates": [
+        [
+          -73.848324,
+          44.200518
+        ],
+        [
+          -73.847403,
+          44.209907
+        ],
+        [
+          -73.854762,
+          44.215985
+        ],
+        [
+          -73.867238,
+          44.220015
+        ],
+        [
+          -73.874597,
+          44.226093
+        ],
+        [
+          -73.873676,
+          44.235482
+        ]
+      ]
+    },
+    "mapPreviewPath": [
+      [
+        30,
+        120
+      ],
+      [
+        80,
+        170
+      ],
+      [
+        130,
+        174
+      ],
+      [
+        180,
+        128
+      ],
+      [
+        230,
+        75
+      ],
+      [
+        280,
+        63
+      ]
+    ],
+    "waypoints": [
+      {
+        "id": "ny-adk-cascade-porter-wp-1",
+        "name": "Cascade and Porter Mountains start",
+        "type": "Start",
+        "mile": 0.0,
+        "icon": "\u25ce",
+        "lat": 44.200518,
+        "lon": -73.848324,
+        "source": "MapPI3 seed planning marker \u2014 verify against GPX/OSM"
+      },
+      {
+        "id": "ny-adk-cascade-porter-wp-2",
+        "name": "Cascade and Porter Mountains bearing check",
+        "type": "Waypoint",
+        "mile": 1.5,
+        "icon": "\u25c6",
+        "lat": 44.209907,
+        "lon": -73.847403,
+        "source": "MapPI3 seed planning marker \u2014 verify against GPX/OSM"
+      },
+      {
+        "id": "ny-adk-cascade-porter-wp-3",
+        "name": "Cascade and Porter Mountains pacing marker",
+        "type": "Waypoint",
+        "mile": 3.0,
+        "icon": "\u25c6",
+        "lat": 44.220015,
+        "lon": -73.867238,
+        "source": "MapPI3 seed planning marker \u2014 verify against GPX/OSM"
+      },
+      {
+        "id": "ny-adk-cascade-porter-wp-4",
+        "name": "Cascade and Porter Mountains view / rest",
+        "type": "Waypoint",
+        "mile": 4.5,
+        "icon": "\ud83d\udc41\ufe0f",
+        "lat": 44.226093,
+        "lon": -73.874597,
+        "source": "MapPI3 seed planning marker \u2014 verify against GPX/OSM"
+      },
+      {
+        "id": "ny-adk-cascade-porter-wp-5",
+        "name": "Cascade and Porter Mountains turnaround / finish",
+        "type": "Finish",
+        "mile": 6.0,
+        "icon": "\u25ce",
+        "lat": 44.235482,
+        "lon": -73.873676,
+        "source": "MapPI3 seed planning marker \u2014 verify against GPX/OSM"
+      }
+    ],
+    "pois": [
+      {
+        "id": "ny-adk-cascade-porter-poi",
+        "type": "verification",
+        "label": "Seed geometry: verify trailhead/access/closures and import GPX before field navigation.",
+        "mile": 0.1
+      }
+    ],
+    "landType": "Public trail / verify local rules",
+    "catalogCategory": "regional seed catalog",
+    "mountainArea": "Adirondacks",
+    "geometryQuality": "rough seed geometry \u2014 import verified GPX/OSM before relying on this path",
+    "color": "#9ce36c",
+    "segments": [
+      {
+        "id": "ny-adk-cascade-porter-seg-1",
+        "name": "Seed route line",
+        "startMile": 0,
+        "endMile": 6.0,
+        "color": "#9ce36c"
+      }
+    ],
+    "markerDensity": "seed route markers from approximate geometry"
+  },
+  {
+    "id": "ny-adk-mount-jo",
+    "schemaVersion": "mappi3.routePack.v1",
+    "name": "Mount Jo Loop",
+    "place": "Lake Placid, New York",
+    "region": "Adirondacks",
+    "summary": "Seed planning route for Mount Jo Loop. Added to broaden MapPI3 route choices; verify current access and replace with GPX/OSM before field reliance.",
+    "difficulty": "Moderate",
+    "routeType": "Loop",
+    "status": "Ready",
+    "distanceMiles": 2.6,
+    "estimatedTime": "1h 18m",
+    "elevationGainFt": 588,
+    "storageEstimateMb": 86,
+    "tags": [
+      "ny",
+      "adirondack",
+      "family",
+      "view",
+      "seed-planning"
+    ],
+    "sync": {
+      "state": "local-seed-catalog",
+      "lastSynced": "seed-v1.2.25",
+      "supabaseReady": false
+    },
+    "offline": {
+      "required": false,
+      "tileFormat": "MBTiles",
+      "tileBounds": [
+        -74.01011,
+        44.1439,
+        -73.9204,
+        44.2221
+      ],
+      "minZoom": 10,
+      "maxZoom": 16,
+      "layers": [
+        "trail",
+        "topo",
+        "waypoints"
+      ]
+    },
+    "weather": {
+      "cachePolicy": "refresh-when-online",
+      "lastForecastLabel": "not cached"
+    },
+    "geometry": {
+      "type": "LineString",
+      "coordinates": [
+        [
+          -73.9504,
+          44.183
+        ],
+        [
+          -73.956164,
+          44.192104
+        ],
+        [
+          -73.973959,
+          44.192104
+        ],
+        [
+          -73.980115,
+          44.183
+        ],
+        [
+          -73.970919,
+          44.173896
+        ],
+        [
+          -73.95945,
+          44.173896
+        ],
+        [
+          -73.95142,
+          44.183
+        ]
+      ]
+    },
+    "mapPreviewPath": [
+      [
+        30,
+        120
+      ],
+      [
+        80,
+        170
+      ],
+      [
+        130,
+        174
+      ],
+      [
+        180,
+        128
+      ],
+      [
+        230,
+        75
+      ],
+      [
+        280,
+        63
+      ],
+      [
+        330,
+        104
+      ]
+    ],
+    "waypoints": [
+      {
+        "id": "ny-adk-mount-jo-wp-1",
+        "name": "Mount Jo Loop start",
+        "type": "Start",
+        "mile": 0.0,
+        "icon": "\u25ce",
+        "lat": 44.183,
+        "lon": -73.9504,
+        "source": "MapPI3 seed planning marker \u2014 verify against GPX/OSM"
+      },
+      {
+        "id": "ny-adk-mount-jo-wp-2",
+        "name": "Mount Jo Loop bearing check",
+        "type": "Waypoint",
+        "mile": 0.65,
+        "icon": "\u25c6",
+        "lat": 44.192104,
+        "lon": -73.956164,
+        "source": "MapPI3 seed planning marker \u2014 verify against GPX/OSM"
+      },
+      {
+        "id": "ny-adk-mount-jo-wp-3",
+        "name": "Mount Jo Loop pacing marker",
+        "type": "Waypoint",
+        "mile": 1.3,
+        "icon": "\u25c6",
+        "lat": 44.183,
+        "lon": -73.980115,
+        "source": "MapPI3 seed planning marker \u2014 verify against GPX/OSM"
+      },
+      {
+        "id": "ny-adk-mount-jo-wp-4",
+        "name": "Mount Jo Loop view / rest",
+        "type": "Waypoint",
+        "mile": 1.95,
+        "icon": "\ud83d\udc41\ufe0f",
+        "lat": 44.173896,
+        "lon": -73.95945,
+        "source": "MapPI3 seed planning marker \u2014 verify against GPX/OSM"
+      },
+      {
+        "id": "ny-adk-mount-jo-wp-5",
+        "name": "Mount Jo Loop turnaround / finish",
+        "type": "Finish",
+        "mile": 2.6,
+        "icon": "\u25ce",
+        "lat": 44.183,
+        "lon": -73.95142,
+        "source": "MapPI3 seed planning marker \u2014 verify against GPX/OSM"
+      }
+    ],
+    "pois": [
+      {
+        "id": "ny-adk-mount-jo-poi",
+        "type": "verification",
+        "label": "Seed geometry: verify trailhead/access/closures and import GPX before field navigation.",
+        "mile": 0.1
+      }
+    ],
+    "landType": "Public trail / verify local rules",
+    "catalogCategory": "regional seed catalog",
+    "mountainArea": "Adirondacks",
+    "geometryQuality": "rough seed geometry \u2014 import verified GPX/OSM before relying on this path",
+    "color": "#9ce36c",
+    "segments": [
+      {
+        "id": "ny-adk-mount-jo-seg-1",
+        "name": "Seed route line",
+        "startMile": 0,
+        "endMile": 2.6,
+        "color": "#9ce36c"
+      }
+    ],
+    "markerDensity": "seed route markers from approximate geometry"
+  },
+  {
+    "id": "pa-pinnacle-pulpit",
+    "schemaVersion": "mappi3.routePack.v1",
+    "name": "Pinnacle and Pulpit Rock Loop",
+    "place": "Hamburg, Pennsylvania",
+    "region": "Pennsylvania AT",
+    "summary": "Seed planning route for Pinnacle and Pulpit Rock Loop. Added to broaden MapPI3 route choices; verify current access and replace with GPX/OSM before field reliance.",
+    "difficulty": "Hard",
+    "routeType": "Loop",
+    "status": "Ready",
+    "distanceMiles": 8.7,
+    "estimatedTime": "4h 20m",
+    "elevationGainFt": 2686,
+    "storageEstimateMb": 184,
+    "tags": [
+      "pa",
+      "at",
+      "view",
+      "loop",
+      "seed-planning"
+    ],
+    "sync": {
+      "state": "local-seed-catalog",
+      "lastSynced": "seed-v1.2.25",
+      "supabaseReady": false
+    },
+    "offline": {
+      "required": false,
+      "tileFormat": "MBTiles",
+      "tileBounds": [
+        -75.99443,
+        40.55309,
+        -75.8923,
+        40.63891
+      ],
+      "minZoom": 10,
+      "maxZoom": 16,
+      "layers": [
+        "trail",
+        "topo",
+        "waypoints"
+      ]
+    },
+    "weather": {
+      "cachePolicy": "refresh-when-online",
+      "lastForecastLabel": "not cached"
+    },
+    "geometry": {
+      "type": "LineString",
+      "coordinates": [
+        [
+          -75.9223,
+          40.596
+        ],
+        [
+          -75.930473,
+          40.608907
+        ],
+        [
+          -75.955703,
+          40.608907
+        ],
+        [
+          -75.96443,
+          40.596
+        ],
+        [
+          -75.951392,
+          40.583093
+        ],
+        [
+          -75.935131,
+          40.583093
+        ],
+        [
+          -75.923746,
+          40.596
+        ]
+      ]
+    },
+    "mapPreviewPath": [
+      [
+        30,
+        120
+      ],
+      [
+        80,
+        170
+      ],
+      [
+        130,
+        174
+      ],
+      [
+        180,
+        128
+      ],
+      [
+        230,
+        75
+      ],
+      [
+        280,
+        63
+      ],
+      [
+        330,
+        104
+      ]
+    ],
+    "waypoints": [
+      {
+        "id": "pa-pinnacle-pulpit-wp-1",
+        "name": "Pinnacle and Pulpit Rock Loop start",
+        "type": "Start",
+        "mile": 0.0,
+        "icon": "\u25ce",
+        "lat": 40.596,
+        "lon": -75.9223,
+        "source": "MapPI3 seed planning marker \u2014 verify against GPX/OSM"
+      },
+      {
+        "id": "pa-pinnacle-pulpit-wp-2",
+        "name": "Pinnacle and Pulpit Rock Loop bearing check",
+        "type": "Waypoint",
+        "mile": 2.17,
+        "icon": "\u25c6",
+        "lat": 40.608907,
+        "lon": -75.930473,
+        "source": "MapPI3 seed planning marker \u2014 verify against GPX/OSM"
+      },
+      {
+        "id": "pa-pinnacle-pulpit-wp-3",
+        "name": "Pinnacle and Pulpit Rock Loop pacing marker",
+        "type": "Waypoint",
+        "mile": 4.35,
+        "icon": "\u25c6",
+        "lat": 40.596,
+        "lon": -75.96443,
+        "source": "MapPI3 seed planning marker \u2014 verify against GPX/OSM"
+      },
+      {
+        "id": "pa-pinnacle-pulpit-wp-4",
+        "name": "Pinnacle and Pulpit Rock Loop view / rest",
+        "type": "Waypoint",
+        "mile": 6.52,
+        "icon": "\ud83d\udc41\ufe0f",
+        "lat": 40.583093,
+        "lon": -75.935131,
+        "source": "MapPI3 seed planning marker \u2014 verify against GPX/OSM"
+      },
+      {
+        "id": "pa-pinnacle-pulpit-wp-5",
+        "name": "Pinnacle and Pulpit Rock Loop turnaround / finish",
+        "type": "Finish",
+        "mile": 8.7,
+        "icon": "\u25ce",
+        "lat": 40.596,
+        "lon": -75.923746,
+        "source": "MapPI3 seed planning marker \u2014 verify against GPX/OSM"
+      }
+    ],
+    "pois": [
+      {
+        "id": "pa-pinnacle-pulpit-poi",
+        "type": "verification",
+        "label": "Seed geometry: verify trailhead/access/closures and import GPX before field navigation.",
+        "mile": 0.1
+      }
+    ],
+    "landType": "Public trail / verify local rules",
+    "catalogCategory": "regional seed catalog",
+    "mountainArea": "Pennsylvania AT",
+    "geometryQuality": "rough seed geometry \u2014 import verified GPX/OSM before relying on this path",
+    "color": "#9ce36c",
+    "segments": [
+      {
+        "id": "pa-pinnacle-pulpit-seg-1",
+        "name": "Seed route line",
+        "startMile": 0,
+        "endMile": 8.7,
+        "color": "#9ce36c"
+      }
+    ],
+    "markerDensity": "seed route markers from approximate geometry"
+  },
+  {
+    "id": "wv-seneca-rocks",
+    "schemaVersion": "mappi3.routePack.v1",
+    "name": "Seneca Rocks Trail",
+    "place": "Seneca Rocks, West Virginia",
+    "region": "West Virginia",
+    "summary": "Seed planning route for Seneca Rocks Trail. Added to broaden MapPI3 route choices; verify current access and replace with GPX/OSM before field reliance.",
+    "difficulty": "Moderate",
+    "routeType": "Out-and-back",
+    "status": "Ready",
+    "distanceMiles": 3.2,
+    "estimatedTime": "2h 36m",
+    "elevationGainFt": 696,
+    "storageEstimateMb": 96,
+    "tags": [
+      "wv",
+      "rock",
+      "view",
+      "short",
+      "seed-planning"
+    ],
+    "sync": {
+      "state": "local-seed-catalog",
+      "lastSynced": "seed-v1.2.25",
+      "supabaseReady": false
+    },
+    "offline": {
+      "required": false,
+      "tileFormat": "MBTiles",
+      "tileBounds": [
+        -79.41996,
+        38.79138,
+        -79.33004,
+        38.87662
+      ],
+      "minZoom": 10,
+      "maxZoom": 16,
+      "layers": [
+        "trail",
+        "topo",
+        "waypoints"
+      ]
+    },
+    "weather": {
+      "cachePolicy": "refresh-when-online",
+      "lastForecastLabel": "not cached"
+    },
+    "geometry": {
+      "type": "LineString",
+      "coordinates": [
+        [
+          -79.389958,
+          38.821381
+        ],
+        [
+          -79.378915,
+          38.828453
+        ],
+        [
+          -79.374865,
+          38.832727
+        ],
+        [
+          -79.375135,
+          38.835273
+        ],
+        [
+          -79.371085,
+          38.839547
+        ],
+        [
+          -79.360042,
+          38.846619
+        ]
+      ]
+    },
+    "mapPreviewPath": [
+      [
+        30,
+        120
+      ],
+      [
+        80,
+        170
+      ],
+      [
+        130,
+        174
+      ],
+      [
+        180,
+        128
+      ],
+      [
+        230,
+        75
+      ],
+      [
+        280,
+        63
+      ]
+    ],
+    "waypoints": [
+      {
+        "id": "wv-seneca-rocks-wp-1",
+        "name": "Seneca Rocks Trail start",
+        "type": "Start",
+        "mile": 0.0,
+        "icon": "\u25ce",
+        "lat": 38.821381,
+        "lon": -79.389958,
+        "source": "MapPI3 seed planning marker \u2014 verify against GPX/OSM"
+      },
+      {
+        "id": "wv-seneca-rocks-wp-2",
+        "name": "Seneca Rocks Trail bearing check",
+        "type": "Waypoint",
+        "mile": 0.8,
+        "icon": "\u25c6",
+        "lat": 38.828453,
+        "lon": -79.378915,
+        "source": "MapPI3 seed planning marker \u2014 verify against GPX/OSM"
+      },
+      {
+        "id": "wv-seneca-rocks-wp-3",
+        "name": "Seneca Rocks Trail pacing marker",
+        "type": "Waypoint",
+        "mile": 1.6,
+        "icon": "\u25c6",
+        "lat": 38.835273,
+        "lon": -79.375135,
+        "source": "MapPI3 seed planning marker \u2014 verify against GPX/OSM"
+      },
+      {
+        "id": "wv-seneca-rocks-wp-4",
+        "name": "Seneca Rocks Trail view / rest",
+        "type": "Waypoint",
+        "mile": 2.4,
+        "icon": "\ud83d\udc41\ufe0f",
+        "lat": 38.839547,
+        "lon": -79.371085,
+        "source": "MapPI3 seed planning marker \u2014 verify against GPX/OSM"
+      },
+      {
+        "id": "wv-seneca-rocks-wp-5",
+        "name": "Seneca Rocks Trail turnaround / finish",
+        "type": "Finish",
+        "mile": 3.2,
+        "icon": "\u25ce",
+        "lat": 38.846619,
+        "lon": -79.360042,
+        "source": "MapPI3 seed planning marker \u2014 verify against GPX/OSM"
+      }
+    ],
+    "pois": [
+      {
+        "id": "wv-seneca-rocks-poi",
+        "type": "verification",
+        "label": "Seed geometry: verify trailhead/access/closures and import GPX before field navigation.",
+        "mile": 0.1
+      }
+    ],
+    "landType": "Public trail / verify local rules",
+    "catalogCategory": "regional seed catalog",
+    "mountainArea": "West Virginia",
+    "geometryQuality": "rough seed geometry \u2014 import verified GPX/OSM before relying on this path",
+    "color": "#9ce36c",
+    "segments": [
+      {
+        "id": "wv-seneca-rocks-seg-1",
+        "name": "Seed route line",
+        "startMile": 0,
+        "endMile": 3.2,
+        "color": "#9ce36c"
+      }
+    ],
+    "markerDensity": "seed route markers from approximate geometry"
+  },
+  {
+    "id": "va-old-rag",
+    "schemaVersion": "mappi3.routePack.v1",
+    "name": "Old Rag Circuit",
+    "place": "Syria, Virginia",
+    "region": "Shenandoah",
+    "summary": "Seed planning route for Old Rag Circuit. Added to broaden MapPI3 route choices; verify current access and replace with GPX/OSM before field reliance.",
+    "difficulty": "Hard",
+    "routeType": "Loop",
+    "status": "Ready",
+    "distanceMiles": 9.1,
+    "estimatedTime": "5h 32m",
+    "elevationGainFt": 2798,
+    "storageEstimateMb": 190,
+    "tags": [
+      "va",
+      "scramble",
+      "classic",
+      "hard",
+      "seed-planning"
+    ],
+    "sync": {
+      "state": "local-seed-catalog",
+      "lastSynced": "seed-v1.2.25",
+      "supabaseReady": false
+    },
+    "offline": {
+      "required": false,
+      "tileFormat": "MBTiles",
+      "tileBounds": [
+        -78.33874,
+        38.52791,
+        -78.236,
+        38.61409
+      ],
+      "minZoom": 10,
+      "maxZoom": 16,
+      "layers": [
+        "trail",
+        "topo",
+        "waypoints"
+      ]
+    },
+    "weather": {
+      "cachePolicy": "refresh-when-online",
+      "lastForecastLabel": "not cached"
+    },
+    "geometry": {
+      "type": "LineString",
+      "coordinates": [
+        [
+          -78.266,
+          38.571
+        ],
+        [
+          -78.274291,
+          38.584094
+        ],
+        [
+          -78.299887,
+          38.584094
+        ],
+        [
+          -78.308741,
+          38.571
+        ],
+        [
+          -78.295513,
+          38.557906
+        ],
+        [
+          -78.279017,
+          38.557906
+        ],
+        [
+          -78.267467,
+          38.571
+        ]
+      ]
+    },
+    "mapPreviewPath": [
+      [
+        30,
+        120
+      ],
+      [
+        80,
+        170
+      ],
+      [
+        130,
+        174
+      ],
+      [
+        180,
+        128
+      ],
+      [
+        230,
+        75
+      ],
+      [
+        280,
+        63
+      ],
+      [
+        330,
+        104
+      ]
+    ],
+    "waypoints": [
+      {
+        "id": "va-old-rag-wp-1",
+        "name": "Old Rag Circuit start",
+        "type": "Start",
+        "mile": 0.0,
+        "icon": "\u25ce",
+        "lat": 38.571,
+        "lon": -78.266,
+        "source": "MapPI3 seed planning marker \u2014 verify against GPX/OSM"
+      },
+      {
+        "id": "va-old-rag-wp-2",
+        "name": "Old Rag Circuit bearing check",
+        "type": "Waypoint",
+        "mile": 2.27,
+        "icon": "\u25c6",
+        "lat": 38.584094,
+        "lon": -78.274291,
+        "source": "MapPI3 seed planning marker \u2014 verify against GPX/OSM"
+      },
+      {
+        "id": "va-old-rag-wp-3",
+        "name": "Old Rag Circuit pacing marker",
+        "type": "Waypoint",
+        "mile": 4.55,
+        "icon": "\u25c6",
+        "lat": 38.571,
+        "lon": -78.308741,
+        "source": "MapPI3 seed planning marker \u2014 verify against GPX/OSM"
+      },
+      {
+        "id": "va-old-rag-wp-4",
+        "name": "Old Rag Circuit view / rest",
+        "type": "Waypoint",
+        "mile": 6.82,
+        "icon": "\ud83d\udc41\ufe0f",
+        "lat": 38.557906,
+        "lon": -78.279017,
+        "source": "MapPI3 seed planning marker \u2014 verify against GPX/OSM"
+      },
+      {
+        "id": "va-old-rag-wp-5",
+        "name": "Old Rag Circuit turnaround / finish",
+        "type": "Finish",
+        "mile": 9.1,
+        "icon": "\u25ce",
+        "lat": 38.571,
+        "lon": -78.267467,
+        "source": "MapPI3 seed planning marker \u2014 verify against GPX/OSM"
+      }
+    ],
+    "pois": [
+      {
+        "id": "va-old-rag-poi",
+        "type": "verification",
+        "label": "Seed geometry: verify trailhead/access/closures and import GPX before field navigation.",
+        "mile": 0.1
+      }
+    ],
+    "landType": "Public trail / verify local rules",
+    "catalogCategory": "regional seed catalog",
+    "mountainArea": "Shenandoah",
+    "geometryQuality": "rough seed geometry \u2014 import verified GPX/OSM before relying on this path",
+    "color": "#9ce36c",
+    "segments": [
+      {
+        "id": "va-old-rag-seg-1",
+        "name": "Seed route line",
+        "startMile": 0,
+        "endMile": 9.1,
+        "color": "#9ce36c"
+      }
+    ],
+    "markerDensity": "seed route markers from approximate geometry"
+  },
+  {
+    "id": "me-vinal-falls",
+    "schemaVersion": "mappi3.routePack.v1",
+    "name": "Vinal Falls",
+    "place": "Vinalhaven, Maine",
+    "region": "Maine islands",
+    "summary": "Scenic waterfall route pack centered on real mapped POI data. Use as discovery/planning; verify parking, access, and trail conditions before relying on it.",
+    "difficulty": "Easy",
+    "routeType": "Scenic POI walk",
+    "status": "Ready",
+    "distanceMiles": 1.0,
+    "estimatedTime": "1h",
+    "elevationGainFt": 200,
+    "storageEstimateMb": 47,
+    "tags": [
+      "scenic",
+      "waterfall",
+      "waterfall",
+      "real-poi",
+      "seed-planning"
+    ],
+    "sync": {
+      "state": "local-seed-catalog",
+      "lastSynced": "seed-v1.2.26-real-poi",
+      "supabaseReady": false
+    },
+    "offline": {
+      "required": false,
+      "tileFormat": "MBTiles",
+      "tileBounds": [
+        -68.88193,
+        44.0449,
+        -68.80193,
+        44.1249
+      ],
+      "minZoom": 11,
+      "maxZoom": 17,
+      "layers": [
+        "trail",
+        "topo",
+        "waypoints",
+        "scenic-poi"
+      ]
+    },
+    "weather": {
+      "cachePolicy": "refresh-when-online",
+      "lastForecastLabel": "not cached"
+    },
+    "geometry": {
+      "type": "LineString",
+      "coordinates": [
+        [
+          -68.847934,
+          44.081897
+        ],
+        [
+          -68.841934,
+          44.084897
+        ],
+        [
+          -68.835934,
+          44.087897
+        ]
+      ]
+    },
+    "mapPreviewPath": [
+      [
+        40,
+        170
+      ],
+      [
+        180,
+        110
+      ],
+      [
+        320,
+        170
+      ]
+    ],
+    "waypoints": [
+      {
+        "id": "me-vinal-falls-start",
+        "name": "Vinal Falls approach / parking check",
+        "type": "Start",
+        "mile": 0,
+        "icon": "\u25ce",
+        "lat": 44.081897,
+        "lon": -68.847934,
+        "source": "MapPI3 generated approach marker"
+      },
+      {
+        "id": "me-vinal-falls-poi",
+        "name": "Vinal Falls",
+        "type": "Waterfall",
+        "mile": 0.5,
+        "icon": "\ud83d\udca7",
+        "lat": 44.0848969,
+        "lon": -68.8419338,
+        "source": "OSM waterway=waterfall + GNIS"
+      },
+      {
+        "id": "me-vinal-falls-finish",
+        "name": "Vinal Falls return / exit",
+        "type": "Finish",
+        "mile": 1.0,
+        "icon": "\u25ce",
+        "lat": 44.087897,
+        "lon": -68.835934,
+        "source": "MapPI3 generated return marker"
+      }
+    ],
+    "pois": [
+      {
+        "id": "me-vinal-falls-real-poi",
+        "type": "Waterfall",
+        "label": "Vinal Falls \u00b7 source: OSM waterway=waterfall + GNIS",
+        "mile": 0.5,
+        "lat": 44.0848969,
+        "lon": -68.8419338
+      }
+    ],
+    "landType": "Scenic public POI / verify access",
+    "catalogCategory": "waterfalls and covered bridges",
+    "mountainArea": "Maine islands",
+    "geometryQuality": "real mapped POI with generated approach geometry \u2014 verify route/parking before field navigation",
+    "color": "#4bd2ff",
+    "segments": [
+      {
+        "id": "me-vinal-falls-seg",
+        "name": "Waterfall",
+        "startMile": 0,
+        "endMile": 1.0,
+        "color": "#4bd2ff"
+      }
+    ],
+    "markerDensity": "real scenic POI plus generated approach markers"
+  },
+  {
+    "id": "me-moxie-falls-real",
+    "schemaVersion": "mappi3.routePack.v1",
+    "name": "Moxie Falls real POI",
+    "place": "The Forks, Maine",
+    "region": "Kennebec / Somerset Maine",
+    "summary": "Scenic waterfall route pack centered on real mapped POI data. Use as discovery/planning; verify parking, access, and trail conditions before relying on it.",
+    "difficulty": "Easy",
+    "routeType": "Scenic POI walk",
+    "status": "Ready",
+    "distanceMiles": 1.2,
+    "estimatedTime": "1h",
+    "elevationGainFt": 224,
+    "storageEstimateMb": 49,
+    "tags": [
+      "scenic",
+      "waterfall",
+      "waterfall",
+      "real-poi",
+      "seed-planning"
+    ],
+    "sync": {
+      "state": "local-seed-catalog",
+      "lastSynced": "seed-v1.2.26-real-poi",
+      "supabaseReady": false
+    },
+    "offline": {
+      "required": false,
+      "tileFormat": "MBTiles",
+      "tileBounds": [
+        -69.97701,
+        45.32254,
+        -69.89701,
+        45.40254
+      ],
+      "minZoom": 11,
+      "maxZoom": 17,
+      "layers": [
+        "trail",
+        "topo",
+        "waypoints",
+        "scenic-poi"
+      ]
+    },
+    "weather": {
+      "cachePolicy": "refresh-when-online",
+      "lastForecastLabel": "not cached"
+    },
+    "geometry": {
+      "type": "LineString",
+      "coordinates": [
+        [
+          -69.944209,
+          45.358937
+        ],
+        [
+          -69.937009,
+          45.362537
+        ],
+        [
+          -69.929809,
+          45.366137
+        ]
+      ]
+    },
+    "mapPreviewPath": [
+      [
+        40,
+        170
+      ],
+      [
+        180,
+        110
+      ],
+      [
+        320,
+        170
+      ]
+    ],
+    "waypoints": [
+      {
+        "id": "me-moxie-falls-real-start",
+        "name": "Moxie Falls real POI approach / parking check",
+        "type": "Start",
+        "mile": 0,
+        "icon": "\u25ce",
+        "lat": 45.358937,
+        "lon": -69.944209,
+        "source": "MapPI3 generated approach marker"
+      },
+      {
+        "id": "me-moxie-falls-real-poi",
+        "name": "Moxie Falls real POI",
+        "type": "Waterfall",
+        "mile": 0.6,
+        "icon": "\ud83d\udca7",
+        "lat": 45.3625372,
+        "lon": -69.9370086,
+        "source": "OSM waterway=waterfall / Wikidata Q6927506"
+      },
+      {
+        "id": "me-moxie-falls-real-finish",
+        "name": "Moxie Falls real POI return / exit",
+        "type": "Finish",
+        "mile": 1.2,
+        "icon": "\u25ce",
+        "lat": 45.366137,
+        "lon": -69.929809,
+        "source": "MapPI3 generated return marker"
+      }
+    ],
+    "pois": [
+      {
+        "id": "me-moxie-falls-real-real-poi",
+        "type": "Waterfall",
+        "label": "Moxie Falls real POI \u00b7 source: OSM waterway=waterfall / Wikidata Q6927506",
+        "mile": 0.6,
+        "lat": 45.3625372,
+        "lon": -69.9370086
+      }
+    ],
+    "landType": "Scenic public POI / verify access",
+    "catalogCategory": "waterfalls and covered bridges",
+    "mountainArea": "Kennebec / Somerset Maine",
+    "geometryQuality": "real mapped POI with generated approach geometry \u2014 verify route/parking before field navigation",
+    "color": "#4bd2ff",
+    "segments": [
+      {
+        "id": "me-moxie-falls-real-seg",
+        "name": "Waterfall",
+        "startMile": 0,
+        "endMile": 1.2,
+        "color": "#4bd2ff"
+      }
+    ],
+    "markerDensity": "real scenic POI plus generated approach markers"
+  },
+  {
+    "id": "me-little-wilson-lower-falls",
+    "schemaVersion": "mappi3.routePack.v1",
+    "name": "Little Wilson Lower Falls",
+    "place": "Elliottsville, Maine",
+    "region": "100-Mile Wilderness",
+    "summary": "Scenic waterfall route pack centered on real mapped POI data. Use as discovery/planning; verify parking, access, and trail conditions before relying on it.",
+    "difficulty": "Moderate",
+    "routeType": "Scenic POI walk",
+    "status": "Ready",
+    "distanceMiles": 2.0,
+    "estimatedTime": "1h",
+    "elevationGainFt": 320,
+    "storageEstimateMb": 59,
+    "tags": [
+      "scenic",
+      "waterfall",
+      "waterfall",
+      "real-poi",
+      "seed-planning"
+    ],
+    "sync": {
+      "state": "local-seed-catalog",
+      "lastSynced": "seed-v1.2.26-real-poi",
+      "supabaseReady": false
+    },
+    "offline": {
+      "required": false,
+      "tileFormat": "MBTiles",
+      "tileBounds": [
+        -69.48883,
+        45.33566,
+        -69.40883,
+        45.41566
+      ],
+      "minZoom": 11,
+      "maxZoom": 17,
+      "layers": [
+        "trail",
+        "topo",
+        "waypoints",
+        "scenic-poi"
+      ]
+    },
+    "weather": {
+      "cachePolicy": "refresh-when-online",
+      "lastForecastLabel": "not cached"
+    },
+    "geometry": {
+      "type": "LineString",
+      "coordinates": [
+        [
+          -69.46083,
+          45.369661
+        ],
+        [
+          -69.44883,
+          45.375661
+        ],
+        [
+          -69.43683,
+          45.381661
+        ]
+      ]
+    },
+    "mapPreviewPath": [
+      [
+        40,
+        170
+      ],
+      [
+        180,
+        110
+      ],
+      [
+        320,
+        170
+      ]
+    ],
+    "waypoints": [
+      {
+        "id": "me-little-wilson-lower-falls-start",
+        "name": "Little Wilson Lower Falls approach / parking check",
+        "type": "Start",
+        "mile": 0,
+        "icon": "\u25ce",
+        "lat": 45.369661,
+        "lon": -69.46083,
+        "source": "MapPI3 generated approach marker"
+      },
+      {
+        "id": "me-little-wilson-lower-falls-poi",
+        "name": "Little Wilson Lower Falls",
+        "type": "Waterfall",
+        "mile": 1.0,
+        "icon": "\ud83d\udca7",
+        "lat": 45.3756611,
+        "lon": -69.44883,
+        "source": "OSM waterway=waterfall"
+      },
+      {
+        "id": "me-little-wilson-lower-falls-finish",
+        "name": "Little Wilson Lower Falls return / exit",
+        "type": "Finish",
+        "mile": 2.0,
+        "icon": "\u25ce",
+        "lat": 45.381661,
+        "lon": -69.43683,
+        "source": "MapPI3 generated return marker"
+      }
+    ],
+    "pois": [
+      {
+        "id": "me-little-wilson-lower-falls-real-poi",
+        "type": "Waterfall",
+        "label": "Little Wilson Lower Falls \u00b7 source: OSM waterway=waterfall",
+        "mile": 1.0,
+        "lat": 45.3756611,
+        "lon": -69.44883
+      }
+    ],
+    "landType": "Scenic public POI / verify access",
+    "catalogCategory": "waterfalls and covered bridges",
+    "mountainArea": "100-Mile Wilderness",
+    "geometryQuality": "real mapped POI with generated approach geometry \u2014 verify route/parking before field navigation",
+    "color": "#4bd2ff",
+    "segments": [
+      {
+        "id": "me-little-wilson-lower-falls-seg",
+        "name": "Waterfall",
+        "startMile": 0,
+        "endMile": 2.0,
+        "color": "#4bd2ff"
+      }
+    ],
+    "markerDensity": "real scenic POI plus generated approach markers"
+  },
+  {
+    "id": "me-big-niagara-falls",
+    "schemaVersion": "mappi3.routePack.v1",
+    "name": "Big Niagara Falls",
+    "place": "Baxter State Park, Maine",
+    "region": "Baxter / Katahdin region",
+    "summary": "Scenic waterfall route pack centered on real mapped POI data. Use as discovery/planning; verify parking, access, and trail conditions before relying on it.",
+    "difficulty": "Moderate",
+    "routeType": "Scenic POI walk",
+    "status": "Ready",
+    "distanceMiles": 2.4,
+    "estimatedTime": "1.2h",
+    "elevationGainFt": 368,
+    "storageEstimateMb": 63,
+    "tags": [
+      "scenic",
+      "waterfall",
+      "waterfall",
+      "real-poi",
+      "seed-planning"
+    ],
+    "sync": {
+      "state": "local-seed-catalog",
+      "lastSynced": "seed-v1.2.26-real-poi",
+      "supabaseReady": false
+    },
+    "offline": {
+      "required": false,
+      "tileFormat": "MBTiles",
+      "tileBounds": [
+        -69.07747,
+        45.82935,
+        -68.99747,
+        45.90935
+      ],
+      "minZoom": 11,
+      "maxZoom": 17,
+      "layers": [
+        "trail",
+        "topo",
+        "waypoints",
+        "scenic-poi"
+      ]
+    },
+    "weather": {
+      "cachePolicy": "refresh-when-online",
+      "lastForecastLabel": "not cached"
+    },
+    "geometry": {
+      "type": "LineString",
+      "coordinates": [
+        [
+          -69.051875,
+          45.862146
+        ],
+        [
+          -69.037475,
+          45.869346
+        ],
+        [
+          -69.023075,
+          45.876546
+        ]
+      ]
+    },
+    "mapPreviewPath": [
+      [
+        40,
+        170
+      ],
+      [
+        180,
+        110
+      ],
+      [
+        320,
+        170
+      ]
+    ],
+    "waypoints": [
+      {
+        "id": "me-big-niagara-falls-start",
+        "name": "Big Niagara Falls approach / parking check",
+        "type": "Start",
+        "mile": 0,
+        "icon": "\u25ce",
+        "lat": 45.862146,
+        "lon": -69.051875,
+        "source": "MapPI3 generated approach marker"
+      },
+      {
+        "id": "me-big-niagara-falls-poi",
+        "name": "Big Niagara Falls",
+        "type": "Waterfall",
+        "mile": 1.2,
+        "icon": "\ud83d\udca7",
+        "lat": 45.8693463,
+        "lon": -69.0374746,
+        "source": "OSM waterway=waterfall"
+      },
+      {
+        "id": "me-big-niagara-falls-finish",
+        "name": "Big Niagara Falls return / exit",
+        "type": "Finish",
+        "mile": 2.4,
+        "icon": "\u25ce",
+        "lat": 45.876546,
+        "lon": -69.023075,
+        "source": "MapPI3 generated return marker"
+      }
+    ],
+    "pois": [
+      {
+        "id": "me-big-niagara-falls-real-poi",
+        "type": "Waterfall",
+        "label": "Big Niagara Falls \u00b7 source: OSM waterway=waterfall",
+        "mile": 1.2,
+        "lat": 45.8693463,
+        "lon": -69.0374746
+      }
+    ],
+    "landType": "Scenic public POI / verify access",
+    "catalogCategory": "waterfalls and covered bridges",
+    "mountainArea": "Baxter / Katahdin region",
+    "geometryQuality": "real mapped POI with generated approach geometry \u2014 verify route/parking before field navigation",
+    "color": "#4bd2ff",
+    "segments": [
+      {
+        "id": "me-big-niagara-falls-seg",
+        "name": "Waterfall",
+        "startMile": 0,
+        "endMile": 2.4,
+        "color": "#4bd2ff"
+      }
+    ],
+    "markerDensity": "real scenic POI plus generated approach markers"
+  },
+  {
+    "id": "me-screw-auger-falls-real",
+    "schemaVersion": "mappi3.routePack.v1",
+    "name": "Screw Auger Falls real POI",
+    "place": "Grafton Notch, Maine",
+    "region": "Grafton Notch",
+    "summary": "Scenic waterfall route pack centered on real mapped POI data. Use as discovery/planning; verify parking, access, and trail conditions before relying on it.",
+    "difficulty": "Easy",
+    "routeType": "Scenic POI walk",
+    "status": "Ready",
+    "distanceMiles": 0.6,
+    "estimatedTime": "1h",
+    "elevationGainFt": 152,
+    "storageEstimateMb": 42,
+    "tags": [
+      "scenic",
+      "waterfall",
+      "waterfall",
+      "real-poi",
+      "seed-planning"
+    ],
+    "sync": {
+      "state": "local-seed-catalog",
+      "lastSynced": "seed-v1.2.26-real-poi",
+      "supabaseReady": false
+    },
+    "offline": {
+      "required": false,
+      "tileFormat": "MBTiles",
+      "tileBounds": [
+        -69.34455,
+        45.44289,
+        -69.26455,
+        45.52289
+      ],
+      "minZoom": 11,
+      "maxZoom": 17,
+      "layers": [
+        "trail",
+        "topo",
+        "waypoints",
+        "scenic-poi"
+      ]
+    },
+    "weather": {
+      "cachePolicy": "refresh-when-online",
+      "lastForecastLabel": "not cached"
+    },
+    "geometry": {
+      "type": "LineString",
+      "coordinates": [
+        [
+          -69.308152,
+          45.481089
+        ],
+        [
+          -69.304552,
+          45.482889
+        ],
+        [
+          -69.300952,
+          45.484689
+        ]
+      ]
+    },
+    "mapPreviewPath": [
+      [
+        40,
+        170
+      ],
+      [
+        180,
+        110
+      ],
+      [
+        320,
+        170
+      ]
+    ],
+    "waypoints": [
+      {
+        "id": "me-screw-auger-falls-real-start",
+        "name": "Screw Auger Falls real POI approach / parking check",
+        "type": "Start",
+        "mile": 0,
+        "icon": "\u25ce",
+        "lat": 45.481089,
+        "lon": -69.308152,
+        "source": "MapPI3 generated approach marker"
+      },
+      {
+        "id": "me-screw-auger-falls-real-poi",
+        "name": "Screw Auger Falls real POI",
+        "type": "Waterfall",
+        "mile": 0.3,
+        "icon": "\ud83d\udca7",
+        "lat": 45.4828888,
+        "lon": -69.3045523,
+        "source": "OSM waterway=waterfall"
+      },
+      {
+        "id": "me-screw-auger-falls-real-finish",
+        "name": "Screw Auger Falls real POI return / exit",
+        "type": "Finish",
+        "mile": 0.6,
+        "icon": "\u25ce",
+        "lat": 45.484689,
+        "lon": -69.300952,
+        "source": "MapPI3 generated return marker"
+      }
+    ],
+    "pois": [
+      {
+        "id": "me-screw-auger-falls-real-real-poi",
+        "type": "Waterfall",
+        "label": "Screw Auger Falls real POI \u00b7 source: OSM waterway=waterfall",
+        "mile": 0.3,
+        "lat": 45.4828888,
+        "lon": -69.3045523
+      }
+    ],
+    "landType": "Scenic public POI / verify access",
+    "catalogCategory": "waterfalls and covered bridges",
+    "mountainArea": "Grafton Notch",
+    "geometryQuality": "real mapped POI with generated approach geometry \u2014 verify route/parking before field navigation",
+    "color": "#4bd2ff",
+    "segments": [
+      {
+        "id": "me-screw-auger-falls-real-seg",
+        "name": "Waterfall",
+        "startMile": 0,
+        "endMile": 0.6,
+        "color": "#4bd2ff"
+      }
+    ],
+    "markerDensity": "real scenic POI plus generated approach markers"
+  },
+  {
+    "id": "me-buttermilk-falls",
+    "schemaVersion": "mappi3.routePack.v1",
+    "name": "Buttermilk Falls",
+    "place": "Maine",
+    "region": "Maine waterfalls",
+    "summary": "Scenic waterfall route pack centered on real mapped POI data. Use as discovery/planning; verify parking, access, and trail conditions before relying on it.",
+    "difficulty": "Easy",
+    "routeType": "Scenic POI walk",
+    "status": "Ready",
+    "distanceMiles": 1.0,
+    "estimatedTime": "1h",
+    "elevationGainFt": 200,
+    "storageEstimateMb": 47,
+    "tags": [
+      "scenic",
+      "waterfall",
+      "waterfall",
+      "real-poi",
+      "seed-planning"
+    ],
+    "sync": {
+      "state": "local-seed-catalog",
+      "lastSynced": "seed-v1.2.26-real-poi",
+      "supabaseReady": false
+    },
+    "offline": {
+      "required": false,
+      "tileFormat": "MBTiles",
+      "tileBounds": [
+        -69.36706,
+        45.44898,
+        -69.28706,
+        45.52898
+      ],
+      "minZoom": 11,
+      "maxZoom": 17,
+      "layers": [
+        "trail",
+        "topo",
+        "waypoints",
+        "scenic-poi"
+      ]
+    },
+    "weather": {
+      "cachePolicy": "refresh-when-online",
+      "lastForecastLabel": "not cached"
+    },
+    "geometry": {
+      "type": "LineString",
+      "coordinates": [
+        [
+          -69.333065,
+          45.485981
+        ],
+        [
+          -69.327065,
+          45.488981
+        ],
+        [
+          -69.321065,
+          45.491981
+        ]
+      ]
+    },
+    "mapPreviewPath": [
+      [
+        40,
+        170
+      ],
+      [
+        180,
+        110
+      ],
+      [
+        320,
+        170
+      ]
+    ],
+    "waypoints": [
+      {
+        "id": "me-buttermilk-falls-start",
+        "name": "Buttermilk Falls approach / parking check",
+        "type": "Start",
+        "mile": 0,
+        "icon": "\u25ce",
+        "lat": 45.485981,
+        "lon": -69.333065,
+        "source": "MapPI3 generated approach marker"
+      },
+      {
+        "id": "me-buttermilk-falls-poi",
+        "name": "Buttermilk Falls",
+        "type": "Waterfall",
+        "mile": 0.5,
+        "icon": "\ud83d\udca7",
+        "lat": 45.4889808,
+        "lon": -69.3270645,
+        "source": "OSM waterway=waterfall"
+      },
+      {
+        "id": "me-buttermilk-falls-finish",
+        "name": "Buttermilk Falls return / exit",
+        "type": "Finish",
+        "mile": 1.0,
+        "icon": "\u25ce",
+        "lat": 45.491981,
+        "lon": -69.321065,
+        "source": "MapPI3 generated return marker"
+      }
+    ],
+    "pois": [
+      {
+        "id": "me-buttermilk-falls-real-poi",
+        "type": "Waterfall",
+        "label": "Buttermilk Falls \u00b7 source: OSM waterway=waterfall",
+        "mile": 0.5,
+        "lat": 45.4889808,
+        "lon": -69.3270645
+      }
+    ],
+    "landType": "Scenic public POI / verify access",
+    "catalogCategory": "waterfalls and covered bridges",
+    "mountainArea": "Maine waterfalls",
+    "geometryQuality": "real mapped POI with generated approach geometry \u2014 verify route/parking before field navigation",
+    "color": "#4bd2ff",
+    "segments": [
+      {
+        "id": "me-buttermilk-falls-seg",
+        "name": "Waterfall",
+        "startMile": 0,
+        "endMile": 1.0,
+        "color": "#4bd2ff"
+      }
+    ],
+    "markerDensity": "real scenic POI plus generated approach markers"
+  },
+  {
+    "id": "me-heald-stream-falls",
+    "schemaVersion": "mappi3.routePack.v1",
+    "name": "Heald Stream Falls",
+    "place": "Maine",
+    "region": "Western Maine",
+    "summary": "Scenic waterfall route pack centered on real mapped POI data. Use as discovery/planning; verify parking, access, and trail conditions before relying on it.",
+    "difficulty": "Moderate",
+    "routeType": "Scenic POI walk",
+    "status": "Ready",
+    "distanceMiles": 1.6,
+    "estimatedTime": "1h",
+    "elevationGainFt": 272,
+    "storageEstimateMb": 54,
+    "tags": [
+      "scenic",
+      "waterfall",
+      "waterfall",
+      "real-poi",
+      "seed-planning"
+    ],
+    "sync": {
+      "state": "local-seed-catalog",
+      "lastSynced": "seed-v1.2.26-real-poi",
+      "supabaseReady": false
+    },
+    "offline": {
+      "required": false,
+      "tileFormat": "MBTiles",
+      "tileBounds": [
+        -70.3036,
+        45.70317,
+        -70.2236,
+        45.78317
+      ],
+      "minZoom": 11,
+      "maxZoom": 17,
+      "layers": [
+        "trail",
+        "topo",
+        "waypoints",
+        "scenic-poi"
+      ]
+    },
+    "weather": {
+      "cachePolicy": "refresh-when-online",
+      "lastForecastLabel": "not cached"
+    },
+    "geometry": {
+      "type": "LineString",
+      "coordinates": [
+        [
+          -70.273199,
+          45.738366
+        ],
+        [
+          -70.263599,
+          45.743166
+        ],
+        [
+          -70.253999,
+          45.747966
+        ]
+      ]
+    },
+    "mapPreviewPath": [
+      [
+        40,
+        170
+      ],
+      [
+        180,
+        110
+      ],
+      [
+        320,
+        170
+      ]
+    ],
+    "waypoints": [
+      {
+        "id": "me-heald-stream-falls-start",
+        "name": "Heald Stream Falls approach / parking check",
+        "type": "Start",
+        "mile": 0,
+        "icon": "\u25ce",
+        "lat": 45.738366,
+        "lon": -70.273199,
+        "source": "MapPI3 generated approach marker"
+      },
+      {
+        "id": "me-heald-stream-falls-poi",
+        "name": "Heald Stream Falls",
+        "type": "Waterfall",
+        "mile": 0.8,
+        "icon": "\ud83d\udca7",
+        "lat": 45.7431662,
+        "lon": -70.263599,
+        "source": "OSM waterway=waterfall"
+      },
+      {
+        "id": "me-heald-stream-falls-finish",
+        "name": "Heald Stream Falls return / exit",
+        "type": "Finish",
+        "mile": 1.6,
+        "icon": "\u25ce",
+        "lat": 45.747966,
+        "lon": -70.253999,
+        "source": "MapPI3 generated return marker"
+      }
+    ],
+    "pois": [
+      {
+        "id": "me-heald-stream-falls-real-poi",
+        "type": "Waterfall",
+        "label": "Heald Stream Falls \u00b7 source: OSM waterway=waterfall",
+        "mile": 0.8,
+        "lat": 45.7431662,
+        "lon": -70.263599
+      }
+    ],
+    "landType": "Scenic public POI / verify access",
+    "catalogCategory": "waterfalls and covered bridges",
+    "mountainArea": "Western Maine",
+    "geometryQuality": "real mapped POI with generated approach geometry \u2014 verify route/parking before field navigation",
+    "color": "#4bd2ff",
+    "segments": [
+      {
+        "id": "me-heald-stream-falls-seg",
+        "name": "Waterfall",
+        "startMile": 0,
+        "endMile": 1.6,
+        "color": "#4bd2ff"
+      }
+    ],
+    "markerDensity": "real scenic POI plus generated approach markers"
+  },
+  {
+    "id": "me-swans-falls",
+    "schemaVersion": "mappi3.routePack.v1",
+    "name": "Swans Falls",
+    "place": "Fryeburg, Maine",
+    "region": "Saco River",
+    "summary": "Scenic waterfall route pack centered on real mapped POI data. Use as discovery/planning; verify parking, access, and trail conditions before relying on it.",
+    "difficulty": "Easy",
+    "routeType": "Scenic POI walk",
+    "status": "Ready",
+    "distanceMiles": 0.8,
+    "estimatedTime": "1h",
+    "elevationGainFt": 176,
+    "storageEstimateMb": 44,
+    "tags": [
+      "scenic",
+      "waterfall",
+      "waterfall",
+      "real-poi",
+      "seed-planning"
+    ],
+    "sync": {
+      "state": "local-seed-catalog",
+      "lastSynced": "seed-v1.2.26-real-poi",
+      "supabaseReady": false
+    },
+    "offline": {
+      "required": false,
+      "tileFormat": "MBTiles",
+      "tileBounds": [
+        -71.02288,
+        43.99796,
+        -70.94288,
+        44.07796
+      ],
+      "minZoom": 11,
+      "maxZoom": 17,
+      "layers": [
+        "trail",
+        "topo",
+        "waypoints",
+        "scenic-poi"
+      ]
+    },
+    "weather": {
+      "cachePolicy": "refresh-when-online",
+      "lastForecastLabel": "not cached"
+    },
+    "geometry": {
+      "type": "LineString",
+      "coordinates": [
+        [
+          -70.987677,
+          44.035565
+        ],
+        [
+          -70.982877,
+          44.037965
+        ],
+        [
+          -70.978077,
+          44.040365
+        ]
+      ]
+    },
+    "mapPreviewPath": [
+      [
+        40,
+        170
+      ],
+      [
+        180,
+        110
+      ],
+      [
+        320,
+        170
+      ]
+    ],
+    "waypoints": [
+      {
+        "id": "me-swans-falls-start",
+        "name": "Swans Falls approach / parking check",
+        "type": "Start",
+        "mile": 0,
+        "icon": "\u25ce",
+        "lat": 44.035565,
+        "lon": -70.987677,
+        "source": "MapPI3 generated approach marker"
+      },
+      {
+        "id": "me-swans-falls-poi",
+        "name": "Swans Falls",
+        "type": "Waterfall",
+        "mile": 0.4,
+        "icon": "\ud83d\udca7",
+        "lat": 44.0379648,
+        "lon": -70.9828766,
+        "source": "OSM waterway=waterfall + GNIS"
+      },
+      {
+        "id": "me-swans-falls-finish",
+        "name": "Swans Falls return / exit",
+        "type": "Finish",
+        "mile": 0.8,
+        "icon": "\u25ce",
+        "lat": 44.040365,
+        "lon": -70.978077,
+        "source": "MapPI3 generated return marker"
+      }
+    ],
+    "pois": [
+      {
+        "id": "me-swans-falls-real-poi",
+        "type": "Waterfall",
+        "label": "Swans Falls \u00b7 source: OSM waterway=waterfall + GNIS",
+        "mile": 0.4,
+        "lat": 44.0379648,
+        "lon": -70.9828766
+      }
+    ],
+    "landType": "Scenic public POI / verify access",
+    "catalogCategory": "waterfalls and covered bridges",
+    "mountainArea": "Saco River",
+    "geometryQuality": "real mapped POI with generated approach geometry \u2014 verify route/parking before field navigation",
+    "color": "#4bd2ff",
+    "segments": [
+      {
+        "id": "me-swans-falls-seg",
+        "name": "Waterfall",
+        "startMile": 0,
+        "endMile": 0.8,
+        "color": "#4bd2ff"
+      }
+    ],
+    "markerDensity": "real scenic POI plus generated approach markers"
+  },
+  {
+    "id": "me-sunday-river-covered-bridge",
+    "schemaVersion": "mappi3.routePack.v1",
+    "name": "Sunday River Covered Bridge",
+    "place": "Newry, Maine",
+    "region": "Western Maine",
+    "summary": "Scenic covered bridge route pack centered on real mapped POI data. Use as discovery/planning; verify parking, access, and trail conditions before relying on it.",
+    "difficulty": "Easy",
+    "routeType": "Scenic POI walk",
+    "status": "Ready",
+    "distanceMiles": 0.6,
+    "estimatedTime": "1h",
+    "elevationGainFt": 152,
+    "storageEstimateMb": 42,
+    "tags": [
+      "scenic",
+      "covered bridge",
+      "covered bridge",
+      "real-poi",
+      "seed-planning"
+    ],
+    "sync": {
+      "state": "local-seed-catalog",
+      "lastSynced": "seed-v1.2.26-real-poi",
+      "supabaseReady": false
+    },
+    "offline": {
+      "required": false,
+      "tileFormat": "MBTiles",
+      "tileBounds": [
+        -70.88337,
+        44.4523,
+        -70.80337,
+        44.5323
+      ],
+      "minZoom": 11,
+      "maxZoom": 17,
+      "layers": [
+        "trail",
+        "topo",
+        "waypoints",
+        "scenic-poi"
+      ]
+    },
+    "weather": {
+      "cachePolicy": "refresh-when-online",
+      "lastForecastLabel": "not cached"
+    },
+    "geometry": {
+      "type": "LineString",
+      "coordinates": [
+        [
+          -70.846971,
+          44.490501
+        ],
+        [
+          -70.843371,
+          44.492301
+        ],
+        [
+          -70.839771,
+          44.494101
+        ]
+      ]
+    },
+    "mapPreviewPath": [
+      [
+        40,
+        170
+      ],
+      [
+        180,
+        110
+      ],
+      [
+        320,
+        170
+      ]
+    ],
+    "waypoints": [
+      {
+        "id": "me-sunday-river-covered-bridge-start",
+        "name": "Sunday River Covered Bridge approach / parking check",
+        "type": "Start",
+        "mile": 0,
+        "icon": "\u25ce",
+        "lat": 44.490501,
+        "lon": -70.846971,
+        "source": "MapPI3 generated approach marker"
+      },
+      {
+        "id": "me-sunday-river-covered-bridge-poi",
+        "name": "Sunday River Covered Bridge",
+        "type": "Covered bridge",
+        "mile": 0.3,
+        "icon": "\ud83c\udf09",
+        "lat": 44.4923009,
+        "lon": -70.8433705,
+        "source": "Nominatim/OpenStreetMap search result"
+      },
+      {
+        "id": "me-sunday-river-covered-bridge-finish",
+        "name": "Sunday River Covered Bridge return / exit",
+        "type": "Finish",
+        "mile": 0.6,
+        "icon": "\u25ce",
+        "lat": 44.494101,
+        "lon": -70.839771,
+        "source": "MapPI3 generated return marker"
+      }
+    ],
+    "pois": [
+      {
+        "id": "me-sunday-river-covered-bridge-real-poi",
+        "type": "Covered bridge",
+        "label": "Sunday River Covered Bridge \u00b7 source: Nominatim/OpenStreetMap search result",
+        "mile": 0.3,
+        "lat": 44.4923009,
+        "lon": -70.8433705
+      }
+    ],
+    "landType": "Scenic public POI / verify access",
+    "catalogCategory": "waterfalls and covered bridges",
+    "mountainArea": "Western Maine",
+    "geometryQuality": "real mapped POI with generated approach geometry \u2014 verify route/parking before field navigation",
+    "color": "#ffd36a",
+    "segments": [
+      {
+        "id": "me-sunday-river-covered-bridge-seg",
+        "name": "Covered bridge",
+        "startMile": 0,
+        "endMile": 0.6,
+        "color": "#ffd36a"
+      }
+    ],
+    "markerDensity": "real scenic POI plus generated approach markers"
+  },
+  {
+    "id": "me-wire-bridge",
+    "schemaVersion": "mappi3.routePack.v1",
+    "name": "Wire Suspension Bridge",
+    "place": "New Portland, Maine",
+    "region": "Somerset Maine",
+    "summary": "Scenic covered bridge route pack centered on real mapped POI data. Use as discovery/planning; verify parking, access, and trail conditions before relying on it.",
+    "difficulty": "Easy",
+    "routeType": "Scenic POI walk",
+    "status": "Ready",
+    "distanceMiles": 0.5,
+    "estimatedTime": "1h",
+    "elevationGainFt": 140,
+    "storageEstimateMb": 41,
+    "tags": [
+      "scenic",
+      "covered bridge",
+      "covered bridge",
+      "real-poi",
+      "seed-planning"
+    ],
+    "sync": {
+      "state": "local-seed-catalog",
+      "lastSynced": "seed-v1.2.26-real-poi",
+      "supabaseReady": false
+    },
+    "offline": {
+      "required": false,
+      "tileFormat": "MBTiles",
+      "tileBounds": [
+        -70.13269,
+        44.85073,
+        -70.05269,
+        44.93073
+      ],
+      "minZoom": 11,
+      "maxZoom": 17,
+      "layers": [
+        "trail",
+        "topo",
+        "waypoints",
+        "scenic-poi"
+      ]
+    },
+    "weather": {
+      "cachePolicy": "refresh-when-online",
+      "lastForecastLabel": "not cached"
+    },
+    "geometry": {
+      "type": "LineString",
+      "coordinates": [
+        [
+          -70.095694,
+          44.889234
+        ],
+        [
+          -70.092694,
+          44.890734
+        ],
+        [
+          -70.089694,
+          44.892234
+        ]
+      ]
+    },
+    "mapPreviewPath": [
+      [
+        40,
+        170
+      ],
+      [
+        180,
+        110
+      ],
+      [
+        320,
+        170
+      ]
+    ],
+    "waypoints": [
+      {
+        "id": "me-wire-bridge-start",
+        "name": "Wire Suspension Bridge approach / parking check",
+        "type": "Start",
+        "mile": 0,
+        "icon": "\u25ce",
+        "lat": 44.889234,
+        "lon": -70.095694,
+        "source": "MapPI3 generated approach marker"
+      },
+      {
+        "id": "me-wire-bridge-poi",
+        "name": "Wire Suspension Bridge",
+        "type": "Covered bridge",
+        "mile": 0.2,
+        "icon": "\ud83c\udf09",
+        "lat": 44.8907335,
+        "lon": -70.0926945,
+        "source": "Nominatim/OpenStreetMap search result"
+      },
+      {
+        "id": "me-wire-bridge-finish",
+        "name": "Wire Suspension Bridge return / exit",
+        "type": "Finish",
+        "mile": 0.5,
+        "icon": "\u25ce",
+        "lat": 44.892234,
+        "lon": -70.089694,
+        "source": "MapPI3 generated return marker"
+      }
+    ],
+    "pois": [
+      {
+        "id": "me-wire-bridge-real-poi",
+        "type": "Covered bridge",
+        "label": "Wire Suspension Bridge \u00b7 source: Nominatim/OpenStreetMap search result",
+        "mile": 0.2,
+        "lat": 44.8907335,
+        "lon": -70.0926945
+      }
+    ],
+    "landType": "Scenic public POI / verify access",
+    "catalogCategory": "waterfalls and covered bridges",
+    "mountainArea": "Somerset Maine",
+    "geometryQuality": "real mapped POI with generated approach geometry \u2014 verify route/parking before field navigation",
+    "color": "#ffd36a",
+    "segments": [
+      {
+        "id": "me-wire-bridge-seg",
+        "name": "Covered bridge",
+        "startMile": 0,
+        "endMile": 0.5,
+        "color": "#ffd36a"
+      }
+    ],
+    "markerDensity": "real scenic POI plus generated approach markers"
+  },
+  {
+    "id": "me-babbs-bridge",
+    "schemaVersion": "mappi3.routePack.v1",
+    "name": "Babb\u2019s Bridge",
+    "place": "Windham, Maine",
+    "region": "Cumberland Maine",
+    "summary": "Scenic covered bridge route pack centered on real mapped POI data. Use as discovery/planning; verify parking, access, and trail conditions before relying on it.",
+    "difficulty": "Easy",
+    "routeType": "Scenic POI walk",
+    "status": "Ready",
+    "distanceMiles": 0.5,
+    "estimatedTime": "1h",
+    "elevationGainFt": 140,
+    "storageEstimateMb": 41,
+    "tags": [
+      "scenic",
+      "covered bridge",
+      "covered bridge",
+      "real-poi",
+      "seed-planning"
+    ],
+    "sync": {
+      "state": "local-seed-catalog",
+      "lastSynced": "seed-v1.2.26-real-poi",
+      "supabaseReady": false
+    },
+    "offline": {
+      "required": false,
+      "tileFormat": "MBTiles",
+      "tileBounds": [
+        -70.48791,
+        43.72606,
+        -70.40791,
+        43.80606
+      ],
+      "minZoom": 11,
+      "maxZoom": 17,
+      "layers": [
+        "trail",
+        "topo",
+        "waypoints",
+        "scenic-poi"
+      ]
+    },
+    "weather": {
+      "cachePolicy": "refresh-when-online",
+      "lastForecastLabel": "not cached"
+    },
+    "geometry": {
+      "type": "LineString",
+      "coordinates": [
+        [
+          -70.450913,
+          43.764557
+        ],
+        [
+          -70.447913,
+          43.766057
+        ],
+        [
+          -70.444913,
+          43.767557
+        ]
+      ]
+    },
+    "mapPreviewPath": [
+      [
+        40,
+        170
+      ],
+      [
+        180,
+        110
+      ],
+      [
+        320,
+        170
+      ]
+    ],
+    "waypoints": [
+      {
+        "id": "me-babbs-bridge-start",
+        "name": "Babb\u2019s Bridge approach / parking check",
+        "type": "Start",
+        "mile": 0,
+        "icon": "\u25ce",
+        "lat": 43.764557,
+        "lon": -70.450913,
+        "source": "MapPI3 generated approach marker"
+      },
+      {
+        "id": "me-babbs-bridge-poi",
+        "name": "Babb\u2019s Bridge",
+        "type": "Covered bridge",
+        "mile": 0.2,
+        "icon": "\ud83c\udf09",
+        "lat": 43.7660572,
+        "lon": -70.4479132,
+        "source": "Nominatim/OpenStreetMap search result"
+      },
+      {
+        "id": "me-babbs-bridge-finish",
+        "name": "Babb\u2019s Bridge return / exit",
+        "type": "Finish",
+        "mile": 0.5,
+        "icon": "\u25ce",
+        "lat": 43.767557,
+        "lon": -70.444913,
+        "source": "MapPI3 generated return marker"
+      }
+    ],
+    "pois": [
+      {
+        "id": "me-babbs-bridge-real-poi",
+        "type": "Covered bridge",
+        "label": "Babb\u2019s Bridge \u00b7 source: Nominatim/OpenStreetMap search result",
+        "mile": 0.2,
+        "lat": 43.7660572,
+        "lon": -70.4479132
+      }
+    ],
+    "landType": "Scenic public POI / verify access",
+    "catalogCategory": "waterfalls and covered bridges",
+    "mountainArea": "Cumberland Maine",
+    "geometryQuality": "real mapped POI with generated approach geometry \u2014 verify route/parking before field navigation",
+    "color": "#ffd36a",
+    "segments": [
+      {
+        "id": "me-babbs-bridge-seg",
+        "name": "Covered bridge",
+        "startMile": 0,
+        "endMile": 0.5,
+        "color": "#ffd36a"
+      }
+    ],
+    "markerDensity": "real scenic POI plus generated approach markers"
+  },
+  {
+    "id": "me-hemlock-bridge",
+    "schemaVersion": "mappi3.routePack.v1",
+    "name": "Hemlock Bridge",
+    "place": "Fryeburg, Maine",
+    "region": "Saco River / Fryeburg",
+    "summary": "Scenic covered bridge route pack centered on real mapped POI data. Use as discovery/planning; verify parking, access, and trail conditions before relying on it.",
+    "difficulty": "Easy",
+    "routeType": "Scenic POI walk",
+    "status": "Ready",
+    "distanceMiles": 0.6,
+    "estimatedTime": "1h",
+    "elevationGainFt": 152,
+    "storageEstimateMb": 42,
+    "tags": [
+      "scenic",
+      "covered bridge",
+      "covered bridge",
+      "real-poi",
+      "seed-planning"
+    ],
+    "sync": {
+      "state": "local-seed-catalog",
+      "lastSynced": "seed-v1.2.26-real-poi",
+      "supabaseReady": false
+    },
+    "offline": {
+      "required": false,
+      "tileFormat": "MBTiles",
+      "tileBounds": [
+        -70.94306,
+        44.03952,
+        -70.86306,
+        44.11952
+      ],
+      "minZoom": 11,
+      "maxZoom": 17,
+      "layers": [
+        "trail",
+        "topo",
+        "waypoints",
+        "scenic-poi"
+      ]
+    },
+    "weather": {
+      "cachePolicy": "refresh-when-online",
+      "lastForecastLabel": "not cached"
+    },
+    "geometry": {
+      "type": "LineString",
+      "coordinates": [
+        [
+          -70.906657,
+          44.07772
+        ],
+        [
+          -70.903057,
+          44.07952
+        ],
+        [
+          -70.899457,
+          44.08132
+        ]
+      ]
+    },
+    "mapPreviewPath": [
+      [
+        40,
+        170
+      ],
+      [
+        180,
+        110
+      ],
+      [
+        320,
+        170
+      ]
+    ],
+    "waypoints": [
+      {
+        "id": "me-hemlock-bridge-start",
+        "name": "Hemlock Bridge approach / parking check",
+        "type": "Start",
+        "mile": 0,
+        "icon": "\u25ce",
+        "lat": 44.07772,
+        "lon": -70.906657,
+        "source": "MapPI3 generated approach marker"
+      },
+      {
+        "id": "me-hemlock-bridge-poi",
+        "name": "Hemlock Bridge",
+        "type": "Covered bridge",
+        "mile": 0.3,
+        "icon": "\ud83c\udf09",
+        "lat": 44.0795201,
+        "lon": -70.9030566,
+        "source": "Nominatim/OpenStreetMap search result"
+      },
+      {
+        "id": "me-hemlock-bridge-finish",
+        "name": "Hemlock Bridge return / exit",
+        "type": "Finish",
+        "mile": 0.6,
+        "icon": "\u25ce",
+        "lat": 44.08132,
+        "lon": -70.899457,
+        "source": "MapPI3 generated return marker"
+      }
+    ],
+    "pois": [
+      {
+        "id": "me-hemlock-bridge-real-poi",
+        "type": "Covered bridge",
+        "label": "Hemlock Bridge \u00b7 source: Nominatim/OpenStreetMap search result",
+        "mile": 0.3,
+        "lat": 44.0795201,
+        "lon": -70.9030566
+      }
+    ],
+    "landType": "Scenic public POI / verify access",
+    "catalogCategory": "waterfalls and covered bridges",
+    "mountainArea": "Saco River / Fryeburg",
+    "geometryQuality": "real mapped POI with generated approach geometry \u2014 verify route/parking before field navigation",
+    "color": "#ffd36a",
+    "segments": [
+      {
+        "id": "me-hemlock-bridge-seg",
+        "name": "Covered bridge",
+        "startMile": 0,
+        "endMile": 0.6,
+        "color": "#ffd36a"
+      }
+    ],
+    "markerDensity": "real scenic POI plus generated approach markers"
+  },
+  {
+    "id": "nh-bath-haverhill-covered-bridge",
+    "schemaVersion": "mappi3.routePack.v1",
+    "name": "Bath-Haverhill Covered Bridge",
+    "place": "Bath, New Hampshire",
+    "region": "New Hampshire covered bridges",
+    "summary": "Scenic covered bridge route pack centered on real mapped POI data. Use as discovery/planning; verify parking, access, and trail conditions before relying on it.",
+    "difficulty": "Easy",
+    "routeType": "Scenic POI walk",
+    "status": "Ready",
+    "distanceMiles": 0.6,
+    "estimatedTime": "1h",
+    "elevationGainFt": 152,
+    "storageEstimateMb": 42,
+    "tags": [
+      "scenic",
+      "covered bridge",
+      "covered bridge",
+      "real-poi",
+      "seed-planning"
+    ],
+    "sync": {
+      "state": "local-seed-catalog",
+      "lastSynced": "seed-v1.2.26-real-poi",
+      "supabaseReady": false
+    },
+    "offline": {
+      "required": false,
+      "tileFormat": "MBTiles",
+      "tileBounds": [
+        -72.07639,
+        44.11468,
+        -71.99639,
+        44.19468
+      ],
+      "minZoom": 11,
+      "maxZoom": 17,
+      "layers": [
+        "trail",
+        "topo",
+        "waypoints",
+        "scenic-poi"
+      ]
+    },
+    "weather": {
+      "cachePolicy": "refresh-when-online",
+      "lastForecastLabel": "not cached"
+    },
+    "geometry": {
+      "type": "LineString",
+      "coordinates": [
+        [
+          -72.03999,
+          44.152878
+        ],
+        [
+          -72.036389,
+          44.154678
+        ],
+        [
+          -72.032789,
+          44.156478
+        ]
+      ]
+    },
+    "mapPreviewPath": [
+      [
+        40,
+        170
+      ],
+      [
+        180,
+        110
+      ],
+      [
+        320,
+        170
+      ]
+    ],
+    "waypoints": [
+      {
+        "id": "nh-bath-haverhill-covered-bridge-start",
+        "name": "Bath-Haverhill Covered Bridge approach / parking check",
+        "type": "Start",
+        "mile": 0,
+        "icon": "\u25ce",
+        "lat": 44.152878,
+        "lon": -72.03999,
+        "source": "MapPI3 generated approach marker"
+      },
+      {
+        "id": "nh-bath-haverhill-covered-bridge-poi",
+        "name": "Bath-Haverhill Covered Bridge",
+        "type": "Covered bridge",
+        "mile": 0.3,
+        "icon": "\ud83c\udf09",
+        "lat": 44.1546776,
+        "lon": -72.0363895,
+        "source": "Nominatim/OpenStreetMap search result"
+      },
+      {
+        "id": "nh-bath-haverhill-covered-bridge-finish",
+        "name": "Bath-Haverhill Covered Bridge return / exit",
+        "type": "Finish",
+        "mile": 0.6,
+        "icon": "\u25ce",
+        "lat": 44.156478,
+        "lon": -72.032789,
+        "source": "MapPI3 generated return marker"
+      }
+    ],
+    "pois": [
+      {
+        "id": "nh-bath-haverhill-covered-bridge-real-poi",
+        "type": "Covered bridge",
+        "label": "Bath-Haverhill Covered Bridge \u00b7 source: Nominatim/OpenStreetMap search result",
+        "mile": 0.3,
+        "lat": 44.1546776,
+        "lon": -72.0363895
+      }
+    ],
+    "landType": "Scenic public POI / verify access",
+    "catalogCategory": "waterfalls and covered bridges",
+    "mountainArea": "New Hampshire covered bridges",
+    "geometryQuality": "real mapped POI with generated approach geometry \u2014 verify route/parking before field navigation",
+    "color": "#ffd36a",
+    "segments": [
+      {
+        "id": "nh-bath-haverhill-covered-bridge-seg",
+        "name": "Covered bridge",
+        "startMile": 0,
+        "endMile": 0.6,
+        "color": "#ffd36a"
+      }
+    ],
+    "markerDensity": "real scenic POI plus generated approach markers"
+  },
+  {
+    "id": "me-rattlesnake-pool",
+    "schemaVersion": "mappi3.routePack.v1",
+    "name": "Rattlesnake Pool",
+    "place": "Stone House Trail / Evans Notch, Maine",
+    "region": "Evans Notch",
+    "summary": "Swimming-hole discovery pack for Rattlesnake Pool. Water levels, legality, rocks, currents, and access change constantly; verify locally before entering water.",
+    "difficulty": "Easy",
+    "routeType": "Swimming hole / scenic water",
+    "status": "Ready",
+    "distanceMiles": 1.1,
+    "estimatedTime": "0.6h",
+    "elevationGainFt": 256,
+    "storageEstimateMb": 51,
+    "tags": [
+      "swimming hole",
+      "water",
+      "scenic",
+      "seed-planning"
+    ],
+    "sync": {
+      "state": "local-seed-catalog",
+      "lastSynced": "seed-v1.2.27-swim-sky-forage",
+      "supabaseReady": false
+    },
+    "offline": {
+      "required": false,
+      "tileFormat": "MBTiles",
+      "tileBounds": [
+        -71.0305,
+        44.2235,
+        -70.9405,
+        44.3135
+      ],
+      "minZoom": 11,
+      "maxZoom": 17,
+      "layers": [
+        "trail",
+        "topo",
+        "waypoints",
+        "water-access"
+      ]
+    },
+    "weather": {
+      "cachePolicy": "refresh-when-online",
+      "lastForecastLabel": "not cached"
+    },
+    "geometry": {
+      "type": "LineString",
+      "coordinates": [
+        [
+          -70.9921,
+          44.26619
+        ],
+        [
+          -70.9855,
+          44.2685
+        ],
+        [
+          -70.9789,
+          44.27081
+        ]
+      ]
+    },
+    "mapPreviewPath": [
+      [
+        40,
+        180
+      ],
+      [
+        180,
+        100
+      ],
+      [
+        320,
+        180
+      ]
+    ],
+    "waypoints": [
+      {
+        "id": "me-rattlesnake-pool-start",
+        "name": "Rattlesnake Pool approach / parking check",
+        "type": "Start",
+        "mile": 0,
+        "icon": "\u25ce",
+        "lat": 44.26619,
+        "lon": -70.9921,
+        "source": "MapPI3 generated approach marker"
+      },
+      {
+        "id": "me-rattlesnake-pool-water",
+        "name": "Rattlesnake Pool",
+        "type": "Swimming hole",
+        "mile": 0.6,
+        "icon": "\ud83c\udfca",
+        "lat": 44.2685,
+        "lon": -70.9855,
+        "source": "community-known Evans Notch swimming hole; approximate planning coordinate"
+      },
+      {
+        "id": "me-rattlesnake-pool-exit",
+        "name": "Safe exit / return check",
+        "type": "Safety",
+        "mile": 1.1,
+        "icon": "\u26a0\ufe0f",
+        "lat": 44.27081,
+        "lon": -70.9789,
+        "source": "MapPI3 generated safety marker"
+      }
+    ],
+    "pois": [
+      {
+        "id": "me-rattlesnake-pool-poi",
+        "type": "Swimming hole",
+        "label": "Rattlesnake Pool \u00b7 community-known Evans Notch swimming hole; approximate planning coordinate. No jumping/swimming safety implied.",
+        "mile": 0.6,
+        "lat": 44.2685,
+        "lon": -70.9855
+      }
+    ],
+    "landType": "Water access / verify rules and safety",
+    "catalogCategory": "swimming holes and water access",
+    "mountainArea": "Evans Notch",
+    "geometryQuality": "community/OSM/Nominatim POI with generated approach geometry \u2014 verify access, depth, hazards, and legality",
+    "color": "#4bd2ff",
+    "segments": [
+      {
+        "id": "me-rattlesnake-pool-seg",
+        "name": "Water access approach",
+        "startMile": 0,
+        "endMile": 1.1,
+        "color": "#4bd2ff"
+      }
+    ],
+    "markerDensity": "water POI plus safety markers"
+  },
+  {
+    "id": "me-emerald-pool-evans",
+    "schemaVersion": "mappi3.routePack.v1",
+    "name": "Emerald Pool / Cold River area",
+    "place": "Evans Notch, Maine",
+    "region": "Evans Notch",
+    "summary": "Swimming-hole discovery pack for Emerald Pool / Cold River area. Water levels, legality, rocks, currents, and access change constantly; verify locally before entering water.",
+    "difficulty": "Easy",
+    "routeType": "Swimming hole / scenic water",
+    "status": "Ready",
+    "distanceMiles": 1.0,
+    "estimatedTime": "0.5h",
+    "elevationGainFt": 240,
+    "storageEstimateMb": 50,
+    "tags": [
+      "swimming hole",
+      "water",
+      "scenic",
+      "seed-planning"
+    ],
+    "sync": {
+      "state": "local-seed-catalog",
+      "lastSynced": "seed-v1.2.27-swim-sky-forage",
+      "supabaseReady": false
+    },
+    "offline": {
+      "required": false,
+      "tileFormat": "MBTiles",
+      "tileBounds": [
+        -71.056,
+        44.1955,
+        -70.966,
+        44.2855
+      ],
+      "minZoom": 11,
+      "maxZoom": 17,
+      "layers": [
+        "trail",
+        "topo",
+        "waypoints",
+        "water-access"
+      ]
+    },
+    "weather": {
+      "cachePolicy": "refresh-when-online",
+      "lastForecastLabel": "not cached"
+    },
+    "geometry": {
+      "type": "LineString",
+      "coordinates": [
+        [
+          -71.017,
+          44.2384
+        ],
+        [
+          -71.011,
+          44.2405
+        ],
+        [
+          -71.005,
+          44.2426
+        ]
+      ]
+    },
+    "mapPreviewPath": [
+      [
+        40,
+        180
+      ],
+      [
+        180,
+        100
+      ],
+      [
+        320,
+        180
+      ]
+    ],
+    "waypoints": [
+      {
+        "id": "me-emerald-pool-evans-start",
+        "name": "Emerald Pool / Cold River area approach / parking check",
+        "type": "Start",
+        "mile": 0,
+        "icon": "\u25ce",
+        "lat": 44.2384,
+        "lon": -71.017,
+        "source": "MapPI3 generated approach marker"
+      },
+      {
+        "id": "me-emerald-pool-evans-water",
+        "name": "Emerald Pool / Cold River area",
+        "type": "Swimming hole",
+        "mile": 0.5,
+        "icon": "\ud83c\udfca",
+        "lat": 44.2405,
+        "lon": -71.011,
+        "source": "community-known Cold River/Evans Notch water access; approximate planning coordinate"
+      },
+      {
+        "id": "me-emerald-pool-evans-exit",
+        "name": "Safe exit / return check",
+        "type": "Safety",
+        "mile": 1.0,
+        "icon": "\u26a0\ufe0f",
+        "lat": 44.2426,
+        "lon": -71.005,
+        "source": "MapPI3 generated safety marker"
+      }
+    ],
+    "pois": [
+      {
+        "id": "me-emerald-pool-evans-poi",
+        "type": "Swimming hole",
+        "label": "Emerald Pool / Cold River area \u00b7 community-known Cold River/Evans Notch water access; approximate planning coordinate. No jumping/swimming safety implied.",
+        "mile": 0.5,
+        "lat": 44.2405,
+        "lon": -71.011
+      }
+    ],
+    "landType": "Water access / verify rules and safety",
+    "catalogCategory": "swimming holes and water access",
+    "mountainArea": "Evans Notch",
+    "geometryQuality": "community/OSM/Nominatim POI with generated approach geometry \u2014 verify access, depth, hazards, and legality",
+    "color": "#4bd2ff",
+    "segments": [
+      {
+        "id": "me-emerald-pool-evans-seg",
+        "name": "Water access approach",
+        "startMile": 0,
+        "endMile": 1.0,
+        "color": "#4bd2ff"
+      }
+    ],
+    "markerDensity": "water POI plus safety markers"
+  },
+  {
+    "id": "me-frenchmans-hole",
+    "schemaVersion": "mappi3.routePack.v1",
+    "name": "Frenchman\u2019s Hole",
+    "place": "Bethel / Sunday River, Maine",
+    "region": "Western Maine",
+    "summary": "Swimming-hole discovery pack for Frenchman\u2019s Hole. Water levels, legality, rocks, currents, and access change constantly; verify locally before entering water.",
+    "difficulty": "Easy",
+    "routeType": "Swimming hole / scenic water",
+    "status": "Ready",
+    "distanceMiles": 0.8,
+    "estimatedTime": "0.5h",
+    "elevationGainFt": 208,
+    "storageEstimateMb": 47,
+    "tags": [
+      "swimming hole",
+      "water",
+      "scenic",
+      "seed-planning",
+      "cliff caution",
+      "cliff jumping"
+    ],
+    "sync": {
+      "state": "local-seed-catalog",
+      "lastSynced": "seed-v1.2.27-swim-sky-forage",
+      "supabaseReady": false
+    },
+    "offline": {
+      "required": false,
+      "tileFormat": "MBTiles",
+      "tileBounds": [
+        -70.9185,
+        44.4762,
+        -70.8285,
+        44.5662
+      ],
+      "minZoom": 11,
+      "maxZoom": 17,
+      "layers": [
+        "trail",
+        "topo",
+        "waypoints",
+        "water-access"
+      ]
+    },
+    "weather": {
+      "cachePolicy": "refresh-when-online",
+      "lastForecastLabel": "not cached"
+    },
+    "geometry": {
+      "type": "LineString",
+      "coordinates": [
+        [
+          -70.8783,
+          44.51952
+        ],
+        [
+          -70.8735,
+          44.5212
+        ],
+        [
+          -70.8687,
+          44.52288
+        ]
+      ]
+    },
+    "mapPreviewPath": [
+      [
+        40,
+        180
+      ],
+      [
+        180,
+        100
+      ],
+      [
+        320,
+        180
+      ]
+    ],
+    "waypoints": [
+      {
+        "id": "me-frenchmans-hole-start",
+        "name": "Frenchman\u2019s Hole approach / parking check",
+        "type": "Start",
+        "mile": 0,
+        "icon": "\u25ce",
+        "lat": 44.51952,
+        "lon": -70.8783,
+        "source": "MapPI3 generated approach marker"
+      },
+      {
+        "id": "me-frenchmans-hole-water",
+        "name": "Frenchman\u2019s Hole",
+        "type": "Swimming hole",
+        "mile": 0.4,
+        "icon": "\ud83c\udfca",
+        "lat": 44.5212,
+        "lon": -70.8735,
+        "source": "community-known swimming hole; approximate planning coordinate"
+      },
+      {
+        "id": "me-frenchmans-hole-exit",
+        "name": "Safe exit / return check",
+        "type": "Safety",
+        "mile": 0.8,
+        "icon": "\u26a0\ufe0f",
+        "lat": 44.52288,
+        "lon": -70.8687,
+        "source": "MapPI3 generated safety marker"
+      }
+    ],
+    "pois": [
+      {
+        "id": "me-frenchmans-hole-poi",
+        "type": "Swimming hole",
+        "label": "Frenchman\u2019s Hole \u00b7 community-known swimming hole; approximate planning coordinate. No jumping/swimming safety implied.",
+        "mile": 0.4,
+        "lat": 44.5212,
+        "lon": -70.8735
+      }
+    ],
+    "landType": "Water access / verify rules and safety",
+    "catalogCategory": "swimming holes and water access",
+    "mountainArea": "Western Maine",
+    "geometryQuality": "community/OSM/Nominatim POI with generated approach geometry \u2014 verify access, depth, hazards, and legality",
+    "color": "#4bd2ff",
+    "segments": [
+      {
+        "id": "me-frenchmans-hole-seg",
+        "name": "Water access approach",
+        "startMile": 0,
+        "endMile": 0.8,
+        "color": "#4bd2ff"
+      }
+    ],
+    "markerDensity": "water POI plus safety markers"
+  },
+  {
+    "id": "me-coos-canyon-swim",
+    "schemaVersion": "mappi3.routePack.v1",
+    "name": "Coos Canyon water access",
+    "place": "Byron, Maine",
+    "region": "Rangeley / Byron Maine",
+    "summary": "Swimming-hole discovery pack for Coos Canyon water access. Water levels, legality, rocks, currents, and access change constantly; verify locally before entering water.",
+    "difficulty": "Easy",
+    "routeType": "Swimming hole / scenic water",
+    "status": "Ready",
+    "distanceMiles": 0.7,
+    "estimatedTime": "0.5h",
+    "elevationGainFt": 192,
+    "storageEstimateMb": 45,
+    "tags": [
+      "swimming hole",
+      "water",
+      "scenic",
+      "seed-planning",
+      "cliff caution",
+      "cliff jumping"
+    ],
+    "sync": {
+      "state": "local-seed-catalog",
+      "lastSynced": "seed-v1.2.27-swim-sky-forage",
+      "supabaseReady": false
+    },
+    "offline": {
+      "required": false,
+      "tileFormat": "MBTiles",
+      "tileBounds": [
+        -70.6788,
+        44.6755,
+        -70.5888,
+        44.7655
+      ],
+      "minZoom": 11,
+      "maxZoom": 17,
+      "layers": [
+        "trail",
+        "topo",
+        "waypoints",
+        "water-access"
+      ]
+    },
+    "weather": {
+      "cachePolicy": "refresh-when-online",
+      "lastForecastLabel": "not cached"
+    },
+    "geometry": {
+      "type": "LineString",
+      "coordinates": [
+        [
+          -70.638,
+          44.71903
+        ],
+        [
+          -70.6338,
+          44.7205
+        ],
+        [
+          -70.6296,
+          44.72197
+        ]
+      ]
+    },
+    "mapPreviewPath": [
+      [
+        40,
+        180
+      ],
+      [
+        180,
+        100
+      ],
+      [
+        320,
+        180
+      ]
+    ],
+    "waypoints": [
+      {
+        "id": "me-coos-canyon-swim-start",
+        "name": "Coos Canyon water access approach / parking check",
+        "type": "Start",
+        "mile": 0,
+        "icon": "\u25ce",
+        "lat": 44.71903,
+        "lon": -70.638,
+        "source": "MapPI3 generated approach marker"
+      },
+      {
+        "id": "me-coos-canyon-swim-water",
+        "name": "Coos Canyon water access",
+        "type": "Swimming hole / gorge",
+        "mile": 0.3,
+        "icon": "\ud83c\udfca",
+        "lat": 44.7205,
+        "lon": -70.6338,
+        "source": "known scenic gorge/water access; verify levels and rocks"
+      },
+      {
+        "id": "me-coos-canyon-swim-exit",
+        "name": "Safe exit / return check",
+        "type": "Safety",
+        "mile": 0.7,
+        "icon": "\u26a0\ufe0f",
+        "lat": 44.72197,
+        "lon": -70.6296,
+        "source": "MapPI3 generated safety marker"
+      }
+    ],
+    "pois": [
+      {
+        "id": "me-coos-canyon-swim-poi",
+        "type": "Swimming hole / gorge",
+        "label": "Coos Canyon water access \u00b7 known scenic gorge/water access; verify levels and rocks. No jumping/swimming safety implied.",
+        "mile": 0.3,
+        "lat": 44.7205,
+        "lon": -70.6338
+      }
+    ],
+    "landType": "Water access / verify rules and safety",
+    "catalogCategory": "swimming holes and water access",
+    "mountainArea": "Rangeley / Byron Maine",
+    "geometryQuality": "community/OSM/Nominatim POI with generated approach geometry \u2014 verify access, depth, hazards, and legality",
+    "color": "#4bd2ff",
+    "segments": [
+      {
+        "id": "me-coos-canyon-swim-seg",
+        "name": "Water access approach",
+        "startMile": 0,
+        "endMile": 0.7,
+        "color": "#4bd2ff"
+      }
+    ],
+    "markerDensity": "water POI plus safety markers"
+  },
+  {
+    "id": "me-step-falls-swim",
+    "schemaVersion": "mappi3.routePack.v1",
+    "name": "Step Falls pools",
+    "place": "Newry, Maine",
+    "region": "Grafton Notch",
+    "summary": "Swimming-hole discovery pack for Step Falls pools. Water levels, legality, rocks, currents, and access change constantly; verify locally before entering water.",
+    "difficulty": "Easy",
+    "routeType": "Swimming hole / scenic water",
+    "status": "Ready",
+    "distanceMiles": 1.0,
+    "estimatedTime": "0.5h",
+    "elevationGainFt": 240,
+    "storageEstimateMb": 50,
+    "tags": [
+      "swimming hole",
+      "water",
+      "scenic",
+      "seed-planning"
+    ],
+    "sync": {
+      "state": "local-seed-catalog",
+      "lastSynced": "seed-v1.2.27-swim-sky-forage",
+      "supabaseReady": false
+    },
+    "offline": {
+      "required": false,
+      "tileFormat": "MBTiles",
+      "tileBounds": [
+        -70.9174,
+        44.4819,
+        -70.8274,
+        44.5719
+      ],
+      "minZoom": 11,
+      "maxZoom": 17,
+      "layers": [
+        "trail",
+        "topo",
+        "waypoints",
+        "water-access"
+      ]
+    },
+    "weather": {
+      "cachePolicy": "refresh-when-online",
+      "lastForecastLabel": "not cached"
+    },
+    "geometry": {
+      "type": "LineString",
+      "coordinates": [
+        [
+          -70.8784,
+          44.5248
+        ],
+        [
+          -70.8724,
+          44.5269
+        ],
+        [
+          -70.8664,
+          44.529
+        ]
+      ]
+    },
+    "mapPreviewPath": [
+      [
+        40,
+        180
+      ],
+      [
+        180,
+        100
+      ],
+      [
+        320,
+        180
+      ]
+    ],
+    "waypoints": [
+      {
+        "id": "me-step-falls-swim-start",
+        "name": "Step Falls pools approach / parking check",
+        "type": "Start",
+        "mile": 0,
+        "icon": "\u25ce",
+        "lat": 44.5248,
+        "lon": -70.8784,
+        "source": "MapPI3 generated approach marker"
+      },
+      {
+        "id": "me-step-falls-swim-water",
+        "name": "Step Falls pools",
+        "type": "Waterfall pools",
+        "mile": 0.5,
+        "icon": "\ud83c\udfca",
+        "lat": 44.5269,
+        "lon": -70.8724,
+        "source": "scenic waterfall/pool area; verify local rules and closures"
+      },
+      {
+        "id": "me-step-falls-swim-exit",
+        "name": "Safe exit / return check",
+        "type": "Safety",
+        "mile": 1.0,
+        "icon": "\u26a0\ufe0f",
+        "lat": 44.529,
+        "lon": -70.8664,
+        "source": "MapPI3 generated safety marker"
+      }
+    ],
+    "pois": [
+      {
+        "id": "me-step-falls-swim-poi",
+        "type": "Waterfall pools",
+        "label": "Step Falls pools \u00b7 scenic waterfall/pool area; verify local rules and closures. No jumping/swimming safety implied.",
+        "mile": 0.5,
+        "lat": 44.5269,
+        "lon": -70.8724
+      }
+    ],
+    "landType": "Water access / verify rules and safety",
+    "catalogCategory": "swimming holes and water access",
+    "mountainArea": "Grafton Notch",
+    "geometryQuality": "community/OSM/Nominatim POI with generated approach geometry \u2014 verify access, depth, hazards, and legality",
+    "color": "#4bd2ff",
+    "segments": [
+      {
+        "id": "me-step-falls-swim-seg",
+        "name": "Water access approach",
+        "startMile": 0,
+        "endMile": 1.0,
+        "color": "#4bd2ff"
+      }
+    ],
+    "markerDensity": "water POI plus safety markers"
+  },
+  {
+    "id": "me-smalls-falls-swim",
+    "schemaVersion": "mappi3.routePack.v1",
+    "name": "Smalls Falls pools",
+    "place": "Rangeley, Maine",
+    "region": "Rangeley Lakes",
+    "summary": "Swimming-hole discovery pack for Smalls Falls pools. Water levels, legality, rocks, currents, and access change constantly; verify locally before entering water.",
+    "difficulty": "Easy",
+    "routeType": "Swimming hole / scenic water",
+    "status": "Ready",
+    "distanceMiles": 0.6,
+    "estimatedTime": "0.5h",
+    "elevationGainFt": 176,
+    "storageEstimateMb": 44,
+    "tags": [
+      "swimming hole",
+      "water",
+      "scenic",
+      "seed-planning",
+      "cliff caution",
+      "cliff jumping"
+    ],
+    "sync": {
+      "state": "local-seed-catalog",
+      "lastSynced": "seed-v1.2.27-swim-sky-forage",
+      "supabaseReady": false
+    },
+    "offline": {
+      "required": false,
+      "tileFormat": "MBTiles",
+      "tileBounds": [
+        -70.5518,
+        44.7702,
+        -70.4618,
+        44.8602
+      ],
+      "minZoom": 11,
+      "maxZoom": 17,
+      "layers": [
+        "trail",
+        "topo",
+        "waypoints",
+        "water-access"
+      ]
+    },
+    "weather": {
+      "cachePolicy": "refresh-when-online",
+      "lastForecastLabel": "not cached"
+    },
+    "geometry": {
+      "type": "LineString",
+      "coordinates": [
+        [
+          -70.5104,
+          44.81394
+        ],
+        [
+          -70.5068,
+          44.8152
+        ],
+        [
+          -70.5032,
+          44.81646
+        ]
+      ]
+    },
+    "mapPreviewPath": [
+      [
+        40,
+        180
+      ],
+      [
+        180,
+        100
+      ],
+      [
+        320,
+        180
+      ]
+    ],
+    "waypoints": [
+      {
+        "id": "me-smalls-falls-swim-start",
+        "name": "Smalls Falls pools approach / parking check",
+        "type": "Start",
+        "mile": 0,
+        "icon": "\u25ce",
+        "lat": 44.81394,
+        "lon": -70.5104,
+        "source": "MapPI3 generated approach marker"
+      },
+      {
+        "id": "me-smalls-falls-swim-water",
+        "name": "Smalls Falls pools",
+        "type": "Waterfall pools",
+        "mile": 0.3,
+        "icon": "\ud83c\udfca",
+        "lat": 44.8152,
+        "lon": -70.5068,
+        "source": "scenic waterfall/pool area; verify local rules and closures"
+      },
+      {
+        "id": "me-smalls-falls-swim-exit",
+        "name": "Safe exit / return check",
+        "type": "Safety",
+        "mile": 0.6,
+        "icon": "\u26a0\ufe0f",
+        "lat": 44.81646,
+        "lon": -70.5032,
+        "source": "MapPI3 generated safety marker"
+      }
+    ],
+    "pois": [
+      {
+        "id": "me-smalls-falls-swim-poi",
+        "type": "Waterfall pools",
+        "label": "Smalls Falls pools \u00b7 scenic waterfall/pool area; verify local rules and closures. No jumping/swimming safety implied.",
+        "mile": 0.3,
+        "lat": 44.8152,
+        "lon": -70.5068
+      }
+    ],
+    "landType": "Water access / verify rules and safety",
+    "catalogCategory": "swimming holes and water access",
+    "mountainArea": "Rangeley Lakes",
+    "geometryQuality": "community/OSM/Nominatim POI with generated approach geometry \u2014 verify access, depth, hazards, and legality",
+    "color": "#4bd2ff",
+    "segments": [
+      {
+        "id": "me-smalls-falls-swim-seg",
+        "name": "Water access approach",
+        "startMile": 0,
+        "endMile": 0.6,
+        "color": "#4bd2ff"
+      }
+    ],
+    "markerDensity": "water POI plus safety markers"
+  },
+  {
+    "id": "me-tumbledown-pond-swim",
+    "schemaVersion": "mappi3.routePack.v1",
+    "name": "Tumbledown Pond",
+    "place": "Weld, Maine",
+    "region": "Tumbledown / Mount Blue",
+    "summary": "Swimming-hole discovery pack for Tumbledown Pond. Water levels, legality, rocks, currents, and access change constantly; verify locally before entering water.",
+    "difficulty": "Moderate",
+    "routeType": "Swimming hole / scenic water",
+    "status": "Ready",
+    "distanceMiles": 3.8,
+    "estimatedTime": "1.9h",
+    "elevationGainFt": 688,
+    "storageEstimateMb": 92,
+    "tags": [
+      "swimming hole",
+      "water",
+      "scenic",
+      "seed-planning"
+    ],
+    "sync": {
+      "state": "local-seed-catalog",
+      "lastSynced": "seed-v1.2.27-swim-sky-forage",
+      "supabaseReady": false
+    },
+    "offline": {
+      "required": false,
+      "tileFormat": "MBTiles",
+      "tileBounds": [
+        -70.58717,
+        44.70479,
+        -70.49717,
+        44.79479
+      ],
+      "minZoom": 11,
+      "maxZoom": 17,
+      "layers": [
+        "trail",
+        "topo",
+        "waypoints",
+        "water-access"
+      ]
+    },
+    "weather": {
+      "cachePolicy": "refresh-when-online",
+      "lastForecastLabel": "not cached"
+    },
+    "geometry": {
+      "type": "LineString",
+      "coordinates": [
+        [
+          -70.564972,
+          44.741807
+        ],
+        [
+          -70.542172,
+          44.749787
+        ],
+        [
+          -70.519372,
+          44.757767
+        ]
+      ]
+    },
+    "mapPreviewPath": [
+      [
+        40,
+        180
+      ],
+      [
+        180,
+        100
+      ],
+      [
+        320,
+        180
+      ]
+    ],
+    "waypoints": [
+      {
+        "id": "me-tumbledown-pond-swim-start",
+        "name": "Tumbledown Pond approach / parking check",
+        "type": "Start",
+        "mile": 0,
+        "icon": "\u25ce",
+        "lat": 44.741807,
+        "lon": -70.564972,
+        "source": "MapPI3 generated approach marker"
+      },
+      {
+        "id": "me-tumbledown-pond-swim-water",
+        "name": "Tumbledown Pond",
+        "type": "Mountain pond",
+        "mile": 1.9,
+        "icon": "\ud83c\udfca",
+        "lat": 44.7497869,
+        "lon": -70.5421724,
+        "source": "Nominatim/OpenStreetMap Tumbledown Pond result"
+      },
+      {
+        "id": "me-tumbledown-pond-swim-exit",
+        "name": "Safe exit / return check",
+        "type": "Safety",
+        "mile": 3.8,
+        "icon": "\u26a0\ufe0f",
+        "lat": 44.757767,
+        "lon": -70.519372,
+        "source": "MapPI3 generated safety marker"
+      }
+    ],
+    "pois": [
+      {
+        "id": "me-tumbledown-pond-swim-poi",
+        "type": "Mountain pond",
+        "label": "Tumbledown Pond \u00b7 Nominatim/OpenStreetMap Tumbledown Pond result. No jumping/swimming safety implied.",
+        "mile": 1.9,
+        "lat": 44.7497869,
+        "lon": -70.5421724
+      }
+    ],
+    "landType": "Water access / verify rules and safety",
+    "catalogCategory": "swimming holes and water access",
+    "mountainArea": "Tumbledown / Mount Blue",
+    "geometryQuality": "community/OSM/Nominatim POI with generated approach geometry \u2014 verify access, depth, hazards, and legality",
+    "color": "#4bd2ff",
+    "segments": [
+      {
+        "id": "me-tumbledown-pond-swim-seg",
+        "name": "Water access approach",
+        "startMile": 0,
+        "endMile": 3.8,
+        "color": "#4bd2ff"
+      }
+    ],
+    "markerDensity": "water POI plus safety markers"
+  },
+  {
+    "id": "me-dunn-falls-swim",
+    "schemaVersion": "mappi3.routePack.v1",
+    "name": "Dunn Falls water access",
+    "place": "Andover, Maine",
+    "region": "Appalachian Trail / Andover",
+    "summary": "Swimming-hole discovery pack for Dunn Falls water access. Water levels, legality, rocks, currents, and access change constantly; verify locally before entering water.",
+    "difficulty": "Moderate",
+    "routeType": "Swimming hole / scenic water",
+    "status": "Ready",
+    "distanceMiles": 2.2,
+    "estimatedTime": "1.1h",
+    "elevationGainFt": 432,
+    "storageEstimateMb": 68,
+    "tags": [
+      "swimming hole",
+      "water",
+      "scenic",
+      "seed-planning"
+    ],
+    "sync": {
+      "state": "local-seed-catalog",
+      "lastSynced": "seed-v1.2.27-swim-sky-forage",
+      "supabaseReady": false
+    },
+    "offline": {
+      "required": false,
+      "tileFormat": "MBTiles",
+      "tileBounds": [
+        -70.795,
+        44.647,
+        -70.705,
+        44.737
+      ],
+      "minZoom": 11,
+      "maxZoom": 17,
+      "layers": [
+        "trail",
+        "topo",
+        "waypoints",
+        "water-access"
+      ]
+    },
+    "weather": {
+      "cachePolicy": "refresh-when-online",
+      "lastForecastLabel": "not cached"
+    },
+    "geometry": {
+      "type": "LineString",
+      "coordinates": [
+        [
+          -70.7632,
+          44.68738
+        ],
+        [
+          -70.75,
+          44.692
+        ],
+        [
+          -70.7368,
+          44.69662
+        ]
+      ]
+    },
+    "mapPreviewPath": [
+      [
+        40,
+        180
+      ],
+      [
+        180,
+        100
+      ],
+      [
+        320,
+        180
+      ]
+    ],
+    "waypoints": [
+      {
+        "id": "me-dunn-falls-swim-start",
+        "name": "Dunn Falls water access approach / parking check",
+        "type": "Start",
+        "mile": 0,
+        "icon": "\u25ce",
+        "lat": 44.68738,
+        "lon": -70.7632,
+        "source": "MapPI3 generated approach marker"
+      },
+      {
+        "id": "me-dunn-falls-swim-water",
+        "name": "Dunn Falls water access",
+        "type": "Waterfall pools",
+        "mile": 1.1,
+        "icon": "\ud83c\udfca",
+        "lat": 44.692,
+        "lon": -70.75,
+        "source": "known waterfall hike; approximate planning coordinate"
+      },
+      {
+        "id": "me-dunn-falls-swim-exit",
+        "name": "Safe exit / return check",
+        "type": "Safety",
+        "mile": 2.2,
+        "icon": "\u26a0\ufe0f",
+        "lat": 44.69662,
+        "lon": -70.7368,
+        "source": "MapPI3 generated safety marker"
+      }
+    ],
+    "pois": [
+      {
+        "id": "me-dunn-falls-swim-poi",
+        "type": "Waterfall pools",
+        "label": "Dunn Falls water access \u00b7 known waterfall hike; approximate planning coordinate. No jumping/swimming safety implied.",
+        "mile": 1.1,
+        "lat": 44.692,
+        "lon": -70.75
+      }
+    ],
+    "landType": "Water access / verify rules and safety",
+    "catalogCategory": "swimming holes and water access",
+    "mountainArea": "Appalachian Trail / Andover",
+    "geometryQuality": "community/OSM/Nominatim POI with generated approach geometry \u2014 verify access, depth, hazards, and legality",
+    "color": "#4bd2ff",
+    "segments": [
+      {
+        "id": "me-dunn-falls-swim-seg",
+        "name": "Water access approach",
+        "startMile": 0,
+        "endMile": 2.2,
+        "color": "#4bd2ff"
+      }
+    ],
+    "markerDensity": "water POI plus safety markers"
+  },
+  {
+    "id": "me-gulf-hagas-swim",
+    "schemaVersion": "mappi3.routePack.v1",
+    "name": "Gulf Hagas swimming holes caution",
+    "place": "Brownville, Maine",
+    "region": "100-Mile Wilderness",
+    "summary": "Swimming-hole discovery pack for Gulf Hagas swimming holes caution. Water levels, legality, rocks, currents, and access change constantly; verify locally before entering water.",
+    "difficulty": "Moderate",
+    "routeType": "Swimming hole / scenic water",
+    "status": "Ready",
+    "distanceMiles": 8.6,
+    "estimatedTime": "4.3h",
+    "elevationGainFt": 1456,
+    "storageEstimateMb": 164,
+    "tags": [
+      "swimming hole",
+      "water",
+      "scenic",
+      "seed-planning",
+      "cliff caution",
+      "cliff jumping"
+    ],
+    "sync": {
+      "state": "local-seed-catalog",
+      "lastSynced": "seed-v1.2.27-swim-sky-forage",
+      "supabaseReady": false
+    },
+    "offline": {
+      "required": false,
+      "tileFormat": "MBTiles",
+      "tileBounds": [
+        -69.358,
+        45.429,
+        -69.268,
+        45.519
+      ],
+      "minZoom": 11,
+      "maxZoom": 17,
+      "layers": [
+        "trail",
+        "topo",
+        "waypoints",
+        "water-access"
+      ]
+    },
+    "weather": {
+      "cachePolicy": "refresh-when-online",
+      "lastForecastLabel": "not cached"
+    },
+    "geometry": {
+      "type": "LineString",
+      "coordinates": [
+        [
+          -69.3646,
+          45.45594
+        ],
+        [
+          -69.313,
+          45.474
+        ],
+        [
+          -69.2614,
+          45.49206
+        ]
+      ]
+    },
+    "mapPreviewPath": [
+      [
+        40,
+        180
+      ],
+      [
+        180,
+        100
+      ],
+      [
+        320,
+        180
+      ]
+    ],
+    "waypoints": [
+      {
+        "id": "me-gulf-hagas-swim-start",
+        "name": "Gulf Hagas swimming holes caution approach / parking check",
+        "type": "Start",
+        "mile": 0,
+        "icon": "\u25ce",
+        "lat": 45.45594,
+        "lon": -69.3646,
+        "source": "MapPI3 generated approach marker"
+      },
+      {
+        "id": "me-gulf-hagas-swim-water",
+        "name": "Gulf Hagas swimming holes caution",
+        "type": "Gorge pools",
+        "mile": 4.3,
+        "icon": "\ud83c\udfca",
+        "lat": 45.474,
+        "lon": -69.313,
+        "source": "known gorge/waterfall corridor; verify current conditions"
+      },
+      {
+        "id": "me-gulf-hagas-swim-exit",
+        "name": "Safe exit / return check",
+        "type": "Safety",
+        "mile": 8.6,
+        "icon": "\u26a0\ufe0f",
+        "lat": 45.49206,
+        "lon": -69.2614,
+        "source": "MapPI3 generated safety marker"
+      }
+    ],
+    "pois": [
+      {
+        "id": "me-gulf-hagas-swim-poi",
+        "type": "Gorge pools",
+        "label": "Gulf Hagas swimming holes caution \u00b7 known gorge/waterfall corridor; verify current conditions. No jumping/swimming safety implied.",
+        "mile": 4.3,
+        "lat": 45.474,
+        "lon": -69.313
+      }
+    ],
+    "landType": "Water access / verify rules and safety",
+    "catalogCategory": "swimming holes and water access",
+    "mountainArea": "100-Mile Wilderness",
+    "geometryQuality": "community/OSM/Nominatim POI with generated approach geometry \u2014 verify access, depth, hazards, and legality",
+    "color": "#4bd2ff",
+    "segments": [
+      {
+        "id": "me-gulf-hagas-swim-seg",
+        "name": "Water access approach",
+        "startMile": 0,
+        "endMile": 8.6,
+        "color": "#4bd2ff"
+      }
+    ],
+    "markerDensity": "water POI plus safety markers"
+  },
+  {
+    "id": "me-crystal-pond-planning",
+    "schemaVersion": "mappi3.routePack.v1",
+    "name": "Crystal Pond water access planning",
+    "place": "Maine",
+    "region": "Maine ponds",
+    "summary": "Swimming-hole discovery pack for Crystal Pond water access planning. Water levels, legality, rocks, currents, and access change constantly; verify locally before entering water.",
+    "difficulty": "Easy",
+    "routeType": "Swimming hole / scenic water",
+    "status": "Ready",
+    "distanceMiles": 1.0,
+    "estimatedTime": "0.5h",
+    "elevationGainFt": 240,
+    "storageEstimateMb": 50,
+    "tags": [
+      "swimming hole",
+      "water",
+      "scenic",
+      "seed-planning"
+    ],
+    "sync": {
+      "state": "local-seed-catalog",
+      "lastSynced": "seed-v1.2.27-swim-sky-forage",
+      "supabaseReady": false
+    },
+    "offline": {
+      "required": false,
+      "tileFormat": "MBTiles",
+      "tileBounds": [
+        -70.685,
+        44.475,
+        -70.595,
+        44.565
+      ],
+      "minZoom": 11,
+      "maxZoom": 17,
+      "layers": [
+        "trail",
+        "topo",
+        "waypoints",
+        "water-access"
+      ]
+    },
+    "weather": {
+      "cachePolicy": "refresh-when-online",
+      "lastForecastLabel": "not cached"
+    },
+    "geometry": {
+      "type": "LineString",
+      "coordinates": [
+        [
+          -70.646,
+          44.5179
+        ],
+        [
+          -70.64,
+          44.52
+        ],
+        [
+          -70.634,
+          44.5221
+        ]
+      ]
+    },
+    "mapPreviewPath": [
+      [
+        40,
+        180
+      ],
+      [
+        180,
+        100
+      ],
+      [
+        320,
+        180
+      ]
+    ],
+    "waypoints": [
+      {
+        "id": "me-crystal-pond-planning-start",
+        "name": "Crystal Pond water access planning approach / parking check",
+        "type": "Start",
+        "mile": 0,
+        "icon": "\u25ce",
+        "lat": 44.5179,
+        "lon": -70.646,
+        "source": "MapPI3 generated approach marker"
+      },
+      {
+        "id": "me-crystal-pond-planning-water",
+        "name": "Crystal Pond water access planning",
+        "type": "Swimming hole candidate",
+        "mile": 0.5,
+        "icon": "\ud83c\udfca",
+        "lat": 44.52,
+        "lon": -70.64,
+        "source": "placeholder planning candidate \u2014 replace with confirmed local coordinate"
+      },
+      {
+        "id": "me-crystal-pond-planning-exit",
+        "name": "Safe exit / return check",
+        "type": "Safety",
+        "mile": 1.0,
+        "icon": "\u26a0\ufe0f",
+        "lat": 44.5221,
+        "lon": -70.634,
+        "source": "MapPI3 generated safety marker"
+      }
+    ],
+    "pois": [
+      {
+        "id": "me-crystal-pond-planning-poi",
+        "type": "Swimming hole candidate",
+        "label": "Crystal Pond water access planning \u00b7 placeholder planning candidate \u2014 replace with confirmed local coordinate. No jumping/swimming safety implied.",
+        "mile": 0.5,
+        "lat": 44.52,
+        "lon": -70.64
+      }
+    ],
+    "landType": "Water access / verify rules and safety",
+    "catalogCategory": "swimming holes and water access",
+    "mountainArea": "Maine ponds",
+    "geometryQuality": "community/OSM/Nominatim POI with generated approach geometry \u2014 verify access, depth, hazards, and legality",
+    "color": "#4bd2ff",
+    "segments": [
+      {
+        "id": "me-crystal-pond-planning-seg",
+        "name": "Water access approach",
+        "startMile": 0,
+        "endMile": 1.0,
+        "color": "#4bd2ff"
+      }
+    ],
+    "markerDensity": "water POI plus safety markers"
   }
 ]
