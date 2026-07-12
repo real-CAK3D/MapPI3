@@ -1,0 +1,1 @@
+{"id":"rainforest-immersive-theme","name":"Rainforest Immersive Theme","category":"themes","version":"0.1.0","description":"Deep jungle theme: layered greens, mist/rain atmosphere, translucent dark panels, glowing foliage accents.","targets":["Pi Zero 2 WH","Pi 5"],"requires":["MapPI3 app"],"size":"tiny"}

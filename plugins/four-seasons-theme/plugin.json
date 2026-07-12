@@ -1,0 +1,1 @@
+{"id":"four-seasons-theme","name":"Four Seasons Theme","category":"themes","version":"0.1.0","description":"Auto-seasonal theme that shifts by current month: Spring Renewal, Summer Sunlit, Autumn Harvest, Winter Quiet.","targets":["Pi Zero 2 WH","Pi 5"],"requires":["MapPI3 app"],"size":"tiny"}

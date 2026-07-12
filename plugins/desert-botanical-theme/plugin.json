@@ -1,0 +1,1 @@
+{"id":"desert-botanical-theme","name":"Desert Botanical Theme","category":"themes","version":"0.1.0","description":"Warm dry-climate theme: terracotta, sand, sage, cactus-inspired forms, clay textures, airy cards.","targets":["Pi Zero 2 WH","Pi 5"],"requires":["MapPI3 app"],"size":"tiny"}

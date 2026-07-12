@@ -1,0 +1,1 @@
+{"id":"coastal-tidal-theme","name":"Coastal Tidal Theme","category":"themes","version":"0.1.0","description":"Breezy ocean theme: seafoam, shell white, driftwood beige, blue-gray waves, fluid card layers.","targets":["Pi Zero 2 WH","Pi 5"],"requires":["MapPI3 app"],"size":"tiny"}
