@@ -4,7 +4,7 @@ APP_DIR = pathlib.Path('/opt/mappi3/app')
 STATE = pathlib.Path('/var/lib/mappi3/state.json')
 PORT = int(os.environ.get('MAPPI3_PORT','5050'))
 SENSE_MODES = ['compass','liquid','weather','fire','flashlight','sos','message','boot','sun','gps','clock','progress','beacon','stars','temp','humidity','pressure','custom','border','magic8','water','snake']
-ALLOWED = {'status','restart-web','reboot','shutdown','update-app','gps-sample','toggle-hotspot','connect-home-wifi','sense-mode','calibrate','harden-hotspot','plugin-update','vnc-setup','vnc-disable','weather-refresh','online-maintenance','gps-diagnose','field-ai-verify','captive-setup','captive-disable','captive-status'}
+ALLOWED = {'status','restart-web','reboot','shutdown','update-app','gps-sample','toggle-hotspot','connect-home-wifi','sense-mode','calibrate','harden-hotspot','plugin-update','vnc-setup','vnc-disable','weather-refresh','noaa-refresh','online-maintenance','gps-diagnose','field-ai-verify','captive-setup','captive-disable','captive-status'}
 SENSE_CACHE = {'ok': False, 'mode': 'compass', 'message': 'Sense HAT display loop starting', 'updated': 0, 'joystick': {'seq': 0, 'direction': '', 'pressed': False, 'updated': 0}}
 SENSE_LOCK = threading.Lock()
 KEY_NAMES = {103:'up',108:'down',105:'left',106:'right',28:'press'}
@@ -654,6 +654,45 @@ def field_ai_verify(payload=None):
         results[cat]={'ok': bool(result.get('ok')), 'vision_model': result.get('vision_model'), 'prototype_model': result.get('prototype_model'), 'possible_identification': result.get('possible_identification'), 'observation_id': result.get('observation_id')}
     return {'ok': all(v.get('ok') and v.get('prototype_model') for v in results.values()), 'status': status_info, 'results': results, 'sample': next(iter(results.values()), {})}
 
+NOAA_CACHE = pathlib.Path('/var/lib/mappi3/noaa-weather-cache.json')
+
+def _http_json(url, timeout=15):
+    req=urllib.request.Request(url, headers={'User-Agent':'MapPI3 Trail Buddy (github.com/real-CAK3D/MapPI3; offline field weather cache)', 'Accept':'application/geo+json, application/json'})
+    with urllib.request.urlopen(req, timeout=timeout) as r:
+        return json.loads(r.read().decode())
+
+def noaa_weather(payload=None):
+    payload=payload or {}
+    lat=float(payload.get('lat') or 44.1004); lon=float(payload.get('lon') or -70.2148)
+    force=bool(payload.get('force'))
+    cache={'ok':False}
+    if NOAA_CACHE.exists():
+        try: cache=json.loads(NOAA_CACHE.read_text())
+        except Exception: cache={'ok':False}
+    age=time.time()-float(cache.get('fetched_at') or 0)
+    if cache.get('ok') and not force and age < 1800 and abs(float(cache.get('lat',lat))-lat)<0.02 and abs(float(cache.get('lon',lon))-lon)<0.02:
+        cache['cached']=True; cache['age_seconds']=round(age); return cache
+    try:
+        point=_http_json(f'https://api.weather.gov/points/{lat:.4f},{lon:.4f}')
+        props=point.get('properties') or {}
+        forecast_url=props.get('forecast'); hourly_url=props.get('forecastHourly')
+        zone_url=props.get('forecastZone') or props.get('county')
+        forecast=_http_json(forecast_url) if forecast_url else {}
+        hourly=_http_json(hourly_url) if hourly_url else {}
+        alerts=_http_json(f'https://api.weather.gov/alerts/active?point={lat:.4f},{lon:.4f}')
+        periods=(forecast.get('properties') or {}).get('periods') or []
+        hourly_periods=(hourly.get('properties') or {}).get('periods') or []
+        alert_items=[]
+        for f in (alerts.get('features') or [])[:12]:
+            p=f.get('properties') or {}; alert_items.append({'event':p.get('event'),'headline':p.get('headline'),'severity':p.get('severity'),'urgency':p.get('urgency'),'certainty':p.get('certainty'),'area':p.get('areaDesc'),'instruction':p.get('instruction'),'description':(p.get('description') or '')[:1500],'effective':p.get('effective'),'expires':p.get('expires')})
+        out={'ok':True,'source':'NOAA/NWS weather.gov live','lat':lat,'lon':lon,'cached':False,'fetched_at':time.time(),'office':props.get('cwa'),'grid':{'x':props.get('gridX'),'y':props.get('gridY')},'zone_url':zone_url,'forecast_url':forecast_url,'hourly_url':hourly_url,'periods':[{'name':p.get('name'),'startTime':p.get('startTime'),'temperature':p.get('temperature'),'temperatureUnit':p.get('temperatureUnit'),'windSpeed':p.get('windSpeed'),'windDirection':p.get('windDirection'),'shortForecast':p.get('shortForecast'),'detailedForecast':p.get('detailedForecast')} for p in periods[:14]],'hourly':[{'startTime':p.get('startTime'),'temperature':p.get('temperature'),'shortForecast':p.get('shortForecast'),'windSpeed':p.get('windSpeed'),'probabilityOfPrecipitation':(p.get('probabilityOfPrecipitation') or {}).get('value')} for p in hourly_periods[:36]],'alerts':alert_items,'alert_count':len(alert_items),'note':'NWS text forecasts/alerts cache for offline field reference. Satellite/radar imagery is a future plugin layer.'}
+        NOAA_CACHE.parent.mkdir(parents=True, exist_ok=True); NOAA_CACHE.write_text(json.dumps(out))
+        return out
+    except Exception as e:
+        if cache.get('ok'):
+            cache['cached']=True; cache['offline_error']=str(e); cache['age_seconds']=round(age); cache['source']='NOAA/NWS cached fallback'; return cache
+        return {'ok':False,'source':'NOAA/NWS unavailable','lat':lat,'lon':lon,'error':str(e),'hint':'Connect Pi to internet via online maintenance to refresh NOAA/NWS cache.'}
+
 def start_online_maintenance(payload=None):
     payload=payload or {}
     ssid=str(payload.get('ssid') or payload.get('homeWifiSsid') or '').strip()[:64]
@@ -697,6 +736,7 @@ for url in ['https://api.open-meteo.com/v1/forecast?latitude={lat}&longitude={lo
     except Exception as e: print(url, 'ERR', repr(e))
 PY
 echo "weather:"; curl -sS --max-time 20 'http://127.0.0.1:{PORT}/api/weather?lat={urllib.parse.quote(lat)}&lon={urllib.parse.quote(lon)}&days={urllib.parse.quote(days)}&timezone={urllib.parse.quote(tz)}' || true; echo
+echo "noaa weather:"; curl -sS --max-time 30 'http://127.0.0.1:{PORT}/api/noaa-weather?lat={urllib.parse.quote(lat)}&lon={urllib.parse.quote(lon)}&force=1' || true; echo
 echo "ai verify:"; curl -sS --max-time 20 -H 'Content-Type: application/json' -d '{{"category":"plant"}}' http://127.0.0.1:{PORT}/api/command/field-ai-verify || true; echo
 echo "vnc:"; curl -sS --max-time 10 http://127.0.0.1:{PORT}/api/vnc/status || true; echo
 """
@@ -773,6 +813,7 @@ def command(name, payload=None):
     if name=='vnc-setup': return setup_vnc(payload)
     if name=='vnc-disable': return disable_vnc()
     if name=='weather-refresh': return pi_weather(payload)
+    if name=='noaa-refresh': return noaa_weather(payload)
     if name=='online-maintenance': return start_online_maintenance(payload)
     if name=='gps-diagnose': return gps_diagnose()
     if name=='field-ai-verify': return field_ai_verify(payload)
@@ -845,6 +886,8 @@ class Handler(http.server.SimpleHTTPRequestHandler):
         if self.path.startswith('/api/field-ai/corrections'): self.json_response(field_ai_corrections()); return
         if self.path.startswith('/api/vnc/status'): self.json_response(vnc_status()); return
         if self.path.startswith('/api/captive/status'): self.json_response(captive_status()); return
+        if self.path.startswith('/api/noaa-weather'):
+            qs=urllib.parse.parse_qs(urllib.parse.urlparse(self.path).query); self.json_response(noaa_weather({k:v[-1] for k,v in qs.items()})); return
         if self.path.startswith('/api/weather'):
             qs=urllib.parse.parse_qs(urllib.parse.urlparse(self.path).query); self.json_response(pi_weather({k:v[-1] for k,v in qs.items()})); return
         if self.path.startswith('/api/online-maintenance/log'): self.json_response(online_maintenance_log()); return
