@@ -1005,6 +1005,30 @@ def media_manifest():
         ]
     return data
 
+GAME_ROOT = pathlib.Path('/var/lib/mappi3/games')
+
+def game_library_status():
+    GAME_ROOT.mkdir(parents=True, exist_ok=True)
+    games=[]
+    for d in sorted([x for x in GAME_ROOT.iterdir() if x.is_dir()]):
+        try:
+            index=d/'index.html'
+            if not index.exists(): continue
+            meta={}
+            mp=d/'mappi3-game.json'
+            if mp.exists():
+                try: meta=json.loads(mp.read_text())
+                except Exception: meta={}
+            rel=d.name
+            size=0
+            for f in d.rglob('*'):
+                try:
+                    if f.is_file(): size += f.stat().st_size
+                except Exception: pass
+            games.append({'id':rel,'title':meta.get('title') or rel.replace('-',' ').replace('_',' ').title(),'url':'/games/'+urllib.parse.quote(rel)+'/index.html','folder':str(d),'offline':True,'size_mb':round(size/1024/1024,2),'note':meta.get('note') or 'Local HTML5 game pack served offline from the MapPI3 hotspot.'})
+        except Exception: pass
+    return {'ok': True, 'root': str(GAME_ROOT), 'count': len(games), 'games': games, 'hint':'Place legal HTML5 game folders at /var/lib/mappi3/games/<game-id>/index.html. Example: /var/lib/mappi3/games/playmario/index.html. MapPI3 will serve them at /games/<game-id>/index.html offline over the hotspot.'}
+
 class Handler(http.server.SimpleHTTPRequestHandler):
     def translate_path(self, path):
         path=urllib.parse.urlparse(path).path
@@ -1013,6 +1037,12 @@ class Handler(http.server.SimpleHTTPRequestHandler):
             rel=urllib.parse.unquote(path[len('/media/'):]).lstrip('/'); target=(MEDIA_ROOT/rel).resolve()
             try:
                 if str(target).startswith(str(MEDIA_ROOT.resolve())) and target.is_file(): return str(target)
+            except Exception: pass
+            return str(APP_DIR/'index.html')
+        if path.startswith('/games/'):
+            rel=urllib.parse.unquote(path[len('/games/'):]).lstrip('/'); target=(GAME_ROOT/rel).resolve()
+            try:
+                if str(target).startswith(str(GAME_ROOT.resolve())) and target.is_file(): return str(target)
             except Exception: pass
             return str(APP_DIR/'index.html')
         p=APP_DIR/path.lstrip('/')
@@ -1042,6 +1072,7 @@ class Handler(http.server.SimpleHTTPRequestHandler):
             qs=urllib.parse.parse_qs(urllib.parse.urlparse(self.path).query); self.json_response(pi_weather({k:v[-1] for k,v in qs.items()})); return
         if self.path.startswith('/api/online-maintenance/log'): self.json_response(online_maintenance_log()); return
         if self.path.startswith('/api/media/library'): self.json_response(media_manifest()); return
+        if self.path.startswith('/api/games/library'): self.json_response(game_library_status()); return
         if self.path.startswith('/api/plugins'): self.json_response(plugin_status()); return
         if self.path.startswith('/api/sense'): self.json_response({'ok': True, 'sense': sense_snapshot(), 'state': read_state(), 'available_modes': SENSE_MODES, 'time': time.time()}); return
         return super().do_GET()
