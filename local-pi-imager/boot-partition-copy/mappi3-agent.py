@@ -789,9 +789,9 @@ def online_maintenance_log():
 
 def harden_hotspot():
     cmds = [
-        "nmcli connection modify MapPI3-hotspot connection.autoconnect yes connection.autoconnect-priority 100 802-11-wireless.powersave 2 ipv4.method shared || true",
+        "nmcli connection modify MapPI3-hotspot connection.autoconnect yes connection.autoconnect-priority 999 connection.autoconnect-retries 0 connection.wait-device-timeout 0 802-11-wireless.band bg 802-11-wireless.channel 1 802-11-wireless.powersave 2 ipv4.method shared ipv4.addresses 10.42.0.1/24 ipv4.never-default yes ipv6.method ignore || true",
         "iw dev wlan0 set power_save off 2>/dev/null || true",
-        "mkdir -p /etc/NetworkManager/conf.d && printf '[connection]\nwifi.powersave = 2\n' > /etc/NetworkManager/conf.d/99-mappi3-wifi-powersave.conf",
+        "mkdir -p /etc/NetworkManager/conf.d && printf '[connection]\nwifi.powersave = 2\n\n[device]\nwifi.scan-rand-mac-address=no\n' > /etc/NetworkManager/conf.d/99-mappi3-field-lock.conf",
         "rfkill unblock wifi || true",
         "nmcli radio wifi on || true"
     ]
