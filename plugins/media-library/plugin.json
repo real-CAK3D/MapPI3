@@ -1,7 +1,17 @@
 {
   "id": "media-library",
   "name": "Media Library",
-  "status": "planned",
+  "status": "ready",
   "install": "install.sh",
-  "uninstall": "uninstall.sh"
+  "uninstall": "uninstall.sh",
+  "features": [
+    "mediaLibrary",
+    "music",
+    "video",
+    "playlists",
+    "storageScan"
+  ],
+  "offline_safe": true,
+  "installed_marker": "/var/lib/mappi3/plugins/media-library/installed.json",
+  "description": "Media folders ready; user media is preserved."
 }

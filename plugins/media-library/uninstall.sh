@@ -1,3 +1,5 @@
 #!/usr/bin/env bash
 set -euo pipefail
-echo "Media library plugin disabled. User media under /var/lib/mappi3/media is preserved; remove manually if desired."
+PLUGIN_ID='media-library'
+rm -rf "/var/lib/mappi3/plugins/$PLUGIN_ID"
+echo "MapPI3 plugin $PLUGIN_ID uninstalled marker removed. User data/cache folders are preserved."

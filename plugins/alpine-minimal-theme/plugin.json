@@ -1,1 +1,23 @@
-{"id":"alpine-minimal-theme","name":"Alpine Minimal Theme","category":"themes","version":"0.1.0","description":"Crisp mountain-air theme: snow white, pale stone, evergreen accents, muted sky blue, thin lines, spacious cards.","targets":["Pi Zero 2 WH","Pi 5"],"requires":["MapPI3 app"],"size":"tiny"}
+{
+  "id": "alpine-minimal-theme",
+  "name": "Alpine Minimal Theme",
+  "category": "themes",
+  "version": "0.1.0",
+  "description": "Crisp mountain-air theme: snow white, pale stone, evergreen accents, muted sky blue, thin lines, spacious cards.",
+  "targets": [
+    "Pi Zero 2 WH",
+    "Pi 5"
+  ],
+  "requires": [
+    "MapPI3 app"
+  ],
+  "size": "tiny",
+  "status": "ready",
+  "install": "install.sh",
+  "uninstall": "uninstall.sh",
+  "features": [
+    "alpine_minimal"
+  ],
+  "offline_safe": true,
+  "installed_marker": "/var/lib/mappi3/plugins/alpine-minimal-theme/installed.json"
+}

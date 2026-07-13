@@ -1,1 +1,23 @@
-{"id":"desert-botanical-theme","name":"Desert Botanical Theme","category":"themes","version":"0.1.0","description":"Warm dry-climate theme: terracotta, sand, sage, cactus-inspired forms, clay textures, airy cards.","targets":["Pi Zero 2 WH","Pi 5"],"requires":["MapPI3 app"],"size":"tiny"}
+{
+  "id": "desert-botanical-theme",
+  "name": "Desert Botanical Theme",
+  "category": "themes",
+  "version": "0.1.0",
+  "description": "Warm dry-climate theme: terracotta, sand, sage, cactus-inspired forms, clay textures, airy cards.",
+  "targets": [
+    "Pi Zero 2 WH",
+    "Pi 5"
+  ],
+  "requires": [
+    "MapPI3 app"
+  ],
+  "size": "tiny",
+  "status": "ready",
+  "install": "install.sh",
+  "uninstall": "uninstall.sh",
+  "features": [
+    "desert_botanical"
+  ],
+  "offline_safe": true,
+  "installed_marker": "/var/lib/mappi3/plugins/desert-botanical-theme/installed.json"
+}

@@ -1,7 +1,16 @@
 {
   "id": "noaa-weather",
   "name": "Noaa Weather",
-  "status": "planned",
+  "status": "ready",
   "install": "install.sh",
-  "uninstall": "uninstall.sh"
+  "uninstall": "uninstall.sh",
+  "features": [
+    "satelliteWeather",
+    "nwsText",
+    "radarTiles",
+    "sdrFuture"
+  ],
+  "offline_safe": true,
+  "installed_marker": "/var/lib/mappi3/plugins/noaa-weather/installed.json",
+  "description": "NOAA/NWS cache folders ready; live refresh works when online."
 }

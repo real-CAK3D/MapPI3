@@ -4,7 +4,7 @@ APP_DIR = pathlib.Path('/opt/mappi3/app')
 STATE = pathlib.Path('/var/lib/mappi3/state.json')
 PORT = int(os.environ.get('MAPPI3_PORT','5050'))
 SENSE_MODES = ['compass','liquid','weather','fire','flashlight','sos','message','boot','sun','gps','clock','progress','beacon','stars','temp','humidity','pressure','custom','border','magic8','water','snake']
-ALLOWED = {'status','restart-web','reboot','shutdown','update-app','gps-sample','toggle-hotspot','connect-home-wifi','sense-mode','calibrate','harden-hotspot','plugin-update','vnc-setup','vnc-disable','weather-refresh','noaa-refresh','online-maintenance','gps-diagnose','field-ai-verify','captive-setup','captive-disable','captive-status','gps-pps-setup'}
+ALLOWED = {'status','restart-web','reboot','shutdown','update-app','gps-sample','toggle-hotspot','connect-home-wifi','sense-mode','calibrate','harden-hotspot','plugin-update','vnc-setup','vnc-disable','weather-refresh','noaa-refresh','online-maintenance','gps-diagnose','field-ai-verify','captive-setup','captive-disable','captive-status','gps-pps-setup','plugin-status','plugin-install','plugin-install-all','plugin-uninstall'}
 SENSE_CACHE = {'ok': False, 'mode': 'compass', 'message': 'Sense HAT display loop starting', 'updated': 0, 'joystick': {'seq': 0, 'direction': '', 'pressed': False, 'updated': 0}}
 SENSE_LOCK = threading.Lock()
 KEY_NAMES = {103:'up',108:'down',105:'left',106:'right',28:'press'}
@@ -817,6 +817,69 @@ def plugin_update(payload):
     features[key]=enabled; st['features']=features; st['features_updated_at']=time.time(); write_state(st)
     return {'ok': True, 'features': features}
 
+PLUGIN_ROOTS = [pathlib.Path('/opt/mappi3/plugins'), pathlib.Path('/var/lib/mappi3/plugins-src'), pathlib.Path('/boot/mappi3/plugins')]
+PLUGIN_STATE = pathlib.Path('/var/lib/mappi3/plugins')
+
+def _safe_plugin_id(value):
+    raw=str(value or '').strip().lower()
+    return ''.join(c for c in raw if c.isalnum() or c in ('-','_'))[:80]
+
+def plugin_registry():
+    packs={}
+    for root in PLUGIN_ROOTS:
+        if not root.exists(): continue
+        for meta in root.glob('*/plugin.json'):
+            try:
+                data=json.loads(meta.read_text())
+                pid=_safe_plugin_id(data.get('id') or meta.parent.name)
+                if not pid: continue
+                marker=PLUGIN_STATE/pid/'installed.json'
+                installed={}
+                if marker.exists():
+                    try: installed=json.loads(marker.read_text())
+                    except Exception: installed={'status':'installed'}
+                packs[pid]={**data,'id':pid,'source':str(meta.parent),'installed':marker.exists(),'installed_marker':str(marker),'installed_state':installed}
+            except Exception as e:
+                packs[meta.parent.name]={'id':meta.parent.name,'source':str(meta.parent),'error':str(e),'installed':False}
+    return packs
+
+def plugin_status(payload=None):
+    packs=plugin_registry()
+    return {'ok': True, 'root_candidates':[str(x) for x in PLUGIN_ROOTS], 'installed_root':str(PLUGIN_STATE), 'count':len(packs), 'installed_count':sum(1 for p in packs.values() if p.get('installed')), 'packs':packs, 'time':time.time()}
+
+def _run_plugin_script(pid, script_name):
+    packs=plugin_registry(); pack=packs.get(pid)
+    if not pack: return {'ok': False, 'id':pid, 'error':'plugin not found'}
+    source=pathlib.Path(pack.get('source') or '')
+    script=source/script_name
+    if not script.exists(): return {'ok': False, 'id':pid, 'error':f'{script_name} missing', 'source':str(source)}
+    if not str(script.resolve()).startswith(str(source.resolve())): return {'ok': False, 'id':pid, 'error':'unsafe script path'}
+    os.chmod(script, os.stat(script).st_mode | 0o755)
+    out=sh(f'cd {json.dumps(str(source))} && bash {json.dumps(str(script))}', timeout=180)
+    st=read_state(); installed=st.get('installed_plugins') if isinstance(st.get('installed_plugins'),dict) else {}
+    installed[pid]={'installed': script_name=='install.sh', 'updated_at':time.time(), 'source':str(source), 'output':out.get('output','')[-1200:]}
+    st['installed_plugins']=installed; write_state(st)
+    return {'ok': out.get('ok'), 'id':pid, 'script':script_name, 'source':str(source), 'output':out.get('output','')[-2500:], 'status':plugin_status().get('packs',{}).get(pid,{})}
+
+def plugin_install(payload=None):
+    payload=payload or {}; pid=_safe_plugin_id(payload.get('id') or payload.get('key'))
+    if not pid: return {'ok': False, 'error':'id required'}
+    return _run_plugin_script(pid, 'install.sh')
+
+def plugin_uninstall(payload=None):
+    payload=payload or {}; pid=_safe_plugin_id(payload.get('id') or payload.get('key'))
+    if not pid: return {'ok': False, 'error':'id required'}
+    return _run_plugin_script(pid, 'uninstall.sh')
+
+def plugin_install_all(payload=None):
+    payload=payload or {}; packs=plugin_registry(); ids=payload.get('ids') or payload.get('queue') or list(packs.keys())
+    ids=[_safe_plugin_id(x) for x in ids if _safe_plugin_id(x)]
+    results=[]
+    for pid in ids:
+        results.append(plugin_install({'id':pid}))
+    ok=all(r.get('ok') for r in results)
+    return {'ok': ok, 'requested':ids, 'installed':sum(1 for r in results if r.get('ok')), 'failed':[r for r in results if not r.get('ok')], 'results':results, 'status':plugin_status()}
+
 def captive_status():
     active=sh('systemctl is-active mappi3-captive.service 2>/dev/null || true', timeout=5)['output'].strip()
     enabled=sh('systemctl is-enabled mappi3-captive.service 2>/dev/null || true', timeout=5)['output'].strip()
@@ -892,6 +955,10 @@ def command(name, payload=None):
     if name=='calibrate': return calibrate(payload.get('target') or 'all')
     if name=='harden-hotspot': return harden_hotspot()
     if name=='plugin-update': return plugin_update(payload)
+    if name=='plugin-status': return plugin_status(payload)
+    if name=='plugin-install': return plugin_install(payload)
+    if name=='plugin-uninstall': return plugin_uninstall(payload)
+    if name=='plugin-install-all': return plugin_install_all(payload)
     if name=='vnc-setup': return setup_vnc(payload)
     if name=='vnc-disable': return disable_vnc()
     if name=='weather-refresh': return pi_weather(payload)
@@ -975,6 +1042,7 @@ class Handler(http.server.SimpleHTTPRequestHandler):
             qs=urllib.parse.parse_qs(urllib.parse.urlparse(self.path).query); self.json_response(pi_weather({k:v[-1] for k,v in qs.items()})); return
         if self.path.startswith('/api/online-maintenance/log'): self.json_response(online_maintenance_log()); return
         if self.path.startswith('/api/media/library'): self.json_response(media_manifest()); return
+        if self.path.startswith('/api/plugins'): self.json_response(plugin_status()); return
         if self.path.startswith('/api/sense'): self.json_response({'ok': True, 'sense': sense_snapshot(), 'state': read_state(), 'available_modes': SENSE_MODES, 'time': time.time()}); return
         return super().do_GET()
     def do_DELETE(self):

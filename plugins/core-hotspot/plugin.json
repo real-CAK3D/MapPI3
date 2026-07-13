@@ -1,8 +1,16 @@
 {
   "id": "core-hotspot",
   "name": "Core Hotspot",
-  "status": "planned",
+  "status": "ready",
   "install": "install.sh",
   "uninstall": "uninstall.sh",
-  "nested_features": true
+  "nested_features": true,
+  "features": [
+    "hotspot",
+    "phonePortal",
+    "updates"
+  ],
+  "offline_safe": true,
+  "installed_marker": "/var/lib/mappi3/plugins/core-hotspot/installed.json",
+  "description": "Core hotspot/captive portal controls are built into the image."
 }

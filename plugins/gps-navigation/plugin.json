@@ -1,8 +1,18 @@
 {
   "id": "gps-navigation",
   "name": "Gps Navigation",
-  "status": "planned",
+  "status": "ready",
   "install": "install.sh",
   "uninstall": "uninstall.sh",
-  "nested_features": true
+  "nested_features": true,
+  "features": [
+    "gpsModule",
+    "phoneGps",
+    "gpx",
+    "turnByTurn",
+    "driveGps"
+  ],
+  "offline_safe": true,
+  "installed_marker": "/var/lib/mappi3/plugins/gps-navigation/installed.json",
+  "description": "GPS/navigation hooks, GPX folders, Drive GPS and route handoff ready."
 }

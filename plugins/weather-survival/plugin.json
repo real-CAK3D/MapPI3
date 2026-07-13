@@ -1,8 +1,17 @@
 {
   "id": "weather-survival",
   "name": "Weather Survival",
-  "status": "planned",
+  "status": "ready",
   "install": "install.sh",
   "uninstall": "uninstall.sh",
-  "nested_features": true
+  "nested_features": true,
+  "features": [
+    "weather",
+    "survival",
+    "weatherAlerts",
+    "weatherCache"
+  ],
+  "offline_safe": true,
+  "installed_marker": "/var/lib/mappi3/plugins/weather-survival/installed.json",
+  "description": "Weather cache and survival reference folders ready."
 }

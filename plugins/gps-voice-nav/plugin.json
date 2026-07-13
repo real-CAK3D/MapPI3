@@ -1,7 +1,16 @@
 {
   "id": "gps-voice-nav",
   "name": "Gps Voice Nav",
-  "status": "planned",
+  "status": "ready",
   "install": "install.sh",
-  "uninstall": "uninstall.sh"
+  "uninstall": "uninstall.sh",
+  "features": [
+    "voiceCommands",
+    "offlineTts",
+    "turnByTurn",
+    "hydrationByDistance"
+  ],
+  "offline_safe": true,
+  "installed_marker": "/var/lib/mappi3/plugins/gps-voice-nav/installed.json",
+  "description": "Voice prompt manifest ready; phone speech fallback works, offline TTS engine is future optional."
 }

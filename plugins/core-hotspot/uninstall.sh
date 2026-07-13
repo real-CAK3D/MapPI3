@@ -1,3 +1,5 @@
 #!/usr/bin/env bash
 set -euo pipefail
-echo "MapPI3 plugin core-hotspot uninstall scaffold."
+PLUGIN_ID='core-hotspot'
+rm -rf "/var/lib/mappi3/plugins/$PLUGIN_ID"
+echo "MapPI3 plugin $PLUGIN_ID uninstalled marker removed. User data/cache folders are preserved."

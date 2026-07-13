@@ -1,8 +1,17 @@
 {
   "id": "sky-forage",
   "name": "Sky Forage",
-  "status": "planned",
+  "status": "ready",
   "install": "install.sh",
   "uninstall": "uninstall.sh",
-  "nested_features": true
+  "nested_features": true,
+  "features": [
+    "sky",
+    "cameraOverlay",
+    "forage",
+    "wildFoodSafety"
+  ],
+  "offline_safe": true,
+  "installed_marker": "/var/lib/mappi3/plugins/sky-forage/installed.json",
+  "description": "Sky/forage guide storage ready; pages are built into the app."
 }

@@ -1,8 +1,16 @@
 {
   "id": "debug-vnc",
   "name": "Debug Vnc",
-  "status": "planned",
+  "status": "ready",
   "install": "install.sh",
   "uninstall": "uninstall.sh",
-  "nested_features": true
+  "nested_features": true,
+  "features": [
+    "vnc",
+    "vncInstall",
+    "vncDisable"
+  ],
+  "offline_safe": true,
+  "installed_marker": "/var/lib/mappi3/plugins/debug-vnc/installed.json",
+  "description": "Debug VNC hooks/status ready; service remains disabled until explicitly enabled."
 }

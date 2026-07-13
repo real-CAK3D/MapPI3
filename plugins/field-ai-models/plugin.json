@@ -1,7 +1,21 @@
 {
   "id": "field-ai-models",
   "name": "Field Ai Models",
-  "status": "planned",
+  "status": "ready",
   "install": "install.sh",
-  "uninstall": "uninstall.sh"
+  "uninstall": "uninstall.sh",
+  "features": [
+    "natureAI",
+    "plantModel",
+    "cloudModel",
+    "fungiModel",
+    "animalModel",
+    "bugModel",
+    "rocks",
+    "barcode",
+    "ocr"
+  ],
+  "offline_safe": true,
+  "installed_marker": "/var/lib/mappi3/plugins/field-ai-models/installed.json",
+  "description": "Prototype offline field-AI model slots and DB folders ready."
 }

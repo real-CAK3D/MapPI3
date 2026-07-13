@@ -1,7 +1,22 @@
 {
   "id": "sense-games",
   "name": "Sense Games",
-  "status": "planned",
+  "status": "ready",
   "install": "install.sh",
-  "uninstall": "uninstall.sh"
+  "uninstall": "uninstall.sh",
+  "features": [
+    "senseHat",
+    "compass",
+    "liquid",
+    "sos",
+    "flashlight",
+    "magic8",
+    "snake",
+    "hydrationAlarm",
+    "senseProgress",
+    "senseDimmer"
+  ],
+  "offline_safe": true,
+  "installed_marker": "/var/lib/mappi3/plugins/sense-games/installed.json",
+  "description": "Sense HAT modes/games/progress/dimmer are built into mappi3-agent."
 }

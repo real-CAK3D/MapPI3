@@ -1,8 +1,16 @@
 {
   "id": "bluetooth-sensors",
   "name": "Bluetooth Sensors",
-  "status": "planned",
+  "status": "ready",
   "install": "install.sh",
   "uninstall": "uninstall.sh",
-  "nested_features": true
+  "nested_features": true,
+  "features": [
+    "bluetoothSensors",
+    "bleHeartbeat",
+    "externalSensors"
+  ],
+  "offline_safe": true,
+  "installed_marker": "/var/lib/mappi3/plugins/bluetooth-sensors/installed.json",
+  "description": "Bluetooth sensor bridge folders/manifest ready; external BLE hardware is future optional."
 }

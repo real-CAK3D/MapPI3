@@ -1,7 +1,18 @@
 {
   "id": "ambient-sounds",
   "name": "Ambient Sounds",
-  "status": "planned",
+  "status": "ready",
   "install": "install.sh",
-  "uninstall": "uninstall.sh"
+  "uninstall": "uninstall.sh",
+  "features": [
+    "ambientSounds",
+    "rainLoop",
+    "creekLoop",
+    "forestLoop",
+    "nightLoop",
+    "sensePulse"
+  ],
+  "offline_safe": true,
+  "installed_marker": "/var/lib/mappi3/plugins/ambient-sounds/installed.json",
+  "description": "Ambient starter slots ready; browser synth fallback works without files."
 }
