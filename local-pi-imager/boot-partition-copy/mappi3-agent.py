@@ -120,6 +120,9 @@ def set_sense_mode(mode, payload=None):
     st=read_state(); st['sense_mode']=mode; st['sense_mode_updated_at']=time.time()
     if 'message' in payload: st['sense_message'] = str(payload.get('message') or '')[:96]
     if 'brightness' in payload: st['sense_brightness'] = payload.get('brightness')
+    if 'brightnessLevel' in payload: st['sense_brightness_level'] = payload.get('brightnessLevel')
+    if 'routeProgress' in payload: st['route_progress'] = payload.get('routeProgress')
+    if 'routeDistanceMiles' in payload: st['route_distance_miles'] = payload.get('routeDistanceMiles')
     if 'scrollSpeed' in payload: st['sense_scroll_speed'] = payload.get('scrollSpeed')
     if 'senseColor' in payload: st['sense_color'] = str(payload.get('senseColor') or '#00aa55')[:16]
     if 'borderOnly' in payload: st['sense_border_only'] = bool(payload.get('borderOnly'))
@@ -145,13 +148,26 @@ def sense_scroll_speed(st):
     try: return max(0.025, min(0.2, float(st.get('sense_scroll_speed') or 0.055)))
     except Exception: return 0.055
 
+def sense_brightness(st):
+    levels=[16,32,56,88,120,160,205,255]
+    try:
+        level=int(st.get('sense_brightness_level') or 0)
+        if 1 <= level <= 8: return levels[level-1]
+    except Exception: pass
+    try: return max(8, min(255, int(st.get('sense_brightness') or 120)))
+    except Exception: return 120
+
+def scale_color(color, brightness):
+    factor=max(0.03, min(1.0, float(brightness)/255.0))
+    return tuple(max(0, min(255, int(c*factor))) for c in color)
+
 def text_once(sense, text, color=(0,160,60), speed=0.06):
     try: sense.show_message(str(text)[:96], text_colour=list(color), scroll_speed=speed)
     except Exception: pass
 
-def draw_compass(sense, yaw):
+def draw_compass(sense, yaw, st=None):
     labels = ['N','NE','E','SE','S','SW','W','NW']; name = labels[int(((float(yaw or 0) + 22.5) % 360) // 45)]
-    put_pixels(sense, COMPASS_PATTERNS.get(name, COMPASS_PATTERNS['N']), (0,120,20))
+    put_pixels(sense, COMPASS_PATTERNS.get(name, COMPASS_PATTERNS['N']), scale_color((0,120,20), sense_brightness(st or {})))
 
 def draw_liquid(sense, orientation, tick):
     roll = max(-1, min(1, float(orientation.get('roll', 0)) / 45.0)); pitch = max(-1, min(1, float(orientation.get('pitch', 0)) / 45.0))
@@ -172,7 +188,7 @@ def draw_fire(sense, tick):
     sense.set_pixels(pixels)
 
 def draw_flashlight(sense, st):
-    b = int(st.get('sense_brightness') or 120); b=max(20,min(255,b)); sense.clear(b,b,b)
+    b = sense_brightness(st); sense.clear(b,b,b)
 
 def draw_sos(sense, tick):
     frame = SOS_FRAMES[(tick//3) % len(SOS_FRAMES)]
@@ -187,8 +203,8 @@ def draw_weather(sense, temp, humidity, pressure):
 def draw_sun(sense, st):
     text_once(sense, st.get('sun_message') or 'SUNRISE / SUNSET CHECK APP', (220,100,0), 0.055)
 
-def draw_gps(sense, gps):
-    mode=int(gps.get('mode') or 0); sats=int(gps.get('satellites') or 0); color=(180,0,0) if mode<2 else ((180,120,0) if mode==2 else (0,150,0))
+def draw_gps(sense, gps, st=None):
+    mode=int(gps.get('mode') or 0); sats=int(gps.get('satellites') or 0); color=scale_color((180,0,0) if mode<2 else ((180,120,0) if mode==2 else (0,150,0)), sense_brightness(st or {}))
     pixels=[[0,0,0] for _ in range(64)]
     for i in range(min(8,max(0,sats))): pixels[56+i]=list(color)
     for y in range(2,6):
@@ -199,6 +215,26 @@ def draw_bar(sense, value, color):
     n=max(0,min(64,int(value))); pixels=[[0,0,0] for _ in range(64)]
     for i in range(n): pixels[63-i]=list(color)
     sense.set_pixels(pixels)
+
+def draw_route_progress(sense, st):
+    brightness=sense_brightness(st)
+    progress=max(0.0, min(1.0, float(st.get('route_progress') or 0)))
+    distance=max(0.0, float(st.get('route_distance_miles') or 0))
+    complete=max(0, min(63, int(round(progress*63))))
+    remaining=scale_color((255,255,255), brightness)
+    done=scale_color((255,0,0), brightness)
+    finish=scale_color((0,255,0), brightness)
+    pixels=[]
+    for i in range(64):
+        if i == 63:
+            pixels.append(list(finish))
+        elif i <= complete and progress > 0:
+            pixels.append(list(done))
+        else:
+            pixels.append(list(remaining))
+    sense.set_pixels(pixels)
+    with SENSE_LOCK:
+        SENSE_CACHE['progress_meter']={'progress':progress,'percent':round(progress*100),'distance_miles':distance,'completed_leds':complete+1 if progress > 0 else 0,'finish_led':'green','remaining_leds':'white','completed_leds_color':'red'}
 
 def parse_color(value, default=(0,140,80)):
     try:
@@ -242,7 +278,7 @@ def sense_loop():
             try:
                 orient=sense.get_orientation(); yaw=orient.get('yaw',0); temp_c=sense.get_temperature(); temp_f=temp_c*9/5+32; hum=sense.get_humidity(); pressure=sense.get_pressure(); gps=gps_status()
                 if mode=='liquid': draw_liquid(sense, orient, tick)
-                elif mode=='compass': draw_compass(sense, yaw)
+                elif mode=='compass': draw_compass(sense, yaw, st)
                 elif mode=='weather':
                     if time.time()-last_text>8: text_once(sense, f'{temp_f:.0f}F {hum:.0f}% {pressure:.0f}mb', (0,120,180), sense_scroll_speed(st)); last_text=time.time()
                 elif mode=='fire': draw_fire(sense,tick)
@@ -254,10 +290,10 @@ def sense_loop():
                     if time.time()-last_text>10: text_once(sense, st.get('boot_message') or 'WELCOME TO THE WILDERNESS', (0,120,20), sense_scroll_speed(st)); last_text=time.time()
                 elif mode=='sun':
                     if time.time()-last_text>8: draw_sun(sense,st); last_text=time.time()
-                elif mode=='gps': draw_gps(sense,gps)
+                elif mode=='gps': draw_gps(sense,gps,st)
                 elif mode=='clock':
                     if time.time()-last_text>5: text_once(sense, time.strftime('%I:%M %p'), (80,80,180), sense_scroll_speed(st)); last_text=time.time()
-                elif mode=='progress': draw_bar(sense, float(st.get('route_progress') or 0.35)*64, (0,150,40))
+                elif mode=='progress': draw_route_progress(sense, st)
                 elif mode=='beacon': sense.clear(0, 0 if tick%2 else 80, 0 if tick%2 else 120)
                 elif mode=='stars':
                     pixels=[[0,0,0] for _ in range(64)]
