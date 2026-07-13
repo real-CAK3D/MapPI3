@@ -4,7 +4,7 @@ APP_DIR = pathlib.Path('/opt/mappi3/app')
 STATE = pathlib.Path('/var/lib/mappi3/state.json')
 PORT = int(os.environ.get('MAPPI3_PORT','5050'))
 SENSE_MODES = ['compass','liquid','weather','fire','flashlight','sos','message','boot','sun','gps','clock','progress','beacon','stars','temp','humidity','pressure','custom','border','magic8','water','snake']
-ALLOWED = {'status','restart-web','reboot','shutdown','update-app','gps-sample','toggle-hotspot','connect-home-wifi','sense-mode','calibrate','harden-hotspot','plugin-update','vnc-setup','vnc-disable','weather-refresh','noaa-refresh','online-maintenance','gps-diagnose','field-ai-verify','captive-setup','captive-disable','captive-status'}
+ALLOWED = {'status','restart-web','reboot','shutdown','update-app','gps-sample','toggle-hotspot','connect-home-wifi','sense-mode','calibrate','harden-hotspot','plugin-update','vnc-setup','vnc-disable','weather-refresh','noaa-refresh','online-maintenance','gps-diagnose','field-ai-verify','captive-setup','captive-disable','captive-status','gps-pps-setup'}
 SENSE_CACHE = {'ok': False, 'mode': 'compass', 'message': 'Sense HAT display loop starting', 'updated': 0, 'joystick': {'seq': 0, 'direction': '', 'pressed': False, 'updated': 0}}
 SENSE_LOCK = threading.Lock()
 KEY_NAMES = {103:'up',108:'down',105:'left',106:'right',28:'press'}
@@ -792,10 +792,56 @@ def setup_captive(payload=None):
     script.write_text('#!/usr/bin/env python3\nimport http.server, urllib.parse, time\nAPP=\'http://10.42.0.1:5050/\'\nPROBES={\'/generate_204\':(204,\'text/plain\',\'\'),\'/gen_204\':(204,\'text/plain\',\'\'),\'/hotspot-detect.html\':(200,\'text/html\',\'<HTML><HEAD><TITLE>Success</TITLE></HEAD><BODY>Success<br><a href="%s">Open MapPI3</a></BODY></HTML>\'%APP),\'/connecttest.txt\':(200,\'text/plain\',\'Microsoft Connect Test\'),\'/ncsi.txt\':(200,\'text/plain\',\'Microsoft NCSI\'),\'/canonical.html\':(200,\'text/html\',\'<meta http-equiv="refresh" content="0; url=%s">\'%APP)}\nclass H(http.server.BaseHTTPRequestHandler):\n    def _send(self,code,ctype,body):\n        raw=body.encode(); self.send_response(code); self.send_header(\'Content-Type\',ctype); self.send_header(\'Cache-Control\',\'no-store\'); self.send_header(\'Content-Length\',str(len(raw))); self.end_headers(); self.wfile.write(raw)\n    def do_GET(self):\n        p=urllib.parse.urlparse(self.path).path\n        if p in PROBES:\n            code,ctype,body=PROBES[p]; self._send(code,ctype,body); return\n        if p in (\'/\',\'/index.html\',\'/map\',\'/login\'):\n            self._send(200,\'text/html\',\'<!doctype html><meta name="viewport" content="width=device-width,initial-scale=1"><title>MapPI3</title><style>body{font-family:sans-serif;background:#07130d;color:#eaffef;padding:24px}a{color:#70f0a0;font-size:1.2rem}</style><h1>MapPI3 Trail Buddy</h1><p>No internet required. Stay on this Wi-Fi and open the trail app.</p><p><a href="\'+APP+\'">Open MapPI3 app</a></p><small>\'+time.ctime()+\'</small>\'); return\n        self.send_response(302); self.send_header(\'Location\',APP); self.end_headers()\n    def log_message(self,*a): pass\nhttp.server.ThreadingHTTPServer((\'0.0.0.0\',80),H).serve_forever()\n')
     os.chmod(script,0o755)
     service=pathlib.Path('/etc/systemd/system/mappi3-captive.service')
-    service.write_text('[Unit]\nDescription=MapPI3 phone stay-connected captive helper\nAfter=network.target mappi3-web.service\n\n[Service]\nType=simple\nExecStart=/usr/bin/python3 /usr/local/bin/mappi3-captive.py\nRestart=on-failure\nRestartSec=2\n\n[Install]\nWantedBy=multi-user.target\n')
+    service.write_text('[Unit]\nDescription=MapPI3 phone stay-connected captive helper\nAfter=network-online.target NetworkManager.service\nWants=network-online.target\n\n[Service]\nType=simple\nExecStartPre=/bin/sh -c \'for i in $(seq 1 45); do ip addr show wlan0 | grep -q "10.42.0.1" && exit 0; sleep 1; done; exit 0\'\nExecStart=/usr/bin/python3 /usr/local/bin/mappi3-captive.py\nRestart=always\nRestartSec=3\n\n[Install]\nWantedBy=multi-user.target\n')
     out=sh('systemctl daemon-reload && systemctl enable --now mappi3-captive.service && systemctl status --no-pager mappi3-captive.service | sed -n "1,12p"', timeout=30)
     st=read_state(); st['captive_portal_enabled_at']=time.time(); write_state(st)
     return {'ok': out.get('ok'), 'message':'Phone stay-connected captive portal enabled on port 80', 'status': captive_status(), 'output': out.get('output','')[-1200:]}
+
+def setup_gps_pps(payload=None):
+    backup = sh('STAMP=$(date +%Y%m%d-%H%M%S); mkdir -p /var/backups/mappi3-pps-setup; for f in /boot/firmware/cmdline.txt /boot/cmdline.txt /boot/firmware/config.txt /etc/default/gpsd; do [ -f "$f" ] && cp -a "$f" "/var/backups/mappi3-pps-setup/$(echo $f|tr / _).$STAMP.bak"; done', timeout=20)
+    cmdline_script = r"""
+python3 - <<'PY'
+from pathlib import Path
+src = Path('/proc/cmdline').read_text().strip().split()
+bad = ('console=ttyAMA','console=ttyS','console=serial','kgdboc=ttyAMA','kgdboc=ttyS','kgdboc=serial')
+parts = [t for t in src if not t.startswith(bad)]
+if not any(x.startswith('root=') for x in parts):
+    parts += ['console=tty1','root=/dev/mmcblk0p2','rootfstype=ext4','rootwait']
+if not any(x.startswith('cfg80211.ieee80211_regdom=') for x in parts):
+    parts.append('cfg80211.ieee80211_regdom=US')
+seen = []
+for part in parts:
+    if part not in seen:
+        seen.append(part)
+Path('/tmp/mappi3-clean-cmdline.txt').write_text(' '.join(seen) + '\n')
+PY
+for f in /boot/firmware/cmdline.txt /boot/cmdline.txt; do [ -f "$f" ] && cp /tmp/mappi3-clean-cmdline.txt "$f" || true; done
+"""
+    cmdline = sh(cmdline_script, timeout=20)
+    config = sh("CFG=/boot/firmware/config.txt; [ -f $CFG ] || CFG=/boot/config.txt; grep -q '^enable_uart=1' $CFG || echo 'enable_uart=1' >> $CFG; grep -q '^dtoverlay=pps-gpio,gpiopin=18' $CFG || echo 'dtoverlay=pps-gpio,gpiopin=18' >> $CFG", timeout=10)
+    gpsd_script = r"""
+python3 - <<'PY'
+from pathlib import Path
+p = Path('/etc/default/gpsd')
+s = p.read_text() if p.exists() else 'START_DAEMON="true"\nUSBAUTO="false"\n'
+lines = []
+for line in s.splitlines():
+    if line.startswith('DEVICES='):
+        lines.append('DEVICES="/dev/serial0 /dev/pps0"')
+    elif line.startswith('GPSD_OPTIONS='):
+        lines.append('GPSD_OPTIONS="-n"')
+    else:
+        lines.append(line)
+if not any(x.startswith('DEVICES=') for x in lines):
+    lines.append('DEVICES="/dev/serial0 /dev/pps0"')
+if not any(x.startswith('GPSD_OPTIONS=') for x in lines):
+    lines.append('GPSD_OPTIONS="-n"')
+p.write_text('\n'.join(lines) + '\n')
+PY
+"""
+    gpsd = sh(gpsd_script, timeout=10)
+    services = sh('systemctl mask serial-getty@ttyAMA0.service serial-getty@serial0.service || true; systemctl disable --now serial-getty@ttyAMA0.service serial-getty@serial0.service || true; systemctl daemon-reload; systemctl restart gpsd.socket gpsd || true', timeout=30)
+    return {'ok': True, 'message':'GPS UART console disabled; GPIO18 PPS overlay configured. Reboot required for boot cmdline/overlay persistence.', 'backup': backup.get('output','')[-800:], 'cmdline': cmdline.get('output','')[-800:], 'config': config.get('output','')[-800:], 'gpsd': gpsd.get('output','')[-800:], 'services': services.get('output','')[-1200:]}
 
 def disable_captive():
     out=sh('systemctl disable --now mappi3-captive.service || true', timeout=20)
@@ -820,6 +866,7 @@ def command(name, payload=None):
     if name=='captive-setup': return setup_captive(payload)
     if name=='captive-disable': return disable_captive()
     if name=='captive-status': return captive_status()
+    if name=='gps-pps-setup': return setup_gps_pps(payload)
     if name=='restart-web': return sh('systemctl restart mappi3-web.service', timeout=10)
     if name=='reboot': return sh('systemctl reboot', timeout=3)
     if name=='shutdown': return sh('systemctl poweroff', timeout=3)
