@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 
@@ -29,6 +29,7 @@ function segmentSlice(routePoints, routeMiles, segment) {
 }
 
 export default function LiveLeafletMap({ trace = [], center = defaultCenter, active = false, route = null, waypoints = [], onMapClick = null, onWaypointMove = null }) {
+  const [tileStatus, setTileStatus] = useState('loading map tiles');
   const mapRef = useRef(null);
   const containerRef = useRef(null);
   const layerRef = useRef({ marker: null, line: null, route: null, segments: [], waypoints: [] });
@@ -48,11 +49,31 @@ export default function LiveLeafletMap({ trace = [], center = defaultCenter, act
 
   useEffect(() => {
     if (!containerRef.current || mapRef.current) return;
-    mapRef.current = L.map(containerRef.current, { zoomControl: true, attributionControl: true }).setView(center, 15);
-    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-      maxZoom: 19,
-      attribution: '&copy; OpenStreetMap contributors'
-    }).addTo(mapRef.current);
+    mapRef.current = L.map(containerRef.current, { zoomControl: true, attributionControl: true, preferCanvas: true }).setView(center, 15);
+    const map = mapRef.current;
+    const host = typeof window !== 'undefined' ? window.location.hostname : '';
+    const isPiLocal = /^(mappi3\.local|10\.42\.0\.1|localhost|127\.0\.0\.1)$/i.test(host);
+    const localTiles = L.tileLayer('/tiles/{z}/{x}/{y}.png', { maxZoom: 18, attribution: 'MapPI3 offline tiles', errorTileUrl: '' });
+    const osmTiles = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { maxZoom: 19, attribution: '&copy; OpenStreetMap contributors', crossOrigin: true, detectRetina: true });
+    let activeLayer = null;
+    let goodTiles = 0;
+    let switched = false;
+    const useLayer = (layer, label) => {
+      if (activeLayer && activeLayer !== layer) map.removeLayer(activeLayer);
+      activeLayer = layer;
+      if (!map.hasLayer(layer)) layer.addTo(map);
+      setTileStatus(label);
+    };
+    const markGood = (label) => { goodTiles += 1; if (goodTiles >= 1) setTileStatus(label); };
+    localTiles.on('tileload', () => markGood('offline Pi map tiles'));
+    osmTiles.on('tileload', () => markGood('live OpenStreetMap tiles'));
+    localTiles.on('tileerror', () => {
+      if (!switched && isPiLocal) { switched = true; useLayer(osmTiles, 'checking live OpenStreetMap tiles'); }
+      else if (!goodTiles) setTileStatus('offline topo fallback · route/POIs still usable');
+    });
+    osmTiles.on('tileerror', () => { if (!goodTiles) setTileStatus(isPiLocal ? 'no tile pack/internet · route line still usable' : 'offline topo fallback · route/POIs still usable'); });
+    useLayer(isPiLocal ? localTiles : osmTiles, isPiLocal ? 'checking offline Pi tiles' : 'checking live OpenStreetMap tiles');
+    setTimeout(() => { if (!goodTiles) setTileStatus(isPiLocal ? 'no tile pack/internet · route line still usable' : 'offline topo fallback · route/POIs still usable'); }, 4500);
   }, [center]);
 
   useEffect(() => {
@@ -122,5 +143,5 @@ export default function LiveLeafletMap({ trace = [], center = defaultCenter, act
     else map.setView(latest, 15);
   }, [points, tracePoints, routePoints, routeMiles, waypoints, center, active, onWaypointMove, route]);
 
-  return <div className="leaflet-shell"><div ref={containerRef} className="leaflet-map" /></div>;
+  return <div className={`leaflet-shell ${onMapClick ? 'draw-active' : ''}`} data-tile-status={tileStatus}><div className="map-fallback-label">{tileStatus}</div>{onMapClick && <div className="draw-map-hint">tap map to place point</div>}<div ref={containerRef} className="leaflet-map" /></div>;
 }

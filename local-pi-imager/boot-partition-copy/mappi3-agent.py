@@ -1,22 +1,27 @@
 #!/usr/bin/env python3
-import base64, fcntl, hashlib, http.server, io, json, math, os, pathlib, random, shutil, socket, sqlite3, struct, subprocess, threading, time, urllib.parse, urllib.request, uuid
+import base64, fcntl, hashlib, http.server, io, json, math, os, pathlib, random, shutil, socket, sqlite3, ssl, struct, subprocess, threading, time, urllib.parse, urllib.request, uuid
 APP_DIR = pathlib.Path('/opt/mappi3/app')
 STATE = pathlib.Path('/var/lib/mappi3/state.json')
 PORT = int(os.environ.get('MAPPI3_PORT','5050'))
-SENSE_MODES = ['compass','liquid','weather','fire','flashlight','sos','message','boot','sun','gps','clock','progress','beacon','stars','temp','humidity','pressure','custom','border','magic8','water','snake']
+HTTPS_PORT = int(os.environ.get('MAPPI3_HTTPS_PORT','5443'))
+CERT_DIR = pathlib.Path('/var/lib/mappi3/certs')
+CERT_FILE = CERT_DIR / 'mappi3-local.crt'
+KEY_FILE = CERT_DIR / 'mappi3-local.key'
+LIQUID_STATE = {'gx': 0.0, 'gy': 0.0, 'gz': 1.0}
+SENSE_MODES = ['compass','compass-arrow','compass-cardinal','rotation-test','liquid','weather','fire','flashlight','sos','message','boot','sun','gps','clock','progress','beacon','stars','temp','humidity','pressure','custom','border','magic8','water','snake']
 ALLOWED = {'status','restart-web','reboot','shutdown','update-app','gps-sample','toggle-hotspot','connect-home-wifi','sense-mode','calibrate','harden-hotspot','plugin-update','vnc-setup','vnc-disable','weather-refresh','noaa-refresh','online-maintenance','gps-diagnose','field-ai-verify','captive-setup','captive-disable','captive-status','gps-pps-setup','plugin-status','plugin-install','plugin-install-all','plugin-uninstall'}
 SENSE_CACHE = {'ok': False, 'mode': 'compass', 'message': 'Sense HAT display loop starting', 'updated': 0, 'joystick': {'seq': 0, 'direction': '', 'pressed': False, 'updated': 0}}
 SENSE_LOCK = threading.Lock()
 KEY_NAMES = {103:'up',108:'down',105:'left',106:'right',28:'press'}
 COMPASS_PATTERNS = {
     'N': [(3,0),(4,0),(3,1),(4,1),(2,2),(5,2),(3,2),(4,2),(3,3),(4,3),(3,4),(4,4),(3,5),(4,5),(3,6),(4,6),(3,7),(4,7)],
-    'NE': [(6,0),(7,0),(7,1),(6,1),(5,2),(6,2),(4,3),(5,3),(3,4),(4,4),(2,5),(3,5),(1,6),(2,6),(0,7),(1,7)],
+    'NE': [(7,0),(6,0),(7,1),(5,0),(7,2),(6,1),(5,2),(4,3),(3,4),(2,5),(1,6),(0,7)],
     'E': [(7,3),(7,4),(6,2),(6,5),(5,3),(5,4),(4,3),(4,4),(3,3),(3,4),(2,3),(2,4),(1,3),(1,4),(0,3),(0,4)],
-    'SE': [(6,7),(7,7),(7,6),(6,6),(5,5),(6,5),(4,4),(5,4),(3,3),(4,3),(2,2),(3,2),(1,1),(2,1),(0,0),(1,0)],
+    'SE': [(7,7),(6,7),(7,6),(5,7),(7,5),(6,6),(5,5),(4,4),(3,3),(2,2),(1,1),(0,0)],
     'S': [(3,7),(4,7),(3,6),(4,6),(2,5),(5,5),(3,5),(4,5),(3,4),(4,4),(3,3),(4,3),(3,2),(4,2),(3,1),(4,1),(3,0),(4,0)],
-    'SW': [(0,7),(1,7),(0,6),(1,6),(2,5),(1,5),(3,4),(2,4),(4,3),(3,3),(5,2),(4,2),(6,1),(5,1),(7,0),(6,0)],
+    'SW': [(0,7),(1,7),(0,6),(2,7),(0,5),(1,6),(2,5),(3,4),(4,3),(5,2),(6,1),(7,0)],
     'W': [(0,3),(0,4),(1,2),(1,5),(2,3),(2,4),(3,3),(3,4),(4,3),(4,4),(5,3),(5,4),(6,3),(6,4),(7,3),(7,4)],
-    'NW': [(0,0),(1,0),(0,1),(1,1),(2,2),(1,2),(3,3),(2,3),(4,4),(3,4),(5,5),(4,5),(6,6),(5,6),(7,7),(6,7)],
+    'NW': [(0,0),(1,0),(0,1),(2,0),(0,2),(1,1),(2,2),(3,3),(4,4),(5,5),(6,6),(7,7)],
 }
 SOS_FRAMES = ['...','---','...','HELP','LOST','GPS','SOS']
 
@@ -37,7 +42,7 @@ def write_state(data):
 
 def normalize_mode(mode):
     raw = str(mode or 'compass').strip().lower().replace(' ', '-').replace('_','-')
-    aliases = {'custom-message':'message','scroll-message':'message','sunrise':'sun','sunset':'sun','sunrise-sunset':'sun','gps-fix':'gps','weather-now':'weather','flash-light':'flashlight'}
+    aliases = {'custom-message':'message','scroll-message':'message','sunrise':'sun','sunset':'sun','sunrise-sunset':'sun','gps-fix':'gps','weather-now':'weather','flash-light':'flashlight','compass arrow':'compass-arrow','compass-arrow':'compass-arrow','compass nsew':'compass-cardinal','compass-nsew':'compass-cardinal','compass cardinal':'compass-cardinal','compass-cardinal':'compass-cardinal','cardinal':'compass-cardinal','rotation':'rotation-test','rotation-test':'rotation-test'}
     raw = aliases.get(raw, raw)
     return raw if raw in SENSE_MODES else ('liquid' if raw.startswith('liq') else 'compass')
 
@@ -123,6 +128,7 @@ def set_sense_mode(mode, payload=None):
     if 'brightnessLevel' in payload: st['sense_brightness_level'] = payload.get('brightnessLevel')
     if 'routeProgress' in payload: st['route_progress'] = payload.get('routeProgress')
     if 'routeDistanceMiles' in payload: st['route_distance_miles'] = payload.get('routeDistanceMiles')
+    if 'senseRotation' in payload: st['sense_rotation'] = payload.get('senseRotation')
     if 'scrollSpeed' in payload: st['sense_scroll_speed'] = payload.get('scrollSpeed')
     if 'senseColor' in payload: st['sense_color'] = str(payload.get('senseColor') or '#00aa55')[:16]
     if 'borderOnly' in payload: st['sense_border_only'] = bool(payload.get('borderOnly'))
@@ -138,11 +144,36 @@ def calibrate(target):
     messages = {'compass':'Rotate the whole Pi/Sense HAT slowly in a figure-eight, away from metal/magnets. Compare heading to a real compass before hiking.','sense':'Lay the Sense HAT level for 3 seconds, then tilt forward/back/left/right so roll and pitch move smoothly.','gps':'Take the GPS outside or to a clear window. Wait for mode 2/3 fix and multiple satellites; indoors mode 1 is normal.','all':'Compass: figure-eight away from metal. Sense: level then tilt. GPS: clear sky until mode 2/3 fix.'}
     return {'ok': True, 'target': target, 'message': messages.get(target, messages['all']), 'state': st.get('calibration', {})}
 
-def put_pixels(sense, coords, color=(0,140,30)):
+
+def rotate_pixels_for_orientation(pixels, st=None):
+    try:
+        rotation = int((st or read_state()).get('sense_rotation') or 0) % 360
+    except Exception:
+        rotation = 0
+    turns = (rotation // 90) % 4
+    if turns == 0:
+        return pixels
+    out = [[0,0,0] for _ in range(64)]
+    for y in range(8):
+        for x in range(8):
+            nx, ny = x, y
+            if turns == 1:
+                nx, ny = 7-y, x
+            elif turns == 2:
+                nx, ny = 7-x, 7-y
+            elif turns == 3:
+                nx, ny = y, 7-x
+            out[ny*8+nx] = pixels[y*8+x]
+    return out
+
+def sense_set_pixels(sense, pixels, st=None):
+    sense.set_pixels(rotate_pixels_for_orientation(pixels, st))
+
+def put_pixels(sense, coords, color=(0,140,30), st=None):
     pixels = [[0,0,0] for _ in range(64)]
     for x,y in coords:
         if 0 <= x < 8 and 0 <= y < 8: pixels[y*8+x] = list(color)
-    sense.set_pixels(pixels)
+    sense_set_pixels(sense, pixels, st)
 
 def sense_scroll_speed(st):
     try: return max(0.025, min(0.2, float(st.get('sense_scroll_speed') or 0.055)))
@@ -165,19 +196,101 @@ def text_once(sense, text, color=(0,160,60), speed=0.06):
     try: sense.show_message(str(text)[:96], text_colour=list(color), scroll_speed=speed)
     except Exception: pass
 
-def draw_compass(sense, yaw, st=None):
-    labels = ['N','NE','E','SE','S','SW','W','NW']; name = labels[int(((float(yaw or 0) + 22.5) % 360) // 45)]
-    put_pixels(sense, COMPASS_PATTERNS.get(name, COMPASS_PATTERNS['N']), scale_color((0,120,20), sense_brightness(st or {})))
 
-def draw_liquid(sense, orientation, tick):
-    roll = max(-1, min(1, float(orientation.get('roll', 0)) / 45.0)); pitch = max(-1, min(1, float(orientation.get('pitch', 0)) / 45.0))
+def compass_name(yaw):
+    labels = ['N','NE','E','SE','S','SW','W','NW']
+    return labels[int(((float(yaw or 0) + 22.5) % 360) // 45)]
+
+def draw_compass_cardinal(sense, yaw, st=None):
+    name = compass_name(yaw)
+    brightness = sense_brightness(st or {})
     pixels = [[0,0,0] for _ in range(64)]
-    for i in range(20):
-        base_x=(i%5)+1; base_y=(i//5)+2
-        x=int(round(max(0,min(7,base_x + roll*(1.4+base_y/5.0)+math.sin((tick+i)/5.0)*0.2))))
-        y=int(round(max(0,min(7,base_y + pitch*(1.4+base_x/6.0)+math.cos((tick+i)/6.0)*0.2))))
-        pixels[y*8+x]=[0,70,140]
-    sense.set_pixels(pixels)
+    green = list(scale_color((0,180,50), brightness))
+    blue = list(scale_color((0,80,190), brightness))
+    white = list(scale_color((220,220,220), brightness))
+    # Bright cardinal anchors: N top, E right, S bottom, W left. Active heading is green; others are blue.
+    anchors = {'N':[(3,0),(4,0),(3,1),(4,1)], 'E':[(6,3),(7,3),(6,4),(7,4)], 'S':[(3,6),(4,6),(3,7),(4,7)], 'W':[(0,3),(1,3),(0,4),(1,4)]}
+    active = name[0] if name else 'N'
+    for k, pts in anchors.items():
+        for x,y in pts: pixels[y*8+x] = green if k == active else blue
+    # Center cross keeps the matrix readable when rotated.
+    for x,y in [(3,3),(4,3),(3,4),(4,4)]: pixels[y*8+x] = white
+    sense_set_pixels(sense, pixels, st)
+    with SENSE_LOCK:
+        SENSE_CACHE['compass_display'] = {'mode':'cardinal','heading':name,'yaw':round(float(yaw or 0),1),'rotation':(st or {}).get('sense_rotation',0)}
+
+def draw_rotation_test(sense, st=None, tick=0):
+    brightness = sense_brightness(st or {})
+    pixels = [[0,0,0] for _ in range(64)]
+    colors = [scale_color((255,0,0), brightness), scale_color((0,180,0), brightness), scale_color((0,80,255), brightness), scale_color((255,220,0), brightness)]
+    # Four colored corner blocks + sweeping white dot: easy to see if 90/180/270 rotation is correct.
+    blocks = [([(0,0),(1,0),(0,1),(1,1)], colors[0]), ([(6,0),(7,0),(6,1),(7,1)], colors[1]), ([(6,6),(7,6),(6,7),(7,7)], colors[2]), ([(0,6),(1,6),(0,7),(1,7)], colors[3])]
+    for pts, color in blocks:
+        for x,y in pts: pixels[y*8+x] = list(color)
+    path = [(x,3) for x in range(8)] + [(7,y) for y in range(4,8)] + [(x,7) for x in range(6,-1,-1)] + [(0,y) for y in range(6,2,-1)]
+    x,y = path[tick % len(path)]; pixels[y*8+x] = list(scale_color((255,255,255), brightness))
+    sense_set_pixels(sense, pixels, st)
+    with SENSE_LOCK:
+        SENSE_CACHE['rotation_test'] = {'rotation':(st or {}).get('sense_rotation',0),'tick':tick,'corners':'red NW, green NE, blue SE, yellow SW before rotation'}
+
+def draw_compass(sense, yaw, st=None):
+    name = compass_name(yaw)
+    put_pixels(sense, COMPASS_PATTERNS.get(name, COMPASS_PATTERNS['N']), scale_color((0,160,50), sense_brightness(st or {})), st)
+    with SENSE_LOCK:
+        SENSE_CACHE['compass_display'] = {'mode':'arrow','heading':name,'yaw':round(float(yaw or 0),1),'rotation':(st or {}).get('sense_rotation',0)}
+
+def draw_liquid(sense, orientation, tick, st=None):
+    # Liquid mode only: use accelerometer gravity, low-pass smoothing, and a tilted fill plane
+    # so the LED matrix behaves like a real half-full container instead of scattered dots.
+    brightness = sense_brightness(st or {})
+    try:
+        raw = sense.get_accelerometer_raw()
+        ax = float(raw.get('x', 0.0)); ay = float(raw.get('y', 0.0)); az = float(raw.get('z', 1.0))
+    except Exception:
+        ax = max(-1, min(1, float((orientation or {}).get('roll', 0)) / 45.0))
+        ay = max(-1, min(1, float((orientation or {}).get('pitch', 0)) / 45.0))
+        az = 1.0
+    # Smooth but stay responsive; clamp out shock/noise.
+    mag = max(0.25, math.sqrt(ax*ax + ay*ay + az*az))
+    ax, ay, az = ax/mag, ay/mag, az/mag
+    LIQUID_STATE['gx'] += (max(-1, min(1, ax)) - LIQUID_STATE['gx']) * 0.22
+    LIQUID_STATE['gy'] += (max(-1, min(1, ay)) - LIQUID_STATE['gy']) * 0.22
+    LIQUID_STATE['gz'] += (max(-1, min(1, az)) - LIQUID_STATE['gz']) * 0.12
+    gx, gy, gz = LIQUID_STATE['gx'], LIQUID_STATE['gy'], LIQUID_STATE['gz']
+    pixels = []
+    water = scale_color((0, 78, 185), brightness)
+    deep = scale_color((0, 34, 105), brightness)
+    surface = scale_color((80, 210, 255), brightness)
+    foam = scale_color((185, 245, 255), brightness)
+    # Half-full baseline. Tilt controls the surface slope. y increases downward.
+    base = 3.55 + gy * 2.0
+    slope_x = -gx * 1.25
+    wave = math.sin(tick * 0.45) * 0.10
+    bubble_x = int(max(0, min(7, round(3.5 - gx * 2.8 + math.sin(tick/3.0)*0.25))))
+    bubble_y = int(max(0, min(7, round(2.0 - gy * 2.0 + math.cos(tick/4.0)*0.25))))
+    lit = 0; surface_count = 0
+    for y in range(8):
+        for x in range(8):
+            threshold = base + slope_x * (x - 3.5) + wave
+            depth = y - threshold
+            if depth >= 0.62:
+                color = deep if depth > 2.2 else water
+                pixels.append(list(color)); lit += 1
+            elif depth >= -0.42:
+                pixels.append(list(surface)); surface_count += 1
+            else:
+                pixels.append([0, 0, 0])
+    # Air bubble/highlight on the high side only when it lands in liquid/surface.
+    bi = bubble_y * 8 + bubble_x
+    if 0 <= bi < 64 and pixels[bi] != [0,0,0]: pixels[bi] = list(foam)
+    # Edge glint near the low side makes motion easier to read on the real LEDs.
+    low_x = int(max(0, min(7, round(3.5 + gx * 3.0))))
+    for yy in range(8):
+        i = yy * 8 + low_x
+        if pixels[i] != [0,0,0] and yy % 2 == tick % 2: pixels[i] = list(surface)
+    sense_set_pixels(sense, pixels, st)
+    with SENSE_LOCK:
+        SENSE_CACHE['liquid_display'] = {'gx': round(gx,3), 'gy': round(gy,3), 'gz': round(gz,3), 'lit_leds': lit, 'surface_leds': surface_count, 'bubble': [bubble_x,bubble_y], 'model': 'accelerometer gravity plane + low-pass smoothing'}
 
 def draw_fire(sense, tick):
     pixels=[]
@@ -185,7 +298,7 @@ def draw_fire(sense, tick):
         for x in range(8):
             heat=max(0, 7-y + random.randint(-2,3) - abs(x-3.5)/2)
             pixels.append([min(180,int(heat*32)), min(90,int(heat*14)), 0])
-    sense.set_pixels(pixels)
+    sense_set_pixels(sense, pixels, st if 'st' in locals() else None)
 
 def draw_flashlight(sense, st):
     b = sense_brightness(st); sense.clear(b,b,b)
@@ -209,12 +322,12 @@ def draw_gps(sense, gps, st=None):
     for i in range(min(8,max(0,sats))): pixels[56+i]=list(color)
     for y in range(2,6):
         for x in range(2,6): pixels[y*8+x]=list(color)
-    sense.set_pixels(pixels)
+    sense_set_pixels(sense, pixels, st if 'st' in locals() else None)
 
 def draw_bar(sense, value, color):
     n=max(0,min(64,int(value))); pixels=[[0,0,0] for _ in range(64)]
     for i in range(n): pixels[63-i]=list(color)
-    sense.set_pixels(pixels)
+    sense_set_pixels(sense, pixels, st if 'st' in locals() else None)
 
 def draw_route_progress(sense, st):
     brightness=sense_brightness(st)
@@ -232,7 +345,7 @@ def draw_route_progress(sense, st):
             pixels.append(list(done))
         else:
             pixels.append(list(remaining))
-    sense.set_pixels(pixels)
+    sense_set_pixels(sense, pixels, st if 'st' in locals() else None)
     with SENSE_LOCK:
         SENSE_CACHE['progress_meter']={'progress':progress,'percent':round(progress*100),'distance_miles':distance,'completed_leds':complete+1 if progress > 0 else 0,'finish_led':'green','remaining_leds':'white','completed_leds_color':'red'}
 
@@ -248,7 +361,7 @@ def draw_border(sense, color):
     for y in range(8):
         for x in range(8):
             if x in (0,7) or y in (0,7): pixels[y*8+x]=list(color)
-    sense.set_pixels(pixels)
+    sense_set_pixels(sense, pixels, st if 'st' in locals() else None)
 
 def draw_water_icon(sense, color=(0,80,220)):
     put_pixels(sense, [(3,0),(4,0),(2,1),(5,1),(2,2),(5,2),(1,3),(6,3),(1,4),(6,4),(2,5),(5,5),(3,6),(4,6),(3,7),(4,7)], color)
@@ -259,7 +372,7 @@ def draw_snake_frame(sense, tick, color=(0,220,70)):
     for i in range(7):
         x,y=path[(tick+i)%len(path)]; pixels[y*8+x]=list(color)
     hx,hy=path[(tick+6)%len(path)]; pixels[hy*8+hx]=[255,255,255]
-    sense.set_pixels(pixels)
+    sense_set_pixels(sense, pixels, st if 'st' in locals() else None)
 
 def sense_alarm_due(st):
     alarm=st.get('hydration_alarm') or {}
@@ -268,17 +381,24 @@ def sense_alarm_due(st):
     return minutes > 0 and now-last >= minutes*60
 
 def sense_loop():
-    tick=0; last_text=0
+    tick=0; last_text=0; last_gps={}; last_gps_at=0
     try:
         from sense_hat import SenseHat
-        sense=SenseHat(); sense.low_light=True; sense.clear(); text_once(sense, 'MAPPI3 WELCOME TO THE WILDERNESS', (0,120,20), 0.05)
+        sense=SenseHat(); sense.low_light=True; sense.clear(0,40,18)  # non-blocking startup flash; boot/message modes handle scrolling text
         with SENSE_LOCK: SENSE_CACHE.update({'ok': True, 'message': 'Sense HAT display loop active', 'updated': time.time()})
         while True:
             st=read_state(); mode=normalize_mode(st.get('sense_mode') or 'compass')
             try:
-                orient=sense.get_orientation(); yaw=orient.get('yaw',0); temp_c=sense.get_temperature(); temp_f=temp_c*9/5+32; hum=sense.get_humidity(); pressure=sense.get_pressure(); gps=gps_status()
-                if mode=='liquid': draw_liquid(sense, orient, tick)
-                elif mode=='compass': draw_compass(sense, yaw, st)
+                orient=sense.get_orientation(); yaw=orient.get('yaw',0); temp_c=sense.get_temperature(); temp_f=temp_c*9/5+32; hum=sense.get_humidity(); pressure=sense.get_pressure()
+                now=time.time()
+                # GPS sampling can block for several seconds indoors; keep LED/joystick modes responsive.
+                if mode == 'gps' or now - last_gps_at > 30:
+                    last_gps = gps_status(); last_gps_at = now
+                gps = last_gps or {'ok': False, 'message': 'GPS not sampled for this display mode yet'}
+                if mode=='liquid': draw_liquid(sense, orient, tick, st)
+                elif mode in ('compass','compass-arrow'): draw_compass(sense, yaw, st)
+                elif mode=='compass-cardinal': draw_compass_cardinal(sense, yaw, st)
+                elif mode=='rotation-test': draw_rotation_test(sense, st, tick)
                 elif mode=='weather':
                     if time.time()-last_text>8: text_once(sense, f'{temp_f:.0f}F {hum:.0f}% {pressure:.0f}mb', (0,120,180), sense_scroll_speed(st)); last_text=time.time()
                 elif mode=='fire': draw_fire(sense,tick)
@@ -298,7 +418,7 @@ def sense_loop():
                 elif mode=='stars':
                     pixels=[[0,0,0] for _ in range(64)]
                     for _ in range(10): pixels[random.randrange(64)]=[random.choice([40,80,140]),random.choice([40,80,140]),random.choice([80,160,220])]
-                    sense.set_pixels(pixels)
+                    sense_set_pixels(sense, pixels, st if 'st' in locals() else None)
                 elif mode=='temp': draw_bar(sense, max(0,min(64,(temp_f-20)/80*64)), (180 if temp_f>80 else 0,120,180 if temp_f<50 else 0))
                 elif mode=='humidity': draw_bar(sense, hum/100*64, (0,60,180))
                 elif mode=='pressure': draw_bar(sense, max(0,min(64,(pressure-970)/80*64)), (120,80,180))
@@ -330,14 +450,14 @@ def joystick_loop():
                         if not data or len(data)<24: time.sleep(0.05); continue
                         _sec,_usec,etype,code,value=struct.unpack('llHHI',data)
                         if etype==1 and value==1 and code in KEY_NAMES:
-                            direction=KEY_NAMES[code]; st=read_state(); current=normalize_mode(st.get('sense_mode') or 'compass')
-                            if direction in ('left','right','press','up','down'):
-                                i=SENSE_MODES.index(current) if current in SENSE_MODES else 0
-                                next_mode='compass' if direction=='left' else 'liquid' if direction=='right' else SENSE_MODES[(i+1)%len(SENSE_MODES)] if direction in ('press','down') else SENSE_MODES[(i-1)%len(SENSE_MODES)]
-                                st['sense_mode']=next_mode; st['sense_mode_updated_at']=time.time(); write_state(st)
+                            direction=KEY_NAMES[code]
+                            # Joystick is an input source for games/app controls. Do not auto-cycle
+                            # Sense HAT display modes here; explicit app buttons/endpoints own display changes.
                             with SENSE_LOCK:
-                                js=dict(SENSE_CACHE.get('joystick') or {}); js.update({'seq': int(js.get('seq') or 0)+1,'direction':direction,'pressed':direction=='press','updated':time.time()}); SENSE_CACHE['joystick']=js
-                                if direction in ('left','right','press','up','down'): SENSE_CACHE.update({'mode': next_mode, 'message': f'Joystick set Sense HAT mode to {next_mode}'})
+                                js=dict(SENSE_CACHE.get('joystick') or {})
+                                js.update({'seq': int(js.get('seq') or 0)+1,'direction':direction,'pressed':direction=='press','updated':time.time()})
+                                SENSE_CACHE['joystick']=js
+                                SENSE_CACHE['message']=f'Joystick input: {direction}'
                     except BlockingIOError: time.sleep(0.05)
         except Exception as e:
             with SENSE_LOCK:
@@ -588,7 +708,7 @@ def status():
     sense_text=sense.get('message') or ('sense-hat ok' if sense.get('ok') else 'sense-hat unavailable')
     if sense.get('ok') and sense.get('orientation'):
         o=sense.get('orientation') or {}; sense_text='sense-hat ok roll={:.1f} pitch={:.1f} yaw={:.1f} mode={}'.format(o.get('roll',0),o.get('pitch',0),o.get('yaw',0),sense.get('mode','compass'))
-    return {'ok': True, 'host': socket.gethostname(), 'port': PORT, 'ip': ip, 'connection_mode': mode, **w, 'gps_device': gps.get('device'), 'gps': gps, 'sense_hat': sense_text, 'sense': sense, 'system': system_stats(), 'state': read_state(), 'time': time.time()}
+    return {'ok': True, 'host': socket.gethostname(), 'port': PORT, 'https': https_status(), 'ip': ip, 'connection_mode': mode, **w, 'gps_device': gps.get('device'), 'gps': gps, 'sense_hat': sense_text, 'sense': sense, 'system': system_stats(), 'state': read_state(), 'time': time.time()}
 
 def connect_home_wifi(payload):
     ssid=(payload.get('ssid') or '').strip(); password=payload.get('password') or ''
@@ -1012,6 +1132,8 @@ def game_library_status():
     games=[]
     for d in sorted([x for x in GAME_ROOT.iterdir() if x.is_dir()]):
         try:
+            if d.name == 'trail-runner-demo':
+                continue
             index=d/'index.html'
             if not index.exists(): continue
             meta={}
@@ -1028,6 +1150,93 @@ def game_library_status():
             games.append({'id':rel,'title':meta.get('title') or rel.replace('-',' ').replace('_',' ').title(),'url':'/games/'+urllib.parse.quote(rel)+'/index.html','folder':str(d),'offline':True,'size_mb':round(size/1024/1024,2),'note':meta.get('note') or 'Local HTML5 game pack served offline from the MapPI3 hotspot.'})
         except Exception: pass
     return {'ok': True, 'root': str(GAME_ROOT), 'count': len(games), 'games': games, 'hint':'Place legal HTML5 game folders at /var/lib/mappi3/games/<game-id>/index.html. Example: /var/lib/mappi3/games/playmario/index.html. MapPI3 will serve them at /games/<game-id>/index.html offline over the hotspot.'}
+
+def bluetoothctl(args='', timeout=12):
+    return sh('bluetoothctl ' + args, timeout=timeout)
+
+def parse_bluetooth_devices(text):
+    devices=[]
+    for line in (text or '').splitlines():
+        line=line.strip()
+        if not line.startswith('Device '): continue
+        parts=line.split(' ',2)
+        if len(parts)>=3:
+            devices.append({'mac':parts[1], 'name':parts[2]})
+    return devices
+
+def bluetooth_status():
+    available=sh('command -v bluetoothctl', timeout=2)
+    if not available.get('ok'):
+        return {'ok': False, 'available': False, 'summary':'bluetoothctl not installed on this Pi image', 'devices':[], 'paired':[], 'connected':[]}
+    ctl=bluetoothctl('show', timeout=3)
+    paired_raw=bluetoothctl('paired-devices', timeout=3)
+    devices_raw=bluetoothctl('devices', timeout=3)
+    paired=parse_bluetooth_devices(paired_raw.get('output',''))[:8]
+    devices=parse_bluetooth_devices(devices_raw.get('output',''))[:30]
+    connected=[]
+    for d in paired[:4]:
+        detail=bluetoothctl('info '+d['mac'], timeout=2).get('output','')
+        d['connected']='Connected: yes' in detail
+        d['trusted']='Trusted: yes' in detail
+        if d['connected']: connected.append(d)
+    return {'ok': ctl.get('ok'), 'available': True, 'adapter': ctl.get('output','')[-1400:], 'devices': devices, 'paired': paired, 'connected': connected, 'summary':'Bluetooth adapter ready' if ctl.get('ok') else 'Bluetooth adapter not ready'}
+
+def bluetooth_scan(payload=None):
+    seconds=max(4, min(25, int((payload or {}).get('seconds') or 8)))
+    if not sh('command -v bluetoothctl', timeout=3).get('ok'):
+        return {'ok': False, 'error':'bluetoothctl not installed', 'devices':[]}
+    sh('rfkill unblock bluetooth || true', timeout=5)
+    sh('bluetoothctl power on', timeout=6)
+    out=sh(f'timeout {seconds} bluetoothctl --timeout {seconds} scan on', timeout=seconds+8)
+    listed=bluetoothctl('devices', timeout=8)
+    devices=parse_bluetooth_devices((out.get('output','')+'\n'+listed.get('output','')))
+    seen={}
+    for d in devices: seen[d['mac']]=d
+    return {'ok': True, 'seconds': seconds, 'devices': list(seen.values()), 'raw': out.get('output','')[-2400:], 'summary': f'Found {len(seen)} Bluetooth device(s).'}
+
+def bluetooth_action(action, payload=None):
+    payload=payload or {}; mac=(payload.get('mac') or payload.get('address') or '').strip()
+    if not mac:
+        return {'ok': False, 'error':'Bluetooth MAC/address required.'}
+    if not sh('command -v bluetoothctl', timeout=3).get('ok'):
+        return {'ok': False, 'error':'bluetoothctl not installed'}
+    safe=''.join(ch for ch in mac if ch in '0123456789abcdefABCDEF:')
+    if len(safe) < 11:
+        return {'ok': False, 'error':'Invalid Bluetooth address.'}
+    sh('rfkill unblock bluetooth || true', timeout=5); sh('bluetoothctl power on', timeout=6)
+    if action == 'trust': cmd='trust '+safe
+    elif action == 'pair': cmd='pair '+safe
+    elif action == 'connect': cmd='connect '+safe
+    elif action == 'disconnect': cmd='disconnect '+safe
+    elif action == 'remove': cmd='remove '+safe
+    else: return {'ok': False, 'error':'Unsupported Bluetooth action.'}
+    res=bluetoothctl(cmd, timeout=25 if action in ['pair','connect'] else 12)
+    status=bluetooth_status()
+    return {'ok': res.get('ok'), 'action': action, 'mac': safe, 'output': res.get('output','')[-2400:], 'status': status}
+
+def https_status():
+    return {'enabled': True, 'port': HTTPS_PORT, 'cert': str(CERT_FILE), 'key': str(KEY_FILE), 'cert_exists': CERT_FILE.exists(), 'key_exists': KEY_FILE.exists(), 'url': f'https://10.42.0.1:{HTTPS_PORT}/', 'trust_note': 'Self-signed local cert: phone may need manual trust/CA install before sensors/camera/notifications count this as fully trusted HTTPS.'}
+
+def ensure_https_cert():
+    CERT_DIR.mkdir(parents=True, exist_ok=True)
+    if CERT_FILE.exists() and KEY_FILE.exists(): return True
+    cmd = 'openssl req -x509 -newkey rsa:2048 -nodes -days 825 -keyout '+json.dumps(str(KEY_FILE))+' -out '+json.dumps(str(CERT_FILE))+' -subj /CN=mappi3.local -addext subjectAltName=DNS:mappi3.local,IP:10.42.0.1,IP:127.0.0.1'
+    r = sh(cmd, timeout=20)
+    try:
+        os.chmod(KEY_FILE, 0o600); os.chmod(CERT_FILE, 0o644)
+    except Exception: pass
+    return bool(r.get('ok') and CERT_FILE.exists() and KEY_FILE.exists())
+
+def serve_http(port=PORT, use_https=False):
+    httpd = http.server.ThreadingHTTPServer(('0.0.0.0', port), Handler)
+    if use_https:
+        if not ensure_https_cert():
+            with SENSE_LOCK: SENSE_CACHE['https_error'] = 'Could not create HTTPS self-signed certificate'
+            return
+        ctx = ssl.SSLContext(ssl.PROTOCOL_TLS_SERVER)
+        ctx.load_cert_chain(str(CERT_FILE), str(KEY_FILE))
+        httpd.socket = ctx.wrap_socket(httpd.socket, server_side=True)
+    httpd.serve_forever()
 
 class Handler(http.server.SimpleHTTPRequestHandler):
     def translate_path(self, path):
@@ -1074,6 +1283,7 @@ class Handler(http.server.SimpleHTTPRequestHandler):
         if self.path.startswith('/api/media/library'): self.json_response(media_manifest()); return
         if self.path.startswith('/api/games/library'): self.json_response(game_library_status()); return
         if self.path.startswith('/api/plugins'): self.json_response(plugin_status()); return
+        if self.path.startswith('/api/bluetooth/status'): self.json_response(bluetooth_status()); return
         if self.path.startswith('/api/sense'): self.json_response({'ok': True, 'sense': sense_snapshot(), 'state': read_state(), 'available_modes': SENSE_MODES, 'time': time.time()}); return
         return super().do_GET()
     def do_DELETE(self):
@@ -1087,9 +1297,13 @@ class Handler(http.server.SimpleHTTPRequestHandler):
         if self.path.startswith('/api/field-ai/analyze'): self.json_response(field_ai_analyze(payload)); return
         if self.path.startswith('/api/field-ai/corrections/vote'): self.json_response(field_ai_vote_correction(payload)); return
         if self.path.startswith('/api/field-ai/corrections'): self.json_response(field_ai_add_correction(payload)); return
+        if self.path.startswith('/api/bluetooth/scan'): self.json_response(bluetooth_scan(payload)); return
+        if self.path.startswith('/api/bluetooth/action/'): self.json_response(bluetooth_action(self.path.rsplit('/',1)[-1], payload)); return
         if self.path.startswith('/api/command/'): self.json_response(command(self.path.rsplit('/',1)[-1], payload)); return
         self.send_error(404)
 
 if __name__ == '__main__':
     threading.Thread(target=sense_loop, daemon=True).start(); threading.Thread(target=joystick_loop, daemon=True).start()
-    os.chdir(str(APP_DIR)); http.server.ThreadingHTTPServer(('0.0.0.0', PORT), Handler).serve_forever()
+    os.chdir(str(APP_DIR))
+    threading.Thread(target=lambda: serve_http(HTTPS_PORT, True), daemon=True).start()
+    serve_http(PORT, False)
