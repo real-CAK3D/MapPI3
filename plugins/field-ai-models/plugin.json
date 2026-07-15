@@ -1,6 +1,6 @@
 {
   "id": "field-ai-models",
-  "name": "Field AI Prototype Cue Pack",
+  "name": "Field AI Model Pack",
   "status": "ready",
   "install": "install.sh",
   "uninstall": "uninstall.sh",
@@ -13,11 +13,28 @@
     "bugPrototypeCue",
     "rockPrototypeCue",
     "barcodeOcrPrototypeCue",
+    "barcodeZbarBackend",
+    "tesseractOcrBackend",
     "injurySafetyRouter",
-    "curatedFieldGuideFallbacks"
+    "curatedFieldGuideFallbacks",
+    "tfliteOnnxModelSlots"
   ],
   "offline_safe": true,
-  "capability_tier": "prototype-cue-pack",
+  "capability_tier": "prototype-cue-pack-plus-barcode-ocr-backends",
   "installed_marker": "/var/lib/mappi3/plugins/field-ai-models/installed.json",
-  "description": "Offline prototype JSON cue models, safety routers, and field-guide fallbacks. This does not install real specialist TFLite/NCNN/OCR recognition models."
+  "optional_pi_packages": [
+    "python3-pil",
+    "python3-pyzbar",
+    "tesseract-ocr",
+    "zbar-tools"
+  ],
+  "model_slots": [
+    "mobilenetv3-small-int8-plants-ne-v1.tflite",
+    "mobilenetv3-small-int8-fungi-ne-v1.tflite",
+    "mobilenetv3-small-int8-fauna-ne-v1.tflite",
+    "mobilenetv3-small-int8-insects-ne-v1.tflite",
+    "track-router-ne-v1.tflite",
+    "mobilenetv3-small-int8-clouds-v1.tflite"
+  ],
+  "description": "Offline prototype JSON cue models, real local barcode/OCR backend hooks, safety routers, and field-guide fallbacks. Plant/fungi/animal/cloud/rock specialist recognition still requires vetted TFLite/ONNX/NCNN model files and verification."
 }

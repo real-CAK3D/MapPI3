@@ -591,18 +591,59 @@ PROTOTYPE_MODEL_BY_CATEGORY = {
     'cloud':'cloud-color-prototypes-v1.json','rock':'rock-mineral-prototypes-v1.json','barcode':'barcode-ocr-prototypes-v1.json',
     'ocr':'barcode-ocr-prototypes-v1.json','injury':'injury-safety-prototypes-v1.json'
 }
-SPECIALIST_MODEL_EXTENSIONS = ('.tflite','.onnx','.ncnn','.bin','.param')
+SPECIALIST_MODEL_EXTENSIONS = ('.tflite','.onnx','.ncnn','.bin','.param','.onnxruntime')
+SPECIALIST_BACKEND_BY_CATEGORY = {
+    'barcode':['pyzbar','zbarimg','tesseract'],
+    'ocr':['tesseract','pytesseract'],
+    'plant':['tflite-runtime','onnxruntime'],
+    'mushroom':['tflite-runtime','onnxruntime'],
+    'animal':['tflite-runtime','onnxruntime'],
+    'bug':['tflite-runtime','onnxruntime'],
+    'track':['tflite-runtime','onnxruntime'],
+    'cloud':['tflite-runtime','onnxruntime'],
+    'rock':['tflite-runtime','onnxruntime']
+}
+
+def import_available(module):
+    try:
+        __import__(module); return True
+    except Exception: return False
+
+def field_ai_backend_status():
+    py={'PIL': import_available('PIL'), 'numpy': import_available('numpy'), 'onnxruntime': import_available('onnxruntime'), 'tflite_runtime': import_available('tflite_runtime'), 'pyzbar': import_available('pyzbar'), 'pytesseract': import_available('pytesseract')}
+    bins={name: bool(sh(f'command -v {name}', timeout=2).get('ok')) for name in ['tesseract','zbarimg']}
+    ready={
+        'barcode': py.get('pyzbar') or bins.get('zbarimg') or bins.get('tesseract'),
+        'ocr': py.get('pytesseract') or bins.get('tesseract'),
+        'image_classifiers': py.get('onnxruntime') or py.get('tflite_runtime'),
+        'pillow_features': py.get('PIL')
+    }
+    return {'python_modules': py, 'binaries': bins, 'ready': ready, 'policy':'Barcode/OCR backends can run real local decoding when zbar/pyzbar/tesseract are installed. Plant/fungi/animal/cloud/rock still need vetted model files before authoritative recognition.'}
+
+def category_specialist_ready(category, specialist_installed=None, backends=None):
+    specialist_installed=specialist_installed or []
+    backends=backends or field_ai_backend_status()
+    if category in ('firstaid','survival','injury'): return True
+    if category in ('barcode','ocr'): return bool(backends.get('ready',{}).get('barcode') or backends.get('ready',{}).get('ocr'))
+    wanted=str(next((c.get('model') for c in FIELD_AI_CATEGORIES if c.get('id')==category), '')).lower()
+    return any((category in name.lower()) or (wanted and pathlib.Path(wanted).name.lower()==name.lower()) for name in specialist_installed)
 
 def field_ai_categories():
     conn=field_ai_db(); rows=[dict(r) for r in conn.execute('SELECT * FROM plugins ORDER BY label')]; conn.close()
+    backends=field_ai_backend_status()
+    installed=[]
+    if BUILTIN_MODEL_DIR.exists(): installed=sorted([p.name for p in BUILTIN_MODEL_DIR.glob('*') if p.is_file()])
+    specialist_installed=[name for name in installed if pathlib.Path(name).suffix.lower() in SPECIALIST_MODEL_EXTENSIONS]
     enriched=[]
     for cat in FIELD_AI_CATEGORIES:
         item=dict(cat); proto=PROTOTYPE_MODEL_BY_CATEGORY.get(item['id'])
         item['prototype_model']=proto
         item['prototype_ready']=bool(proto) or item['id'] in ('firstaid','survival')
-        item['capability']='prototype-cue' if proto else ('fixed-reference' if item['id'] in ('firstaid','survival') else 'future-specialist')
+        item['specialist_ready']=category_specialist_ready(item['id'], specialist_installed, backends)
+        item['capability']='specialist-backend' if item['specialist_ready'] and item['id'] in ('barcode','ocr') else ('prototype-cue' if proto else ('fixed-reference' if item['id'] in ('firstaid','survival','injury') else 'future-specialist'))
+        item['backend_candidates']=SPECIALIST_BACKEND_BY_CATEGORY.get(item['id'], [])
         enriched.append(item)
-    return {'ok': True, 'categories': enriched, 'plugins': rows, 'offline': True, 'capability_tier': 'safe offline prototype cues + curated references', 'model_policy': 'Prototype JSON cue models are bundled for routing/fallbacks. Real specialist TFLite/NCNN/OCR models are future add-ons and must be verified separately before being treated as installed.'}
+    return {'ok': True, 'categories': enriched, 'plugins': rows, 'offline': True, 'backend_status': backends, 'capability_tier': 'safe offline prototype cues + real barcode/OCR backend hooks where installed', 'model_policy': 'Prototype JSON cue models are bundled for routing/fallbacks. Barcode/OCR can use real local zbar/tesseract backends when installed. Plant/fungi/animal/cloud/rock specialist TFLite/ONNX/NCNN files must be added and verified separately.'}
 
 def field_ai_status():
     ensure_builtin_models(); conn=field_ai_db(); species=conn.execute('SELECT COUNT(*) c FROM species').fetchone()['c']; obs=conn.execute('SELECT COUNT(*) c FROM observations').fetchone()['c']; corrections=conn.execute('SELECT COUNT(*) c FROM corrections').fetchone()['c']; plugins=[dict(r) for r in conn.execute('SELECT * FROM plugins ORDER BY id')]; conn.close()
@@ -613,7 +654,9 @@ def field_ai_status():
     prototype_installed=[name for name in prototype_expected if name in installed]
     specialist_installed=[name for name in installed if pathlib.Path(name).suffix.lower() in SPECIALIST_MODEL_EXTENSIONS]
     specialist_expected=[c['model'] for c in FIELD_AI_CATEGORIES if str(c.get('model','')).endswith(('.tflite','.onnx','.ncnn')) or str(c.get('model','')).startswith('future-')]
-    return {'ok': True, 'offline': True, 'database': str(FIELD_AI_DB), 'species_records': species, 'observations': obs, 'corrections': corrections, 'model_dir': str(model_dir), 'installed_models': installed, 'installed_prototype_models': prototype_installed, 'expected_prototype_models': prototype_expected, 'missing_prototype_models': [name for name in prototype_expected if name not in prototype_installed], 'installed_specialist_models': specialist_installed, 'expected_future_specialist_models': specialist_expected, 'specialist_models_ready': bool(specialist_installed), 'capability_tier': 'prototype-cue-pack' if prototype_installed else 'curated-reference-fallback', 'plugins': plugins, 'model_policy': 'Current offline AI is prototype JSON cue matching plus curated field-guide fallback. It is not authoritative species, medical, weather, OCR, or geology recognition until specialist models/backends are installed and live-verified.', 'memory_policy': 'Zero 2 W: one model loaded at a time; image resize target 224/320; avoid PyTorch on Pi'}
+    backend_status=field_ai_backend_status()
+    backend_categories_ready=[cat for cat in SPECIALIST_BACKEND_BY_CATEGORY if category_specialist_ready(cat, specialist_installed, backend_status)]
+    return {'ok': True, 'offline': True, 'database': str(FIELD_AI_DB), 'species_records': species, 'observations': obs, 'corrections': corrections, 'model_dir': str(model_dir), 'installed_models': installed, 'installed_prototype_models': prototype_installed, 'expected_prototype_models': prototype_expected, 'missing_prototype_models': [name for name in prototype_expected if name not in prototype_installed], 'installed_specialist_models': specialist_installed, 'installed_specialist_backends': backend_categories_ready, 'specialist_backend_status': backend_status, 'expected_future_specialist_models': specialist_expected, 'specialist_models_ready': bool(specialist_installed or backend_categories_ready), 'capability_tier': 'prototype-cue-pack + backend hooks' if prototype_installed else 'curated-reference-fallback', 'plugins': plugins, 'model_policy': 'Current offline AI has prototype JSON cue matching, curated field-guide fallback, and real local barcode/OCR hooks when zbar/tesseract/pyzbar/pytesseract are installed. It is not authoritative species, medical, weather, or geology recognition until vetted specialist models/backends are installed and live-verified.', 'memory_policy': 'Zero 2 W: one model loaded at a time; image resize target 224/320; prefer small INT8/TFLite/ONNX; avoid PyTorch on Pi'}
 
 def _species_by_category(conn, category):
     if category=='auto':
@@ -667,6 +710,56 @@ def basic_image_model(image_path, category):
         return {'engine':'unavailable','error':str(e),'guess':'Image stored; install Pillow/TFLite model for feature inference','confidence':0}
 
 
+def decode_barcode_or_ocr(image_path, category='barcode'):
+    result={'engine':'none','available':False,'decoded':[], 'text':'', 'notes':[]}
+    if not image_path or not pathlib.Path(image_path).exists(): return result
+    try:
+        from PIL import Image
+        img=Image.open(image_path)
+    except Exception as e:
+        result['notes'].append('Pillow image open failed: '+str(e)); img=None
+    if img is not None:
+        try:
+            from pyzbar.pyzbar import decode as zbar_decode
+            decoded=[]
+            for item in zbar_decode(img):
+                raw=item.data.decode('utf-8','replace') if getattr(item,'data',None) else ''
+                decoded.append({'type': str(getattr(item,'type','barcode')), 'data': raw[:500]})
+            if decoded:
+                result.update({'engine':'pyzbar', 'available':True, 'decoded':decoded, 'text':'\n'.join(d['data'] for d in decoded)})
+                return result
+            result['available']=True; result['notes'].append('pyzbar available but no barcode decoded')
+        except Exception as e:
+            result['notes'].append('pyzbar unavailable/failed: '+str(e)[:160])
+    if shutil.which('zbarimg'):
+        out=sh('zbarimg --quiet --raw '+json.dumps(str(image_path)), timeout=12)
+        if out.get('ok') and out.get('output','').strip():
+            lines=[line.strip() for line in out.get('output','').splitlines() if line.strip()]
+            result.update({'engine':'zbarimg', 'available':True, 'decoded':[{'type':'barcode','data':line[:500]} for line in lines], 'text':'\n'.join(lines)[:1500]})
+            return result
+        result['available']=True; result['notes'].append('zbarimg available but no barcode decoded')
+    if category in ('ocr','barcode'):
+        try:
+            if img is not None:
+                import pytesseract
+                text=(pytesseract.image_to_string(img) or '').strip()
+                result['available']=True
+                if text:
+                    result.update({'engine':'pytesseract', 'text':text[:2000], 'decoded':[{'type':'ocr','data':text[:500]}]})
+                    return result
+                result['notes'].append('pytesseract available but no text recognized')
+        except Exception as e:
+            result['notes'].append('pytesseract unavailable/failed: '+str(e)[:160])
+        if shutil.which('tesseract'):
+            out=sh('tesseract '+json.dumps(str(image_path))+' stdout --psm 6 2>/dev/null', timeout=15)
+            result['available']=True
+            text=(out.get('output') or '').strip()
+            if text:
+                result.update({'engine':'tesseract-cli', 'text':text[:2000], 'decoded':[{'type':'ocr','data':text[:500]}]})
+                return result
+            result['notes'].append('tesseract available but no text recognized')
+    return result
+
 def prototype_model_match(category, vision):
     ensure_builtin_models()
     name=PROTOTYPE_MODEL_BY_CATEGORY.get(category)
@@ -703,16 +796,20 @@ def field_ai_analyze(payload):
     conn=field_ai_db(); candidates=_species_by_category(conn, category)
     vision = basic_image_model(image_path, category) if image_path else {'engine':'none','guess':'No image supplied','confidence':0}
     prototype = prototype_model_match(category, vision) if image_path else None
+    specialist_backend = decode_barcode_or_ocr(image_path, category) if image_path and category in ('barcode','ocr') else None
     primary=candidates[0] if candidates else {}
-    model_ready=any(c['id']==category and c.get('ready') for c in FIELD_AI_CATEGORIES)
+    model_ready=category_specialist_ready(category) or any(c['id']==category and c.get('ready') for c in FIELD_AI_CATEGORIES)
     confidence=42 if category not in ('injury','firstaid','survival') else 100
     if category=='mushroom': confidence=36
+    if specialist_backend and specialist_backend.get('decoded'):
+        confidence=88
+        primary={**primary, 'id':'decoded-code-or-text', 'common_name':'Decoded barcode/OCR text', 'scientific_name':'local zbar/tesseract backend', 'identification_features':'Real local barcode/OCR backend returned decoded data; review privately before sharing.', 'dangerous_lookalikes':'Damaged labels, reflections, partial codes, private IDs.', 'additional_photo_requirements':'Straight-on full code/label photo with borders visible.'}
     alternatives=[{'id':c['id'],'name':c['common_name'],'confidence':max(5, confidence-(i+1)*9),'category':c['category']} for i,c in enumerate(candidates[1:4])]
-    warnings=['Possible identification only. Do not consume any wild plant or mushroom based only on this result.','Offline model files are not installed yet; this response uses the safe reference/database fallback.']
+    warnings=['Possible identification only. Do not consume any wild plant or mushroom based only on this result.','Specialist species model files are not installed yet; this response uses the safe reference/database fallback unless a barcode/OCR backend returned decoded text.']
     if category in ('injury','firstaid'):
         warnings=['This app cannot diagnose bites, burns, rashes, wounds, infections, poisoning, or allergic reactions from an image.','Emergency signs: trouble breathing, facial/throat swelling, confusion, fainting, uncontrolled bleeding, severe burns, rapidly spreading redness, suspected venomous bite, shock, severe allergic reaction.']
     if category=='cloud': warnings=['Cloud photo only: not a reliable forecast. Use pressure, wind, radar/weather source when available, and leave exposed areas early if thunder/lightning threatens.']
-    result={'ok': True,'observation_id': obs_id,'category': category,'router': {'selected_category': category, 'model_ready': model_ready, 'plugin': next((c for c in FIELD_AI_CATEGORIES if c['id']==category), FIELD_AI_CATEGORIES[0])},'image': image_info,'possible_identification': {'id': primary.get('id','reference'), 'name': primary.get('common_name','Offline reference guidance'), 'scientific_name': primary.get('scientific_name',''), 'confidence': confidence, 'confirmed': False},'alternatives': alternatives,'vision_model': vision, 'prototype_model': prototype, 'visible_features': [f"Local image model: {vision.get('guess')} ({vision.get('engine')})", primary.get('identification_features','Collect multiple angles and habitat context.') if primary else 'Collect additional photos.'],'dangerous_lookalikes': primary.get('dangerous_lookalikes','Unknown lookalikes require expert/local confirmation.') if primary else 'Unknown','safety_warnings': warnings,'additional_photos_requested': (primary.get('additional_photo_requirements') if primary else 'Top, underside, stem/base, whole organism, habitat, scale reference.'),'recommended_next_steps': ['Take 2-4 more photos from different angles with scale/context.','Compare against offline field-guide record and dangerous lookalikes.','Prototype JSON models are active now; install/enable specialist INT8/TFLite model next for stronger inference.'],'field_guide': primary,'offline_reference_matches': candidates[:5],'history_saved': True,'limitations': 'This is an offline-first plugin scaffold and safety/reference fallback until specialist model files are added.'}
+    result={'ok': True,'observation_id': obs_id,'category': category,'router': {'selected_category': category, 'model_ready': model_ready, 'plugin': next((c for c in FIELD_AI_CATEGORIES if c['id']==category), FIELD_AI_CATEGORIES[0])},'image': image_info,'possible_identification': {'id': primary.get('id','reference'), 'name': primary.get('common_name','Offline reference guidance'), 'scientific_name': primary.get('scientific_name',''), 'confidence': confidence, 'confirmed': False},'alternatives': alternatives,'vision_model': vision, 'prototype_model': prototype, 'specialist_backend': specialist_backend, 'visible_features': [f"Local image model: {vision.get('guess')} ({vision.get('engine')})", (f"Specialist backend: {specialist_backend.get('engine')} decoded {len(specialist_backend.get('decoded') or [])} item(s)" if specialist_backend and specialist_backend.get('decoded') else ''), primary.get('identification_features','Collect multiple angles and habitat context.') if primary else 'Collect additional photos.'],'dangerous_lookalikes': primary.get('dangerous_lookalikes','Unknown lookalikes require expert/local confirmation.') if primary else 'Unknown','safety_warnings': warnings,'additional_photos_requested': (primary.get('additional_photo_requirements') if primary else 'Top, underside, stem/base, whole organism, habitat, scale reference.'),'recommended_next_steps': ['Take 2-4 more photos from different angles with scale/context.','Compare against offline field-guide record and dangerous lookalikes.','Prototype JSON models are active now; install/enable specialist INT8/TFLite/ONNX/OCR backend next for stronger inference.'],'field_guide': primary,'offline_reference_matches': candidates[:5],'history_saved': True,'limitations': 'This is an offline-first plugin scaffold and safety/reference fallback. Barcode/OCR can use real local backends when installed; species/geology/weather recognition needs vetted model files.'}
     conn.execute('INSERT OR REPLACE INTO observations VALUES (?,?,?,?,?,?)', (obs_id, time.time(), category, image_path, json.dumps(result), notes)); conn.commit(); conn.close()
     return result
 
@@ -847,8 +944,8 @@ def field_ai_verify(payload=None):
         field_id=(result.get('possible_identification') or {}).get('id')
         field_ok=bool(field_id and field_id!='reference')
         prototype_ok=bool(prototype) if expected_proto else True
-        results[cat]={'ok': bool(result.get('ok')), 'field_guide_ok': field_ok, 'prototype_expected': expected_proto, 'prototype_ok': prototype_ok, 'vision_model': result.get('vision_model'), 'prototype_model': prototype, 'possible_identification': result.get('possible_identification'), 'observation_id': result.get('observation_id')}
-    return {'ok': all(v.get('ok') and v.get('field_guide_ok') and v.get('prototype_ok') for v in results.values()), 'status': status_info, 'results': results, 'sample': next(iter(results.values()), {}), 'note':'Self-test verifies all categories route to a safe field-guide/reference result. Prototype JSON cue models are expected only for image categories; real specialist model binaries are not implied.'}
+        results[cat]={'ok': bool(result.get('ok')), 'field_guide_ok': field_ok, 'prototype_expected': expected_proto, 'prototype_ok': prototype_ok, 'specialist_ready': (result.get('router') or {}).get('model_ready'), 'specialist_backend': result.get('specialist_backend'), 'vision_model': result.get('vision_model'), 'prototype_model': prototype, 'possible_identification': result.get('possible_identification'), 'observation_id': result.get('observation_id')}
+    return {'ok': all(v.get('ok') and v.get('field_guide_ok') and v.get('prototype_ok') for v in results.values()), 'status': status_info, 'results': results, 'sample': next(iter(results.values()), {}), 'note':'Self-test verifies all categories route to a safe field-guide/reference result. Prototype JSON cue models are expected for image categories; barcode/OCR specialist_backend reports real zbar/tesseract availability when installed. Species/geology/weather specialist model binaries are not implied.'}
 
 NOAA_CACHE = pathlib.Path('/var/lib/mappi3/noaa-weather-cache.json')
 
