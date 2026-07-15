@@ -563,6 +563,9 @@ FIELD_GUIDE_SEED = [
     ('water-hemlock','Water hemlock','Cicuta maculata','poisonous plants','Deadly wetland carrot-family plant.','Umbel flowers, wet habitat, compound leaves, chambered root.','Wet meadows, stream banks, marshes.','New England and North America.','Spring through fall.','Extremely poisonous if ingested.','Not edible.','Wild carrot, angelica, elderberry, other umbel plants.','Never sample wild carrot-family roots/stems without expert ID.','Suspected ingestion is emergency; call poison control/EMS.','Avoid unknown wetland umbel plants.','Photo whole plant, leaf, stem, flower, habitat; do not handle bare-handed.','0.60','MapPI3 offline safety guide.'),
     ('amanita-warning','Amanita / deadly mushroom warning','Amanita spp.','mushrooms and fungi','Some Amanita species are deadly and can resemble edible mushrooms.','Look for cap, gills, ring, volva/base, spore color, habitat; many features hidden.','Woods, lawns, near host trees depending species.','New England has dangerous Amanita species.','Summer/fall common.','Potentially deadly.','Never treat as edible from photo ID.','Edible mushrooms can be confused with deadly Amanita/Galerina/Lepiota.','MapPI3 never certifies mushrooms safe to eat.','Suspected mushroom poisoning: save specimen/photos and seek emergency/poison control help.','Photo top, underside, full stem, base/volva, nearby trees, bruising.','Need multiple photos and expert ID.','0.95','MapPI3 mushroom safety rule.'),
     ('black-bear','Black bear','Ursus americanus','mammals','Large omnivore; usually avoids humans but food-conditioned bears are dangerous.','Large body, rounded ears, tracks with five toes/claws.','Forests, mountains, campsites.','Maine/New England.','Active spring-fall; denning winter.','Danger if surprised, cubs nearby, or food-conditioned.','Not applicable.','Large dog/coyote tracks can confuse track photos.','Do not approach; secure food; back away calmly.','Attack/injury requires emergency care.','Make noise, keep dog controlled, store food properly.','Photo tracks with scale, scat, or distant animal only.','0.75','MapPI3 wildlife safety seed.'),
+    ('tick-warning','Tick / small arthropod caution','Ixodida / field arthropod cue','insects and spiders','Small dark arthropod reference for bug/spider/tick routing and bite-prevention reminders.','Tiny dark oval body, legs close to body, often found on clothing, skin, pets, grass, or leaf litter.','Tall grass, brush, leaf litter, animal trails, campsites.','Common in New England.','Spring through fall; active during mild weather.','Bite/vector risk varies; do not handle unknown bugs bare-handed.','Not edible.','Small beetles, seeds, dirt specks, spiders, other arthropods.','Use tweezers for attached ticks, clean skin, save/photo specimen if symptoms occur.','Seek medical guidance for fever, expanding rash, severe reaction, or embedded mouthparts concern.','Use as a caution cue only; verify with scale and clear close-up.','Close focused top photo, scale reference, body/leg view, where it was found.','0.55','MapPI3 offline arthropod safety seed.'),
+    ('track-reference','Animal track / scat field cue','Track/scat reference','animal tracks and scat','Reference record for track/scat routing when the app sees ground marks rather than the animal.','Look for print shape, toe count, claw marks, stride, trail pattern, scat size, and scale.','Mud, snow, sand, trail edges, stream banks, campsites.','Universal field cue.','Any season; snow/mud preserve tracks best.','Wildlife proximity risk; scat can carry pathogens.','Not applicable.','Dog/coyote/fox/bobcat/bear/deer tracks overlap without scale and gait context.','Do not touch scat bare-handed; keep distance from fresh signs, dens, carcasses, or cubs.','Bites/scratches require real first aid; possible rabies exposure needs urgent care.','Use scale, stride, habitat, and freshness before guessing species.','Photo track with ruler/boot/coin scale, trail pattern, nearby scat, habitat context.','0.50','MapPI3 offline track safety seed.'),
+    ('survival-priorities','Survival priorities checklist','Fixed offline reference','survival guide','A fixed reminder for field priorities when offline, lost, injured, cold, overheated, or low on supplies.','Stop, breathe, assess hazards, tell someone your plan if possible, mark location, preserve battery, water, shelter, warmth, signaling, navigation.','Any field setting.','Universal.','Any time.','Risk depends on exposure, injury, weather, water, and navigation state.','Not applicable.','Panic, bad shortcuts, unsafe water, exposure, delayed emergency call.','Do not rely on MapPI3 as your only navigation/emergency tool.','Call emergency services/use beacon when life safety is in question.','Prioritize immediate safety over app interaction.','No photo required; record location, conditions, injury, water/shelter/battery state.','1.0','MapPI3 curated survival reference.'),
     ('cumulonimbus','Cumulonimbus cloud','Cumulonimbus','clouds','Tall thunderstorm cloud associated with lightning, heavy rain, hail, gusts.','Vertical tower/anvil shape, dark base, rapid growth.','Sky observation.','Global.','Warm season common; can occur any storm season.','Weather hazard: lightning/wind/heavy rain.','Not applicable.','Cumulus congestus, dark stratus.','Cloud photo alone is not a forecast; leave ridges/open water if thunder/lightning risk.','Lightning injury/burn/shock are emergencies.','Watch sky, pressure, wind, thunder; seek shelter early.','Wide sky photo and horizon context.','0.70','MapPI3 cloud safety guide.'),
     ('granite-reference','Granite / light igneous rock cue','Granite','rocks and minerals','Coarse-grained light igneous rock reference for offline geology comparisons.','Look for interlocking light/dark crystals, quartz/feldspar/mica speckles, hardness, and outcrop context.','Outcrops, glacial erratics, trail cuts, old stone walls.','Common in New England bedrock/erratics.','Any season.','Low handling risk; rockfall, cliffs, mines, and sharp fragments are the real hazards.','Not edible.','Gneiss, quartzite, concrete, other speckled rocks.','Do not hammer near eyes; avoid unstable slopes, quarries, caves, and mine openings.','Eye injury/cut/fall requires real first aid or emergency care.','Use as a safe geology cue only; verify hardness, streak, grain, and geologic map context.','Photo fresh surface, weathered surface, scale, surrounding outcrop.','0.45','MapPI3 offline geology seed.'),
     ('code-label-reference','Barcode / QR / label text cue','Machine-readable label','barcode and ocr','High-contrast printed codes or label text that may be scanned later by a ZXing/Tesseract plugin.','Look for square QR finder marks, parallel barcode stripes, printed characters, and clear focus.','Packages, trail signs, gear labels, permits, maps.','Universal.','Any time.','Low; scanning labels can reveal private data, so avoid sharing sensitive codes publicly.','Not applicable.','Decorative stripes, low-contrast text, damaged labels, reflections.','Do not publish private IDs, tickets, addresses, medical info, or account codes.','Not a medical/safety classifier.','Use for offline note capture and future OCR/barcode plugin routing.','Take a straight-on, well-lit, focused photo; include full code borders.','0.50','MapPI3 offline barcode/OCR seed.'),
@@ -582,26 +585,51 @@ def field_ai_db():
         conn.execute('INSERT OR IGNORE INTO plugins VALUES (?,?,?,?,?,?)', (cat['id'], 'model' if cat.get('input')!='questions' else 'reference', cat['name'], '/opt/mappi3/models/'+cat['model'], 1 if cat['ready'] else 0, json.dumps(cat)))
     conn.commit(); return conn
 
+PROTOTYPE_MODEL_BY_CATEGORY = {
+    'auto':'plant-green-prototypes-v1.json','plant':'plant-green-prototypes-v1.json','mushroom':'fungi-color-prototypes-v1.json',
+    'animal':'animal-track-prototypes-v1.json','track':'animal-track-prototypes-v1.json','bug':'insect-closeup-prototypes-v1.json',
+    'cloud':'cloud-color-prototypes-v1.json','rock':'rock-mineral-prototypes-v1.json','barcode':'barcode-ocr-prototypes-v1.json',
+    'ocr':'barcode-ocr-prototypes-v1.json','injury':'injury-safety-prototypes-v1.json'
+}
+SPECIALIST_MODEL_EXTENSIONS = ('.tflite','.onnx','.ncnn','.bin','.param')
+
 def field_ai_categories():
     conn=field_ai_db(); rows=[dict(r) for r in conn.execute('SELECT * FROM plugins ORDER BY label')]; conn.close()
-    return {'ok': True, 'categories': FIELD_AI_CATEGORIES, 'plugins': rows, 'offline': True, 'model_policy': 'load-one-specialist-at-a-time; TensorFlow Lite/NCNN INT8 preferred; current build uses safe offline reference fallback until model files are installed'}
+    enriched=[]
+    for cat in FIELD_AI_CATEGORIES:
+        item=dict(cat); proto=PROTOTYPE_MODEL_BY_CATEGORY.get(item['id'])
+        item['prototype_model']=proto
+        item['prototype_ready']=bool(proto) or item['id'] in ('firstaid','survival')
+        item['capability']='prototype-cue' if proto else ('fixed-reference' if item['id'] in ('firstaid','survival') else 'future-specialist')
+        enriched.append(item)
+    return {'ok': True, 'categories': enriched, 'plugins': rows, 'offline': True, 'capability_tier': 'safe offline prototype cues + curated references', 'model_policy': 'Prototype JSON cue models are bundled for routing/fallbacks. Real specialist TFLite/NCNN/OCR models are future add-ons and must be verified separately before being treated as installed.'}
 
 def field_ai_status():
     ensure_builtin_models(); conn=field_ai_db(); species=conn.execute('SELECT COUNT(*) c FROM species').fetchone()['c']; obs=conn.execute('SELECT COUNT(*) c FROM observations').fetchone()['c']; corrections=conn.execute('SELECT COUNT(*) c FROM corrections').fetchone()['c']; plugins=[dict(r) for r in conn.execute('SELECT * FROM plugins ORDER BY id')]; conn.close()
-    model_dir=pathlib.Path('/opt/mappi3/models')
+    model_dir=BUILTIN_MODEL_DIR
     installed=[]
-    if model_dir.exists(): installed=[p.name for p in model_dir.glob('*') if p.is_file()]
-    return {'ok': True, 'offline': True, 'database': str(FIELD_AI_DB), 'species_records': species, 'observations': obs, 'corrections': corrections, 'model_dir': str(model_dir), 'installed_models': installed, 'plugins': plugins, 'memory_policy': 'Zero 2 W: one model loaded at a time; image resize target 224/320; avoid PyTorch on Pi'}
+    if model_dir.exists(): installed=sorted([p.name for p in model_dir.glob('*') if p.is_file()])
+    prototype_expected=sorted(set(BUILTIN_JSON_MODELS.keys()))
+    prototype_installed=[name for name in prototype_expected if name in installed]
+    specialist_installed=[name for name in installed if pathlib.Path(name).suffix.lower() in SPECIALIST_MODEL_EXTENSIONS]
+    specialist_expected=[c['model'] for c in FIELD_AI_CATEGORIES if str(c.get('model','')).endswith(('.tflite','.onnx','.ncnn')) or str(c.get('model','')).startswith('future-')]
+    return {'ok': True, 'offline': True, 'database': str(FIELD_AI_DB), 'species_records': species, 'observations': obs, 'corrections': corrections, 'model_dir': str(model_dir), 'installed_models': installed, 'installed_prototype_models': prototype_installed, 'expected_prototype_models': prototype_expected, 'missing_prototype_models': [name for name in prototype_expected if name not in prototype_installed], 'installed_specialist_models': specialist_installed, 'expected_future_specialist_models': specialist_expected, 'specialist_models_ready': bool(specialist_installed), 'capability_tier': 'prototype-cue-pack' if prototype_installed else 'curated-reference-fallback', 'plugins': plugins, 'model_policy': 'Current offline AI is prototype JSON cue matching plus curated field-guide fallback. It is not authoritative species, medical, weather, OCR, or geology recognition until specialist models/backends are installed and live-verified.', 'memory_policy': 'Zero 2 W: one model loaded at a time; image resize target 224/320; avoid PyTorch on Pi'}
 
 def _species_by_category(conn, category):
-    if category in ('auto','survival'):
+    if category=='auto':
         rows=conn.execute('SELECT * FROM species LIMIT 8').fetchall()
+    elif category=='survival':
+        rows=conn.execute("SELECT * FROM species WHERE category LIKE '%survival%' LIMIT 8").fetchall()
     elif category=='plant':
         rows=conn.execute("SELECT * FROM species WHERE category LIKE '%plant%' OR category LIKE '%tree%' OR category LIKE '%edible%' LIMIT 8").fetchall()
     elif category=='mushroom':
         rows=conn.execute("SELECT * FROM species WHERE category LIKE '%mushroom%' OR category LIKE '%fungi%' LIMIT 8").fetchall()
-    elif category in ('animal','bug','track'):
+    elif category=='animal':
         rows=conn.execute("SELECT * FROM species WHERE category LIKE '%mammal%' OR category LIKE '%animal%' LIMIT 8").fetchall()
+    elif category=='bug':
+        rows=conn.execute("SELECT * FROM species WHERE category LIKE '%insect%' OR category LIKE '%spider%' OR category LIKE '%arthropod%' LIMIT 8").fetchall()
+    elif category=='track':
+        rows=conn.execute("SELECT * FROM species WHERE category LIKE '%track%' OR category LIKE '%scat%' LIMIT 8").fetchall()
     elif category=='cloud':
         rows=conn.execute("SELECT * FROM species WHERE category LIKE '%cloud%' LIMIT 8").fetchall()
     elif category=='rock':
@@ -641,8 +669,7 @@ def basic_image_model(image_path, category):
 
 def prototype_model_match(category, vision):
     ensure_builtin_models()
-    fmap={'cloud':'cloud-color-prototypes-v1.json','plant':'plant-green-prototypes-v1.json','auto':'plant-green-prototypes-v1.json','mushroom':'fungi-color-prototypes-v1.json','animal':'animal-track-prototypes-v1.json','track':'animal-track-prototypes-v1.json','bug':'insect-closeup-prototypes-v1.json','rock':'rock-mineral-prototypes-v1.json','barcode':'barcode-ocr-prototypes-v1.json','ocr':'barcode-ocr-prototypes-v1.json','injury':'injury-safety-prototypes-v1.json'}
-    name=fmap.get(category)
+    name=PROTOTYPE_MODEL_BY_CATEGORY.get(category)
     if not name or not vision or not isinstance(vision.get('features'), dict): return None
     try:
         model=json.loads((BUILTIN_MODEL_DIR/name).read_text())
@@ -791,7 +818,7 @@ def gps_diagnose():
 def field_ai_verify(payload=None):
     payload=payload or {}; ensure_builtin_models()
     status_info=field_ai_status()
-    colors={'plant':(30,180,45),'cloud':(245,245,245),'mushroom':(220,130,35),'animal':(55,48,42),'bug':(18,18,18),'track':(85,70,55),'rock':(145,145,145),'barcode':(0,0,0),'injury':(205,115,95)}
+    colors={'auto':(30,180,45),'plant':(30,180,45),'cloud':(245,245,245),'mushroom':(220,130,35),'animal':(55,48,42),'bug':(18,18,18),'track':(85,70,55),'rock':(145,145,145),'barcode':(0,0,0),'injury':(205,115,95),'firstaid':(205,40,35),'survival':(70,120,55)}
     def sample_png(color):
         try:
             from PIL import Image, ImageDraw
@@ -809,12 +836,19 @@ def field_ai_verify(payload=None):
             return 'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAIAAACQd1PeAAAADElEQVR4nGNgaGD4DwABBAEAgh1Y6QAAAABJRU5ErkJggg=='
     samples={k:sample_png(v) for k,v in colors.items()}
     requested=payload.get('category')
-    cats=[requested] if requested and requested!='all' else list(samples.keys())
+    all_cats=[c['id'] for c in FIELD_AI_CATEGORIES]
+    cats=[requested] if requested and requested!='all' else all_cats
     results={}
     for cat in cats:
-        result=field_ai_analyze({'category': cat, 'image': samples.get(cat) or samples['plant'], 'notes':'MapPI3 multi-model self-test observation'})
-        results[cat]={'ok': bool(result.get('ok')), 'vision_model': result.get('vision_model'), 'prototype_model': result.get('prototype_model'), 'possible_identification': result.get('possible_identification'), 'observation_id': result.get('observation_id')}
-    return {'ok': all(v.get('ok') and v.get('prototype_model') for v in results.values()), 'status': status_info, 'results': results, 'sample': next(iter(results.values()), {})}
+        image='' if cat in ('firstaid','survival') else (samples.get(cat) or samples['plant'])
+        result=field_ai_analyze({'category': cat, 'image': image, 'notes':'MapPI3 all-category prototype/readiness self-test observation'})
+        expected_proto=PROTOTYPE_MODEL_BY_CATEGORY.get(cat)
+        prototype=result.get('prototype_model')
+        field_id=(result.get('possible_identification') or {}).get('id')
+        field_ok=bool(field_id and field_id!='reference')
+        prototype_ok=bool(prototype) if expected_proto else True
+        results[cat]={'ok': bool(result.get('ok')), 'field_guide_ok': field_ok, 'prototype_expected': expected_proto, 'prototype_ok': prototype_ok, 'vision_model': result.get('vision_model'), 'prototype_model': prototype, 'possible_identification': result.get('possible_identification'), 'observation_id': result.get('observation_id')}
+    return {'ok': all(v.get('ok') and v.get('field_guide_ok') and v.get('prototype_ok') for v in results.values()), 'status': status_info, 'results': results, 'sample': next(iter(results.values()), {}), 'note':'Self-test verifies all categories route to a safe field-guide/reference result. Prototype JSON cue models are expected only for image categories; real specialist model binaries are not implied.'}
 
 NOAA_CACHE = pathlib.Path('/var/lib/mappi3/noaa-weather-cache.json')
 
