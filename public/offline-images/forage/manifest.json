@@ -1,0 +1,47 @@
+[
+  {
+    "id": "cattail-shoots",
+    "scientific": "Typha latifolia",
+    "common": "broadleaf cattail",
+    "source": "iNaturalist open data default photo",
+    "source_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/4280840/medium.jpeg",
+    "local_path": "/offline-images/forage/cattail-shoots.jpg",
+    "bytes": 79389
+  },
+  {
+    "id": "dandelion-greens",
+    "scientific": "Taraxacum officinale",
+    "common": "common dandelion",
+    "source": "iNaturalist open data default photo",
+    "source_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/23575133/medium.jpg",
+    "local_path": "/offline-images/forage/dandelion-greens.jpg",
+    "bytes": 55925
+  },
+  {
+    "id": "blackberry-blueberry",
+    "scientific": "Vaccinium corymbosum",
+    "common": "Northern highbush blueberry",
+    "source": "iNaturalist open data default photo",
+    "source_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/216577733/medium.jpg",
+    "local_path": "/offline-images/forage/blackberry-blueberry.jpg",
+    "bytes": 50603
+  },
+  {
+    "id": "chicken-of-woods",
+    "scientific": "Laetiporus sulphureus",
+    "common": "chicken of the woods",
+    "source": "iNaturalist open data default photo",
+    "source_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/42106925/medium.jpg",
+    "local_path": "/offline-images/forage/chicken-of-woods.jpg",
+    "bytes": 209330
+  },
+  {
+    "id": "fiddleheads",
+    "scientific": "Matteuccia struthiopteris",
+    "common": "ostrich fern",
+    "source": "iNaturalist open data default photo",
+    "source_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/394351700/medium.jpeg",
+    "local_path": "/offline-images/forage/fiddleheads.jpg",
+    "bytes": 193532
+  }
+]

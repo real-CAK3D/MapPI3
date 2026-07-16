@@ -1,0 +1,112 @@
+{
+  "name": "Lewiston Maine 300-mile overview raster cache",
+  "center": {
+    "lat": 44.1004,
+    "lon": -70.2148
+  },
+  "radius_miles": 300,
+  "bbox": {
+    "lat_min": 39.76332490118577,
+    "lat_max": 48.43747509881423,
+    "lon_min": -76.25427307671598,
+    "lon_max": -64.17532692328402
+  },
+  "max_zoom": 10,
+  "tile_count_expected": 1701,
+  "downloaded_now": 1701,
+  "skipped_existing": 0,
+  "failed": [],
+  "levels": [
+    {
+      "z": 0,
+      "x_min": 0,
+      "x_max": 0,
+      "y_min": 0,
+      "y_max": 0,
+      "tiles": 1
+    },
+    {
+      "z": 1,
+      "x_min": 0,
+      "x_max": 0,
+      "y_min": 0,
+      "y_max": 0,
+      "tiles": 1
+    },
+    {
+      "z": 2,
+      "x_min": 1,
+      "x_max": 1,
+      "y_min": 1,
+      "y_max": 1,
+      "tiles": 1
+    },
+    {
+      "z": 3,
+      "x_min": 2,
+      "x_max": 2,
+      "y_min": 2,
+      "y_max": 3,
+      "tiles": 2
+    },
+    {
+      "z": 4,
+      "x_min": 4,
+      "x_max": 5,
+      "y_min": 5,
+      "y_max": 6,
+      "tiles": 4
+    },
+    {
+      "z": 5,
+      "x_min": 9,
+      "x_max": 10,
+      "y_min": 11,
+      "y_max": 12,
+      "tiles": 4
+    },
+    {
+      "z": 6,
+      "x_min": 18,
+      "x_max": 20,
+      "y_min": 22,
+      "y_max": 24,
+      "tiles": 9
+    },
+    {
+      "z": 7,
+      "x_min": 36,
+      "x_max": 41,
+      "y_min": 44,
+      "y_max": 48,
+      "tiles": 30
+    },
+    {
+      "z": 8,
+      "x_min": 73,
+      "x_max": 82,
+      "y_min": 88,
+      "y_max": 97,
+      "tiles": 100
+    },
+    {
+      "z": 9,
+      "x_min": 147,
+      "x_max": 164,
+      "y_min": 177,
+      "y_max": 194,
+      "tiles": 324
+    },
+    {
+      "z": 10,
+      "x_min": 295,
+      "x_max": 329,
+      "y_min": 354,
+      "y_max": 388,
+      "tiles": 1225
+    }
+  ],
+  "source": "https://tile.openstreetmap.org/{z}/{x}/{y}.png",
+  "attribution": "\u00a9 OpenStreetMap contributors",
+  "note": "Overview cache only; zoom 11+ detailed tiles should be added by smaller corridor/route packs to avoid enormous storage/bulk tile pulls."
+}
