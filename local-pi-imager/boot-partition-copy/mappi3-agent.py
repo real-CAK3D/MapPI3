@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-import base64, fcntl, hashlib, http.server, io, json, math, os, pathlib, random, shutil, socket, sqlite3, ssl, struct, subprocess, threading, time, urllib.parse, urllib.request, uuid
+import base64, fcntl, hashlib, http.server, io, json, math, os, pathlib, random, shlex, shutil, socket, sqlite3, ssl, struct, subprocess, threading, time, urllib.parse, urllib.request, uuid
 APP_DIR = pathlib.Path('/opt/mappi3/app')
 STATE = pathlib.Path('/var/lib/mappi3/state.json')
 PORT = int(os.environ.get('MAPPI3_PORT','5050'))
@@ -8,8 +8,10 @@ CERT_DIR = pathlib.Path('/var/lib/mappi3/certs')
 CERT_FILE = CERT_DIR / 'mappi3-local.crt'
 KEY_FILE = CERT_DIR / 'mappi3-local.key'
 LIQUID_STATE = {'gx': 0.0, 'gy': 0.0, 'gz': 1.0}
-SENSE_MODES = ['compass','compass-arrow','compass-cardinal','rotation-test','liquid','weather','fire','flashlight','sos','message','boot','sun','gps','clock','progress','beacon','stars','temp','humidity','pressure','custom','border','magic8','water','snake']
-ALLOWED = {'status','restart-web','reboot','shutdown','update-app','gps-sample','toggle-hotspot','connect-home-wifi','sense-mode','calibrate','harden-hotspot','plugin-update','vnc-setup','vnc-disable','weather-refresh','noaa-refresh','online-maintenance','gps-diagnose','field-ai-verify','captive-setup','captive-disable','captive-status','gps-pps-setup','plugin-status','plugin-install','plugin-install-all','plugin-uninstall'}
+LIQUID_PARTICLES = []
+PACMAN_STATE = {}
+SENSE_MODES = ['compass','compass-arrow','compass-cardinal','rotation-test','liquid','pacman','weather','fire','flashlight','sos','message','boot','sun','gps','clock','progress','beacon','stars','temp','humidity','pressure','custom','border','magic8','water','snake']
+ALLOWED = {'status','restart-web','reboot','shutdown','update-app','gps-sample','toggle-hotspot','hotspot-on','connect-home-wifi','wifi-scan','wifi-save-network','wifi-connect-saved','network-status','tailscale-status','tailscale-login','remote-access-repair','sense-mode','calibrate','harden-hotspot','plugin-update','vnc-setup','vnc-disable','weather-refresh','noaa-refresh','online-maintenance','gps-diagnose','sense-diagnose','field-ai-verify','captive-setup','captive-disable','captive-status','gps-pps-setup','plugin-status','plugin-install','plugin-install-all','plugin-uninstall'}
 SENSE_CACHE = {'ok': False, 'mode': 'compass', 'message': 'Sense HAT display loop starting', 'updated': 0, 'joystick': {'seq': 0, 'direction': '', 'pressed': False, 'updated': 0}}
 SENSE_LOCK = threading.Lock()
 KEY_NAMES = {103:'up',108:'down',105:'left',106:'right',28:'press'}
@@ -23,7 +25,7 @@ COMPASS_PATTERNS = {
     'W': [(0,3),(0,4),(1,2),(1,5),(2,3),(2,4),(3,3),(3,4),(4,3),(4,4),(5,3),(5,4),(6,3),(6,4),(7,3),(7,4)],
     'NW': [(0,0),(1,0),(0,1),(2,0),(0,2),(1,1),(2,2),(3,3),(4,4),(5,5),(6,6),(7,7)],
 }
-SOS_FRAMES = ['...','---','...','HELP','LOST','GPS','SOS']
+SOS_MORSE_UNITS = [1,0,1,0,1,0,0,0,3,0,3,0,3,0,0,0,1,0,1,0,1,0,0,0,0,0,0]  # SOS = ... --- ...; 1=dot, 3=dash, 0=off gap
 
 def sh(cmd, timeout=20):
     try:
@@ -42,7 +44,7 @@ def write_state(data):
 
 def normalize_mode(mode):
     raw = str(mode or 'compass').strip().lower().replace(' ', '-').replace('_','-')
-    aliases = {'custom-message':'message','scroll-message':'message','sunrise':'sun','sunset':'sun','sunrise-sunset':'sun','gps-fix':'gps','weather-now':'weather','flash-light':'flashlight','compass arrow':'compass-arrow','compass-arrow':'compass-arrow','compass nsew':'compass-cardinal','compass-nsew':'compass-cardinal','compass cardinal':'compass-cardinal','compass-cardinal':'compass-cardinal','cardinal':'compass-cardinal','rotation':'rotation-test','rotation-test':'rotation-test'}
+    aliases = {'custom-message':'message','scroll-message':'message','sunrise':'sun','sunset':'sun','sunrise-sunset':'sun','gps-fix':'gps','weather-now':'weather','flash-light':'flashlight','compass arrow':'compass-arrow','compass-arrow':'compass-arrow','compass nsew':'compass-cardinal','compass-nsew':'compass-cardinal','compass cardinal':'compass-cardinal','compass-cardinal':'compass-cardinal','cardinal':'compass-cardinal','rotation':'rotation-test','rotation-test':'rotation-test','pac-man':'pacman','pac man':'pacman','pac':'pacman','game-pacman':'pacman'}
     raw = aliases.get(raw, raw)
     return raw if raw in SENSE_MODES else ('liquid' if raw.startswith('liq') else 'compass')
 
@@ -121,8 +123,16 @@ def sense_snapshot():
     with SENSE_LOCK: return dict(SENSE_CACHE)
 
 def set_sense_mode(mode, payload=None):
+    global LIQUID_PARTICLES, PACMAN_STATE
     payload = payload or {}; mode = normalize_mode(mode)
     st=read_state(); st['sense_mode']=mode; st['sense_mode_updated_at']=time.time()
+    if mode == 'liquid':
+        LIQUID_PARTICLES = []
+        LIQUID_STATE.update({'gx': 0.0, 'gy': 0.0, 'gz': 1.0})
+        st['liquid_reset_at'] = time.time()
+    if mode == 'pacman':
+        PACMAN_STATE = {}
+        st['pacman_reset_at'] = time.time()
     if 'message' in payload: st['sense_message'] = str(payload.get('message') or '')[:96]
     if 'brightness' in payload: st['sense_brightness'] = payload.get('brightness')
     if 'brightnessLevel' in payload: st['sense_brightness_level'] = payload.get('brightnessLevel')
@@ -141,7 +151,7 @@ def set_sense_mode(mode, payload=None):
 
 def calibrate(target):
     target = (target or 'all').lower(); st=read_state(); st.setdefault('calibration', {})[target] = {'requested_at': time.time(), 'status': 'requested'}; write_state(st)
-    messages = {'compass':'Rotate the whole Pi/Sense HAT slowly in a figure-eight, away from metal/magnets. Compare heading to a real compass before hiking.','sense':'Lay the Sense HAT level for 3 seconds, then tilt forward/back/left/right so roll and pitch move smoothly.','gps':'Take the GPS outside or to a clear window. Wait for mode 2/3 fix and multiple satellites; indoors mode 1 is normal.','all':'Compass: figure-eight away from metal. Sense: level then tilt. GPS: clear sky until mode 2/3 fix.'}
+    messages = {'compass':'Rotate the whole Pi/Sense HAT slowly in a figure-eight, away from metal/magnets. Compass display uses Sense HAT get_compass() magnetic North first, with optional compass_offset_deg/compass_declination_deg in state. Compare heading to a real compass before hiking.','sense':'Lay the Sense HAT level for 3 seconds, then tilt forward/back/left/right so roll and pitch move smoothly.','gps':'Take the GPS outside or to a clear window. Wait for mode 2/3 fix and multiple satellites; indoors mode 1 is normal.','all':'Compass: figure-eight away from metal. Sense: level then tilt. GPS: clear sky until mode 2/3 fix.'}
     return {'ok': True, 'target': target, 'message': messages.get(target, messages['all']), 'state': st.get('calibration', {})}
 
 
@@ -197,27 +207,59 @@ def text_once(sense, text, color=(0,160,60), speed=0.06):
     except Exception: pass
 
 
+def corrected_compass_heading(raw_heading, st=None):
+    # Sense HAT get_compass() returns magnetic heading in degrees from North.
+    # Optional stored corrections let field calibration/declination keep the LED arrow honest.
+    st = st or {}
+    try: heading = float(raw_heading or 0.0)
+    except Exception: heading = 0.0
+    try: heading += float(st.get('compass_offset_deg') or 0.0)
+    except Exception: pass
+    try: heading += float(st.get('compass_declination_deg') or 0.0)
+    except Exception: pass
+    return (heading + 360.0) % 360.0
+
 def compass_name(yaw):
     labels = ['N','NE','E','SE','S','SW','W','NW']
     return labels[int(((float(yaw or 0) + 22.5) % 360) // 45)]
 
+def compass_north_bearing(yaw):
+    # Sense HAT get_compass() reports where the Pi/Sense HAT top edge is facing.
+    # A compass needle on the 8x8 matrix must point toward North relative to the device,
+    # so invert the heading: top-facing-East means North is to the display's left/West.
+    try: return (360.0 - float(yaw or 0.0)) % 360.0
+    except Exception: return 0.0
+
+def compass_display_bearing(yaw, st=None):
+    # MapPI3 rotates every 8x8 frame for the mounted Sense HAT orientation. If the compass
+    # pattern is selected before that rotation without compensation, the visible arrow is
+    # shifted by sense_rotation. Pre-compensate so the physical LED arrow still points North.
+    bearing = compass_north_bearing(yaw)
+    try: rotation = int((st or {}).get('sense_rotation') or 0) % 360
+    except Exception: rotation = 0
+    return (bearing - rotation) % 360.0
+
 def draw_compass_cardinal(sense, yaw, st=None):
-    name = compass_name(yaw)
+    st = st or {}
+    heading_name = compass_name(yaw)
+    north_bearing = compass_north_bearing(yaw)
+    display_bearing = compass_display_bearing(yaw, st)
+    north_name = compass_name(display_bearing)
     brightness = sense_brightness(st or {})
     pixels = [[0,0,0] for _ in range(64)]
     green = list(scale_color((0,180,50), brightness))
     blue = list(scale_color((0,80,190), brightness))
     white = list(scale_color((220,220,220), brightness))
-    # Bright cardinal anchors: N top, E right, S bottom, W left. Active heading is green; others are blue.
+    # Bright cardinal anchors: N top, E right, S bottom, W left. The green block marks where North is relative to the device.
     anchors = {'N':[(3,0),(4,0),(3,1),(4,1)], 'E':[(6,3),(7,3),(6,4),(7,4)], 'S':[(3,6),(4,6),(3,7),(4,7)], 'W':[(0,3),(1,3),(0,4),(1,4)]}
-    active = name[0] if name else 'N'
+    active = north_name[0] if north_name else 'N'
     for k, pts in anchors.items():
         for x,y in pts: pixels[y*8+x] = green if k == active else blue
     # Center cross keeps the matrix readable when rotated.
     for x,y in [(3,3),(4,3),(3,4),(4,4)]: pixels[y*8+x] = white
     sense_set_pixels(sense, pixels, st)
     with SENSE_LOCK:
-        SENSE_CACHE['compass_display'] = {'mode':'cardinal','heading':name,'yaw':round(float(yaw or 0),1),'rotation':(st or {}).get('sense_rotation',0)}
+        SENSE_CACHE['compass_display'] = {'mode':'cardinal','heading':heading_name,'yaw':round(float(yaw or 0),1),'north_pointer':compass_name(north_bearing),'north_bearing':round(north_bearing,1),'display_pointer':north_name,'display_bearing':round(display_bearing,1),'rotation':st.get('sense_rotation',0)}
 
 def draw_rotation_test(sense, st=None, tick=0):
     brightness = sense_brightness(st or {})
@@ -234,64 +276,157 @@ def draw_rotation_test(sense, st=None, tick=0):
         SENSE_CACHE['rotation_test'] = {'rotation':(st or {}).get('sense_rotation',0),'tick':tick,'corners':'red NW, green NE, blue SE, yellow SW before rotation'}
 
 def draw_compass(sense, yaw, st=None):
-    name = compass_name(yaw)
-    put_pixels(sense, COMPASS_PATTERNS.get(name, COMPASS_PATTERNS['N']), scale_color((0,160,50), sense_brightness(st or {})), st)
+    st = st or {}
+    heading_name = compass_name(yaw)
+    north_bearing = compass_north_bearing(yaw)
+    display_bearing = compass_display_bearing(yaw, st)
+    name = compass_name(display_bearing)
+    put_pixels(sense, COMPASS_PATTERNS.get(name, COMPASS_PATTERNS['N']), scale_color((0,160,50), sense_brightness(st)), st)
     with SENSE_LOCK:
-        SENSE_CACHE['compass_display'] = {'mode':'arrow','heading':name,'yaw':round(float(yaw or 0),1),'rotation':(st or {}).get('sense_rotation',0)}
+        SENSE_CACHE['compass_display'] = {'mode':'arrow','heading':heading_name,'yaw':round(float(yaw or 0),1),'north_pointer':compass_name(north_bearing),'north_bearing':round(north_bearing,1),'display_pointer':name,'display_bearing':round(display_bearing,1),'rotation':st.get('sense_rotation',0)}
+
+def _liquid_particles():
+    global LIQUID_PARTICLES
+    if not LIQUID_PARTICLES:
+        # Legacy particle state is retained only for compatibility diagnostics. The live renderer
+        # below uses a gravity-sorted bottle fill so the 8x8 display visibly shifts immediately.
+        LIQUID_PARTICLES = [{'x':1.0 + (i % 6) * 1.08 + (0.24 if (i//6) % 2 else 0), 'y':2.25 + (i//6) * 0.78, 'vx':0.0, 'vy':0.0} for i in range(24)]
+    return LIQUID_PARTICLES
+
+def _liquid_bottle_pixels(gx, gy, gz, tick, brightness):
+    """Render liquid like a bottle: fill the downhill side with a level surface.
+
+    Particle dots settled into a static-looking blob on the real 8x8 Sense HAT. For field use,
+    the readable cue is a bright water mass whose surface moves opposite the projected gravity
+    vector. We sort cells by downhill gravity, fill a fixed volume, then add a tiny animated
+    surface slosh so small hand movements are visible.
+    """
+    plane = math.sqrt(gx*gx + gy*gy)
+    fill_cells = 26
+    water = list(scale_color((0, 82, 220), brightness))
+    deep = list(scale_color((0, 35, 145), brightness))
+    foam = list(scale_color((190, 248, 255), brightness))
+    glow = list(scale_color((40, 170, 255), brightness))
+    pixels = [[0,0,0] for _ in range(64)]
+    center_band = 0.16
+    if plane < center_band:
+        # Near level: start as a centered blob, then drift outward from center as tilt grows.
+        # The real Pi often reports ~0.04-0.05 plane magnitude while visually level, so a wider
+        # center band keeps tiny sensor bias from pinning the liquid to a side.
+        if plane < 0.001:
+            nx, ny = 0.0, 0.0
+        else:
+            nx, ny = gx / plane, gy / plane
+        drift = min(1.0, plane / center_band)
+        center_x = 3.5 + nx * drift * 1.55
+        center_y = 3.5 + ny * drift * 1.55
+        wave_phase = tick * 0.58
+        ranked = []
+        for y in range(8):
+            for x in range(8):
+                dx = x - center_x; dy = y - center_y
+                radius = math.sqrt(dx*dx + dy*dy)
+                angle_wave = 0.18 * math.sin((x * 1.4) + (y * 0.8) + wave_phase)
+                # Lower score is closer to the current liquid center. A small downhill bias gives
+                # it range-of-motion from the center without snapping to an edge.
+                score = radius - (nx * (x - 3.5) + ny * (y - 3.5)) * drift * 0.35 + angle_wave
+                ranked.append((score, x, y))
+        ranked.sort()
+        filled = {(x,y): score for score,x,y in ranked[:fill_cells]}
+        surface = set()
+        for x,y in filled:
+            for dx,dy in ((1,0),(-1,0),(0,1),(0,-1)):
+                n = (x+dx, y+dy)
+                if 0 <= n[0] < 8 and 0 <= n[1] < 8 and n not in filled:
+                    surface.add((x,y)); break
+        for (x,y), score in filled.items():
+            pixels[y*8+x] = foam if (x,y) in surface else (water if score < 2.2 else deep)
+        surface_list = sorted(surface)
+        if surface_list:
+            sx, sy = surface_list[tick % len(surface_list)]
+            pixels[sy*8+sx] = glow
+        return pixels, {
+            'surface_cells': len(surface), 'fill_cells': len(filled),
+            'downhill': 'center' if drift < 0.35 else ('right' if abs(nx) > abs(ny) and nx > 0 else ('left' if abs(nx) > abs(ny) else ('down' if ny > 0 else 'up'))),
+            'centered': True, 'center_x': round(center_x, 2), 'center_y': round(center_y, 2), 'center_drift': round(drift, 2)
+        }
+
+    # Positive projection means the cell is downhill. The small sinusoidal term creates a
+    # readable slosh ripple without hiding the physical tilt direction.
+    nx, ny = gx / plane, gy / plane
+    wave_phase = tick * 0.62
+    ranked = []
+    for y in range(8):
+        for x in range(8):
+            cx, cy = x - 3.5, y - 3.5
+            cross = -ny * cx + nx * cy
+            ripple = 0.20 * math.sin(cross * 1.15 + wave_phase) * min(1.0, plane * 1.8)
+            score = (nx * cx + ny * cy) + ripple
+            ranked.append((score, x, y, cross))
+    ranked.sort(reverse=True)
+    filled = {(x,y): score for score,x,y,cross in ranked[:fill_cells]}
+    surface = set()
+    for x,y in filled:
+        for dx,dy in ((1,0),(-1,0),(0,1),(0,-1)):
+            n = (x+dx, y+dy)
+            if 0 <= n[0] < 8 and 0 <= n[1] < 8 and n not in filled:
+                surface.add((x,y)); break
+    for (x,y), score in filled.items():
+        pixels[y*8+x] = foam if (x,y) in surface else (water if score > 0.5 else deep)
+    # A moving specular fleck on the surface helps CAK3D see that the loop is alive.
+    surface_list = sorted(surface)
+    if surface_list:
+        sx, sy = surface_list[tick % len(surface_list)]
+        pixels[sy*8+sx] = glow
+    downhill = 'right' if abs(nx) > abs(ny) and nx > 0 else ('left' if abs(nx) > abs(ny) else ('down' if ny > 0 else 'up'))
+    return pixels, {'surface_cells': len(surface), 'fill_cells': len(filled), 'downhill': downhill}
 
 def draw_liquid(sense, orientation, tick, st=None):
-    # Liquid mode only: use accelerometer gravity, low-pass smoothing, and a tilted fill plane
-    # so the LED matrix behaves like a real half-full container instead of scattered dots.
+    # Bottle-fill renderer: project accelerometer gravity into the LED plane and fill the
+    # downhill side. This is intentionally more readable than free particles on an 8x8 matrix.
     brightness = sense_brightness(st or {})
+    raw_error = None
     try:
         raw = sense.get_accelerometer_raw()
         ax = float(raw.get('x', 0.0)); ay = float(raw.get('y', 0.0)); az = float(raw.get('z', 1.0))
-    except Exception:
-        ax = max(-1, min(1, float((orientation or {}).get('roll', 0)) / 45.0))
+    except Exception as e:
+        raw_error = str(e)
+        ax = max(-1, min(1, float((orientation or {}).get('roll', 0)) / 38.0))
         ay = max(-1, min(1, float((orientation or {}).get('pitch', 0)) / 45.0))
         az = 1.0
-    # Smooth but stay responsive; clamp out shock/noise.
+    raw_ax, raw_ay, raw_az = ax, ay, az
     mag = max(0.25, math.sqrt(ax*ax + ay*ay + az*az))
     ax, ay, az = ax/mag, ay/mag, az/mag
-    LIQUID_STATE['gx'] += (max(-1, min(1, ax)) - LIQUID_STATE['gx']) * 0.22
-    LIQUID_STATE['gy'] += (max(-1, min(1, ay)) - LIQUID_STATE['gy']) * 0.22
-    LIQUID_STATE['gz'] += (max(-1, min(1, az)) - LIQUID_STATE['gz']) * 0.12
+    LIQUID_STATE['gx'] += (max(-1, min(1, ax)) - LIQUID_STATE['gx']) * 0.75
+    LIQUID_STATE['gy'] += (max(-1, min(1, ay)) - LIQUID_STATE['gy']) * 0.75
+    LIQUID_STATE['gz'] += (max(-1, min(1, az)) - LIQUID_STATE['gz']) * 0.35
     gx, gy, gz = LIQUID_STATE['gx'], LIQUID_STATE['gy'], LIQUID_STATE['gz']
-    pixels = []
-    water = scale_color((0, 78, 185), brightness)
-    deep = scale_color((0, 34, 105), brightness)
-    surface = scale_color((80, 210, 255), brightness)
-    foam = scale_color((185, 245, 255), brightness)
-    # Half-full baseline. Tilt controls the surface slope. y increases downward.
-    base = 3.55 + gy * 2.0
-    slope_x = -gx * 1.25
-    wave = math.sin(tick * 0.45) * 0.10
-    bubble_x = int(max(0, min(7, round(3.5 - gx * 2.8 + math.sin(tick/3.0)*0.25))))
-    bubble_y = int(max(0, min(7, round(2.0 - gy * 2.0 + math.cos(tick/4.0)*0.25))))
-    lit = 0; surface_count = 0
-    for y in range(8):
-        for x in range(8):
-            threshold = base + slope_x * (x - 3.5) + wave
-            depth = y - threshold
-            if depth >= 0.62:
-                color = deep if depth > 2.2 else water
-                pixels.append(list(color)); lit += 1
-            elif depth >= -0.42:
-                pixels.append(list(surface)); surface_count += 1
-            else:
-                pixels.append([0, 0, 0])
-    # Air bubble/highlight on the high side only when it lands in liquid/surface.
-    bi = bubble_y * 8 + bubble_x
-    if 0 <= bi < 64 and pixels[bi] != [0,0,0]: pixels[bi] = list(foam)
-    # Edge glint near the low side makes motion easier to read on the real LEDs.
-    low_x = int(max(0, min(7, round(3.5 + gx * 3.0))))
-    for yy in range(8):
-        i = yy * 8 + low_x
-        if pixels[i] != [0,0,0] and yy % 2 == tick % 2: pixels[i] = list(surface)
+    pixels, render = _liquid_bottle_pixels(gx, gy, gz, tick, brightness)
     sense_set_pixels(sense, pixels, st)
     with SENSE_LOCK:
-        SENSE_CACHE['liquid_display'] = {'gx': round(gx,3), 'gy': round(gy,3), 'gz': round(gz,3), 'lit_leds': lit, 'surface_leds': surface_count, 'bubble': [bubble_x,bubble_y], 'model': 'accelerometer gravity plane + low-pass smoothing'}
-
+        plane = math.sqrt(gx*gx + gy*gy)
+        raw_plane = math.sqrt(raw_ax*raw_ax + raw_ay*raw_ay)
+        SENSE_CACHE['liquid_display'] = {
+            'gx': round(gx,3), 'gy': round(gy,3), 'gz': round(gz,3),
+            'raw_accel': {'x': round(raw_ax,3), 'y': round(raw_ay,3), 'z': round(raw_az,3)},
+            'normalized_accel': {'x': round(ax,3), 'y': round(ay,3), 'z': round(az,3)},
+            'plane_magnitude': round(plane,3),
+            'raw_plane_magnitude': round(raw_plane,3),
+            'tilt_degrees': round(math.degrees(math.atan2(plane, max(0.001, abs(gz)))),1),
+            'raw_tilt_degrees': round(math.degrees(math.atan2(raw_plane, max(0.001, abs(raw_az)))),1),
+            'lit_leds': sum(1 for c in pixels if c != [0,0,0]),
+            'particles': 0,
+            'loop_target_hz': 16,
+            'surface_cells': render.get('surface_cells'),
+            'fill_cells': render.get('fill_cells'),
+            'downhill': render.get('downhill'),
+            'centered': render.get('centered', False),
+            'center_x': render.get('center_x'),
+            'center_y': render.get('center_y'),
+            'center_drift': render.get('center_drift'),
+            'raw_error': raw_error,
+            'model': 'centered bottle-fill liquid + tilt drift + slosh shimmer + raw accel telemetry'
+        }
 def draw_fire(sense, tick):
     pixels=[]
     for y in range(8):
@@ -304,10 +439,15 @@ def draw_flashlight(sense, st):
     b = sense_brightness(st); sense.clear(b,b,b)
 
 def draw_sos(sense, tick):
-    frame = SOS_FRAMES[(tick//3) % len(SOS_FRAMES)]
-    if frame in ('...','---'):
-        color=(180,0,0) if frame=='...' else (180,180,180); sense.clear(*color)
-    else: text_once(sense, frame, (180,0,0), 0.045)
+    # White-only SOS beacon: no scrolling text, no red frames. Morse timing loops ... --- ...
+    unit = SOS_MORSE_UNITS[(tick // 2) % len(SOS_MORSE_UNITS)]
+    if unit:
+        b = sense_brightness(read_state())
+        sense.clear(b, b, b)
+    else:
+        sense.clear(0, 0, 0)
+    with SENSE_LOCK:
+        SENSE_CACHE['sos_display'] = {'mode':'white-only-morse', 'signal':'... --- ...', 'lit': bool(unit), 'unit': unit}
 
 def draw_weather(sense, temp, humidity, pressure):
     msg=f'{temp:.0f}F {humidity:.0f}% {pressure:.0f}mb' if pressure else f'{temp:.0f}F {humidity:.0f}%'
@@ -374,6 +514,143 @@ def draw_snake_frame(sense, tick, color=(0,220,70)):
     hx,hy=path[(tick+6)%len(path)]; pixels[hy*8+hx]=[255,255,255]
     sense_set_pixels(sense, pixels, st if 'st' in locals() else None)
 
+PACMAN_MAPS = [
+    # 8x8 tribute layouts: # = electric-blue maze wall, . = pellet lane, o = power pellet.
+    ("o......o", ".##.##..", "........", ".#.##.#.", ".#....#.", "........", "..##.##.", "o......o"),
+    ("o.####.o", "........", ".##..##.", "........", "..####..", "........", ".##..##.", "o......o"),
+    ("o..##..o", ".#....#.", "...##...", "##....##", "##....##", "...##...", ".#....#.", "o..##..o"),
+    ("o......o", "..#..#..", ".#....#.", "...##...", "...##...", ".#....#.", "..#..#..", "o......o"),
+]
+PACMAN_DIRS = [(1,0),(-1,0),(0,1),(0,-1)]
+# Classic arcade palette approximated for Sense HAT LEDs: Blinky, Pinky, Inky, Clyde.
+PACMAN_GHOST_COLORS = [(255,0,0),(255,184,255),(0,255,255),(255,184,82)]
+PACMAN_WALL_COLOR = (33,33,255)
+PACMAN_PELLET_COLOR = (255,184,174)
+PACMAN_POWER_COLOR = (255,184,174)
+PACMAN_YELLOW = (255,255,0)
+PACMAN_CHERRY = (255,0,0)
+PACMAN_CHERRY_STEM = (0,255,0)
+PACMAN_PELLET_DRAW_INTERVAL = 3
+PACMAN_FRAME_SLEEP = 0.42
+PACMAN_GHOST_MOVE_INTERVAL = 3
+PACMAN_FRUITS_PER_MAP = 12
+PACMAN_POWER_TICKS = 45
+
+def _pacman_cells(layout):
+    return [(x,y) for y,row in enumerate(layout) for x,ch in enumerate(row) if ch != '#']
+
+def _pacman_step(point, direction):
+    return ((point[0] + direction[0]) % 8, (point[1] + direction[1]) % 8)
+
+def _pacman_neighbors(point, cells):
+    cellset=set(cells)
+    return [_pacman_step(point,d) for d in PACMAN_DIRS if _pacman_step(point,d) in cellset]
+
+def _pacman_distance(a, b):
+    dx=min(abs(a[0]-b[0]), 8-abs(a[0]-b[0])); dy=min(abs(a[1]-b[1]), 8-abs(a[1]-b[1]))
+    return dx+dy
+
+def _pacman_new_fruit(state):
+    cells=state['cells']; blocked={state['pacman']} | {g['pos'] for g in state['ghosts']}
+    choices=[c for c in cells if c not in blocked]
+    return random.choice(choices or cells)
+
+def _pacman_new_state():
+    layout=PACMAN_MAPS[0]; cells=sorted(_pacman_cells(layout), key=lambda p:(p[1],p[0])); homes=list(reversed(cells))
+    state={'map_index':0,'layout':layout,'cells':cells,'pacman':cells[0],'dir':(1,0),'mouth_open':True,'score':0,'fruit_count':0,'power':0,'caught':0,'ticks':0,'ghosts':[]}
+    state['ghosts']=[{'pos':homes[i % len(homes)], 'dir':random.choice(PACMAN_DIRS), 'home':homes[i % len(homes)], 'eaten':0, 'color':PACMAN_GHOST_COLORS[i % len(PACMAN_GHOST_COLORS)]} for i in range(4)]
+    state['fruit']=_pacman_new_fruit(state)
+    return state
+
+def _pacman_next_map(state):
+    state['map_index']=(int(state.get('map_index') or 0)+1)%len(PACMAN_MAPS); layout=PACMAN_MAPS[state['map_index']]; cells=sorted(_pacman_cells(layout), key=lambda p:(p[1],p[0])); homes=list(reversed(cells))
+    state.update({'layout':layout,'cells':cells,'pacman':cells[0],'dir':(1,0),'mouth_open':True,'power':0,'caught':0,'ticks':0})
+    state['ghosts']=[{'pos':homes[i % len(homes)], 'dir':random.choice(PACMAN_DIRS), 'home':homes[i % len(homes)], 'eaten':0, 'color':PACMAN_GHOST_COLORS[i % len(PACMAN_GHOST_COLORS)]} for i in range(4)]
+    state['fruit']=_pacman_new_fruit(state)
+
+def _pacman_best_dir(start, target, cells, chase=True):
+    dirs=_pacman_neighbors(start, cells); random.shuffle(dirs)
+    if not dirs: return (0,0)
+    chosen=(min if chase else max)(dirs, key=lambda p:_pacman_distance(p,target))
+    return ((chosen[0]-start[0]) % 8 if abs(chosen[0]-start[0]) <= 1 else -1 if chosen[0] > start[0] else 1, (chosen[1]-start[1]) % 8 if abs(chosen[1]-start[1]) <= 1 else -1 if chosen[1] > start[1] else 1)
+
+def _pacman_direction_to(start, target, cells, chase=True):
+    opts=PACMAN_DIRS[:]; random.shuffle(opts)
+    legal=[d for d in opts if _pacman_step(start,d) in set(cells)]
+    if not legal: return (0,0)
+    return (min if chase else max)(legal, key=lambda d:_pacman_distance(_pacman_step(start,d), target))
+
+def _pacman_tick_state(state):
+    state['ticks']=int(state.get('ticks') or 0)+1
+    if state.get('caught',0):
+        state['caught']-=1
+        if state['caught'] <= 0: _pacman_next_map(state)
+        return
+    cells=state['cells']; active=[g['pos'] for g in state['ghosts'] if not g.get('eaten')]
+    target=min(active, key=lambda p:_pacman_distance(state['pacman'],p)) if state.get('power') and active else state.get('fruit')
+    state['dir']=_pacman_direction_to(state['pacman'], target, cells, chase=True)
+    state['pacman']=_pacman_step(state['pacman'], state['dir'])
+    if state['pacman'] == state.get('fruit'):
+        state['score']+=10; state['fruit_count']+=1; state['power']=PACMAN_POWER_TICKS; state['fruit']=_pacman_new_fruit(state)
+        if state['fruit_count'] % PACMAN_FRUITS_PER_MAP == 0: _pacman_next_map(state); return
+    ghosts_should_move = state['ticks'] % PACMAN_GHOST_MOVE_INTERVAL == 0
+    for g in state['ghosts']:
+        if g.get('eaten'):
+            g['eaten']-=1
+            if g['eaten'] <= 0: g['pos']=g['home']
+            continue
+        if not ghosts_should_move:
+            continue
+        if state.get('power') and random.random() < 0.75:
+            g['dir']=_pacman_direction_to(g['pos'], state['pacman'], cells, chase=False)
+        elif random.random() < 0.70:
+            g['dir']=_pacman_direction_to(g['pos'], state['pacman'], cells, chase=True)
+        g['pos']=_pacman_step(g['pos'], g['dir'])
+    for g in state['ghosts']:
+        if g['pos'] != state['pacman'] or g.get('eaten'): continue
+        if state.get('power'):
+            g['eaten']=10; state['score']+=25
+        else:
+            state['caught']=6
+    state['mouth_open']=not state.get('mouth_open', True); state['power']=max(0, int(state.get('power') or 0)-1)
+
+def draw_pacman_frame(sense, tick, st=None):
+    global PACMAN_STATE
+    if not PACMAN_STATE: PACMAN_STATE=_pacman_new_state()
+    state=PACMAN_STATE; _pacman_tick_state(state)
+    brightness=sense_brightness(st or {})
+    pixels=[[0,0,0] for _ in range(64)]
+    def put(pt, color):
+        x,y=pt; pixels[y*8+x]=list(scale_color(color, brightness))
+    layout=state['layout']
+    # Classic Pac-Man read: black maze, electric-blue walls, warm peach pellets.
+    # On 8x8, bright/full-density pellets wash out Pac-Man and the ghosts, so dots are deliberately sparse and dim.
+    for y,row in enumerate(layout):
+        for x,ch in enumerate(row):
+            if ch == '#':
+                pixels[y*8+x]=list(scale_color(PACMAN_WALL_COLOR, brightness))
+            elif ch == 'o' and (tick % 8) < 5:
+                pixels[y*8+x]=list(scale_color(PACMAN_POWER_COLOR, max(28, int(brightness * 0.45))))
+            elif ch == '.' and ((x + y + tick) % PACMAN_PELLET_DRAW_INTERVAL) == 0:
+                pixels[y*8+x]=list(scale_color(PACMAN_PELLET_COLOR, max(18, int(brightness * 0.22))))
+    if not state.get('caught'):
+        put(state['fruit'], PACMAN_CHERRY)
+        fx,fy=state['fruit']; stem=(fx, max(0, fy-1))
+        if stem in state['cells'] and tick % 3 != 0: put(stem, PACMAN_CHERRY_STEM)
+    for g in state['ghosts']:
+        if g.get('eaten'):
+            if g['eaten'] % 2 == 0: put(g['pos'], PACMAN_POWER_COLOR)
+            continue
+        color=(33,33,255) if state.get('power') and state['power'] % 4 != 0 else g['color']
+        put(g['pos'], color)
+    put(state['pacman'], (255,60,0) if state.get('caught') else (PACMAN_YELLOW if not state.get('power') else (255,255,140)))
+    if state.get('mouth_open') and not state.get('caught'):
+        mouth=_pacman_step(state['pacman'], state.get('dir') or (1,0))
+        if mouth in _pacman_neighbors(state['pacman'], state['cells']): pixels[mouth[1]*8+mouth[0]]=[0,0,0]
+    sense_set_pixels(sense, pixels, st)
+    with SENSE_LOCK:
+        SENSE_CACHE['pacman_display']={'model':'classic arcade-inspired 8x8 pacman maze: blue walls, sparse warm pellets, cherry, four slower ghosts','score':state.get('score',0),'fruit_count':state.get('fruit_count',0),'map_index':state.get('map_index',0),'power_ticks':state.get('power',0),'caught_flash_ticks':state.get('caught',0),'ghosts':len(state.get('ghosts') or []),'ghost_move_interval':PACMAN_GHOST_MOVE_INTERVAL,'fruits_per_map':PACMAN_FRUITS_PER_MAP,'frame_sleep':PACMAN_FRAME_SLEEP,'pellet_draw_interval':PACMAN_PELLET_DRAW_INTERVAL,'lit_leds':sum(1 for c in pixels if c != [0,0,0]),'palette':'wall=#2121ff pac=#ffff00 pellet=#ffb8ae blinky=#ff0000 pinky=#ffb8ff inky=#00ffff clyde=#ffb852'}
+
 def sense_alarm_due(st):
     alarm=st.get('hydration_alarm') or {}
     if not alarm.get('enabled'): return False
@@ -389,13 +666,17 @@ def sense_loop():
         while True:
             st=read_state(); mode=normalize_mode(st.get('sense_mode') or 'compass')
             try:
-                orient=sense.get_orientation(); yaw=orient.get('yaw',0); temp_c=sense.get_temperature(); temp_f=temp_c*9/5+32; hum=sense.get_humidity(); pressure=sense.get_pressure()
+                orient=sense.get_orientation(); raw_yaw=orient.get('yaw',0)
+                try: magnetic_yaw=sense.get_compass()
+                except Exception: magnetic_yaw=raw_yaw
+                yaw=corrected_compass_heading(magnetic_yaw, st); temp_c=sense.get_temperature(); temp_f=temp_c*9/5+32; hum=sense.get_humidity(); pressure=sense.get_pressure()
                 now=time.time()
                 # GPS sampling can block for several seconds indoors; keep LED/joystick modes responsive.
                 if mode == 'gps' or now - last_gps_at > 30:
                     last_gps = gps_status(); last_gps_at = now
                 gps = last_gps or {'ok': False, 'message': 'GPS not sampled for this display mode yet'}
                 if mode=='liquid': draw_liquid(sense, orient, tick, st)
+                elif mode=='pacman': draw_pacman_frame(sense, tick, st)
                 elif mode in ('compass','compass-arrow'): draw_compass(sense, yaw, st)
                 elif mode=='compass-cardinal': draw_compass_cardinal(sense, yaw, st)
                 elif mode=='rotation-test': draw_rotation_test(sense, st, tick)
@@ -431,10 +712,17 @@ def sense_loop():
                 elif mode=='snake': draw_snake_frame(sense,tick,parse_color(st.get('sense_color'), (0,220,70)))
                 if sense_alarm_due(st):
                     draw_water_icon(sense, (0,120,255)); text_once(sense, 'DRINK 8OZ WATER', (0,120,255), sense_scroll_speed(st)); alarm=st.get('hydration_alarm') or {}; alarm['lastFiredAt']=time.time(); st['hydration_alarm']=alarm; write_state(st)
-                with SENSE_LOCK: SENSE_CACHE.update({'ok': True, 'mode': mode, 'available_modes': SENSE_MODES, 'orientation': orient, 'compass': yaw, 'temp': temp_f, 'humidity': hum, 'pressure': pressure, 'gps': gps, 'message': f'{mode} display active', 'updated': time.time()})
+                orient = dict(orient or {}); orient.update({'magnetic_heading': round(float(magnetic_yaw or 0),1), 'north_heading': round(float(yaw or 0),1), 'cardinal': compass_name(yaw)})
+                with SENSE_LOCK: SENSE_CACHE.update({'ok': True, 'mode': mode, 'available_modes': SENSE_MODES, 'orientation': orient, 'compass': yaw, 'magnetic_compass': magnetic_yaw, 'compass_cardinal': compass_name(yaw), 'temp': temp_f, 'humidity': hum, 'pressure': pressure, 'gps': gps, 'message': f'{mode} display active', 'updated': time.time()})
             except Exception as e:
                 with SENSE_LOCK: SENSE_CACHE.update({'ok': False, 'mode': mode, 'message': f'Sense HAT read/display error: {e}', 'updated': time.time()})
-            tick+=1; time.sleep(0.35 if mode in ('liquid','fire','stars','beacon') else 0.75)
+            tick+=1
+            if mode == 'liquid':
+                time.sleep(0.06)
+            elif mode == 'pacman':
+                time.sleep(PACMAN_FRAME_SLEEP)
+            else:
+                time.sleep(0.35 if mode in ('fire','stars','beacon') else 0.75)
     except Exception as e:
         with SENSE_LOCK: SENSE_CACHE.update({'ok': False, 'message': f'Sense HAT unavailable: {e}', 'updated': time.time()})
 
@@ -840,17 +1128,197 @@ def status():
         o=sense.get('orientation') or {}; sense_text='sense-hat ok roll={:.1f} pitch={:.1f} yaw={:.1f} mode={}'.format(o.get('roll',0),o.get('pitch',0),o.get('yaw',0),sense.get('mode','compass'))
     return {'ok': True, 'host': socket.gethostname(), 'port': PORT, 'https': https_status(), 'ip': ip, 'connection_mode': mode, **w, 'gps_device': gps.get('device'), 'gps': gps, 'sense_hat': sense_text, 'sense': sense, 'system': system_stats(), 'state': read_state(), 'time': time.time()}
 
+def _nmcli_lines(args, timeout=5):
+    out = sh('nmcli -t ' + args + ' 2>/dev/null || true', timeout=timeout).get('output','')
+    return [line for line in out.splitlines() if line.strip()]
+
+def _systemd_state(service):
+    active = sh(f'systemctl is-active {shlex.quote(service)} 2>/dev/null || true', timeout=4).get('output','').strip() or 'unknown'
+    enabled = sh(f'systemctl is-enabled {shlex.quote(service)} 2>/dev/null || true', timeout=4).get('output','').strip() or 'unknown'
+    return {'service': service, 'active': active, 'enabled': enabled}
+
+def _ssh_status():
+    names = ['ssh.service', 'sshd.service']
+    states = [_systemd_state(name) for name in names]
+    listeners = sh("ss -lntp 2>/dev/null | grep -E ':(22)\\s' || true", timeout=4).get('output','').strip()
+    return {'ok': any(s.get('active') == 'active' for s in states) and bool(listeners), 'services': states, 'listening': bool(listeners), 'listeners': listeners[-1000:]}
+
+
+def _safe_connection_name(ssid, label=None):
+    base = ''.join(ch if ch.isalnum() or ch in ('-','_','.') else '-' for ch in str(label or ssid or 'wifi'))
+    base = '-'.join([x for x in base.split('-') if x])[:48] or 'wifi'
+    if not base.startswith('MapPI3-'):
+        base = 'MapPI3-' + base
+    return base[:64]
+
+def wifi_scan(payload=None):
+    payload = payload or {}
+    if not pathlib.Path('/usr/bin/nmcli').exists():
+        return {'ok': False, 'error': 'nmcli/NetworkManager not installed', 'networks': [], 'saved_wifi': []}
+    if payload.get('rescan', True):
+        sh('nmcli radio wifi on; rfkill unblock wifi || true; nmcli device wifi rescan ifname wlan0 2>/dev/null || nmcli device wifi rescan || true', timeout=15)
+    raw = _nmcli_lines('-f IN-USE,SSID,SECURITY,SIGNAL,FREQ,BARS device wifi list --rescan no', timeout=8)
+    networks = []
+    seen = set()
+    for line in raw:
+        parts = line.split(':')
+        if len(parts) < 6: continue
+        in_use, ssid, security, signal, freq, bars = parts[0], parts[1], parts[2], parts[3], parts[4], ':'.join(parts[5:])
+        ssid = ssid.strip()
+        if not ssid or ssid in seen: continue
+        seen.add(ssid)
+        try: sig = int(signal or 0)
+        except Exception: sig = 0
+        networks.append({'ssid': ssid, 'in_use': in_use.strip() == '*', 'security': security or 'open', 'signal': sig, 'freq': freq, 'bars': bars, 'saved': False})
+    saved = _wifi_saved_connections()
+    saved_names = {item.get('name') for item in saved}
+    saved_ssids = {item.get('ssid') for item in saved}
+    for item in networks:
+        item['saved'] = item['ssid'] in saved_ssids or _safe_connection_name(item['ssid']) in saved_names
+    networks.sort(key=lambda n: (not n.get('in_use'), -int(n.get('signal') or 0), n.get('ssid','').lower()))
+    return {'ok': True, 'networks': networks[:60], 'saved_wifi': saved, 'time': time.time()}
+
+def wifi_save_network(payload=None):
+    payload = payload or {}
+    ssid = str(payload.get('ssid') or '').strip()
+    password = str(payload.get('password') or '')
+    label = str(payload.get('label') or ssid).strip()
+    autoconnect = bool(payload.get('autoconnect', True))
+    if not ssid: return {'ok': False, 'error': 'SSID is required'}
+    if not pathlib.Path('/usr/bin/nmcli').exists():
+        return {'ok': False, 'error': 'nmcli/NetworkManager not installed; cannot save Wi-Fi credentials on this image yet'}
+    name = _safe_connection_name(ssid, label)
+    priority = int(payload.get('priority') or 650)
+    cmd = 'set -u; nmcli radio wifi on; rfkill unblock wifi || true; '
+    cmd += 'nmcli connection delete ' + shlex.quote(name) + ' >/dev/null 2>&1 || true; '
+    cmd += 'nmcli connection add type wifi ifname wlan0 con-name ' + shlex.quote(name) + ' ssid ' + shlex.quote(ssid) + '; '
+    cmd += 'nmcli connection modify ' + shlex.quote(name) + ' connection.autoconnect ' + ('yes' if autoconnect else 'no') + ' connection.autoconnect-priority ' + shlex.quote(str(priority)) + ' ipv4.method auto; '
+    if password:
+        cmd += 'nmcli connection modify ' + shlex.quote(name) + ' wifi-sec.key-mgmt wpa-psk wifi-sec.psk ' + shlex.quote(password) + '; '
+    else:
+        cmd += 'nmcli connection modify ' + shlex.quote(name) + ' wifi-sec.key-mgmt none; '
+    out = sh(cmd, timeout=30)
+    st = read_state(); st.setdefault('saved_wifi_profiles', {})[name] = {'ssid': ssid, 'label': label or ssid, 'saved_at': time.time(), 'has_password': bool(password), 'autoconnect': autoconnect}; write_state(st)
+    saved = _wifi_saved_connections()
+    return {'ok': out.get('ok'), 'message': f'Saved Wi-Fi profile {name} for SSID {ssid}. Password is stored only in NetworkManager on the Pi and is never returned by the API.', 'name': name, 'ssid': ssid, 'has_password': bool(password), 'output': '[REDACTED]', 'saved_wifi': saved}
+
+def _wifi_saved_connections():
+    saved_raw = _nmcli_lines('-f NAME,TYPE,AUTOCONNECT,AUTOCONNECT-PRIORITY connection show')
+    state_profiles = (read_state().get('saved_wifi_profiles') or {})
+    saved = []
+    for line in saved_raw:
+        parts = line.split(':')
+        if len(parts) >= 4 and parts[1] in ('802-11-wireless','wifi'):
+            name = parts[0]
+            meta = state_profiles.get(name, {}) if isinstance(state_profiles, dict) else {}
+            ssid = meta.get('ssid') or sh('nmcli -g 802-11-wireless.ssid connection show ' + shlex.quote(name) + ' 2>/dev/null || true', timeout=4).get('output','').strip()
+            saved.append({'name': name, 'ssid': ssid or name.replace('MapPI3-','',1), 'label': meta.get('label') or ssid or name, 'type': parts[1], 'autoconnect': parts[2], 'priority': parts[3], 'has_password': bool(meta.get('has_password', True)), 'secret': '[REDACTED]'})
+    return saved
+
+def network_status(payload=None):
+    active = _nmcli_lines('-f NAME,TYPE,DEVICE connection show --active')
+    devices = _nmcli_lines('-f DEVICE,TYPE,STATE,CONNECTION device')
+    route = sh('ip route | sed -n "1,20p"', timeout=4).get('output','')
+    ts = tailscale_status()
+    ssh = _ssh_status()
+    return {'ok': True, 'wifi': wifi_info(), 'active_connections': active, 'saved_wifi': _wifi_saved_connections(), 'devices': devices, 'has_default_route': any(line.startswith('default ') for line in route.splitlines()), 'route': route, 'tailscale': ts, 'ssh': ssh, 'remote_ready': bool(ts.get('online') and ssh.get('ok')), 'time': time.time()}
+
+def repair_remote_access(payload=None):
+    steps = []
+    steps.append(sh('systemctl enable --now ssh.service 2>&1 || systemctl enable --now sshd.service 2>&1 || true', timeout=20))
+    if shutil.which('tailscale'):
+        steps.append(sh('systemctl enable --now tailscaled 2>&1 || true', timeout=20))
+    if pathlib.Path('/usr/bin/nmcli').exists():
+        steps.append(sh('nmcli radio wifi on; rfkill unblock wifi || true; iw dev wlan0 set power_save off 2>/dev/null || true', timeout=15))
+    status_now = network_status()
+    return {'ok': status_now.get('remote_ready'), 'message': 'Remote access repair attempted: SSH enabled, tailscaled started, Wi-Fi unblocked/power-save disabled.', 'steps': [s.get('output','')[-1000:] for s in steps], 'network': status_now}
+
 def connect_home_wifi(payload):
     ssid=(payload.get('ssid') or '').strip(); password=payload.get('password') or ''
+    keep_hotspot=bool(payload.get('keepHotspot', False))
     if not ssid: return {'ok': False, 'error': 'SSID is required'}
     st=read_state(); st['home_wifi_ssid']=ssid; st['home_wifi_saved_at']=time.time(); write_state(st)
     if not pathlib.Path('/usr/bin/nmcli').exists(): return {'ok': False, 'error': 'nmcli/NetworkManager not installed yet; saved SSID locally only'}
-    cmd = "nmcli radio wifi on; rfkill unblock wifi || true; nmcli device wifi rescan || true; nmcli connection delete MapPI3-home >/dev/null 2>&1 || true; "
-    cmd += "nmcli connection add type wifi ifname wlan0 con-name MapPI3-home ssid " + json.dumps(ssid) + "; "
-    cmd += "nmcli connection modify MapPI3-home connection.autoconnect yes wifi-sec.key-mgmt wpa-psk wifi-sec.psk " + json.dumps(password) + "; "
-    cmd += "nmcli connection up MapPI3-home || nmcli device wifi connect " + json.dumps(ssid) + " password " + json.dumps(password)
-    return sh(cmd, timeout=45)
+    pre = network_status()
+    con = 'MapPI3-home'
+    cmd = "set -u; nmcli radio wifi on; rfkill unblock wifi || true; iw dev wlan0 set power_save off 2>/dev/null || true; nmcli device wifi rescan || true; "
+    cmd += "nmcli connection delete " + shlex.quote(con) + " >/dev/null 2>&1 || true; "
+    cmd += "nmcli connection add type wifi ifname wlan0 con-name " + shlex.quote(con) + " ssid " + shlex.quote(ssid) + "; "
+    cmd += "nmcli connection modify " + shlex.quote(con) + " connection.autoconnect yes connection.autoconnect-priority 700 wifi-sec.key-mgmt wpa-psk wifi-sec.psk " + shlex.quote(password) + " ipv4.method auto; "
+    if keep_hotspot:
+        cmd += "nmcli connection up " + shlex.quote(con) + " || nmcli device wifi connect " + shlex.quote(ssid) + " password " + shlex.quote(password) + "; "
+    else:
+        cmd += "nmcli connection down MapPI3-hotspot || true; sleep 2; nmcli connection up " + shlex.quote(con) + " || nmcli device wifi connect " + shlex.quote(ssid) + " password " + shlex.quote(password) + "; "
+    cmd += "systemctl enable --now ssh.service 2>/dev/null || systemctl enable --now sshd.service 2>/dev/null || true; systemctl enable --now tailscaled 2>/dev/null || true"
+    out = sh(cmd, timeout=60)
+    time.sleep(3)
+    out['pre_network'] = pre
+    out['network'] = network_status()
+    out['message'] = ('Attempted Wi-Fi join while keeping hotspot up. Some Pi Wi-Fi adapters cannot run AP+client together.' if keep_hotspot else 'Attempted Wi-Fi join after lowering the MapPI3 hotspot. Reconnect over Tailscale/LAN if successful; use hotspot restore locally if not.')
+    return out
 
+def wifi_connect_saved(payload=None):
+    payload = payload or {}
+    name = str(payload.get('name') or payload.get('connection') or '').strip()
+    ssid = str(payload.get('ssid') or '').strip()
+    keep_hotspot = bool(payload.get('keepHotspot', False))
+    if not name and ssid:
+        name = _safe_connection_name(ssid, payload.get('label') or ssid)
+    if not name:
+        return {'ok': False, 'error': 'Saved Wi-Fi connection name or SSID is required'}
+    if not name.startswith('MapPI3-'):
+        return {'ok': False, 'error': 'Refusing to switch to a non-MapPI3 managed connection'}
+    if not pathlib.Path('/usr/bin/nmcli').exists(): return {'ok': False, 'error': 'nmcli/NetworkManager not installed'}
+    known = [item.get('name') for item in network_status().get('saved_wifi', [])]
+    if name not in known: return {'ok': False, 'error': f'Saved Wi-Fi connection not found: {name}', 'known': known}
+    pre = network_status()
+    cmd = 'nmcli radio wifi on; rfkill unblock wifi || true; iw dev wlan0 set power_save off 2>/dev/null || true; '
+    if not keep_hotspot:
+        cmd += 'nmcli connection down MapPI3-hotspot || true; sleep 2; '
+    cmd += 'nmcli connection up ' + shlex.quote(name) + '; '
+    cmd += 'systemctl enable --now ssh.service 2>/dev/null || systemctl enable --now sshd.service 2>/dev/null || true; '
+    cmd += 'systemctl enable --now tailscaled 2>/dev/null || true'
+    out = sh(cmd, timeout=60)
+    time.sleep(4)
+    net = network_status()
+    out['ok'] = bool(out.get('ok') and (net.get('has_default_route') or net.get('tailscale',{}).get('online')))
+    out['pre_network'] = pre
+    out['network'] = net
+    out['message'] = f'Requested switch to saved Wi-Fi {name}. SSH and tailscaled were enabled. If Tailscale is Running, disconnect from hotspot, turn on Tailscale, then SSH to the shown Tailscale IP/DNS.'
+    return out
+
+def hotspot_on(payload=None):
+    saved_names = [item.get('name') for item in _wifi_saved_connections() if item.get('name','').startswith('MapPI3-') and item.get('name') != 'MapPI3-hotspot']
+    down = ' '.join('nmcli connection down ' + shlex.quote(n) + ' >/dev/null 2>&1 || true;' for n in saved_names[:20])
+    cmd = 'nmcli radio wifi on; rfkill unblock wifi || true; nmcli connection modify MapPI3-hotspot connection.autoconnect yes connection.autoconnect-priority 500 ipv4.method shared ipv4.addresses 10.42.0.1/24 ipv4.never-default yes || true; ' + down + ' nmcli connection up MapPI3-hotspot'
+    out = sh(cmd, timeout=45)
+    out['network'] = network_status()
+    return out
+
+def tailscale_status(payload=None):
+    if not shutil.which('tailscale'):
+        return {'ok': False, 'installed': False, 'backend_state': 'not-installed'}
+    text = sh('timeout 8 tailscale status --json 2>/dev/null', timeout=10).get('output','')
+    try:
+        data=json.loads(text)
+        self_node=data.get('Self') or {}
+        return {'ok': True, 'installed': True, 'backend_state': data.get('BackendState'), 'current_tailnet': data.get('CurrentTailnet'), 'hostname': self_node.get('HostName'), 'online': self_node.get('Online'), 'tailscale_ips': self_node.get('TailscaleIPs'), 'dns_name': self_node.get('DNSName')}
+    except Exception:
+        short = sh('timeout 6 tailscale status 2>&1 || true', timeout=8).get('output','')[-1000:]
+        return {'ok': False, 'installed': True, 'backend_state': short.strip() or 'unknown'}
+
+def tailscale_login(payload=None):
+    if not shutil.which('tailscale'):
+        return {'ok': False, 'installed': False, 'error': 'tailscale CLI is not installed'}
+    sh('systemctl enable --now tailscaled || true', timeout=15)
+    out = sh('timeout 25 tailscale up --ssh --hostname=MapPI3 --accept-dns=false 2>&1 || true', timeout=30)
+    status = tailscale_status()
+    auth_url = ''
+    for token in out.get('output','').split():
+        if token.startswith('https://login.tailscale.com/'):
+            auth_url = token.strip()
+            break
+    return {'ok': status.get('backend_state') == 'Running', 'message': 'Open auth_url and sign into the real_cak3d tailnet if present. If no URL appears, connect the Pi to internet first, then retry.', 'auth_url': auth_url, 'output_tail': out.get('output','')[-1600:], 'status': status, 'network': network_status()}
 
 
 def pi_weather(payload):
@@ -911,6 +1379,52 @@ def gps_diagnose():
     else:
         checks['recommendation']='GPS fix present.'
     return {'ok': True, 'diagnostics': checks}
+
+def sense_diagnose(payload=None):
+    payload = payload or {}
+    count = max(3, min(20, int(payload.get('count') or 8)))
+    delay = max(0.02, min(0.5, float(payload.get('delay') or 0.12)))
+    samples = []
+    try:
+        from sense_hat import SenseHat
+        sense = SenseHat()
+        for _ in range(count):
+            raw = sense.get_accelerometer_raw()
+            orient = sense.get_orientation()
+            try: compass = sense.get_compass()
+            except Exception: compass = None
+            ax = float(raw.get('x', 0.0)); ay = float(raw.get('y', 0.0)); az = float(raw.get('z', 1.0))
+            plane = math.sqrt(ax*ax + ay*ay)
+            samples.append({
+                'raw_accel': {'x': round(ax,4), 'y': round(ay,4), 'z': round(az,4)},
+                'raw_plane_magnitude': round(plane,4),
+                'raw_tilt_degrees': round(math.degrees(math.atan2(plane, max(0.001, abs(az)))),2),
+                'orientation': {k: round(float(orient.get(k) or 0), 2) for k in ('roll','pitch','yaw')},
+                'compass': round(float(compass), 2) if compass is not None else None,
+                'time': time.time(),
+            })
+            time.sleep(delay)
+        def span(path):
+            vals=[]
+            for sample in samples:
+                cur=sample
+                for part in path.split('.'):
+                    cur=cur.get(part) if isinstance(cur, dict) else None
+                if isinstance(cur, (int,float)): vals.append(float(cur))
+            return round(max(vals)-min(vals),4) if vals else None
+        spans = {
+            'raw_x': span('raw_accel.x'),
+            'raw_y': span('raw_accel.y'),
+            'raw_z': span('raw_accel.z'),
+            'roll': span('orientation.roll'),
+            'pitch': span('orientation.pitch'),
+            'tilt_degrees': span('raw_tilt_degrees'),
+        }
+        moving = any((spans.get(k) or 0) > (0.08 if k.startswith('raw_') else 3.0) for k in spans)
+        return {'ok': True, 'count': count, 'delay': delay, 'samples': samples, 'spans': spans, 'moving': moving, 'sense_cache': sense_snapshot(), 'hint': 'Tilt the Pi during this command; raw_x/raw_y/roll/pitch/tilt_degrees spans should jump if the IMU is moving.'}
+    except Exception as e:
+        return {'ok': False, 'error': str(e), 'sense_cache': sense_snapshot()}
+
 
 def field_ai_verify(payload=None):
     payload=payload or {}; ensure_builtin_models()
@@ -1207,6 +1721,14 @@ def command(name, payload=None):
     payload=payload or {}
     if name not in ALLOWED: return {'ok': False, 'error': 'unknown command'}
     if name=='status': return status()
+    if name=='network-status': return network_status(payload)
+    if name=='wifi-scan': return wifi_scan(payload)
+    if name=='wifi-save-network': return wifi_save_network(payload)
+    if name=='tailscale-status': return tailscale_status(payload)
+    if name=='tailscale-login': return tailscale_login(payload)
+    if name=='remote-access-repair': return repair_remote_access(payload)
+    if name=='wifi-connect-saved': return wifi_connect_saved(payload)
+    if name=='hotspot-on': return hotspot_on(payload)
     if name=='gps-sample': return gps_sample()
     if name=='sense-mode': return set_sense_mode(payload.get('mode') or payload.get('sense_mode') or payload.get('orientationMode') or 'compass', payload)
     if name=='calibrate': return calibrate(payload.get('target') or 'all')
@@ -1222,6 +1744,7 @@ def command(name, payload=None):
     if name=='noaa-refresh': return noaa_weather(payload)
     if name=='online-maintenance': return start_online_maintenance(payload)
     if name=='gps-diagnose': return gps_diagnose()
+    if name=='sense-diagnose': return sense_diagnose(payload)
     if name=='field-ai-verify': return field_ai_verify(payload)
     if name=='captive-setup': return setup_captive(payload)
     if name=='captive-disable': return disable_captive()
@@ -1406,6 +1929,9 @@ class Handler(http.server.SimpleHTTPRequestHandler):
         except Exception: return {}
     def do_GET(self):
         if self.path.startswith('/api/status'): self.json_response(status()); return
+        if self.path.startswith('/api/network/status'): self.json_response(network_status()); return
+        if self.path.startswith('/api/wifi/scan'): self.json_response(wifi_scan()); return
+        if self.path.startswith('/api/tailscale/status'): self.json_response(tailscale_status()); return
         if self.path.startswith('/api/field-ai/categories'): self.json_response(field_ai_categories()); return
         if self.path.startswith('/api/field-ai/status'): self.json_response(field_ai_status()); return
         if self.path.startswith('/api/field-ai/history'): self.json_response(field_ai_history()); return
@@ -1429,6 +1955,9 @@ class Handler(http.server.SimpleHTTPRequestHandler):
     def do_POST(self):
         payload=self.read_json()
         if self.path.startswith('/api/wifi-home'): self.json_response(connect_home_wifi(payload)); return
+        if self.path.startswith('/api/wifi/scan'): self.json_response(wifi_scan(payload)); return
+        if self.path.startswith('/api/wifi/save'): self.json_response(wifi_save_network(payload)); return
+        if self.path.startswith('/api/wifi/connect'): self.json_response(wifi_connect_saved(payload)); return
         if self.path.startswith('/api/sense-mode'): self.json_response(set_sense_mode(payload.get('mode') or payload.get('sense_mode') or 'compass', payload)); return
         if self.path.startswith('/api/calibrate'): self.json_response(calibrate(payload.get('target') or 'all')); return
         if self.path.startswith('/api/field-ai/analyze'): self.json_response(field_ai_analyze(payload)); return

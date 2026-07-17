@@ -1,0 +1,56 @@
+{
+  "schema": "mappi3.release-packages.v1",
+  "version": "1.2.43",
+  "product_model": "Pi-first image/app with web/PWA fallback",
+  "packages": [
+    {
+      "id": "mappi3-base",
+      "name": "MapPI3 base Pi image/app",
+      "audience": "first boot, smallest reliable field build",
+      "includes": [
+        "Pi hotspot app",
+        "GPS/PPS hooks",
+        "Sense HAT simulator + hardware control",
+        "Wi-Fi/Tailscale onboarding",
+        "core offline route/map shell"
+      ],
+      "artifact": "releases/mappi3-base-latest.img.xz",
+      "status": "manifest-placeholder"
+    },
+    {
+      "id": "mappi3-plugins",
+      "name": "MapPI3 app with plugins",
+      "audience": "Pi users with more SD space and field hardware",
+      "includes": [
+        "base package",
+        "plugin manager",
+        "NOAA/weather",
+        "Sense HAT games",
+        "GPS voice nav",
+        "Bluetooth sensors",
+        "debug VNC hooks"
+      ],
+      "artifact": "releases/mappi3-plugins-latest.img.xz",
+      "status": "manifest-placeholder"
+    },
+    {
+      "id": "mappi3-plugins-data",
+      "name": "MapPI3 app with plugins + data packs",
+      "audience": "fully loaded offline trail/field kit",
+      "includes": [
+        "plugins package",
+        "offline library",
+        "forage images",
+        "regional tile/data packs",
+        "field AI starter assets"
+      ],
+      "artifact": "releases/mappi3-plugins-data-latest.img.xz",
+      "status": "manifest-placeholder"
+    }
+  ],
+  "map_pack_policy": {
+    "home_radius_miles_default": 300,
+    "source": "home address/account origin or phone/Pi GPS fallback",
+    "note": "Planner lists downloadable packs around the saved home base; generation/downloading is staged by manifest so the Pi image stays recoverable."
+  }
+}
