@@ -1,0 +1,13 @@
+# Keep Vercel CLI uploads lean and free of local-only field hardware artifacts.
+node_modules/
+dist/
+.vercel/
+.git/
+.env
+.env.*
+!.env.example
+*.log
+coverage/
+.cache/
+staging/
+local-pi-imager/
