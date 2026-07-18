@@ -10,7 +10,7 @@ KEY_FILE = CERT_DIR / 'mappi3-local.key'
 LIQUID_STATE = {'gx': 0.0, 'gy': 0.0, 'gz': 1.0}
 LIQUID_PARTICLES = []
 PACMAN_STATE = {}
-SENSE_MODES = ['compass','compass-arrow','compass-cardinal','rotation-test','liquid','pacman','weather','fire','flashlight','sos','message','boot','sun','gps','clock','progress','beacon','stars','temp','humidity','pressure','custom','border','magic8','water','snake']
+SENSE_MODES = ['compass','compass-arrow','compass-cardinal','rotation-test','liquid','pacman','weather','fire','flashlight','sos','message','boot','sun','gps','clock','progress','beacon','stars','temp','humidity','pressure','avatar','level','custom','border','magic8','water','snake']
 ALLOWED = {'status','restart-web','reboot','shutdown','update-app','gps-sample','toggle-hotspot','hotspot-on','connect-home-wifi','wifi-scan','wifi-save-network','wifi-connect-saved','network-status','tailscale-status','tailscale-login','remote-access-repair','sense-mode','calibrate','harden-hotspot','plugin-update','vnc-setup','vnc-disable','weather-refresh','noaa-refresh','online-maintenance','gps-diagnose','sense-diagnose','field-ai-verify','captive-setup','captive-disable','captive-status','gps-pps-setup','plugin-status','plugin-install','plugin-install-all','plugin-uninstall'}
 SENSE_CACHE = {'ok': False, 'mode': 'compass', 'message': 'Sense HAT display loop starting', 'updated': 0, 'joystick': {'seq': 0, 'direction': '', 'pressed': False, 'updated': 0}}
 SENSE_LOCK = threading.Lock()
@@ -44,7 +44,7 @@ def write_state(data):
 
 def normalize_mode(mode):
     raw = str(mode or 'compass').strip().lower().replace(' ', '-').replace('_','-')
-    aliases = {'custom-message':'message','scroll-message':'message','sunrise':'sun','sunset':'sun','sunrise-sunset':'sun','gps-fix':'gps','weather-now':'weather','flash-light':'flashlight','compass arrow':'compass-arrow','compass-arrow':'compass-arrow','compass nsew':'compass-cardinal','compass-nsew':'compass-cardinal','compass cardinal':'compass-cardinal','compass-cardinal':'compass-cardinal','cardinal':'compass-cardinal','rotation':'rotation-test','rotation-test':'rotation-test','pac-man':'pacman','pac man':'pacman','pac':'pacman','game-pacman':'pacman'}
+    aliases = {'custom-message':'message','scroll-message':'message','sunrise':'sun','sunset':'sun','sunrise-sunset':'sun','gps-fix':'gps','weather-now':'weather','flash-light':'flashlight','compass arrow':'compass-arrow','compass-arrow':'compass-arrow','compass nsew':'compass-cardinal','compass-nsew':'compass-cardinal','compass cardinal':'compass-cardinal','compass-cardinal':'compass-cardinal','cardinal':'compass-cardinal','rotation':'rotation-test','rotation-test':'rotation-test','pac-man':'pacman','pac man':'pacman','pac':'pacman','game-pacman':'pacman','avatar-buddy':'avatar','buddy':'avatar','face':'avatar','level-readout':'level','bubble-level':'level'}
     raw = aliases.get(raw, raw)
     return raw if raw in SENSE_MODES else ('liquid' if raw.startswith('liq') else 'compass')
 
@@ -141,6 +141,10 @@ def set_sense_mode(mode, payload=None):
     if 'senseRotation' in payload: st['sense_rotation'] = payload.get('senseRotation')
     if 'scrollSpeed' in payload: st['sense_scroll_speed'] = payload.get('scrollSpeed')
     if 'senseColor' in payload: st['sense_color'] = str(payload.get('senseColor') or '#00aa55')[:16]
+    if 'customPixels' in payload and isinstance(payload.get('customPixels'), list):
+        st['sense_custom_pixels'] = payload.get('customPixels')[:64]
+    if 'liquidAxisMap' in payload: st['liquid_axis_map'] = str(payload.get('liquidAxisMap') or 'rotate-ccw')[:24]
+    if 'compassOffsetDeg' in payload: st['compass_offset_deg'] = payload.get('compassOffsetDeg')
     if 'borderOnly' in payload: st['sense_border_only'] = bool(payload.get('borderOnly'))
     if 'hydrationAlarm' in payload and isinstance(payload.get('hydrationAlarm'), dict): st['hydration_alarm'] = payload.get('hydrationAlarm')
     if 'features' in payload and isinstance(payload.get('features'), dict): st['features'] = payload.get('features')
@@ -397,8 +401,18 @@ def draw_liquid(sense, orientation, tick, st=None):
     raw_ax, raw_ay, raw_az = ax, ay, az
     mag = max(0.25, math.sqrt(ax*ax + ay*ay + az*az))
     ax, ay, az = ax/mag, ay/mag, az/mag
-    LIQUID_STATE['gx'] += (max(-1, min(1, ax)) - LIQUID_STATE['gx']) * 0.75
-    LIQUID_STATE['gy'] += (max(-1, min(1, ay)) - LIQUID_STATE['gy']) * 0.75
+    axis_map = str((st or {}).get('liquid_axis_map') or 'rotate-ccw')
+    if axis_map == 'rotate-ccw':
+        # Sense HAT is mounted 90° relative to the case; project tilt so right/up
+        # motion reads naturally on the LED matrix.
+        display_ax, display_ay = -ay, ax
+    elif axis_map == 'rotate-cw':
+        display_ax, display_ay = ay, -ax
+    else:
+        axis_map = 'raw'
+        display_ax, display_ay = ax, ay
+    LIQUID_STATE['gx'] += (max(-1, min(1, display_ax)) - LIQUID_STATE['gx']) * 0.75
+    LIQUID_STATE['gy'] += (max(-1, min(1, display_ay)) - LIQUID_STATE['gy']) * 0.75
     LIQUID_STATE['gz'] += (max(-1, min(1, az)) - LIQUID_STATE['gz']) * 0.35
     gx, gy, gz = LIQUID_STATE['gx'], LIQUID_STATE['gy'], LIQUID_STATE['gz']
     pixels, render = _liquid_bottle_pixels(gx, gy, gz, tick, brightness)
@@ -409,6 +423,8 @@ def draw_liquid(sense, orientation, tick, st=None):
         SENSE_CACHE['liquid_display'] = {
             'gx': round(gx,3), 'gy': round(gy,3), 'gz': round(gz,3),
             'raw_accel': {'x': round(raw_ax,3), 'y': round(raw_ay,3), 'z': round(raw_az,3)},
+            'axis_map': axis_map,
+            'display_accel': {'x': round(display_ax,3), 'y': round(display_ay,3), 'z': round(raw_az,3)},
             'normalized_accel': {'x': round(ax,3), 'y': round(ay,3), 'z': round(az,3)},
             'plane_magnitude': round(plane,3),
             'raw_plane_magnitude': round(raw_plane,3),
@@ -488,6 +504,85 @@ def draw_route_progress(sense, st):
     sense_set_pixels(sense, pixels, st if 'st' in locals() else None)
     with SENSE_LOCK:
         SENSE_CACHE['progress_meter']={'progress':progress,'percent':round(progress*100),'distance_miles':distance,'completed_leds':complete+1 if progress > 0 else 0,'finish_led':'green','remaining_leds':'white','completed_leds_color':'red'}
+
+def draw_avatar_buddy(sense, tick, st=None, orient=None, temp_f=None):
+    brightness = sense_brightness(st or {})
+    green = list(scale_color(parse_color((st or {}).get('sense_color'), (0,170,85)), brightness))
+    white = list(scale_color((230,245,235), brightness))
+    blue = list(scale_color((40,160,255), brightness))
+    amber = list(scale_color((255,185,60), brightness))
+    red = list(scale_color((255,70,50), brightness))
+    pixels = [[0,0,0] for _ in range(64)]
+    # rounded face outline
+    for x,y in [(2,0),(3,0),(4,0),(5,0),(1,1),(6,1),(0,2),(7,2),(0,3),(7,3),(0,4),(7,4),(1,6),(6,6),(2,7),(3,7),(4,7),(5,7)]:
+        pixels[y*8+x] = green
+    blink = tick % 12 in (10,11)
+    hot = temp_f is not None and temp_f >= 85
+    eye = amber if hot else blue
+    if blink:
+        for x,y in [(2,3),(3,3),(5,3),(6,3)]: pixels[y*8+x] = white
+    else:
+        for x,y in [(2,2),(3,2),(2,3),(3,3),(5,2),(6,2),(5,3),(6,3)]: pixels[y*8+x] = eye
+    try:
+        roll = float((orient or {}).get('roll') or 0); pitch = float((orient or {}).get('pitch') or 0)
+    except Exception:
+        roll = pitch = 0
+    # Mouth reacts to tilt: smile when level, diagonal smirk when moving, red caution if steep.
+    steep = abs(roll) > 24 or abs(pitch) > 24
+    mouth = red if steep else white
+    if steep:
+        pts = [(2,5),(3,6),(4,6),(5,5)]
+    elif tick % 8 < 4:
+        pts = [(2,5),(3,6),(4,6),(5,5)]
+    else:
+        pts = [(2,5),(3,5),(4,5),(5,5)]
+    for x,y in pts: pixels[y*8+x] = mouth
+    sense_set_pixels(sense, pixels, st)
+    with SENSE_LOCK:
+        SENSE_CACHE['avatar_buddy']={'blink': blink, 'steep_tilt': steep, 'roll': round(roll,1), 'pitch': round(pitch,1), 'temp_f': round(float(temp_f or 0),1) if temp_f is not None else None}
+
+def draw_custom_pixels(sense, st=None):
+    st = st or {}
+    raw = st.get('sense_custom_pixels') or []
+    pixels=[]
+    fallback = list(scale_color(parse_color(st.get('sense_color'), (0,170,85)), sense_brightness(st)))
+    for i in range(64):
+        item = raw[i] if i < len(raw) else [0,0,0]
+        try:
+            if isinstance(item, str):
+                item = parse_color(item, (0,0,0))
+            rgb = [max(0,min(255,int(v))) for v in list(item)[:3]]
+        except Exception:
+            rgb = fallback if i in (0,7,56,63) else [0,0,0]
+        pixels.append(rgb)
+    sense_set_pixels(sense, pixels, st)
+    with SENSE_LOCK:
+        SENSE_CACHE['custom_display']={'lit_leds':sum(1 for c in pixels if c != [0,0,0]), 'source':'app custom pixel editor'}
+
+def draw_level(sense, orient, st=None):
+    brightness = sense_brightness(st or {})
+    pixels = [[0,0,0] for _ in range(64)]
+    dim = list(scale_color((20,55,40), brightness))
+    green = list(scale_color((0,255,90), brightness))
+    amber = list(scale_color((255,190,50), brightness))
+    red = list(scale_color((255,60,45), brightness))
+    white = list(scale_color((240,240,240), brightness))
+    for x in range(8): pixels[3*8+x] = dim; pixels[4*8+x] = dim
+    for y in range(8): pixels[y*8+3] = dim; pixels[y*8+4] = dim
+    try:
+        roll = float((orient or {}).get('roll') or 0); pitch = float((orient or {}).get('pitch') or 0)
+    except Exception:
+        roll = pitch = 0
+    x = max(0,min(7, int(round(3.5 + roll / 12.0))))
+    y = max(0,min(7, int(round(3.5 + pitch / 12.0))))
+    mag = max(abs(roll), abs(pitch))
+    color = green if mag <= 4 else (amber if mag <= 15 else red)
+    pixels[y*8+x] = color
+    for cx,cy in [(3,3),(4,3),(3,4),(4,4)]:
+        if (cx,cy)!=(x,y): pixels[cy*8+cx]=white
+    sense_set_pixels(sense, pixels, st)
+    with SENSE_LOCK:
+        SENSE_CACHE['level_display']={'x_roll_deg':round(roll,1),'y_pitch_deg':round(pitch,1),'status':'level' if mag <= 4 else ('tilted' if mag <= 15 else 'steep'), 'dot':{'x':x,'y':y}}
 
 def parse_color(value, default=(0,140,80)):
     try:
@@ -680,6 +775,8 @@ def sense_loop():
                 elif mode in ('compass','compass-arrow'): draw_compass(sense, yaw, st)
                 elif mode=='compass-cardinal': draw_compass_cardinal(sense, yaw, st)
                 elif mode=='rotation-test': draw_rotation_test(sense, st, tick)
+                elif mode=='avatar': draw_avatar_buddy(sense, tick, st, orient, temp_f)
+                elif mode=='level': draw_level(sense, orient, st)
                 elif mode=='weather':
                     if time.time()-last_text>8: text_once(sense, f'{temp_f:.0f}F {hum:.0f}% {pressure:.0f}mb', (0,120,180), sense_scroll_speed(st)); last_text=time.time()
                 elif mode=='fire': draw_fire(sense,tick)
@@ -704,7 +801,7 @@ def sense_loop():
                 elif mode=='humidity': draw_bar(sense, hum/100*64, (0,60,180))
                 elif mode=='pressure': draw_bar(sense, max(0,min(64,(pressure-970)/80*64)), (120,80,180))
                 elif mode=='custom':
-                    color=parse_color(st.get('sense_color'), (0,170,85)); draw_border(sense,color) if st.get('sense_border_only') else sense.clear(*color)
+                    draw_custom_pixels(sense, st)
                 elif mode=='border': draw_border(sense, parse_color(st.get('sense_color'), (0,170,85)))
                 elif mode=='magic8':
                     if time.time()-last_text>7: text_once(sense, random.choice(['YES','NO','MAYBE','TRAIL SAYS YES','ASK AGAIN','WATCH WEATHER','DRINK WATER']), parse_color(st.get('sense_color'), (80,0,180)), sense_scroll_speed(st)); last_text=time.time()
@@ -712,7 +809,13 @@ def sense_loop():
                 elif mode=='snake': draw_snake_frame(sense,tick,parse_color(st.get('sense_color'), (0,220,70)))
                 if sense_alarm_due(st):
                     draw_water_icon(sense, (0,120,255)); text_once(sense, 'DRINK 8OZ WATER', (0,120,255), sense_scroll_speed(st)); alarm=st.get('hydration_alarm') or {}; alarm['lastFiredAt']=time.time(); st['hydration_alarm']=alarm; write_state(st)
-                orient = dict(orient or {}); orient.update({'magnetic_heading': round(float(magnetic_yaw or 0),1), 'north_heading': round(float(yaw or 0),1), 'cardinal': compass_name(yaw)})
+                orient = dict(orient or {})
+                try:
+                    level_x = round(float(orient.get('roll') or 0), 1); level_y = round(float(orient.get('pitch') or 0), 1)
+                except Exception:
+                    level_x = level_y = 0.0
+                level_status = 'level' if max(abs(level_x), abs(level_y)) <= 4 else ('tilted' if max(abs(level_x), abs(level_y)) <= 15 else 'steep')
+                orient.update({'magnetic_heading': round(float(magnetic_yaw or 0),1), 'north_heading': round(float(yaw or 0),1), 'cardinal': compass_name(yaw), 'level_x': level_x, 'level_y': level_y, 'level_status': level_status})
                 with SENSE_LOCK: SENSE_CACHE.update({'ok': True, 'mode': mode, 'available_modes': SENSE_MODES, 'orientation': orient, 'compass': yaw, 'magnetic_compass': magnetic_yaw, 'compass_cardinal': compass_name(yaw), 'temp': temp_f, 'humidity': hum, 'pressure': pressure, 'gps': gps, 'message': f'{mode} display active', 'updated': time.time()})
             except Exception as e:
                 with SENSE_LOCK: SENSE_CACHE.update({'ok': False, 'mode': mode, 'message': f'Sense HAT read/display error: {e}', 'updated': time.time()})
