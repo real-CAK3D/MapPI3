@@ -30,6 +30,7 @@ function segmentSlice(routePoints, routeMiles, segment) {
 
 export default function LiveLeafletMap({ trace = [], center = defaultCenter, active = false, route = null, waypoints = [], onMapClick = null, onWaypointMove = null }) {
   const [tileStatus, setTileStatus] = useState('loading map tiles');
+  const formatCoord = (point) => Array.isArray(point) ? `${Number(point[0]).toFixed(5)}, ${Number(point[1]).toFixed(5)}` : 'GPS pending';
   const mapRef = useRef(null);
   const containerRef = useRef(null);
   const layerRef = useRef({ marker: null, line: null, route: null, segments: [], waypoints: [] });
@@ -71,9 +72,9 @@ export default function LiveLeafletMap({ trace = [], center = defaultCenter, act
       if (!switched && isPiLocal) { switched = true; useLayer(osmTiles, 'checking live OpenStreetMap tiles'); }
       else if (!goodTiles) setTileStatus('offline topo fallback · route/POIs still usable');
     });
-    osmTiles.on('tileerror', () => { if (!goodTiles) setTileStatus(isPiLocal ? 'no tile pack/internet · route line still usable' : 'offline topo fallback · route/POIs still usable'); });
+    osmTiles.on('tileerror', () => { if (!goodTiles) setTileStatus(isPiLocal ? 'GPS live · tile pack/internet unavailable · route/POIs still usable' : 'GPS live · offline topo fallback · route/POIs still usable'); });
     useLayer(isPiLocal ? localTiles : osmTiles, isPiLocal ? 'checking offline Pi tiles' : 'checking live OpenStreetMap tiles');
-    setTimeout(() => { if (!goodTiles) setTileStatus(isPiLocal ? 'no tile pack/internet · route line still usable' : 'offline topo fallback · route/POIs still usable'); }, 4500);
+    setTimeout(() => { if (!goodTiles) setTileStatus(isPiLocal ? 'GPS live · tile pack/internet unavailable · route/POIs still usable' : 'GPS live · offline topo fallback · route/POIs still usable'); }, 4500);
   }, [center]);
 
   useEffect(() => {
@@ -135,7 +136,7 @@ export default function LiveLeafletMap({ trace = [], center = defaultCenter, act
       weight: 3,
       fillColor: active ? '#58a8ff' : (route?.color || '#9ce36c'),
       fillOpacity: 0.9
-    }).addTo(map);
+    }).bindTooltip(`Live GPS / map point · ${formatCoord(latest)}`, { direction: 'top' }).bindPopup(`<strong>Live GPS / map point</strong><br>${formatCoord(latest)}<br>${active ? 'tracking live movement' : 'selected route/start point'}`).addTo(map);
 
     const waypointPoints = (waypoints || []).filter(point => Number.isFinite(point.lat) && Number.isFinite(point.lon)).map(point => [point.lat, point.lon]);
     const boundsPoints = [...routePoints, ...tracePoints, ...waypointPoints];
@@ -143,5 +144,6 @@ export default function LiveLeafletMap({ trace = [], center = defaultCenter, act
     else map.setView(latest, 15);
   }, [points, tracePoints, routePoints, routeMiles, waypoints, center, active, onWaypointMove, route]);
 
-  return <div className={`leaflet-shell ${onMapClick ? 'draw-active' : ''}`} data-tile-status={tileStatus}><div className="map-fallback-label">{tileStatus}</div>{onMapClick && <div className="draw-map-hint">tap map to place point</div>}<div ref={containerRef} className="leaflet-map" /></div>;
+  const latestPoint = points[points.length - 1] || center;
+  return <div className={`leaflet-shell ${onMapClick ? 'draw-active' : ''}`} data-tile-status={tileStatus}><div className="map-fallback-label">{tileStatus} · GPS {formatCoord(latestPoint)}</div>{onMapClick && <div className="draw-map-hint">tap map to place point</div>}<div ref={containerRef} className="leaflet-map" /></div>;
 }
