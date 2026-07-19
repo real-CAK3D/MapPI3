@@ -507,39 +507,42 @@ def draw_route_progress(sense, st):
 
 def draw_avatar_buddy(sense, tick, st=None, orient=None, temp_f=None):
     brightness = sense_brightness(st or {})
-    green = list(scale_color(parse_color((st or {}).get('sense_color'), (0,170,85)), brightness))
+    base = parse_color((st or {}).get('sense_color'), (0,170,85))
+    face = list(scale_color(base, brightness))
+    shade = list(scale_color(base, max(8, int(brightness * 0.42))))
     white = list(scale_color((230,245,235), brightness))
     blue = list(scale_color((40,160,255), brightness))
     amber = list(scale_color((255,185,60), brightness))
     red = list(scale_color((255,70,50), brightness))
-    pixels = [[0,0,0] for _ in range(64)]
-    # rounded face outline
-    for x,y in [(2,0),(3,0),(4,0),(5,0),(1,1),(6,1),(0,2),(7,2),(0,3),(7,3),(0,4),(7,4),(1,6),(6,6),(2,7),(3,7),(4,7),(5,7)]:
-        pixels[y*8+x] = green
+    # The entire 8x8 LED matrix is the buddy face. No separate circle/outline: every
+    # pixel belongs to the face, with a small edge shade only for depth/readability.
+    pixels = [list(face) for _ in range(64)]
+    for x,y in [(0,0),(7,0),(0,7),(7,7),(1,0),(6,0),(0,1),(7,1),(0,6),(7,6),(1,7),(6,7)]:
+        pixels[y*8+x] = shade
     blink = tick % 12 in (10,11)
     hot = temp_f is not None and temp_f >= 85
     eye = amber if hot else blue
     if blink:
-        for x,y in [(2,3),(3,3),(5,3),(6,3)]: pixels[y*8+x] = white
+        for x,y in [(1,3),(2,3),(5,3),(6,3)]: pixels[y*8+x] = white
     else:
-        for x,y in [(2,2),(3,2),(2,3),(3,3),(5,2),(6,2),(5,3),(6,3)]: pixels[y*8+x] = eye
+        for x,y in [(1,2),(2,2),(1,3),(2,3),(5,2),(6,2),(5,3),(6,3)]: pixels[y*8+x] = eye
     try:
         roll = float((orient or {}).get('roll') or 0); pitch = float((orient or {}).get('pitch') or 0)
     except Exception:
         roll = pitch = 0
-    # Mouth reacts to tilt: smile when level, diagonal smirk when moving, red caution if steep.
+    # Mouth reacts to tilt: smile when level, flatter when moving, red caution if steep.
     steep = abs(roll) > 24 or abs(pitch) > 24
     mouth = red if steep else white
     if steep:
-        pts = [(2,5),(3,6),(4,6),(5,5)]
+        pts = [(1,5),(2,6),(3,6),(4,6),(5,6),(6,5)]
     elif tick % 8 < 4:
-        pts = [(2,5),(3,6),(4,6),(5,5)]
+        pts = [(1,5),(2,6),(3,6),(4,6),(5,6),(6,5)]
     else:
-        pts = [(2,5),(3,5),(4,5),(5,5)]
+        pts = [(1,5),(2,5),(3,6),(4,6),(5,5),(6,5)]
     for x,y in pts: pixels[y*8+x] = mouth
     sense_set_pixels(sense, pixels, st)
     with SENSE_LOCK:
-        SENSE_CACHE['avatar_buddy']={'blink': blink, 'steep_tilt': steep, 'roll': round(roll,1), 'pitch': round(pitch,1), 'temp_f': round(float(temp_f or 0),1) if temp_f is not None else None}
+        SENSE_CACHE['avatar_buddy']={'model':'full-matrix face, no circle outline','blink': blink, 'steep_tilt': steep, 'roll': round(roll,1), 'pitch': round(pitch,1), 'temp_f': round(float(temp_f or 0),1) if temp_f is not None else None}
 
 def draw_custom_pixels(sense, st=None):
     st = st or {}
