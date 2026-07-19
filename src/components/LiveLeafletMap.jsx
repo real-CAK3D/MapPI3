@@ -28,7 +28,7 @@ function segmentSlice(routePoints, routeMiles, segment) {
   return routePoints.slice(Math.max(0, startIndex - 1), Math.max(startIndex + 1, endIndex + 1));
 }
 
-export default function LiveLeafletMap({ trace = [], center = defaultCenter, active = false, route = null, waypoints = [], onMapClick = null, onWaypointMove = null }) {
+export default function LiveLeafletMap({ trace = [], center = defaultCenter, active = false, route = null, waypoints = [], onMapClick = null, onWaypointMove = null, onViewChange = null }) {
   const [tileStatus, setTileStatus] = useState('loading map tiles');
   const formatCoord = (point) => Array.isArray(point) ? `${Number(point[0]).toFixed(5)}, ${Number(point[1]).toFixed(5)}` : 'GPS pending';
   const mapRef = useRef(null);
@@ -79,10 +79,21 @@ export default function LiveLeafletMap({ trace = [], center = defaultCenter, act
 
   useEffect(() => {
     if (!mapRef.current) return undefined;
-    const handler = (event) => onMapClick && onMapClick({ lat: event.latlng.lat, lon: event.latlng.lng });
-    mapRef.current.on('click', handler);
-    return () => mapRef.current && mapRef.current.off('click', handler);
-  }, [onMapClick]);
+    const clickHandler = (event) => onMapClick && onMapClick({ lat: event.latlng.lat, lon: event.latlng.lng });
+    const viewHandler = () => {
+      if (!onViewChange || !mapRef.current) return;
+      const c = mapRef.current.getCenter();
+      onViewChange({ lat: c.lat, lon: c.lng, zoom: mapRef.current.getZoom() });
+    };
+    mapRef.current.on('click', clickHandler);
+    mapRef.current.on('moveend zoomend', viewHandler);
+    viewHandler();
+    return () => {
+      if (!mapRef.current) return;
+      mapRef.current.off('click', clickHandler);
+      mapRef.current.off('moveend zoomend', viewHandler);
+    };
+  }, [onMapClick, onViewChange]);
 
   useEffect(() => {
     if (!mapRef.current) return;
@@ -145,5 +156,5 @@ export default function LiveLeafletMap({ trace = [], center = defaultCenter, act
   }, [points, tracePoints, routePoints, routeMiles, waypoints, center, active, onWaypointMove, route]);
 
   const latestPoint = points[points.length - 1] || center;
-  return <div className={`leaflet-shell ${onMapClick ? 'draw-active' : ''}`} data-tile-status={tileStatus}><div className="map-fallback-label">{tileStatus} · GPS {formatCoord(latestPoint)}</div>{onMapClick && <div className="draw-map-hint">tap map to place point</div>}<div ref={containerRef} className="leaflet-map" /></div>;
+  return <div className={`leaflet-shell ${onMapClick ? 'draw-active' : ''}`} data-tile-status={tileStatus}><div className="map-fallback-label">{tileStatus} · GPS {formatCoord(latestPoint)}</div>{onMapClick && <><div className="map-center-crosshair" aria-hidden="true">⌖</div><div className="draw-map-hint">pan/zoom map, tap + or use Add map center</div></>}<div ref={containerRef} className="leaflet-map" /></div>;
 }
