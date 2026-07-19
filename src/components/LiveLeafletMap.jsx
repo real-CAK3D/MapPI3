@@ -129,7 +129,7 @@ export default function LiveLeafletMap({ trace = [], center = defaultCenter, act
     });
 
     if (tracePoints.length > 1) layerRef.current.line = L.polyline(tracePoints, { color: '#4bd2ff', weight: 6, opacity: 0.9 }).addTo(map);
-    else layerRef.current.line = L.polyline(points, { color: '#4bd2ff', weight: 4, opacity: 0.4 }).addTo(map);
+    else layerRef.current.line = null;
     layerRef.current.marker = L.circleMarker(latest, {
       radius: 9,
       color: '#dff1ff',
