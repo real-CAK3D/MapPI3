@@ -10,6 +10,7 @@ KEY_FILE = CERT_DIR / 'mappi3-local.key'
 LIQUID_STATE = {'gx': 0.0, 'gy': 0.0, 'gz': 1.0}
 LIQUID_PARTICLES = []
 PACMAN_STATE = {}
+AVATAR_STATE = {'last_accel': None, 'last_accel_at': 0.0, 'surprise_until': 0.0, 'still_since': 0.0}
 SENSE_MODES = ['compass','compass-arrow','compass-cardinal','rotation-test','liquid','pacman','weather','fire','flashlight','sos','message','boot','sun','gps','clock','progress','beacon','stars','temp','humidity','pressure','avatar','level','custom','border','magic8','water','snake']
 ALLOWED = {'status','restart-web','reboot','shutdown','update-app','gps-sample','toggle-hotspot','hotspot-on','connect-home-wifi','wifi-scan','wifi-save-network','wifi-connect-saved','network-status','tailscale-status','tailscale-login','remote-access-repair','sense-mode','calibrate','harden-hotspot','plugin-update','vnc-setup','vnc-disable','weather-refresh','noaa-refresh','online-maintenance','gps-diagnose','sense-diagnose','field-ai-verify','captive-setup','captive-disable','captive-status','gps-pps-setup','plugin-status','plugin-install','plugin-install-all','plugin-uninstall'}
 SENSE_CACHE = {'ok': False, 'mode': 'compass', 'message': 'Sense HAT display loop starting', 'updated': 0, 'joystick': {'seq': 0, 'direction': '', 'pressed': False, 'updated': 0}}
@@ -505,42 +506,127 @@ def draw_route_progress(sense, st):
     with SENSE_LOCK:
         SENSE_CACHE['progress_meter']={'progress':progress,'percent':round(progress*100),'distance_miles':distance,'completed_leds':complete+1 if progress > 0 else 0,'finish_led':'green','remaining_leds':'white','completed_leds_color':'red'}
 
+def avatar_temperature_color(temp_f, brightness=4):
+    # Field-readable gradient from the Sense HAT's live temperature reading:
+    # dark purple cold -> blue warming -> yellow mild -> orange warm -> red hot.
+    stops = [
+        (32.0, (42, 0, 86), 'cold dark purple'),
+        (50.0, (28, 95, 255), 'warming blue'),
+        (68.0, (255, 225, 60), 'comfortable yellow'),
+        (82.0, (255, 135, 25), 'warm orange'),
+        (95.0, (255, 35, 25), 'hot red'),
+    ]
+    try:
+        value = float(temp_f)
+    except Exception:
+        value = 68.0
+    if value <= stops[0][0]:
+        return list(scale_color(stops[0][1], brightness)), stops[0][2]
+    for idx in range(1, len(stops)):
+        low_f, low_rgb, _ = stops[idx - 1]
+        high_f, high_rgb, label = stops[idx]
+        if value <= high_f:
+            ratio = max(0.0, min(1.0, (value - low_f) / max(1.0, high_f - low_f)))
+            rgb = tuple(int(round(low_rgb[channel] + (high_rgb[channel] - low_rgb[channel]) * ratio)) for channel in range(3))
+            return list(scale_color(rgb, brightness)), label
+    return list(scale_color(stops[-1][1], brightness)), stops[-1][2]
+
 def draw_avatar_buddy(sense, tick, st=None, orient=None, temp_f=None):
+    global AVATAR_STATE
     brightness = sense_brightness(st or {})
     white = list(scale_color((230,245,235), brightness))
-    blue = list(scale_color((40,160,255), brightness))
-    amber = list(scale_color((255,185,60), brightness))
     red = list(scale_color((255,70,50), brightness))
-    # Battery-conserving face: only top 3x3 eyes and mouth are lit.
-    # No outline, between-eye LEDs, cheeks, or jaw. Eye centers stay dark.
+    amber = list(scale_color((255,180,45), brightness))
+    blue = list(scale_color((50,130,255), brightness))
     pixels = [[0,0,0] for _ in range(64)]
-    blink = tick % 12 in (10,11)
-    hot = temp_f is not None and temp_f >= 85
-    eye = amber if hot else blue
-    left_eye = [(0,0),(1,0),(2,0),(0,1),(2,1),(0,2),(1,2),(2,2)]
-    right_eye = [(5,0),(6,0),(7,0),(5,1),(7,1),(5,2),(6,2),(7,2)]
-    if blink:
-        # Even the blink frame keeps the center LED of each 3x3 eye dark.
-        for x,y in [(0,1),(2,1),(5,1),(7,1)]: pixels[y*8+x] = eye
-    else:
-        for x,y in left_eye + right_eye: pixels[y*8+x] = eye
+    eye, temp_band = avatar_temperature_color(temp_f, brightness)
     try:
         roll = float((orient or {}).get('roll') or 0); pitch = float((orient or {}).get('pitch') or 0)
+        # Sense HAT orientation can report near-level angles as ~358/359 degrees;
+        # normalize to signed degrees so level does not look like a scary tilt.
+        roll = ((roll + 180.0) % 360.0) - 180.0
+        pitch = ((pitch + 180.0) % 360.0) - 180.0
     except Exception:
         roll = pitch = 0
-    # Mouth reacts to tilt: smile when level, flatter when moving, red caution if steep.
-    steep = abs(roll) > 24 or abs(pitch) > 24
-    mouth = red if steep else white
-    if steep:
-        pts = [(1,5),(2,6),(3,6),(4,6),(5,6),(6,5)]
-    elif tick % 8 < 4:
-        pts = [(1,5),(2,6),(3,6),(4,6),(5,6),(6,5)]
+    now = time.time()
+    accel_error = None
+    try:
+        raw = sense.get_accelerometer_raw()
+        ax = float(raw.get('x', 0.0)); ay = float(raw.get('y', 0.0)); az = float(raw.get('z', 1.0))
+    except Exception as e:
+        accel_error = str(e)
+        ax = max(-1.8, min(1.8, roll / 45.0)); ay = max(-1.8, min(1.8, pitch / 45.0)); az = 1.0
+    last = AVATAR_STATE.get('last_accel')
+    dt = max(0.05, now - float(AVATAR_STATE.get('last_accel_at') or now))
+    jerk = 0.0
+    if last:
+        jerk = math.sqrt((ax-last[0])**2 + (ay-last[1])**2 + (az-last[2])**2) / dt
+    plane = math.sqrt(ax*ax + ay*ay)
+    motion = math.sqrt((ax-(last[0] if last else ax))**2 + (ay-(last[1] if last else ay))**2 + (az-(last[2] if last else az))**2)
+    # Keep the buddy cheerful most of the time. Only strong, sudden handling should
+    # interrupt happy mode, and tilt should read as a rare warning rather than the
+    # default face while the Pi is carried at a normal angle.
+    if jerk > 3.2 or motion > 0.95:
+        AVATAR_STATE['surprise_until'] = now + 1.1
+    if motion < 0.035 and abs(roll) < 10 and abs(pitch) < 10:
+        AVATAR_STATE['still_since'] = float(AVATAR_STATE.get('still_since') or now)
     else:
-        pts = [(1,5),(2,5),(3,6),(4,6),(5,5),(6,5)]
-    for x,y in pts: pixels[y*8+x] = mouth
+        AVATAR_STATE['still_since'] = 0.0
+    AVATAR_STATE['last_accel'] = (ax, ay, az); AVATAR_STATE['last_accel_at'] = now
+    still_seconds = (now - float(AVATAR_STATE.get('still_since') or now)) if AVATAR_STATE.get('still_since') else 0.0
+    blink = tick % 18 in (16,17)
+    steep = abs(roll) > 48 or abs(pitch) > 48 or plane > 1.12
+    try:
+        temp_value = float(temp_f) if temp_f is not None else 68.0
+    except Exception:
+        temp_value = 68.0
+    if now < float(AVATAR_STATE.get('surprise_until') or 0.0):
+        expression = 'surprised'
+    elif steep:
+        expression = 'cautious-tilt'
+    elif temp_value >= 88:
+        expression = 'hot'
+    elif temp_value <= 40:
+        expression = 'cold'
+    elif still_seconds > 18 and tick % 20 < 8:
+        expression = 'sleepy'
+    elif blink:
+        expression = 'blink'
+    else:
+        expression = 'happy'
+    def coords(points, color):
+        for x,y in points:
+            if 0 <= x < 8 and 0 <= y < 8:
+                pixels[y*8+x] = color
+    left_eye = [(0,0),(1,0),(2,0),(0,1),(2,1),(0,2),(1,2),(2,2)]
+    right_eye = [(5,0),(6,0),(7,0),(5,1),(7,1),(5,2),(6,2),(7,2)]
+    if expression == 'surprised':
+        coords(left_eye + [(1,1)] + right_eye + [(6,1)], white)
+        coords([(3,5),(4,5),(2,6),(5,6),(3,7),(4,7)], amber)
+    elif expression == 'cautious-tilt':
+        # Concerned-but-friendly tilt: amber eyes plus a small smile instead of
+        # the old red frown, so brief movement feels curious rather than mad.
+        coords([(0,0),(1,0),(2,1),(0,2),(1,2),(5,1),(6,0),(7,0),(6,2),(7,2)], amber)
+        coords([(1,5),(2,6),(3,6),(4,6),(5,6),(6,5)], white)
+    elif expression == 'hot':
+        coords([(0,1),(1,1),(2,2),(5,2),(6,1),(7,1)], red)
+        coords([(1,6),(2,6),(3,5),(4,5),(5,6),(6,6)], white)
+        coords([(3,0),(4,0)], blue)
+    elif expression == 'cold':
+        coords([(0,0),(1,1),(2,0),(0,2),(2,2),(5,0),(6,1),(7,0),(5,2),(7,2)], blue)
+        coords([(1,6),(2,6),(3,6),(4,6),(5,6),(6,6)], white if tick % 2 else blue)
+    elif expression == 'sleepy':
+        coords([(0,1),(1,1),(2,1),(5,1),(6,1),(7,1)], eye)
+        coords([(2,6),(3,6),(4,6),(5,6)], white)
+    elif expression == 'blink':
+        coords([(0,1),(2,1),(5,1),(7,1)], eye)
+        coords([(1,5),(2,6),(3,6),(4,6),(5,6),(6,5)], white)
+    else:
+        coords(left_eye + right_eye, eye)
+        coords([(1,5),(2,6),(3,6),(4,6),(5,6),(6,5)] if tick % 8 < 4 else [(1,5),(2,5),(3,6),(4,6),(5,5),(6,5)], white)
     sense_set_pixels(sense, pixels, st)
     with SENSE_LOCK:
-        SENSE_CACHE['avatar_buddy']={'model':'battery-conserving eyes-and-mouth face; top 3x3 eyes with center LEDs off; no outline/cheeks/jaw','blink': blink, 'steep_tilt': steep, 'roll': round(roll,1), 'pitch': round(pitch,1), 'temp_f': round(float(temp_f or 0),1) if temp_f is not None else None}
+        SENSE_CACHE['avatar_buddy']={'model':'pwnagotchi-style sensor-reactive trail buddy face; Sense HAT accel/tilt/temp drive surprised, cautious-tilt, hot, cold, sleepy, blink, and happy expressions','expression': expression, 'blink': blink, 'steep_tilt': steep, 'roll': round(roll,1), 'pitch': round(pitch,1), 'accel': {'x': round(ax,3), 'y': round(ay,3), 'z': round(az,3)}, 'jerk': round(jerk,3), 'plane_magnitude': round(plane,3), 'still_seconds': round(still_seconds,1), 'temp_f': round(temp_value,1), 'temp_color': eye, 'temp_band': temp_band, 'accel_error': accel_error}
 
 def draw_custom_pixels(sense, st=None):
     st = st or {}
@@ -1325,7 +1411,8 @@ def network_status(payload=None):
     route = sh('ip route | sed -n "1,20p"', timeout=4).get('output','')
     ts = tailscale_status()
     ssh = _ssh_status()
-    return {'ok': True, 'wifi': wifi_info(), 'active_connections': active, 'saved_wifi': _wifi_saved_connections(), 'devices': devices, 'has_default_route': any(line.startswith('default ') for line in route.splitlines()), 'route': route, 'tailscale': ts, 'ssh': ssh, 'remote_ready': bool(ts.get('online') and ssh.get('ok')), 'time': time.time()}
+    bt_pan = bluetooth_pan_status(include_scan=False) if 'bluetooth_pan_status' in globals() else {'ok': False, 'ready': False, 'summary': 'Bluetooth PAN helper not loaded yet'}
+    return {'ok': True, 'wifi': wifi_info(), 'active_connections': active, 'saved_wifi': _wifi_saved_connections(), 'devices': devices, 'has_default_route': any(line.startswith('default ') for line in route.splitlines()), 'route': route, 'tailscale': ts, 'ssh': ssh, 'bluetooth_pan': bt_pan, 'remote_ready': bool((ts.get('online') or bt_pan.get('internet_ok')) and ssh.get('ok')), 'time': time.time()}
 
 def repair_remote_access(payload=None):
     steps = []
@@ -1918,6 +2005,91 @@ def game_library_status():
 def bluetoothctl(args='', timeout=12):
     return sh('bluetoothctl ' + args, timeout=timeout)
 
+def _safe_bt_mac(mac):
+    safe=''.join(ch for ch in str(mac or '') if ch in '0123456789abcdefABCDEF:').upper()
+    parts=safe.split(':')
+    if len(parts) == 6 and all(len(x)==2 for x in parts): return safe
+    return ''
+
+def _bt_boot_config_findings():
+    text = sh("grep -nEi 'disable-bt|dtoverlay=.*bt|bluetooth|uart|serial|miniuart|pi3' /boot/firmware/config.txt /boot/config.txt 2>/dev/null || true", timeout=4).get('output','')
+    lower = text.lower()
+    return {'raw': text[-1600:], 'disable_bt_overlay': 'disable-bt' in lower, 'uart_enabled': 'enable_uart=1' in lower, 'hint': ('Internal Bluetooth is disabled by boot overlay, usually to keep the PL011 UART for GPS on /dev/serial0. Use a USB Bluetooth dongle or change the GPS/UART design before expecting phone PAN over the built-in radio.' if 'disable-bt' in lower else '')}
+
+def bluetooth_pan_status(payload=None, include_scan=True):
+    service = _systemd_state('bluetooth.service')
+    has_ctl = sh('command -v bluetoothctl', timeout=2).get('ok')
+    has_nm = sh('command -v nmcli', timeout=2).get('ok')
+    if not has_ctl:
+        return {'ok': False, 'ready': False, 'available': False, 'summary': 'bluetoothctl/BlueZ is not installed.', 'service': service}
+    ctl = bluetoothctl('show', timeout=4)
+    adapter_text = ctl.get('output','')[-1600:]
+    has_controller = bool(ctl.get('ok') and adapter_text.strip() and 'No default controller available' not in adapter_text)
+    links = sh("ip -br addr 2>/dev/null | grep -E '^bnep[0-9]+' || true", timeout=3).get('output','').strip()
+    routes = sh("ip route 2>/dev/null | sed -n '1,20p'", timeout=3).get('output','')
+    default_routes = [line for line in routes.splitlines() if line.startswith('default ')]
+    nm_devices = _nmcli_lines('-f DEVICE,TYPE,STATE,CONNECTION device', timeout=5) if has_nm else []
+    nm_active = _nmcli_lines('-f NAME,TYPE,DEVICE connection show --active', timeout=5) if has_nm else []
+    boot = _bt_boot_config_findings()
+    internet_ok = False
+    if links and any('bnep' in line for line in default_routes):
+        internet_ok = sh("timeout 8 python3 - <<'PY'\nimport urllib.request\nurllib.request.urlopen('https://connectivitycheck.gstatic.com/generate_204', timeout=5).read()\nprint('ok')\nPY", timeout=10).get('ok')
+    ready = bool(service.get('active') == 'active' and has_controller and has_nm)
+    summary = 'Bluetooth PAN ready for phone pairing.' if ready else 'Bluetooth PAN not ready.'
+    if service.get('active') != 'active': summary = 'Bluetooth service is not active.'
+    elif not has_controller: summary = 'Bluetooth service is active, but no Bluetooth controller is available.'
+    elif not has_nm: summary = 'Bluetooth adapter exists, but NetworkManager/nmcli is missing.'
+    if boot.get('disable_bt_overlay') and not has_controller:
+        summary += ' Internal Bluetooth appears disabled for the GPS UART lane; a USB Bluetooth dongle is the safest PAN path.'
+    return {'ok': True, 'ready': ready, 'available': True, 'service': service, 'controller': has_controller, 'adapter': adapter_text, 'boot_config': boot, 'bnep_links': links.splitlines() if links else [], 'default_routes': default_routes, 'nm_devices': nm_devices, 'nm_active': nm_active, 'internet_ok': internet_ok, 'hotspot_preserved': any('MapPI3-hotspot' in line and 'wlan0' in line for line in nm_active), 'summary': summary, 'time': time.time()}
+
+def bluetooth_pan_prepare(payload=None):
+    payload = payload or {}
+    mac = _safe_bt_mac(payload.get('mac') or payload.get('address'))
+    share_clients = bool(payload.get('shareClients') or payload.get('share_clients'))
+    status_before = bluetooth_pan_status(include_scan=False)
+    ts = time.strftime('%Y%m%dT%H%M%SZ', time.gmtime())
+    backup = f'/opt/mappi3/backups/bluetooth-pan-{ts}'
+    backup_cmd = "set -u; install -d -m 0755 " + shlex.quote(backup) + "; "
+    backup_cmd += "(systemctl is-enabled bluetooth.service 2>&1 || true) > " + shlex.quote(backup + '/bluetooth.service.enabled.before') + "; "
+    backup_cmd += "(systemctl is-active bluetooth.service 2>&1 || true) > " + shlex.quote(backup + '/bluetooth.service.active.before') + "; "
+    backup_cmd += "(nmcli -t -f NAME,UUID,TYPE,DEVICE,AUTOCONNECT con show 2>&1 || true) > " + shlex.quote(backup + '/nm-connections.before') + "; "
+    backup_cmd += "(ip route 2>&1 || true) > " + shlex.quote(backup + '/ip-route.before') + "; "
+    backup_cmd += "(sysctl net.ipv4.ip_forward 2>&1 || true) > " + shlex.quote(backup + '/ip-forward.before')
+    backup_out = sh(backup_cmd, timeout=15)
+    steps = [sh('systemctl enable --now bluetooth.service 2>&1 || true', timeout=25), sh('modprobe bnep 2>&1 || true', timeout=8), sh('bluetoothctl power on 2>&1 || true', timeout=8)]
+    status_mid = bluetooth_pan_status(include_scan=False)
+    if not status_mid.get('controller'):
+        return {'ok': False, 'backup': backup, 'backup_output': backup_out.get('output','')[-1000:], 'pre_status': status_before, 'status': status_mid, 'steps': [x.get('output','')[-1200:] for x in steps], 'message': status_mid.get('summary') or 'No Bluetooth controller available; leaving hotspot unchanged.'}
+    connect_steps = []
+    if mac:
+        connect_steps.append(bluetoothctl('trust '+mac, timeout=10))
+        connect_steps.append(sh('nmcli device connect '+shlex.quote(mac)+' 2>&1 || true', timeout=35))
+        if not bluetooth_pan_status(include_scan=False).get('bnep_links'):
+            con = 'MapPI3-phone-pan-' + mac.replace(':','')[-4:]
+            cmd = 'nmcli connection delete '+shlex.quote(con)+' >/dev/null 2>&1 || true; '
+            cmd += 'nmcli connection add type bluetooth con-name '+shlex.quote(con)+' ifname '+shlex.quote(mac)+' bluetooth.type panu ipv4.method auto connection.autoconnect no; '
+            cmd += 'nmcli connection up '+shlex.quote(con)+' 2>&1 || true'
+            connect_steps.append(sh(cmd, timeout=45))
+    if share_clients:
+        # Prefer NetworkManager shared hotspot NAT. If bnep0 becomes default, MapPI3-hotspot shared mode should forward clients.
+        connect_steps.append(sh('nmcli connection modify MapPI3-hotspot ipv4.method shared ipv4.addresses 10.42.0.1/24 ipv4.never-default yes connection.autoconnect yes 2>&1 || true', timeout=12))
+    status_after = bluetooth_pan_status(include_scan=False)
+    return {'ok': bool(status_after.get('controller')), 'backup': backup, 'pre_status': status_before, 'status': status_after, 'steps': [x.get('output','')[-1200:] for x in steps + connect_steps], 'message': ('Bluetooth PAN prepared. Enable Bluetooth tethering/Personal Hotspot on the phone, pair/trust it, then connect PAN.' if not mac else 'Bluetooth PAN connection attempt finished; check bnep_links/default_routes/internet_ok.')}
+
+def bluetooth_pan_disconnect(payload=None):
+    payload = payload or {}
+    mac = _safe_bt_mac(payload.get('mac') or payload.get('address'))
+    outs=[]
+    if mac:
+        outs.append(bluetoothctl('disconnect '+mac, timeout=12))
+    for line in _nmcli_lines('-f NAME,TYPE connection show', timeout=5):
+        parts=line.split(':')
+        if len(parts)>=2 and (parts[1]=='bluetooth' or parts[0].startswith('MapPI3-phone-pan')):
+            outs.append(sh('nmcli connection down '+shlex.quote(parts[0])+' 2>&1 || true', timeout=12))
+    status_now = bluetooth_pan_status(include_scan=False)
+    return {'ok': True, 'status': status_now, 'steps': [o.get('output','')[-1200:] for o in outs], 'message': 'Bluetooth PAN disconnected/disabled where possible; MapPI3 hotspot profile left intact.'}
+
 def parse_bluetooth_devices(text):
     devices=[]
     for line in (text or '').splitlines():
@@ -2050,6 +2222,7 @@ class Handler(http.server.SimpleHTTPRequestHandler):
         if self.path.startswith('/api/media/library'): self.json_response(media_manifest()); return
         if self.path.startswith('/api/games/library'): self.json_response(game_library_status()); return
         if self.path.startswith('/api/plugins'): self.json_response(plugin_status()); return
+        if self.path.startswith('/api/bluetooth/pan/status'): self.json_response(bluetooth_pan_status()); return
         if self.path.startswith('/api/bluetooth/status'): self.json_response(bluetooth_status()); return
         if self.path.startswith('/api/sense'): self.json_response({'ok': True, 'sense': sense_snapshot(), 'state': read_state(), 'available_modes': SENSE_MODES, 'time': time.time()}); return
         return super().do_GET()
@@ -2067,6 +2240,8 @@ class Handler(http.server.SimpleHTTPRequestHandler):
         if self.path.startswith('/api/field-ai/analyze'): self.json_response(field_ai_analyze(payload)); return
         if self.path.startswith('/api/field-ai/corrections/vote'): self.json_response(field_ai_vote_correction(payload)); return
         if self.path.startswith('/api/field-ai/corrections'): self.json_response(field_ai_add_correction(payload)); return
+        if self.path.startswith('/api/bluetooth/pan/prepare'): self.json_response(bluetooth_pan_prepare(payload)); return
+        if self.path.startswith('/api/bluetooth/pan/disconnect'): self.json_response(bluetooth_pan_disconnect(payload)); return
         if self.path.startswith('/api/bluetooth/scan'): self.json_response(bluetooth_scan(payload)); return
         if self.path.startswith('/api/bluetooth/action/'): self.json_response(bluetooth_action(self.path.rsplit('/',1)[-1], payload)); return
         if self.path.startswith('/api/command/'): self.json_response(command(self.path.rsplit('/',1)[-1], payload)); return
