@@ -150,6 +150,7 @@ def set_sense_mode(mode, payload=None):
     if 'borderOnly' in payload: st['sense_border_only'] = bool(payload.get('borderOnly'))
     if 'hydrationAlarm' in payload and isinstance(payload.get('hydrationAlarm'), dict): st['hydration_alarm'] = payload.get('hydrationAlarm')
     if 'features' in payload and isinstance(payload.get('features'), dict): st['features'] = payload.get('features')
+    if 'herbieExpression' in payload: st['herbie_expression'] = str(payload.get('herbieExpression') or 'auto')[:32]
     write_state(st)
     with SENSE_LOCK:
         SENSE_CACHE['mode'] = mode; SENSE_CACHE['message'] = f'Sense HAT mode set to {mode}'; SENSE_CACHE['updated'] = time.time()
@@ -581,53 +582,84 @@ def draw_avatar_buddy(sense, tick, st=None, orient=None, temp_f=None):
         temp_value = float(temp_f) if temp_f is not None else 68.0
     except Exception:
         temp_value = 68.0
-    if now < float(AVATAR_STATE.get('surprise_until') or 0.0):
+    allowed_herbie = {'neutral','happy','excited','curious','thinking','side-eye','suspicious','confused','surprised','worried','sad','angry','annoyed','tired','yawning','determined','sleepy','blushing','laughing','cheeky','focused','wow','love','grateful','party-mode','high-af','chillin','meditating','bored','melting','sweating','overwhelmed','greetings','wink','thumbs-up','thumbs-down','facepalm','oh-no','face-with-tears','party-hard'}
+    manual = str((st or {}).get('herbie_expression') or 'auto').strip().lower().replace('_','-').replace(' ', '-')
+    if manual in allowed_herbie:
+        expression = manual
+    elif now < float(AVATAR_STATE.get('surprise_until') or 0.0):
         expression = 'surprised'
     elif steep:
-        expression = 'cautious-tilt'
+        expression = 'surprised'
     elif temp_value >= 88:
-        expression = 'hot'
+        expression = 'sweating'
     elif temp_value <= 40:
-        expression = 'cold'
-    elif still_seconds > 18 and tick % 20 < 8:
+        expression = 'tired'
+    elif still_seconds > 28 and tick % 32 < 10:
         expression = 'sleepy'
+    elif still_seconds > 14 and tick % 28 < 10:
+        expression = 'bored'
     elif blink:
         expression = 'blink'
     else:
-        expression = 'happy'
+        ambient = ['happy','neutral','curious','thinking','side-eye','suspicious','happy','focused','excited','laughing','cheeky','wow','grateful','chillin','determined','thumbs-up','wink','party-mode','love']
+        expression = ambient[(tick // 12) % len(ambient)]
     def coords(points, color):
         for x,y in points:
             if 0 <= x < 8 and 0 <= y < 8:
                 pixels[y*8+x] = color
     left_eye = [(0,0),(1,0),(2,0),(0,1),(2,1),(0,2),(1,2),(2,2)]
     right_eye = [(5,0),(6,0),(7,0),(5,1),(7,1),(5,2),(6,2),(7,2)]
-    if expression == 'surprised':
+    mouth_happy = [(1,5),(2,6),(3,6),(4,6),(5,6),(6,5)]
+    mouth_smile = [(1,5),(2,5),(3,6),(4,6),(5,5),(6,5)]
+    mouth_flat = [(2,6),(3,6),(4,6),(5,6)]
+    mouth_frown = [(1,6),(2,5),(3,5),(4,5),(5,5),(6,6)]
+    mouth_open = [(3,5),(4,5),(2,6),(5,6),(3,7),(4,7)]
+    pink = list(scale_color((255,120,160), brightness))
+    soft_sleep = ('blink','sleepy','tired','yawning','chillin','meditating','bored')
+    if expression in soft_sleep:
+        coords([(0,1),(1,1),(2,1),(5,1),(6,1),(7,1)] if expression in ('blink','sleepy','tired','yawning','meditating') else left_eye + right_eye, eye)
+        coords(mouth_open if expression == 'yawning' else (mouth_flat if expression in ('sleepy','tired','bored','meditating') else mouth_happy), white)
+    elif expression in ('surprised','confused','wow','oh-no','overwhelmed'):
         coords(left_eye + [(1,1)] + right_eye + [(6,1)], white)
-        coords([(3,5),(4,5),(2,6),(5,6),(3,7),(4,7)], amber)
-    elif expression == 'cautious-tilt':
-        # Concerned-but-friendly tilt: amber eyes plus a small smile instead of
-        # the old red frown, so brief movement feels curious rather than mad.
-        coords([(0,0),(1,0),(2,1),(0,2),(1,2),(5,1),(6,0),(7,0),(6,2),(7,2)], amber)
-        coords([(1,5),(2,6),(3,6),(4,6),(5,6),(6,5)], white)
-    elif expression == 'hot':
-        coords([(0,1),(1,1),(2,2),(5,2),(6,1),(7,1)], red)
-        coords([(1,6),(2,6),(3,5),(4,5),(5,6),(6,6)], white)
+        coords(mouth_open, amber)
+        if expression in ('confused','overwhelmed'): coords([(0,6),(7,6)], blue)
+    elif expression in ('worried','sad','annoyed','face-with-tears'):
+        coords([(0,1),(1,0),(2,1),(5,1),(6,0),(7,1),(0,2),(2,2),(5,2),(7,2)], amber if expression in ('worried','annoyed') else blue)
+        coords(mouth_frown, white if expression in ('worried','annoyed') else blue)
+        if expression == 'face-with-tears': coords([(0,4),(7,4),(0,5),(7,5)], blue)
+    elif expression in ('angry','thumbs-down'):
+        coords([(0,1),(1,1),(2,0),(5,0),(6,1),(7,1),(0,2),(2,2),(5,2),(7,2)], red)
+        coords(mouth_frown, red)
+    elif expression in ('focused','curious','thinking','determined','suspicious','side-eye'):
+        if expression in ('focused','determined'):
+            coords([(0,0),(1,1),(2,2),(5,2),(6,1),(7,0),(0,2),(2,2),(5,2),(7,2)], white)
+        elif expression == 'side-eye':
+            coords([(0,0),(1,0),(2,0),(1,1),(5,0),(6,0),(7,0),(6,1)], eye)
+        elif expression == 'suspicious':
+            coords([(0,1),(1,0),(2,1),(5,1),(6,0),(7,1)], amber)
+        else:
+            coords(left_eye + right_eye, eye)
+        coords(mouth_flat if expression in ('thinking','suspicious') else mouth_smile, white)
+    elif expression in ('blushing','love','grateful','greetings'):
+        coords(left_eye + right_eye, pink if expression == 'love' else eye)
+        coords(mouth_happy, white)
+        coords([(0,4),(7,4)], pink if expression in ('blushing','love') else amber)
+    elif expression in ('laughing','excited','party-mode','party-hard','high-af','thumbs-up','cheeky'):
+        coords([(0,0),(2,0),(1,1),(5,0),(7,0),(6,1)] if expression in ('laughing','party-hard') else left_eye + right_eye, eye)
+        coords(mouth_open if expression in ('laughing','excited','party-hard','high-af') else mouth_happy, white if expression != 'excited' else amber)
+    elif expression in ('melting','sweating','facepalm'):
+        coords(left_eye + right_eye, blue if expression == 'sweating' else amber)
+        coords(mouth_frown if expression == 'facepalm' else mouth_flat, white)
         coords([(3,0),(4,0)], blue)
-    elif expression == 'cold':
-        coords([(0,0),(1,1),(2,0),(0,2),(2,2),(5,0),(6,1),(7,0),(5,2),(7,2)], blue)
-        coords([(1,6),(2,6),(3,6),(4,6),(5,6),(6,6)], white if tick % 2 else blue)
-    elif expression == 'sleepy':
-        coords([(0,1),(1,1),(2,1),(5,1),(6,1),(7,1)], eye)
-        coords([(2,6),(3,6),(4,6),(5,6)], white)
-    elif expression == 'blink':
-        coords([(0,1),(2,1),(5,1),(7,1)], eye)
-        coords([(1,5),(2,6),(3,6),(4,6),(5,6),(6,5)], white)
+    elif expression == 'wink':
+        coords([(0,1),(1,1),(2,1)] + right_eye, eye)
+        coords(mouth_smile, white)
     else:
         coords(left_eye + right_eye, eye)
-        coords([(1,5),(2,6),(3,6),(4,6),(5,6),(6,5)] if tick % 8 < 4 else [(1,5),(2,5),(3,6),(4,6),(5,5),(6,5)], white)
+        coords(mouth_happy if tick % 8 < 4 else mouth_smile, white)
     sense_set_pixels(sense, pixels, st)
     with SENSE_LOCK:
-        SENSE_CACHE['avatar_buddy']={'model':'pwnagotchi-style sensor-reactive trail buddy face; Sense HAT accel/tilt/temp drive surprised, cautious-tilt, hot, cold, sleepy, blink, and happy expressions','expression': expression, 'blink': blink, 'steep_tilt': steep, 'roll': round(roll,1), 'pitch': round(pitch,1), 'accel': {'x': round(ax,3), 'y': round(ay,3), 'z': round(az,3)}, 'jerk': round(jerk,3), 'plane_magnitude': round(plane,3), 'still_seconds': round(still_seconds,1), 'temp_f': round(temp_value,1), 'temp_color': eye, 'temp_band': temp_band, 'accel_error': accel_error}
+        SENSE_CACHE['avatar_buddy']={'model':'Herbie Map sensor-reactive trail buddy face; compact 8x8 Sense HAT fallback for the expanded 40-face Herbie sheet, grouped into happy, focused, sleepy/bored, worried/sad, angry, surprised/confused, party, love, and utility reaction states','expression': expression, 'blink': blink, 'steep_tilt': steep, 'roll': round(roll,1), 'pitch': round(pitch,1), 'accel': {'x': round(ax,3), 'y': round(ay,3), 'z': round(az,3)}, 'jerk': round(jerk,3), 'plane_magnitude': round(plane,3), 'still_seconds': round(still_seconds,1), 'temp_f': round(temp_value,1), 'temp_color': eye, 'temp_band': temp_band, 'accel_error': accel_error}
 
 def draw_custom_pixels(sense, st=None):
     st = st or {}

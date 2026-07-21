@@ -29,6 +29,61 @@ const defaultSenseCustomPixels = Array.from({ length: 64 }, (_, i) => {
   if (x === 0 || x === 7 || y === 0 || y === 7) return [0, 170, 85];
   return [0, 0, 0];
 });
+
+const herbieExpressions = [
+  'auto','neutral','happy','excited','curious','thinking','side-eye','suspicious','confused',
+  'surprised','worried','sad','angry','annoyed','tired','yawning','determined',
+  'sleepy','blushing','laughing','cheeky','focused','wow','love','grateful',
+  'party-mode','high-af','chillin','meditating','bored','melting','sweating','overwhelmed',
+  'greetings','wink','thumbs-up','thumbs-down','facepalm','oh-no','face-with-tears','party-hard'
+];
+const herbieExpressionLabels = {
+  auto:'Auto trail mood', neutral:'Neutral', happy:'Happy', excited:'Excited', curious:'Curious', thinking:'Thinking', 'side-eye':'Side eye', suspicious:'Suspicious', confused:'Confused',
+  surprised:'Surprised', worried:'Worried', sad:'Sad', angry:'Angry', annoyed:'Annoyed', tired:'Tired', yawning:'Yawning', determined:'Determined',
+  sleepy:'Sleepy', blushing:'Blushing', laughing:'Laughing', cheeky:'Cheeky', focused:'Focused', wow:'Wow', love:'Love', grateful:'Grateful',
+  'party-mode':'Party mode', 'high-af':'High AF', chillin:"Chillin'", meditating:'Meditating', bored:'Bored', melting:'Melting', sweating:'Sweating', overwhelmed:'Overwhelmed',
+  greetings:'Greetings', wink:'Wink', 'thumbs-up':'Thumbs up', 'thumbs-down':'Thumbs down', facepalm:'Facepalm', 'oh-no':'Oh no!', 'face-with-tears':'Face with tears', 'party-hard':'Party hard'
+};
+const herbieMotionAssets = ['tilted-left','tilted-right','shaking','bouncing','spinning','happy-hover','scanning','low-battery'];
+const herbieAsset = (kind, name) => `/assets/herbie/${kind}/${name}.png`;
+function herbieCompanionState({ settings = {}, progress = 0.34, tick = 0, mode = 'Avatar Buddy' } = {}) {
+  const manual = settings.herbieExpression || settings.demoAvatarExpression || 'auto';
+  const roll = Number(settings.levelX || settings.demoRoll || 0);
+  const pitch = Number(settings.levelY || settings.demoPitch || 0);
+  const battery = Number(settings.batteryPercent ?? settings.piBatteryPercent ?? 100);
+  const tilt = Math.abs(roll) > 42 || Math.abs(pitch) > 42;
+  const lowBattery = Number.isFinite(battery) && battery <= 20;
+  const routePct = Math.max(0, Math.min(1, Number(progress || 0)));
+  const cycle = [
+    'neutral','happy','curious','thinking','side-eye','suspicious','blink','happy','excited','laughing','cheeky','focused','wow','grateful',
+    'bored','chillin','meditating','sleepy','tired','yawning','worried','confused','annoyed','determined','thumbs-up','wink','party-mode','party-hard','love'
+  ];
+  let expression = manual && manual !== 'auto' ? manual : cycle[Math.floor(tick / 6) % cycle.length];
+  let motion = 'idle';
+  let reason = 'ambient companion loop';
+  if (manual === 'auto') {
+    if (lowBattery) { expression = 'worried'; motion = 'low-battery'; reason = 'battery caution'; }
+    else if (tilt) { expression = 'surprised'; motion = roll < 0 ? 'tilted-left' : 'tilted-right'; reason = 'motion/tilt reaction'; }
+    else if (/pac[- ]?man|game/i.test(mode)) { expression = 'party-mode'; motion = 'bouncing'; reason = 'game mode energy'; }
+    else if (/compass|scan|gps/i.test(mode)) { expression = 'focused'; motion = 'scanning'; reason = 'navigation scan'; }
+    else if (routePct >= 0.88) { expression = 'grateful'; motion = 'happy-hover'; reason = 'near route finish'; }
+  }
+  if (expression === 'blink') { expression = 'happy'; motion = motion === 'idle' ? 'blink' : motion; }
+  if (manual !== 'auto' && ['laughing','excited','love','party-mode','party-hard','wow','thumbs-up','grateful'].includes(expression)) motion = 'bouncing';
+  if (manual !== 'auto' && ['angry','surprised','confused','worried','overwhelmed','oh-no','face-with-tears'].includes(expression)) motion = expression === 'surprised' ? 'shaking' : motion;
+  if (manual !== 'auto' && ['bored','chillin','meditating','sleepy','tired','yawning'].includes(expression)) motion = 'happy-hover';
+  if (manual !== 'auto' && ['focused','determined'].includes(expression)) motion = 'scanning';
+  if (manual !== 'auto' && ['melting','sweating','high-af'].includes(expression)) motion = 'spinning';
+  return { expression, motion, reason, blinking: motion === 'blink' || tick % 22 === 20, tilted: motion.startsWith('tilted'), motionAsset: herbieMotionAssets.includes(motion) };
+}
+function HerbieCompanionPanel({ settings = {}, setSettings, progress = 0.34, tick = 0, mode = 'Avatar Buddy' }) {
+  const herbie = herbieCompanionState({ settings, progress, tick, mode });
+  const manual = settings.herbieExpression || 'auto';
+  const setHerbie = (value) => setSettings && setSettings(s => ({ ...s, herbieExpression:value, orientationMode:'Avatar Buddy' }));
+  const imageKind = herbie.motionAsset && manual === 'auto' && ['low-battery','tilted-left','tilted-right','scanning'].includes(herbie.motion) ? 'motions' : 'expressions';
+  const imageName = imageKind === 'motions' ? herbie.motion : herbie.expression;
+  return <div className={`herbie-companion motion-${herbie.motion} ${herbie.blinking ? 'is-blinking' : ''} ${herbie.tilted ? 'is-tilted' : ''}`}><div className="herbie-stage"><img src={herbieAsset(imageKind, imageName)} alt={`Herbie Map ${imageName} ${imageKind === 'motions' ? 'motion' : 'expression'}`} loading="lazy" /></div><div className="herbie-copy"><div className="section-head compact"><div><h3>Herbie Map companion</h3><p className="muted">Nature-loving AI trail buddy replacing the old abstract face. Uses every labeled expression from the expanded sheet, with motion-reactive moods and Sense HAT fallbacks.</p></div><Pill>{herbieExpressionLabels[herbie.expression] || herbie.expression}</Pill></div><label className="field-line"><span>Herbie mood</span><select value={manual} onChange={e=>setHerbie(e.target.value)}>{herbieExpressions.map(x=><option key={x} value={x}>{herbieExpressionLabels[x] || x}</option>)}</select></label><div className="tag-row"><Pill>{herbie.reason}</Pill><Pill>{herbie.motion === 'idle' ? 'soft idle' : herbie.motion}</Pill><Pill>40 faces + 8 motions offline</Pill></div></div></div>;
+}
 function rgbToCss(c = [0,0,0]) { return `rgb(${c[0]||0},${c[1]||0},${c[2]||0})`; }
 function mapPi3StructuredAddress(parts = {}) {
   return [parts.street, [parts.city, parts.state].filter(Boolean).join(', '), [parts.zip, parts.zip4].filter(Boolean).join('-')].filter(Boolean).join(' ').trim();
@@ -488,27 +543,28 @@ function senseSimulatorPixels(mode, settings = {}, progress = 0.34, tick = 0) {
     coords(simCompassPatterns[settings.compassPreview || 'NE'] || simCompassPatterns.N, primary);
   } else if (key.includes('avatar') || key.includes('buddy')) {
     pixels.fill([0,0,0]);
-    const eye = avatarTemperatureColor(settings.demoTempF || settings.tempF || 68, level), smile = scaleLed([240,245,220], level), warn = scaleLed([255,180,60], level), red = scaleLed([255,70,50], level), blue = scaleLed([50,130,255], level), white = scaleLed([230,245,235], level);
+    const leaf = avatarTemperatureColor(settings.demoTempF || settings.tempF || 68, level), smile = scaleLed([240,245,220], level), amber = scaleLed([255,190,65], level), red = scaleLed([255,70,50], level), blue = scaleLed([50,130,255], level), white = scaleLed([230,245,235], level), pink = scaleLed([255,120,160], level);
     const leftEye = [[0,0],[1,0],[2,0],[0,1],[2,1],[0,2],[1,2],[2,2]];
     const rightEye = [[5,0],[6,0],[7,0],[5,1],[7,1],[5,2],[6,2],[7,2]];
-    const normDeg = (value) => ((((Number(value || 0) + 180) % 360) + 360) % 360) - 180;
-    const roll = normDeg(settings.levelX || settings.demoRoll || 0), pitch = normDeg(settings.levelY || settings.demoPitch || 0), tempF = Number(settings.demoTempF || settings.tempF || 68);
-    const demoCycle = ['happy','happy','happy','blink','happy','surprised','happy','cautious-tilt','happy','hot','cold','sleepy'];
-    const expression = settings.demoAvatarExpression || (Math.abs(roll) > 48 || Math.abs(pitch) > 48 ? 'cautious-tilt' : (tempF >= 88 ? 'hot' : (tempF <= 40 ? 'cold' : demoCycle[Math.floor(tick / 8) % demoCycle.length])));
-    if (expression === 'surprised') {
-      coords([...leftEye,[1,1],...rightEye,[6,1]], white); coords([[3,5],[4,5],[2,6],[5,6],[3,7],[4,7]], warn);
-    } else if (expression === 'cautious-tilt') {
-      coords([[0,0],[1,0],[2,1],[0,2],[1,2],[5,1],[6,0],[7,0],[6,2],[7,2]], warn); coords([[1,5],[2,6],[3,6],[4,6],[5,6],[6,5]], white);
-    } else if (expression === 'hot') {
-      coords([[0,1],[1,1],[2,2],[5,2],[6,1],[7,1]], red); coords([[3,0],[4,0]], blue); coords([[1,6],[2,6],[3,5],[4,5],[5,6],[6,6]], smile);
-    } else if (expression === 'cold') {
-      coords([[0,0],[1,1],[2,0],[0,2],[2,2],[5,0],[6,1],[7,0],[5,2],[7,2]], blue); coords([[1,6],[2,6],[3,6],[4,6],[5,6],[6,6]], tick % 2 ? white : blue);
-    } else if (expression === 'sleepy') {
-      coords([[0,1],[1,1],[2,1],[5,1],[6,1],[7,1]], eye); coords([[2,6],[3,6],[4,6],[5,6]], smile);
-    } else if (expression === 'blink') {
-      coords([[0,1],[2,1],[5,1],[7,1]], eye); coords([[1,5],[2,6],[3,6],[4,6],[5,6],[6,5]], smile);
+    const herbie = herbieCompanionState({ settings, progress, tick, mode });
+    const expression = settings.demoAvatarExpression || herbie.expression;
+    const mouthHappy = [[1,5],[2,6],[3,6],[4,6],[5,6],[6,5]], mouthSmile = [[1,5],[2,5],[3,6],[4,6],[5,5],[6,5]], mouthFlat = [[2,6],[3,6],[4,6],[5,6]], mouthFrown = [[1,6],[2,5],[3,5],[4,5],[5,5],[6,6]], mouthOpen = [[3,5],[4,5],[2,6],[5,6],[3,7],[4,7]];
+    if (herbie.blinking || expression === 'sleepy') {
+      coords([[0,1],[1,1],[2,1],[5,1],[6,1],[7,1]], leaf); coords(expression === 'sleepy' ? mouthFlat : mouthHappy, smile);
+    } else if (expression === 'surprised' || expression === 'confused') {
+      coords([...leftEye,[1,1],...rightEye,[6,1]], white); coords(mouthOpen, amber); if (expression === 'confused') coords([[0,6],[7,6]], blue);
+    } else if (expression === 'worried' || expression === 'sad') {
+      coords([[0,1],[1,0],[2,1],[5,1],[6,0],[7,1],[0,2],[2,2],[5,2],[7,2]], amber); coords(mouthFrown, expression === 'sad' ? blue : white);
+    } else if (expression === 'angry') {
+      coords([[0,1],[1,1],[2,0],[5,0],[6,1],[7,1],[0,2],[2,2],[5,2],[7,2]], red); coords(mouthFrown, red);
+    } else if (expression === 'focused' || expression === 'curious' || expression === 'thinking') {
+      coords(expression === 'focused' ? [[0,0],[1,1],[2,2],[5,2],[6,1],[7,0],[0,2],[2,2],[5,2],[7,2]] : [...leftEye, ...rightEye], expression === 'focused' ? white : leaf); coords(expression === 'thinking' ? mouthFlat : mouthSmile, smile);
+    } else if (expression === 'blushing' || expression === 'love') {
+      coords([...leftEye, ...rightEye], expression === 'love' ? pink : leaf); coords(mouthHappy, smile); coords([[0,4],[7,4]], pink);
+    } else if (expression === 'laughing' || expression === 'excited') {
+      coords([[0,0],[2,0],[1,1],[5,0],[7,0],[6,1]], leaf); coords(mouthOpen, expression === 'laughing' ? white : amber);
     } else {
-      coords([...leftEye, ...rightEye], eye); coords(tick % 8 < 4 ? [[1,5],[2,6],[3,6],[4,6],[5,6],[6,5]] : [[1,5],[2,5],[3,6],[4,6],[5,5],[6,5]], smile);
+      coords([...leftEye, ...rightEye], leaf); coords(tick % 8 < 4 ? mouthHappy : mouthSmile, smile);
     }
   } else if (key.includes('level')) {
     const roll = Number(settings.levelX || settings.demoRoll || 0), pitch = Number(settings.levelY || settings.demoPitch || 0);
@@ -584,7 +640,7 @@ function SenseHatSimulator({ settings = {}, setSettings, progress = 0.34, select
   const setRotation = (rotation) => setSettings && setSettings(s => ({ ...s, senseRotation: Number(rotation) || 0 }));
   const rotateMountedOrientation = () => setSettings && setSettings(s => ({ ...s, senseRotation: ((Number(s.senseRotation || 0) + 90) % 360) }));
   const pct = Math.round(Math.max(0, Math.min(1, Number(progress || 0))) * 100);
-  return <div className="sense-sim-card"><div className="section-head compact"><div><h3>Mobile Sense HAT simulator</h3><p className="muted">Phone-only/Vercel mode mirrors the Pi Sense HAT: 8×8 LEDs, modes, dimmer, joystick controls, and route progress preview.</p></div><Pill tone={mobileOnly ? 'warn' : 'online'}>{mobileOnly ? 'simulated' : 'hardware companion'}</Pill></div><div className="sense-sim-layout"><div className="sense-led-matrix" role="img" aria-label={`Simulated Sense HAT ${mode} matrix`}>{pixels.map((c,i)=><i key={i} style={{ backgroundColor:`rgb(${c[0]},${c[1]},${c[2]})`, boxShadow:`0 0 ${Math.max(2,(settings.senseBrightnessLevel||4)*2)}px rgba(${c[0]},${c[1]},${c[2]},.55)` }} />)}</div><div className="sense-sim-controls"><div className="tag-row"><Pill>{mode}</Pill><Pill>{pct}% route</Pill><Pill>{selectedRoute?.name || 'selected route'}</Pill></div><label className="field-line"><span>Simulator mode</span><select value={mode} onChange={e=>setMode(e.target.value)}>{['Compass','Compass Arrow','Compass NSEW','Rotation Test','Liquid','Level','Avatar Buddy','Custom','Pac-Man','Weather','Fire','Flashlight','SOS','Message','Boot','Sun','GPS','Clock','Progress','Beacon','Stars','Temp','Humidity','Pressure','Border','Magic8','Water','Snake'].map(x=><option key={x}>{x}</option>)}</select></label><label className="field-line"><span>LED dimmer</span><input type="range" min="1" max="8" value={settings.senseBrightnessLevel || 4} onChange={e=>setLevel(Number(e.target.value))} /></label><label className="field-line"><span>Mounted orientation</span><select value={settings.senseRotation || 0} onChange={e=>setRotation(e.target.value)}><option value={0}>0° normal</option><option value={90}>90° mounted</option><option value={180}>180° mounted</option><option value={270}>270° mounted</option></select><button type="button" className="ghost small" onClick={rotateMountedOrientation}>Rotate 90° now</button></label><div className="sense-joystick" aria-label="simulated Sense HAT joystick"><button onClick={()=>setMode('Compass')}>↑</button><button onClick={()=>setMode('Liquid')}>←</button><button onClick={()=>setMode('Progress')}>●</button><button onClick={()=>setMode('GPS')}>→</button><button onClick={()=>setMode('SOS')}>↓</button></div><p className="muted">Progress mode uses white remaining LEDs, red completed LEDs, and a green finish LED from top-left to bottom-right.</p></div></div></div>;
+  return <div className="sense-sim-card"><div className="section-head compact"><div><h3>Mobile Sense HAT simulator</h3><p className="muted">Phone-only/Vercel mode mirrors the Pi Sense HAT: 8×8 LEDs, modes, dimmer, joystick controls, and route progress preview.</p></div><Pill tone={mobileOnly ? 'warn' : 'online'}>{mobileOnly ? 'simulated' : 'hardware companion'}</Pill></div><HerbieCompanionPanel settings={settings} setSettings={setSettings} progress={progress} tick={tick} mode={mode} /><div className="sense-sim-layout"><div className="sense-led-matrix" role="img" aria-label={`Simulated Sense HAT ${mode} matrix`}>{pixels.map((c,i)=><i key={i} style={{ backgroundColor:`rgb(${c[0]},${c[1]},${c[2]})`, boxShadow:`0 0 ${Math.max(2,(settings.senseBrightnessLevel||4)*2)}px rgba(${c[0]},${c[1]},${c[2]},.55)` }} />)}</div><div className="sense-sim-controls"><div className="tag-row"><Pill>{mode}</Pill><Pill>{pct}% route</Pill><Pill>{selectedRoute?.name || 'selected route'}</Pill></div><label className="field-line"><span>Simulator mode</span><select value={mode} onChange={e=>setMode(e.target.value)}>{['Compass','Compass Arrow','Compass NSEW','Rotation Test','Liquid','Level','Avatar Buddy','Custom','Pac-Man','Weather','Fire','Flashlight','SOS','Message','Boot','Sun','GPS','Clock','Progress','Beacon','Stars','Temp','Humidity','Pressure','Border','Magic8','Water','Snake'].map(x=><option key={x}>{x}</option>)}</select></label><label className="field-line"><span>LED dimmer</span><input type="range" min="1" max="8" value={settings.senseBrightnessLevel || 4} onChange={e=>setLevel(Number(e.target.value))} /></label><label className="field-line"><span>Mounted orientation</span><select value={settings.senseRotation || 0} onChange={e=>setRotation(e.target.value)}><option value={0}>0° normal</option><option value={90}>90° mounted</option><option value={180}>180° mounted</option><option value={270}>270° mounted</option></select><button type="button" className="ghost small" onClick={rotateMountedOrientation}>Rotate 90° now</button></label><div className="sense-joystick" aria-label="simulated Sense HAT joystick"><button onClick={()=>setMode('Compass')}>↑</button><button onClick={()=>setMode('Liquid')}>←</button><button onClick={()=>setMode('Progress')}>●</button><button onClick={()=>setMode('GPS')}>→</button><button onClick={()=>setMode('SOS')}>↓</button></div><p className="muted">Progress mode uses white remaining LEDs, red completed LEDs, and a green finish LED from top-left to bottom-right.</p></div></div></div>;
 }
 
 
@@ -592,7 +648,7 @@ function SenseHatControlCenter({ settings = {}, setSettings, selectedRoute = pri
   const [status, setStatus] = useState('Ready. Phone simulator works everywhere; physical Sense HAT commands work from the Pi hotspot/local app.');
   const [senseLive, setSenseLive] = useState(null);
   const localPi = typeof window !== 'undefined' && /^(mappi3\.local|10\.42\.0\.1|localhost|127\.0\.0\.1)$/i.test(window.location.hostname) && window.location.protocol !== 'https:';
-  const makeSensePayload = (mode = settings.orientationMode || 'Compass', extra = {}) => ({ mode, message: settings.senseMessage || '', brightness: settings.senseBrightness || 120, brightnessLevel: settings.senseBrightnessLevel || 4, scrollSpeed: settings.senseScrollSpeed || 0.055, senseColor: settings.senseColor || '#00aa55', borderOnly: Boolean(settings.senseBorderOnly), routeProgress: progress, routeDistanceMiles: selectedRoute?.distanceMiles || selectedRoute?.miles || 0, senseRotation: settings.senseRotation || 0, liquidAxisMap: settings.liquidAxisMap || 'rotate-ccw', customPixels: settings.senseCustomPixels || defaultSenseCustomPixels, hydrationAlarm: { enabled:Boolean(settings.hydrationAlarmEnabled), waterOz:Number(settings.hydrationWaterOz || 8), intervalMinutes:Number(settings.hydrationIntervalMinutes || 30) }, features: settings.piFeatures || {}, ...extra });
+  const makeSensePayload = (mode = settings.orientationMode || 'Compass', extra = {}) => ({ mode, message: settings.senseMessage || '', brightness: settings.senseBrightness || 120, brightnessLevel: settings.senseBrightnessLevel || 4, scrollSpeed: settings.senseScrollSpeed || 0.055, senseColor: settings.senseColor || '#00aa55', borderOnly: Boolean(settings.senseBorderOnly), routeProgress: progress, routeDistanceMiles: selectedRoute?.distanceMiles || selectedRoute?.miles || 0, senseRotation: settings.senseRotation || 0, liquidAxisMap: settings.liquidAxisMap || 'rotate-ccw', customPixels: settings.senseCustomPixels || defaultSenseCustomPixels, hydrationAlarm: { enabled:Boolean(settings.hydrationAlarmEnabled), waterOz:Number(settings.hydrationWaterOz || 8), intervalMinutes:Number(settings.hydrationIntervalMinutes || 30) }, features: settings.piFeatures || {}, herbieExpression: settings.herbieExpression || 'auto', ...extra });
   const pushLiveSense = async (payload, quiet = false) => {
     if (!localPi) { if (!quiet) setStatus('Simulator updated. Open the app from the Pi hotspot/local URL to push this live to the physical Sense HAT.'); return null; }
     const data = await fetch('/api/command/sense-mode', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify(payload) }).then(r=>r.json());
@@ -617,7 +673,7 @@ function SenseHatControlCenter({ settings = {}, setSettings, selectedRoute = pri
         .catch(err => setStatus(`Live Sense HAT update failed: ${err.message}`));
     }, 180);
     return () => clearTimeout(t);
-  }, [localPi, settings.orientationMode, settings.senseMessage, settings.senseBrightness, settings.senseBrightnessLevel, settings.senseScrollSpeed, settings.senseColor, settings.senseBorderOnly, settings.senseRotation, settings.liquidAxisMap, JSON.stringify(settings.senseCustomPixels || defaultSenseCustomPixels), settings.hydrationAlarmEnabled, settings.hydrationWaterOz, settings.hydrationIntervalMinutes, settings.piFeatures, progress, selectedRoute?.id]);
+  }, [localPi, settings.orientationMode, settings.senseMessage, settings.senseBrightness, settings.senseBrightnessLevel, settings.senseScrollSpeed, settings.senseColor, settings.senseBorderOnly, settings.senseRotation, settings.liquidAxisMap, JSON.stringify(settings.senseCustomPixels || defaultSenseCustomPixels), settings.hydrationAlarmEnabled, settings.hydrationWaterOz, settings.hydrationIntervalMinutes, settings.piFeatures, settings.herbieExpression, progress, selectedRoute?.id]);
   const readSense = async () => { setStatus('Reading Sense HAT status…'); try { const data = await fetch('/api/sense', { cache:'no-store' }).then(r=>r.json()); setSenseLive(data); setStatus(data?.sense?.ok ? `Sense HAT live: ${data.sense.mode} · joystick ${data.sense.joystick?.direction || 'idle'}` : `Sense API reachable: ${data?.sense?.message || 'not active'}`); } catch (err) { setStatus(`Sense HAT status unavailable here: ${err.message}`); } };
   const calibrate = async (target='sense') => { setStatus(`Starting ${target} calibration…`); try { const data = await fetch('/api/calibrate', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ target }) }).then(r=>r.json()); setStatus(data.message || `${target} calibration requested.`); } catch (err) { setStatus(`Calibration unavailable here: ${err.message}`); } };
   const setLevel = (level) => setSettings && setSettings(s => ({ ...s, senseBrightnessLevel: level, senseBrightness: senseBrightnessValues[level-1] || 120 }));
@@ -1664,7 +1720,7 @@ function App() {
     const payload = { mode, message: settings.senseMessage || '', brightness: settings.senseBrightness || 120, brightnessLevel: settings.senseBrightnessLevel || 4, scrollSpeed: settings.senseScrollSpeed || 0.055, senseColor: settings.senseColor || '#00aa55', borderOnly: Boolean(settings.senseBorderOnly), features: settings.piFeatures || {}, routeProgress: progress, routeDistanceMiles: selectedRoute?.distanceMiles || selectedRoute?.miles || 0, senseRotation: settings.senseRotation || 0, liquidAxisMap: settings.liquidAxisMap || 'rotate-ccw', customPixels: settings.senseCustomPixels || defaultSenseCustomPixels, hydrationAlarm: { enabled:Boolean(settings.hydrationAlarmEnabled), waterOz:Number(settings.hydrationWaterOz || 8), intervalMinutes:Number(settings.hydrationIntervalMinutes || 30) } };
     const t = setTimeout(() => fetch('/api/command/sense-mode', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) }).catch(() => {}), 180);
     return () => clearTimeout(t);
-  }, [settings.orientationMode, settings.senseMessage, settings.senseBrightness, settings.senseBrightnessLevel, settings.senseScrollSpeed, settings.senseColor, settings.senseBorderOnly, settings.senseRotation, settings.liquidAxisMap, JSON.stringify(settings.senseCustomPixels || defaultSenseCustomPixels), settings.hydrationAlarmEnabled, settings.hydrationWaterOz, settings.hydrationIntervalMinutes, settings.piFeatures, progress, selectedRoute?.id]);
+  }, [settings.orientationMode, settings.senseMessage, settings.senseBrightness, settings.senseBrightnessLevel, settings.senseScrollSpeed, settings.senseColor, settings.senseBorderOnly, settings.senseRotation, settings.liquidAxisMap, JSON.stringify(settings.senseCustomPixels || defaultSenseCustomPixels), settings.hydrationAlarmEnabled, settings.hydrationWaterOz, settings.hydrationIntervalMinutes, settings.piFeatures, settings.herbieExpression, progress, selectedRoute?.id]);
   useEffect(() => localStorage.setItem('mappi3.driveDestination', JSON.stringify(driveDestination)), [driveDestination]); useEffect(() => localStorage.setItem('mappi3.deviceId', JSON.stringify(deviceId)), [deviceId]); useEffect(() => localStorage.setItem('mappi3.accountState', JSON.stringify(accountState)), [accountState]); useEffect(() => localStorage.setItem('mappi3.completedTrails', JSON.stringify(completedTrails)), [completedTrails]); useEffect(() => localStorage.setItem('mappi3.activeTab', JSON.stringify(activeTab)), [activeTab]); useEffect(() => localStorage.setItem('mappi3.originPoint', JSON.stringify(originPoint)), [originPoint]); useEffect(() => localStorage.setItem('mappi3.customWaypointsByRoute', JSON.stringify(customWaypointsByRoute)), [customWaypointsByRoute]); useEffect(() => localStorage.setItem('mappi3.healthHistory', JSON.stringify(healthHistory)), [healthHistory]); useEffect(() => localStorage.setItem('mappi3.selectedRouteId', JSON.stringify(selectedRouteId)), [selectedRouteId]); useEffect(() => localStorage.setItem('mappi3.searchQuery', JSON.stringify(searchQuery)), [searchQuery]); useEffect(() => localStorage.setItem('mappi3.settings', JSON.stringify(settings)), [settings]); useEffect(() => localStorage.setItem('mappi3.routes', JSON.stringify(routes)), [routes]); useEffect(() => localStorage.setItem('mappi3.elapsed', JSON.stringify(elapsed)), [elapsed]); useEffect(() => localStorage.setItem('mappi3.progress', JSON.stringify(progress)), [progress]); useEffect(() => localStorage.setItem('mappi3.hiker', JSON.stringify(hiker)), [hiker]); useEffect(() => localStorage.setItem('mappi3.conditions', JSON.stringify(conditions)), [conditions]); useEffect(() => localStorage.setItem('mappi3.walk', JSON.stringify({ ...walk, active: false })), [walk]); useEffect(() => localStorage.setItem('mappi3.walkHistory', JSON.stringify(savedWalks)), [savedWalks]); useEffect(() => localStorage.setItem('mappi3.workoutLog', JSON.stringify(workoutLog)), [workoutLog]); useEffect(() => localStorage.setItem('mappi3.launchChecklist', JSON.stringify(launchChecklist)), [launchChecklist]); useEffect(() => localStorage.setItem('mappi3.launchPlan', JSON.stringify(launchPlan)), [launchPlan]); useEffect(() => localStorage.setItem('mappi3.readinessLog', JSON.stringify(readinessLog)), [readinessLog]);
   useEffect(() => { if (!recording) return undefined; const timer = setInterval(() => { setElapsed(e => e + 1); setProgress(p => (p >= 0.98 ? 0.02 : Math.min(0.99, p + 0.012))); }, 1000); return () => clearInterval(timer); }, [recording]);
   useEffect(() => {
