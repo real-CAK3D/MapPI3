@@ -173,6 +173,9 @@ from mappi3_whisplay_common import *
 API = 'http://127.0.0.1:5050'
 running = True
 page = 0
+seen_pacman_events = set()
+popup_event = None
+popup_until = 0.0
 
 def api(path, timeout=1.5):
     try:
@@ -219,7 +222,53 @@ def lines_safety():
         '~backtrack, conserve power.',
     ]
 
+def sense_payload(data):
+    if not isinstance(data, dict):
+        return {}
+    return data.get('sense') if isinstance(data.get('sense'), dict) else data
+
+def pacman_events_from_api():
+    sense = sense_payload(api('/api/sense', timeout=1.0))
+    pac = sense.get('pacman_display') or {}
+    if sense.get('mode') != 'pacman' and not pac:
+        return []
+    return [e for e in pac.get('events', []) if isinstance(e, dict) and e.get('id')]
+
+def poll_pacman_popup():
+    global popup_event, popup_until
+    for event in pacman_events_from_api():
+        eid = event.get('id')
+        if eid in seen_pacman_events:
+            continue
+        seen_pacman_events.add(eid)
+        popup_event = event
+        popup_until = time.time() + 2.4
+        return True
+    return False
+
+def render_pacman_popup(event):
+    etype = event.get('type') or 'pacman_event'
+    label = event.get('label') or etype.replace('_',' ')
+    accent = AMBER
+    lines = ['~Sense HAT Pac-Man']
+    if etype == 'fruit_eaten':
+        accent = RED; lines += ['Cherry eaten!', f'+{event.get("score_delta", 10)} points', f'fruit #{event.get("fruit_count", "?")}']
+    elif etype == 'ghost_eaten':
+        accent = BLUE; lines += [label, f'ghost: {event.get("ghost_name", "ghost")}', f'+{event.get("score_delta", 25)} points']
+    elif etype == 'pacman_caught':
+        accent = RED; lines += [label, 'resetting tiny maze', f'score: {event.get("score", 0)}']
+    elif etype == 'map_advanced':
+        accent = GREEN; lines += [label, f'level {int(event.get("next_map", 0)) + 1}', f'{event.get("fruits_per_map", 12)} cherries/map']
+    elif etype == 'power_started':
+        accent = AMBER; lines += ['Power mode!', 'ghosts go blue', f'ticks: {event.get("power_ticks", 0)}']
+    else:
+        lines += wrap(label, 24)[:4]
+    lines.append(f'score: {event.get("score", 0)}')
+    return draw_card('Pac-Man Event', lines, accent, 'auto popup · returns to Dash')
+
 def render():
+    if popup_event and time.time() < popup_until:
+        return render_pacman_popup(popup_event)
     if page % 4 == 0:
         return draw_face('happy')
     if page % 4 == 1:
@@ -243,8 +292,8 @@ def main():
     show(hw, render())
     try:
         while running:
-            time.sleep(1)
-            if page % 4 in (1,2):
+            time.sleep(0.5)
+            if poll_pacman_popup() or (popup_event and time.time() < popup_until) or page % 4 in (1,2):
                 show(hw, render())
     finally:
         hw.cleanup()

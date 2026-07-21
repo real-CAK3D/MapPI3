@@ -10,6 +10,7 @@ KEY_FILE = CERT_DIR / 'mappi3-local.key'
 LIQUID_STATE = {'gx': 0.0, 'gy': 0.0, 'gz': 1.0}
 LIQUID_PARTICLES = []
 PACMAN_STATE = {}
+PACMAN_EVENT_SEQ = 0
 AVATAR_STATE = {'last_accel': None, 'last_accel_at': 0.0, 'surprise_until': 0.0, 'still_since': 0.0}
 SENSE_MODES = ['compass','compass-arrow','compass-cardinal','rotation-test','liquid','pacman','weather','fire','flashlight','sos','message','boot','sun','gps','clock','progress','beacon','stars','temp','humidity','pressure','avatar','level','custom','border','magic8','water','snake']
 ALLOWED = {'status','restart-web','reboot','shutdown','update-app','gps-sample','toggle-hotspot','hotspot-on','connect-home-wifi','wifi-scan','wifi-save-network','wifi-connect-saved','network-status','tailscale-status','tailscale-login','remote-access-repair','sense-mode','calibrate','harden-hotspot','plugin-update','vnc-setup','vnc-disable','weather-refresh','noaa-refresh','online-maintenance','gps-diagnose','sense-diagnose','field-ai-verify','captive-setup','captive-disable','captive-status','gps-pps-setup','plugin-status','plugin-install','plugin-install-all','plugin-uninstall'}
@@ -717,6 +718,31 @@ PACMAN_FRAME_SLEEP = 0.42
 PACMAN_GHOST_MOVE_INTERVAL = 3
 PACMAN_FRUITS_PER_MAP = 12
 PACMAN_POWER_TICKS = 45
+PACMAN_GHOST_NAMES = ['Blinky','Pinky','Inky','Clyde']
+
+def _pacman_hex(color):
+    return '#%02x%02x%02x' % tuple(int(max(0, min(255, c))) for c in color)
+
+def _pacman_event(state, event_type, label, score_delta=0, **extra):
+    global PACMAN_EVENT_SEQ
+    PACMAN_EVENT_SEQ += 1
+    event = {
+        'id': f'pacman-{int(time.time() * 1000)}-{PACMAN_EVENT_SEQ}',
+        'seq': PACMAN_EVENT_SEQ,
+        'type': event_type,
+        'label': label,
+        'score_delta': score_delta,
+        'score': int(state.get('score') or 0),
+        'fruit_count': int(state.get('fruit_count') or 0),
+        'map_index': int(state.get('map_index') or 0),
+        'created_at': round(time.time(), 3),
+    }
+    event.update(extra)
+    events = list(state.get('events') or [])
+    events.append(event)
+    state['events'] = events[-8:]
+    state['last_event'] = event
+    return event
 
 def _pacman_cells(layout):
     return [(x,y) for y,row in enumerate(layout) for x,ch in enumerate(row) if ch != '#']
@@ -739,16 +765,19 @@ def _pacman_new_fruit(state):
 
 def _pacman_new_state():
     layout=PACMAN_MAPS[0]; cells=sorted(_pacman_cells(layout), key=lambda p:(p[1],p[0])); homes=list(reversed(cells))
-    state={'map_index':0,'layout':layout,'cells':cells,'pacman':cells[0],'dir':(1,0),'mouth_open':True,'score':0,'fruit_count':0,'power':0,'caught':0,'ticks':0,'ghosts':[]}
-    state['ghosts']=[{'pos':homes[i % len(homes)], 'dir':random.choice(PACMAN_DIRS), 'home':homes[i % len(homes)], 'eaten':0, 'color':PACMAN_GHOST_COLORS[i % len(PACMAN_GHOST_COLORS)]} for i in range(4)]
+    state={'map_index':0,'layout':layout,'cells':cells,'pacman':cells[0],'dir':(1,0),'mouth_open':True,'score':0,'fruit_count':0,'power':0,'caught':0,'ticks':0,'ghosts':[],'events':[]}
+    state['ghosts']=[{'name':PACMAN_GHOST_NAMES[i % len(PACMAN_GHOST_NAMES)], 'index':i, 'pos':homes[i % len(homes)], 'dir':random.choice(PACMAN_DIRS), 'home':homes[i % len(homes)], 'eaten':0, 'color':PACMAN_GHOST_COLORS[i % len(PACMAN_GHOST_COLORS)]} for i in range(4)]
     state['fruit']=_pacman_new_fruit(state)
+    _pacman_event(state, 'power_started', 'Pac-Man ready!', 0, position=list(state['pacman']), power_ticks=0)
     return state
 
 def _pacman_next_map(state):
-    state['map_index']=(int(state.get('map_index') or 0)+1)%len(PACMAN_MAPS); layout=PACMAN_MAPS[state['map_index']]; cells=sorted(_pacman_cells(layout), key=lambda p:(p[1],p[0])); homes=list(reversed(cells))
+    previous=int(state.get('map_index') or 0)
+    state['map_index']=(previous+1)%len(PACMAN_MAPS); layout=PACMAN_MAPS[state['map_index']]; cells=sorted(_pacman_cells(layout), key=lambda p:(p[1],p[0])); homes=list(reversed(cells))
     state.update({'layout':layout,'cells':cells,'pacman':cells[0],'dir':(1,0),'mouth_open':True,'power':0,'caught':0,'ticks':0})
-    state['ghosts']=[{'pos':homes[i % len(homes)], 'dir':random.choice(PACMAN_DIRS), 'home':homes[i % len(homes)], 'eaten':0, 'color':PACMAN_GHOST_COLORS[i % len(PACMAN_GHOST_COLORS)]} for i in range(4)]
+    state['ghosts']=[{'name':PACMAN_GHOST_NAMES[i % len(PACMAN_GHOST_NAMES)], 'index':i, 'pos':homes[i % len(homes)], 'dir':random.choice(PACMAN_DIRS), 'home':homes[i % len(homes)], 'eaten':0, 'color':PACMAN_GHOST_COLORS[i % len(PACMAN_GHOST_COLORS)]} for i in range(4)]
     state['fruit']=_pacman_new_fruit(state)
+    _pacman_event(state, 'map_advanced', f'Map {state["map_index"] + 1}!', 0, previous_map=previous, next_map=state['map_index'], fruits_per_map=PACMAN_FRUITS_PER_MAP)
 
 def _pacman_best_dir(start, target, cells, chase=True):
     dirs=_pacman_neighbors(start, cells); random.shuffle(dirs)
@@ -773,7 +802,10 @@ def _pacman_tick_state(state):
     state['dir']=_pacman_direction_to(state['pacman'], target, cells, chase=True)
     state['pacman']=_pacman_step(state['pacman'], state['dir'])
     if state['pacman'] == state.get('fruit'):
+        fruit_pos=state.get('fruit')
         state['score']+=10; state['fruit_count']+=1; state['power']=PACMAN_POWER_TICKS; state['fruit']=_pacman_new_fruit(state)
+        _pacman_event(state, 'fruit_eaten', 'Cherry +10', 10, fruit_type='cherry', position=list(fruit_pos or state['pacman']), power_ticks=PACMAN_POWER_TICKS)
+        _pacman_event(state, 'power_started', 'Power pellet!', 0, power_ticks=PACMAN_POWER_TICKS)
         if state['fruit_count'] % PACMAN_FRUITS_PER_MAP == 0: _pacman_next_map(state); return
     ghosts_should_move = state['ticks'] % PACMAN_GHOST_MOVE_INTERVAL == 0
     for g in state['ghosts']:
@@ -792,8 +824,11 @@ def _pacman_tick_state(state):
         if g['pos'] != state['pacman'] or g.get('eaten'): continue
         if state.get('power'):
             g['eaten']=10; state['score']+=25
+            _pacman_event(state, 'ghost_eaten', f'{g.get("name","Ghost")} +25', 25, ghost_name=g.get('name','Ghost'), ghost_index=g.get('index',0), ghost_color=_pacman_hex(g.get('color', PACMAN_GHOST_COLORS[0])), power_ticks=int(state.get('power') or 0), position=list(g.get('pos') or state['pacman']))
         else:
             state['caught']=6
+            _pacman_event(state, 'pacman_caught', f'Caught by {g.get("name","Ghost")}', 0, ghost_name=g.get('name','Ghost'), ghost_index=g.get('index',0), ghost_color=_pacman_hex(g.get('color', PACMAN_GHOST_COLORS[0])), position=list(state['pacman']))
+            break
     state['mouth_open']=not state.get('mouth_open', True); state['power']=max(0, int(state.get('power') or 0)-1)
 
 def draw_pacman_frame(sense, tick, st=None):
@@ -831,7 +866,7 @@ def draw_pacman_frame(sense, tick, st=None):
         if mouth in _pacman_neighbors(state['pacman'], state['cells']): pixels[mouth[1]*8+mouth[0]]=[0,0,0]
     sense_set_pixels(sense, pixels, st)
     with SENSE_LOCK:
-        SENSE_CACHE['pacman_display']={'model':'classic arcade-inspired 8x8 pacman maze: blue walls, sparse warm pellets, cherry, four slower ghosts','score':state.get('score',0),'fruit_count':state.get('fruit_count',0),'map_index':state.get('map_index',0),'power_ticks':state.get('power',0),'caught_flash_ticks':state.get('caught',0),'ghosts':len(state.get('ghosts') or []),'ghost_move_interval':PACMAN_GHOST_MOVE_INTERVAL,'fruits_per_map':PACMAN_FRUITS_PER_MAP,'frame_sleep':PACMAN_FRAME_SLEEP,'pellet_draw_interval':PACMAN_PELLET_DRAW_INTERVAL,'lit_leds':sum(1 for c in pixels if c != [0,0,0]),'palette':'wall=#2121ff pac=#ffff00 pellet=#ffb8ae blinky=#ff0000 pinky=#ffb8ff inky=#00ffff clyde=#ffb852'}
+        SENSE_CACHE['pacman_display']={'model':'classic arcade-inspired 8x8 pacman maze with named Whisplay popup events: fruit_eaten, ghost_eaten, pacman_caught, map_advanced, power_started','score':state.get('score',0),'fruit_count':state.get('fruit_count',0),'map_index':state.get('map_index',0),'power_ticks':state.get('power',0),'caught_flash_ticks':state.get('caught',0),'ghosts':len(state.get('ghosts') or []),'ghost_move_interval':PACMAN_GHOST_MOVE_INTERVAL,'fruits_per_map':PACMAN_FRUITS_PER_MAP,'frame_sleep':PACMAN_FRAME_SLEEP,'pellet_draw_interval':PACMAN_PELLET_DRAW_INTERVAL,'events':list(state.get('events') or []),'last_event_id':(state.get('last_event') or {}).get('id'),'lit_leds':sum(1 for c in pixels if c != [0,0,0]),'palette':'wall=#2121ff pac=#ffff00 pellet=#ffb8ae blinky=#ff0000 pinky=#ffb8ff inky=#00ffff clyde=#ffb852'}
 
 def sense_alarm_due(st):
     alarm=st.get('hydration_alarm') or {}
