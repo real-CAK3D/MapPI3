@@ -208,19 +208,40 @@ def lines_fieldkit():
     stats = status.get('stats') if isinstance(status.get('stats'), dict) else status.get('system') if isinstance(status.get('system'), dict) else {}
     disk = stats.get('disk') if isinstance(stats.get('disk'), dict) else {}
     mem = stats.get('memory') if isinstance(stats.get('memory'), dict) else {}
-    temp = stats.get('temperature_c') or sense.get('temperature') or sense.get('temp_c')
+    temp = stats.get('temperature_c')
+    if temp is None and sense.get('temp') is not None:
+        temp = (float(sense.get('temp')) - 32) * 5 / 9
     uptime = stats.get('uptime_seconds') or status.get('uptime_seconds') or status.get('uptime')
-    net_text = json.dumps(net).lower() if isinstance(net, dict) else ''
-    hotspot = bool(net.get('hotspot_active') or 'mappi3-hotspot' in net_text) if isinstance(net, dict) else False
-    tailscale = 'tailscale' in net_text and 'offline' not in net_text
-    api_ok = not status.get('_error')
-    caution = (isinstance(disk.get('percent'), (int,float)) and disk.get('percent') > 85) or (isinstance(temp, (int,float)) and temp > 70)
-    ready = api_ok and hotspot and not caution
-    lines=[f'{tone(ready, caution)}summary: {"ready" if ready else "caution" if api_ok else "problem"}', f'API: {"online" if api_ok else "offline"}', f'hotspot: {"on" if hotspot else "check"}', f'tailscale: {"seen" if tailscale else "field/offline"}']
+    wifi = net.get('wifi') if isinstance(net.get('wifi'), dict) else {}
+    ts = net.get('tailscale') if isinstance(net.get('tailscale'), dict) else {}
+    bt = net.get('bluetooth_pan') if isinstance(net.get('bluetooth_pan'), dict) else {}
+    api_ok = not status.get('_error') and bool(status.get('ok', True))
+    hotspot = bool(wifi.get('hotspot_active') or status.get('hotspot_active'))
+    tailscale_online = bool(ts.get('online') or ts.get('tailscale_ips'))
+    tailscale_seen = bool(ts.get('installed') is not False and (ts.get('ok') or ts.get('backend_state') or ts.get('tailscale_ips')))
+    internet = bool(net.get('has_default_route') or bt.get('internet_ok'))
+    disk_pct = disk.get('percent') if isinstance(disk.get('percent'), (int,float)) else None
+    mem_pct = mem.get('percent') if isinstance(mem.get('percent'), (int,float)) else None
+    temp_num = float(temp) if isinstance(temp, (int,float)) else None
+    problems = []
+    cautions = []
+    if not api_ok: problems.append('API')
+    if not hotspot: problems.append('hotspot')
+    if temp_num is not None and temp_num >= 80: problems.append('temp')
+    elif temp_num is not None and temp_num >= 70: cautions.append('temp')
+    if mem_pct is not None and mem_pct >= 90: problems.append('RAM')
+    elif mem_pct is not None and mem_pct >= 80: cautions.append('RAM')
+    if disk_pct is not None and disk_pct >= 95: problems.append('disk')
+    elif disk_pct is not None and disk_pct >= 85: cautions.append('disk')
+    if not tailscale_online and tailscale_seen: cautions.append('tailnet')
+    if not internet: cautions.append('offline')
+    summary = 'problem' if problems else 'caution' if cautions else 'ready'
+    lines=[f'{tone(summary == "ready", summary == "caution")}summary: {summary.upper()}', f'API: {"online" if api_ok else "offline"}', f'hotspot: {"READY" if hotspot else "PROBLEM"}', f'tailnet: {"online" if tailscale_online else "field/offline"}', f'internet: {"route" if internet else "cached only"}']
     if uptime: lines.append(f'uptime: {int(float(uptime)//60)} min' if str(uptime).replace('.','',1).isdigit() else f'uptime: {uptime}')
-    if temp is not None: lines.append(f'temp: {round(float(temp),1)}C')
-    if mem.get('percent') is not None: lines.append(f'RAM: {mem.get("percent")}%')
-    if disk.get('free_gb') is not None: lines.append(f'disk free: {disk.get("free_gb")}GB')
+    if temp_num is not None: lines.append(f'CPU temp: {round(temp_num,1)}C')
+    if mem_pct is not None: lines.append(f'RAM: {mem_pct}% used')
+    if disk.get('free_gb') is not None: lines.append(f'disk: {disk.get("free_gb")}GB free')
+    lines.append('battery: UNKNOWN/no UPS')
     lines.append('power: dim + burst GPS')
     return lines[:12]
 
