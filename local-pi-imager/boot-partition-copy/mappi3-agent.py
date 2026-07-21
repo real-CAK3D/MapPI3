@@ -13,7 +13,7 @@ PACMAN_STATE = {}
 PACMAN_EVENT_SEQ = 0
 AVATAR_STATE = {'last_accel': None, 'last_accel_at': 0.0, 'surprise_until': 0.0, 'still_since': 0.0}
 SENSE_MODES = ['compass','compass-arrow','compass-cardinal','rotation-test','liquid','pacman','weather','fire','flashlight','sos','message','boot','sun','gps','clock','progress','beacon','stars','temp','humidity','pressure','avatar','level','custom','border','magic8','water','snake']
-ALLOWED = {'status','restart-web','reboot','shutdown','update-app','gps-sample','toggle-hotspot','hotspot-on','connect-home-wifi','wifi-scan','wifi-save-network','wifi-connect-saved','network-status','tailscale-status','tailscale-login','remote-access-repair','sense-mode','calibrate','harden-hotspot','plugin-update','vnc-setup','vnc-disable','weather-refresh','noaa-refresh','online-maintenance','gps-diagnose','sense-diagnose','field-ai-verify','captive-setup','captive-disable','captive-status','gps-pps-setup','plugin-status','plugin-install','plugin-install-all','plugin-uninstall'}
+ALLOWED = {'status','restart-web','reboot','shutdown','update-app','gps-sample','toggle-hotspot','hotspot-on','connect-home-wifi','wifi-scan','wifi-save-network','wifi-connect-saved','network-status','tailscale-status','tailscale-login','remote-access-repair','sense-mode','calibrate','harden-hotspot','plugin-update','vnc-setup','vnc-disable','weather-refresh','noaa-refresh','online-maintenance','gps-diagnose','sense-diagnose','field-ai-verify','captive-setup','captive-disable','captive-status','gps-pps-setup','whisplay-test-popup','snake-trail-event','plugin-status','plugin-install','plugin-install-all','plugin-uninstall'}
 SENSE_CACHE = {'ok': False, 'mode': 'compass', 'message': 'Sense HAT display loop starting', 'updated': 0, 'joystick': {'seq': 0, 'direction': '', 'pressed': False, 'updated': 0}}
 SENSE_LOCK = threading.Lock()
 KEY_NAMES = {103:'up',108:'down',105:'left',106:'right',28:'press'}
@@ -1943,6 +1943,51 @@ def disable_captive():
     out=sh('systemctl disable --now mappi3-captive.service || true', timeout=20)
     return {'ok': True, 'message':'Phone stay-connected captive portal disabled', 'status': captive_status(), 'output': out.get('output','')[-800:]}
 
+
+def whisplay_test_popup(payload=None):
+    """Inject a deterministic popup event into the Pac-Man/Snake event bridge for Whisplay Dash visual tests."""
+    global PACMAN_STATE
+    payload = payload or {}
+    if not PACMAN_STATE:
+        PACMAN_STATE = _pacman_new_state()
+    label = str(payload.get('label') or payload.get('message') or 'Manual Whisplay popup test')[:48]
+    event_type = str(payload.get('type') or 'manual_popup_test')[:32]
+    score_delta = int(payload.get('score_delta') or 0)
+    event = _pacman_event(PACMAN_STATE, event_type, label, score_delta,
+                          manual=True,
+                          source='api/command/whisplay-test-popup',
+                          display_seconds=float(payload.get('display_seconds') or 3.2),
+                          contrast='high',
+                          text='Readable from trail distance?',
+                          score=int(PACMAN_STATE.get('score') or 0))
+    with SENSE_LOCK:
+        current = SENSE_CACHE.get('pacman_display') if isinstance(SENSE_CACHE.get('pacman_display'), dict) else {}
+        events = list(PACMAN_STATE.get('events') or current.get('events') or [])
+        current.update({'model':'manual Whisplay popup bridge test','events':events[-8:],'last_event_id':event.get('id'),'last_event':event,'manual_popup_ready':True})
+        SENSE_CACHE['pacman_display'] = current
+        SENSE_CACHE['message'] = label
+        SENSE_CACHE['updated'] = time.time()
+    return {'ok': True, 'command': 'whisplay-test-popup', 'event': event, 'hint': 'Launch MapPI3 Dash on Whisplay; popup should appear without waiting for gameplay.'}
+
+def snake_trail_event(payload=None):
+    global PACMAN_STATE
+    payload = payload or {}
+    if not PACMAN_STATE:
+        PACMAN_STATE = _pacman_new_state()
+    label = str(payload.get('label') or 'Snake Trail snack found')[:48]
+    event = _pacman_event(PACMAN_STATE, 'snake_trail_event', label, int(payload.get('score_delta') or 15),
+                          manual=bool(payload.get('manual', True)),
+                          source='api/command/snake-trail-event',
+                          segment_count=int(payload.get('segment_count') or 4),
+                          trail='Snake Trail',
+                          display_seconds=float(payload.get('display_seconds') or 3.0))
+    with SENSE_LOCK:
+        current = SENSE_CACHE.get('pacman_display') if isinstance(SENSE_CACHE.get('pacman_display'), dict) else {}
+        events = list(PACMAN_STATE.get('events') or current.get('events') or [])
+        current.update({'model':'shared Whisplay game popup bridge','events':events[-8:],'last_event_id':event.get('id'),'last_event':event})
+        SENSE_CACHE['pacman_display'] = current
+    return {'ok': True, 'command': 'snake-trail-event', 'event': event}
+
 def command(name, payload=None):
     payload=payload or {}
     if name not in ALLOWED: return {'ok': False, 'error': 'unknown command'}
@@ -1976,6 +2021,8 @@ def command(name, payload=None):
     if name=='captive-disable': return disable_captive()
     if name=='captive-status': return captive_status()
     if name=='gps-pps-setup': return setup_gps_pps(payload)
+    if name=='whisplay-test-popup': return whisplay_test_popup(payload)
+    if name=='snake-trail-event': return snake_trail_event(payload)
     if name=='restart-web': return sh('systemctl restart mappi3-web.service', timeout=10)
     if name=='reboot': return sh('systemctl reboot', timeout=3)
     if name=='shutdown': return sh('systemctl poweroff', timeout=3)

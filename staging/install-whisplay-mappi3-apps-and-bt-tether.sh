@@ -166,16 +166,18 @@ PY
 cat > "$EXAMPLE_DIR/mappi3_whisplay_dashboard.py" <<'PY'
 #!/usr/bin/env python3
 from __future__ import annotations
-import json, time
+import json, random, time
 from urllib import request
 from mappi3_whisplay_common import *
 
 API = 'http://127.0.0.1:5050'
 running = True
 page = 0
-seen_pacman_events = set()
+seen_popup_events = set()
 popup_event = None
 popup_until = 0.0
+snake = {'body': [(4,4),(3,4),(2,4)], 'dir': (1,0), 'food': (6,4), 'score': 0, 'over': False, 'last_emit': 0.0}
+PAGES = ['Buddy Home','Field Kit','Compass+Level','Weather+Sky','Network','Safety','Snake Trail']
 
 def api(path, timeout=1.5):
     try:
@@ -184,26 +186,65 @@ def api(path, timeout=1.5):
     except Exception as e:
         return {'_error': str(e)}
 
-def lines_status():
-    status = api('/api/status')
-    sense = api('/api/sense')
-    net = api('/api/network/status')
-    lines=[]
-    if status.get('_error'):
-        lines.append('!MapPI3 API offline')
-        lines += wrap(status['_error'], 24)[:3]
-    else:
-        lines.append('+MapPI3 web/API online')
-        for key in ('mode','device','uptime','version'):
-            if key in status: lines.append(f'{key}: {status[key]}')
-    if isinstance(sense, dict) and not sense.get('_error'):
-        avatar = sense.get('avatar') or sense.get('mood') or 'buddy'
-        lines.append(f'buddy: {avatar}')
-        for k in ('temperature','roll','pitch','humidity'):
-            if k in sense: lines.append(f'{k}: {sense[k]}')
-    if isinstance(net, dict) and not net.get('_error'):
-        lines.append('net: ok')
-    return lines or ['MapPI3 status waiting...']
+def post_command(name, payload=None, timeout=1.8):
+    body = json.dumps(payload or {}).encode('utf-8')
+    req = request.Request(API + '/api/command/' + name, data=body, headers={'Content-Type':'application/json'}, method='POST')
+    try:
+        with request.urlopen(req, timeout=timeout) as r:
+            return json.loads(r.read().decode('utf-8'))
+    except Exception as e:
+        return {'ok': False, '_error': str(e)}
+
+def sense_payload(data):
+    if not isinstance(data, dict):
+        return {}
+    return data.get('sense') if isinstance(data.get('sense'), dict) else data
+
+def tone(ok, warn=False):
+    return '+' if ok and not warn else '~' if ok else '!'
+
+def lines_fieldkit():
+    status = api('/api/status'); net = api('/api/network/status'); sense = sense_payload(api('/api/sense'))
+    stats = status.get('stats') if isinstance(status.get('stats'), dict) else status.get('system') if isinstance(status.get('system'), dict) else {}
+    disk = stats.get('disk') if isinstance(stats.get('disk'), dict) else {}
+    mem = stats.get('memory') if isinstance(stats.get('memory'), dict) else {}
+    temp = stats.get('temperature_c') or sense.get('temperature') or sense.get('temp_c')
+    uptime = stats.get('uptime_seconds') or status.get('uptime_seconds') or status.get('uptime')
+    net_text = json.dumps(net).lower() if isinstance(net, dict) else ''
+    hotspot = bool(net.get('hotspot_active') or 'mappi3-hotspot' in net_text) if isinstance(net, dict) else False
+    tailscale = 'tailscale' in net_text and 'offline' not in net_text
+    api_ok = not status.get('_error')
+    caution = (isinstance(disk.get('percent'), (int,float)) and disk.get('percent') > 85) or (isinstance(temp, (int,float)) and temp > 70)
+    ready = api_ok and hotspot and not caution
+    lines=[f'{tone(ready, caution)}summary: {"ready" if ready else "caution" if api_ok else "problem"}', f'API: {"online" if api_ok else "offline"}', f'hotspot: {"on" if hotspot else "check"}', f'tailscale: {"seen" if tailscale else "field/offline"}']
+    if uptime: lines.append(f'uptime: {int(float(uptime)//60)} min' if str(uptime).replace('.','',1).isdigit() else f'uptime: {uptime}')
+    if temp is not None: lines.append(f'temp: {round(float(temp),1)}C')
+    if mem.get('percent') is not None: lines.append(f'RAM: {mem.get("percent")}%')
+    if disk.get('free_gb') is not None: lines.append(f'disk free: {disk.get("free_gb")}GB')
+    lines.append('power: dim + burst GPS')
+    return lines[:12]
+
+def lines_compass():
+    sense = sense_payload(api('/api/sense'))
+    heading = sense.get('compass') or sense.get('heading')
+    orient = sense.get('orientation') if isinstance(sense.get('orientation'), dict) else {}
+    roll = orient.get('roll', sense.get('roll'))
+    pitch = orient.get('pitch', sense.get('pitch'))
+    level = (roll is not None and pitch is not None and abs(float(roll)) < 8 and abs(float(pitch)) < 8)
+    card = ['N','NE','E','SE','S','SW','W','NW'][int(((float(heading or 0)+22.5)%360)//45)] if heading is not None else '—'
+    return [f'heading: {round(float(heading),1) if heading is not None else "—"} {card}', f'roll: {round(float(roll),1) if roll is not None else "—"}', f'pitch: {round(float(pitch),1) if pitch is not None else "—"}', f'{tone(level)}level: {"steady" if level else "tilted/check"}', 'calibrate away from metal', '~carry real compass/map']
+
+def lines_weather():
+    sense = sense_payload(api('/api/sense'))
+    weather = api('/api/weather?days=1', timeout=1.0)
+    temp = sense.get('temperature') or sense.get('temp_c')
+    hum = sense.get('humidity')
+    pres = sense.get('pressure')
+    src = weather.get('source') or ('Sense HAT' if temp is not None else 'cache/offline')
+    lines=[f'source: {src}', f'temp: {round(float(temp),1) if temp is not None else "—"}C', f'humidity: {round(float(hum),1) if hum is not None else "—"}%', f'pressure: {round(float(pres),1) if pres is not None else "—"}', 'sky: offline sky cues', 'watch clouds/wind shifts']
+    if weather.get('current'):
+        lines += wrap(json.dumps(weather.get('current'))[:80], 24)[:3]
+    return lines[:12]
 
 def lines_network():
     net = api('/api/network/status')
@@ -213,88 +254,111 @@ def lines_network():
     return wrap(text.replace('{','').replace('}','').replace('"',''), 25)[:12]
 
 def lines_safety():
-    return [
-        '+Assist mode only',
-        'Carry real nav tools.',
-        'Offline maps + compass.',
-        'Phone/SOS stays primary.',
-        '~When unsure: stop, mark,',
-        '~backtrack, conserve power.',
-    ]
+    return ['+Assist mode only','Carry real nav tools.','Phone/SOS primary.','Offline maps + compass.','Mark last known point.','~When unsure: stop,', '~backtrack, save power.']
 
-def sense_payload(data):
-    if not isinstance(data, dict):
-        return {}
-    return data.get('sense') if isinstance(data.get('sense'), dict) else data
-
-def pacman_events_from_api():
+def events_from_api():
     sense = sense_payload(api('/api/sense', timeout=1.0))
     pac = sense.get('pacman_display') or {}
-    if sense.get('mode') != 'pacman' and not pac:
-        return []
     return [e for e in pac.get('events', []) if isinstance(e, dict) and e.get('id')]
 
-def poll_pacman_popup():
+def poll_popup():
     global popup_event, popup_until
-    for event in pacman_events_from_api():
+    for event in events_from_api():
         eid = event.get('id')
-        if eid in seen_pacman_events:
+        if eid in seen_popup_events:
             continue
-        seen_pacman_events.add(eid)
+        seen_popup_events.add(eid)
         popup_event = event
-        popup_until = time.time() + 2.4
+        popup_until = time.time() + float(event.get('display_seconds') or 2.8)
         return True
     return False
 
-def render_pacman_popup(event):
-    etype = event.get('type') or 'pacman_event'
-    label = event.get('label') or etype.replace('_',' ')
-    accent = AMBER
-    lines = ['~Sense HAT Pac-Man']
-    if etype == 'fruit_eaten':
-        accent = RED; lines += ['Cherry eaten!', f'+{event.get("score_delta", 10)} points', f'fruit #{event.get("fruit_count", "?")}']
+def render_popup(event):
+    etype = event.get('type') or 'game_event'; label = event.get('label') or etype.replace('_',' ')
+    if etype in ('manual_popup_test','snake_trail_event'):
+        accent = GREEN if etype == 'manual_popup_test' else BLUE
+        lines = ['+manual popup bridge' if etype == 'manual_popup_test' else '+Snake Trail', label, event.get('text') or event.get('trail') or 'shared game event', f'score +{event.get("score_delta",0)}', 'text/contrast check']
+    elif etype == 'fruit_eaten':
+        accent = RED; lines = ['~Sense HAT Pac-Man','Cherry eaten!', f'+{event.get("score_delta", 10)} points', f'fruit #{event.get("fruit_count", "?")}']
     elif etype == 'ghost_eaten':
-        accent = BLUE; lines += [label, f'ghost: {event.get("ghost_name", "ghost")}', f'+{event.get("score_delta", 25)} points']
+        accent = BLUE; lines = ['~Sense HAT Pac-Man', label, f'ghost: {event.get("ghost_name", "ghost")}', f'+{event.get("score_delta", 25)} points']
     elif etype == 'pacman_caught':
-        accent = RED; lines += [label, 'resetting tiny maze', f'score: {event.get("score", 0)}']
+        accent = RED; lines = ['~Sense HAT Pac-Man', label, 'resetting tiny maze', f'score: {event.get("score", 0)}']
     elif etype == 'map_advanced':
-        accent = GREEN; lines += [label, f'level {int(event.get("next_map", 0)) + 1}', f'{event.get("fruits_per_map", 12)} cherries/map']
+        accent = GREEN; lines = ['~Sense HAT Pac-Man', label, f'level {int(event.get("next_map", 0)) + 1}', f'{event.get("fruits_per_map", 12)} cherries/map']
     elif etype == 'power_started':
-        accent = AMBER; lines += ['Power mode!', 'ghosts go blue', f'ticks: {event.get("power_ticks", 0)}']
+        accent = AMBER; lines = ['~Sense HAT Pac-Man','Power mode!','ghosts go blue', f'ticks: {event.get("power_ticks", 0)}']
     else:
-        lines += wrap(label, 24)[:4]
+        accent = AMBER; lines = wrap(label, 24)[:5]
     lines.append(f'score: {event.get("score", 0)}')
-    return draw_card('Pac-Man Event', lines, accent, 'auto popup · returns to Dash')
+    return draw_card('Whisplay Popup', lines, accent, 'auto returns · press next')
+
+def rand_food(body):
+    choices=[(x,y) for x in range(8) for y in range(8) if (x,y) not in body]
+    return random.choice(choices or [(0,0)])
+
+def tick_snake():
+    global snake
+    if snake['over']: return
+    hx,hy=snake['body'][0]; dx,dy=snake['dir']; head=((hx+dx)%8,(hy+dy)%8)
+    if head in snake['body']:
+        snake['over'] = True; post_command('snake-trail-event', {'label':'Snake Trail tangled', 'score_delta':0, 'segment_count':len(snake['body'])}, timeout=0.8); return
+    body=[head]+snake['body']
+    if head == snake['food']:
+        snake['score'] += 15; snake['food'] = rand_food(body); now=time.time()
+        if now - snake.get('last_emit',0) > 1.5:
+            snake['last_emit'] = now; post_command('snake-trail-event', {'label':'Snake Trail snack found', 'score_delta':15, 'segment_count':len(body)}, timeout=0.8)
+    else:
+        body=body[:-1]
+    snake['body']=body
+
+def render_snake():
+    tick_snake(); img = Image.new('RGB', (W, H), BG); d = ImageDraw.Draw(img)
+    d.rounded_rectangle((6,6,W-7,H-7),12,outline=BLUE,width=2,fill=(10,24,34))
+    d.text((16,12),'Snake Trail',font=F_TITLE,fill=BLUE); d.text((16,38),f'score {snake["score"]} · segments {len(snake["body"])}',font=F_SMALL,fill=DIM)
+    ox,oy,cell=28,64,22; d.rounded_rectangle((ox-4,oy-4,ox+8*cell+4,oy+8*cell+4),6,outline=(40,70,90),width=1,fill=(4,12,18))
+    for y in range(8):
+        for x in range(8):
+            fill=(8,20,28)
+            if (x,y)==snake['food']: fill=AMBER
+            if (x,y) in snake['body']: fill=GREEN
+            if (x,y)==snake['body'][0]: fill=WHITE
+            d.rounded_rectangle((ox+x*cell+2, oy+y*cell+2, ox+(x+1)*cell-2, oy+(y+1)*cell-2), 3, fill=fill)
+    if snake['over']:
+        d.rounded_rectangle((28,116,212,164),8,fill=(80,20,25),outline=RED,width=2); d.text((48,130),'Trail tangled',font=F_BODY,fill=WHITE)
+    d.text((16,H-23),'press next · joystick parked',font=F_TINY,fill=DIM)
+    return img
 
 def render():
-    if popup_event and time.time() < popup_until:
-        return render_pacman_popup(popup_event)
-    if page % 4 == 0:
-        return draw_face('happy')
-    if page % 4 == 1:
-        return draw_card('MapPI3 Status', lines_status(), GREEN)
-    if page % 4 == 2:
-        return draw_card('Network', lines_network(), BLUE)
+    if popup_event and time.time() < popup_until: return render_popup(popup_event)
+    title = PAGES[page % len(PAGES)]
+    if title == 'Buddy Home': return draw_face('happy')
+    if title == 'Field Kit': return draw_card('Field Kit/Power', lines_fieldkit(), GREEN)
+    if title == 'Compass+Level': return draw_card('Compass + Level', lines_compass(), BLUE)
+    if title == 'Weather+Sky': return draw_card('Weather + Sky', lines_weather(), AMBER)
+    if title == 'Network': return draw_card('Network', lines_network(), BLUE)
+    if title == 'Snake Trail': return render_snake()
     return draw_card('Trail Safety', lines_safety(), AMBER)
 
 def main():
-    global running, page
+    global running, page, popup_until
     hw = create_hw('whisplay-mappi3-dashboard', 'MapPI3 Dash', 'M3', 90)
     def next_page():
-        global page
-        page += 1
-        show(hw, render())
+        global page, popup_until
+        if page % len(PAGES) == 0:
+            post_command('whisplay-test-popup', {'label':'Dash button popup test', 'display_seconds':3.2}, timeout=0.8)
+        page += 1; popup_until = 0.0; show(hw, render())
     def exit_req():
         global running
         running = False
-    hw.on_button_press(next_page)
-    hw.on_exit_request(exit_req)
-    show(hw, render())
+    hw.on_button_press(next_page); hw.on_exit_request(exit_req); show(hw, render())
     try:
+        last = 0
         while running:
-            time.sleep(0.5)
-            if poll_pacman_popup() or (popup_event and time.time() < popup_until) or page % 4 in (1,2):
-                show(hw, render())
+            time.sleep(0.35); active = page % len(PAGES)
+            if poll_popup() or (popup_event and time.time() < popup_until) or active in (1,2,3,4,6):
+                if active == 6 and time.time() - last < 0.18: continue
+                last = time.time(); show(hw, render())
     finally:
         hw.cleanup()
 
