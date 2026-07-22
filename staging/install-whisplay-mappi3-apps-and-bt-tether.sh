@@ -115,21 +115,53 @@ def draw_card(title, lines, accent=GREEN, footer='press = next · hold/gesture =
     d.text((16, H-23), footer[:34], font=F_TINY, fill=DIM)
     return img
 
-def draw_face(mood='happy'):
+HERBIE_ASSET_ROOTS = [
+    Path('/opt/mappi3/app/assets/herbie'),
+    Path('/home/ubuntu/MapPi3/public/assets/herbie'),
+]
+HERBIE_EXPRESSIONS = {
+    'neutral','happy','excited','curious','thinking','side-eye','suspicious','confused','surprised',
+    'worried','sad','angry','annoyed','tired','yawning','determined','focused','bored','sleepy',
+    'chillin','meditating','laughing','cheeky','wow','love','grateful','blushing','sweating','melting',
+    'overwhelmed','high-af','party-mode','greetings','wink','thumbs-up','thumbs-down','facepalm',
+    'oh-no','face-with-tears','party-hard'
+}
+
+def herbie_asset_path(kind, name):
+    safe = str(name or 'happy').strip().replace('..','').replace('/','-')
+    for root in HERBIE_ASSET_ROOTS:
+        p = root / kind / f'{safe}.png'
+        if p.exists():
+            return p
+    return None
+
+def draw_face(mood='happy', caption='ready to roam', blink=False):
+    mood = str(mood or 'happy')
+    if mood not in HERBIE_EXPRESSIONS:
+        mood = 'happy'
     img = Image.new('RGB', (W, H), BG)
     d = ImageDraw.Draw(img)
-    d.rounded_rectangle((6, 6, W-7, H-7), 12, outline=GREEN, width=2, fill=(14, 28, 36))
-    d.text((16, 14), 'Herbie', font=F_TITLE, fill=GREEN)
-    cx, cy = 120, 138
-    d.ellipse((48, 68, 192, 212), fill=(245, 220, 115), outline=(90, 70, 20), width=3)
-    d.ellipse((82, 112, 100, 130), fill=(20, 30, 35))
-    d.ellipse((140, 112, 158, 130), fill=(20, 30, 35))
-    if mood in ('warn','hot'):
-        d.arc((80, 140, 160, 190), 200, 340, fill=(35, 30, 25), width=4)
-        d.text((70, 224), 'trail-check mode', font=F_BODY, fill=AMBER)
-    else:
+    accent = AMBER if mood in ('worried','confused','surprised','tired','yawning','sweating','oh-no') else GREEN
+    d.rounded_rectangle((6, 6, W-7, H-7), 12, outline=accent, width=2, fill=(14, 28, 36))
+    d.text((16, 14), 'Herbie', font=F_TITLE, fill=accent)
+    p = herbie_asset_path('expressions', mood)
+    if p:
+        try:
+            face = Image.open(p).convert('RGBA')
+            face.thumbnail((210, 158), Image.LANCZOS)
+            x = (W - face.width) // 2
+            y = 54 + max(0, (150 - face.height) // 2)
+            img.paste(face, (x, y), face)
+            if blink:
+                d.rounded_rectangle((72, y + int(face.height * .34), 168, y + int(face.height * .43)), 4, fill=(7, 18, 9), outline=(196, 215, 95), width=1)
+        except Exception:
+            p = None
+    if not p:
+        d.ellipse((48, 68, 192, 212), fill=(245, 220, 115), outline=(90, 70, 20), width=3)
+        d.ellipse((82, 112, 100, 130), fill=(20, 30, 35))
+        d.ellipse((140, 112, 158, 130), fill=(20, 30, 35))
         d.arc((78, 128, 162, 184), 20, 160, fill=(35, 30, 25), width=4)
-        d.text((72, 224), 'ready to roam', font=F_BODY, fill=GREEN)
+    d.text((16, 214), str(caption or mood).replace('_',' ')[:27], font=F_BODY, fill=accent)
     d.text((16, H-23), 'press = status · exit gesture backs out', font=F_TINY, fill=DIM)
     return img
 
@@ -360,10 +392,41 @@ def render_snake():
     d.text((16,H-23),'press next · joystick parked',font=F_TINY,fill=DIM)
     return img
 
+def whisplay_herbie_state():
+    status = api('/api/status', timeout=1.0)
+    sense = sense_payload(api('/api/sense', timeout=1.0))
+    net = api('/api/network/status', timeout=1.0)
+    orient = sense.get('orientation') if isinstance(sense.get('orientation'), dict) else {}
+    roll = orient.get('roll', sense.get('roll'))
+    pitch = orient.get('pitch', sense.get('pitch'))
+    temp = sense.get('temperature') or sense.get('temp_c')
+    battery = status.get('battery') if isinstance(status.get('battery'), dict) else {}
+    low_battery = any(str(v).lower() in ('low','critical') for v in [battery.get('state'), battery.get('status')])
+    try: tilted = max(abs(float(roll or 0)), abs(float(pitch or 0))) >= 12
+    except Exception: tilted = False
+    try: hot = temp is not None and float(temp) >= 30
+    except Exception: hot = False
+    if status.get('_error'):
+        return 'worried', 'API offline/cache mode'
+    if low_battery:
+        return 'worried', 'battery caution'
+    if hot:
+        return 'sweating', f'temp {temp_f_text(temp)}'
+    if tilted:
+        return 'surprised', 'tilt reaction'
+    if net.get('_error'):
+        return 'confused', 'network status unknown'
+    if not net.get('has_default_route'):
+        return 'focused', 'field hotspot mode'
+    cycle = ['happy','curious','thinking','wink','grateful','determined']
+    return cycle[int(time.time() // 8) % len(cycle)], 'live Whisplay avatar'
+
 def render():
     if popup_event and time.time() < popup_until: return render_popup(popup_event)
     title = PAGES[page % len(PAGES)]
-    if title == 'Buddy Home': return draw_face('happy')
+    if title == 'Buddy Home':
+        mood, caption = whisplay_herbie_state()
+        return draw_face(mood, caption, blink=(int(time.time() * 2) % 23 == 0))
     if title == 'Field Kit': return draw_card('Field Kit/Power', lines_fieldkit(), GREEN)
     if title == 'Compass+Level': return draw_card('Compass + Level', lines_compass(), BLUE)
     if title == 'Weather+Sky': return draw_card('Weather + Sky', lines_weather(), AMBER)
