@@ -119,7 +119,7 @@ def draw_face(mood='happy'):
     img = Image.new('RGB', (W, H), BG)
     d = ImageDraw.Draw(img)
     d.rounded_rectangle((6, 6, W-7, H-7), 12, outline=GREEN, width=2, fill=(14, 28, 36))
-    d.text((16, 14), 'MapPI3 Buddy', font=F_TITLE, fill=GREEN)
+    d.text((16, 14), 'Herbie', font=F_TITLE, fill=GREEN)
     cx, cy = 120, 138
     d.ellipse((48, 68, 192, 212), fill=(245, 220, 115), outline=(90, 70, 20), width=3)
     d.ellipse((82, 112, 100, 130), fill=(20, 30, 35))
@@ -203,6 +203,16 @@ def sense_payload(data):
 def tone(ok, warn=False):
     return '+' if ok and not warn else '~' if ok else '!'
 
+def c_to_f(value):
+    try:
+        return float(value) * 9.0 / 5.0 + 32.0
+    except Exception:
+        return None
+
+def temp_f_text(value_c):
+    value_f = c_to_f(value_c)
+    return '—' if value_f is None else f'{round(value_f,1)}F'
+
 def lines_fieldkit():
     status = api('/api/status'); net = api('/api/network/status'); sense = sense_payload(api('/api/sense'))
     stats = status.get('stats') if isinstance(status.get('stats'), dict) else status.get('system') if isinstance(status.get('system'), dict) else {}
@@ -238,7 +248,7 @@ def lines_fieldkit():
     summary = 'problem' if problems else 'caution' if cautions else 'ready'
     lines=[f'{tone(summary == "ready", summary == "caution")}summary: {summary.upper()}', f'API: {"online" if api_ok else "offline"}', f'hotspot: {"READY" if hotspot else "PROBLEM"}', f'tailnet: {"online" if tailscale_online else "field/offline"}', f'internet: {"route" if internet else "cached only"}']
     if uptime: lines.append(f'uptime: {int(float(uptime)//60)} min' if str(uptime).replace('.','',1).isdigit() else f'uptime: {uptime}')
-    if temp_num is not None: lines.append(f'CPU temp: {round(temp_num,1)}C')
+    if temp_num is not None: lines.append(f'CPU temp: {temp_f_text(temp_num)}')
     if mem_pct is not None: lines.append(f'RAM: {mem_pct}% used')
     if disk.get('free_gb') is not None: lines.append(f'disk: {disk.get("free_gb")}GB free')
     lines.append('battery: UNKNOWN/no UPS')
@@ -258,11 +268,11 @@ def lines_compass():
 def lines_weather():
     sense = sense_payload(api('/api/sense'))
     weather = api('/api/weather?days=1', timeout=1.0)
-    temp = sense.get('temperature') or sense.get('temp_c')
+    temp_c = sense.get('temperature') or sense.get('temp_c')
     hum = sense.get('humidity')
     pres = sense.get('pressure')
-    src = weather.get('source') or ('Sense HAT' if temp is not None else 'cache/offline')
-    lines=[f'source: {src}', f'temp: {round(float(temp),1) if temp is not None else "—"}C', f'humidity: {round(float(hum),1) if hum is not None else "—"}%', f'pressure: {round(float(pres),1) if pres is not None else "—"}', 'sky: offline sky cues', 'watch clouds/wind shifts']
+    src = weather.get('source') or ('Sense HAT' if temp_c is not None else 'cache/offline')
+    lines=[f'source: {src}', f'temp: {temp_f_text(temp_c)}', f'humidity: {round(float(hum),1) if hum is not None else "—"}%', f'pressure: {round(float(pres),1) if pres is not None else "—"}', 'sky: offline sky cues', 'watch clouds/wind shifts']
     if weather.get('current'):
         lines += wrap(json.dumps(weather.get('current'))[:80], 24)[:3]
     return lines[:12]

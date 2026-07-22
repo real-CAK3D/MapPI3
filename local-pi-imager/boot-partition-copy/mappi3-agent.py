@@ -11,7 +11,7 @@ LIQUID_STATE = {'gx': 0.0, 'gy': 0.0, 'gz': 1.0}
 LIQUID_PARTICLES = []
 PACMAN_STATE = {}
 PACMAN_EVENT_SEQ = 0
-AVATAR_STATE = {'last_accel': None, 'last_accel_at': 0.0, 'surprise_until': 0.0, 'still_since': 0.0}
+SENSE_FACE_STATE = {'last_accel': None, 'last_accel_at': 0.0, 'surprise_until': 0.0, 'still_since': 0.0}
 SENSE_MODES = ['compass','compass-arrow','compass-cardinal','rotation-test','liquid','pacman','weather','fire','flashlight','sos','message','boot','sun','gps','clock','progress','beacon','stars','temp','humidity','pressure','avatar','level','custom','border','magic8','water','snake']
 ALLOWED = {'status','restart-web','reboot','shutdown','update-app','gps-sample','toggle-hotspot','hotspot-on','connect-home-wifi','wifi-scan','wifi-save-network','wifi-connect-saved','network-status','tailscale-status','tailscale-login','remote-access-repair','sense-mode','calibrate','harden-hotspot','plugin-update','vnc-setup','vnc-disable','weather-refresh','noaa-refresh','online-maintenance','gps-diagnose','sense-diagnose','field-ai-verify','captive-setup','captive-disable','captive-status','gps-pps-setup','whisplay-test-popup','snake-trail-event','plugin-status','plugin-install','plugin-install-all','plugin-uninstall'}
 SENSE_CACHE = {'ok': False, 'mode': 'compass', 'message': 'Sense HAT display loop starting', 'updated': 0, 'joystick': {'seq': 0, 'direction': '', 'pressed': False, 'updated': 0}}
@@ -46,7 +46,7 @@ def write_state(data):
 
 def normalize_mode(mode):
     raw = str(mode or 'compass').strip().lower().replace(' ', '-').replace('_','-')
-    aliases = {'custom-message':'message','scroll-message':'message','sunrise':'sun','sunset':'sun','sunrise-sunset':'sun','gps-fix':'gps','weather-now':'weather','flash-light':'flashlight','compass arrow':'compass-arrow','compass-arrow':'compass-arrow','compass nsew':'compass-cardinal','compass-nsew':'compass-cardinal','compass cardinal':'compass-cardinal','compass-cardinal':'compass-cardinal','cardinal':'compass-cardinal','rotation':'rotation-test','rotation-test':'rotation-test','pac-man':'pacman','pac man':'pacman','pac':'pacman','game-pacman':'pacman','avatar-buddy':'avatar','buddy':'avatar','face':'avatar','level-readout':'level','bubble-level':'level'}
+    aliases = {'custom-message':'message','scroll-message':'message','sunrise':'sun','sunset':'sun','sunrise-sunset':'sun','gps-fix':'gps','weather-now':'weather','flash-light':'flashlight','compass arrow':'compass-arrow','compass-arrow':'compass-arrow','compass nsew':'compass-cardinal','compass-nsew':'compass-cardinal','compass cardinal':'compass-cardinal','compass-cardinal':'compass-cardinal','cardinal':'compass-cardinal','rotation':'rotation-test','rotation-test':'rotation-test','pac-man':'pacman','pac man':'pacman','pac':'pacman','game-pacman':'pacman','animated-face':'avatar','sense-face':'avatar','face':'avatar','level-readout':'level','bubble-level':'level'}
     raw = aliases.get(raw, raw)
     return raw if raw in SENSE_MODES else ('liquid' if raw.startswith('liq') else 'compass')
 
@@ -508,7 +508,7 @@ def draw_route_progress(sense, st):
     with SENSE_LOCK:
         SENSE_CACHE['progress_meter']={'progress':progress,'percent':round(progress*100),'distance_miles':distance,'completed_leds':complete+1 if progress > 0 else 0,'finish_led':'green','remaining_leds':'white','completed_leds_color':'red'}
 
-def avatar_temperature_color(temp_f, brightness=4):
+def sense_face_temperature_color(temp_f, brightness=4):
     # Field-readable gradient from the Sense HAT's live temperature reading:
     # dark purple cold -> blue warming -> yellow mild -> orange warm -> red hot.
     stops = [
@@ -533,15 +533,15 @@ def avatar_temperature_color(temp_f, brightness=4):
             return list(scale_color(rgb, brightness)), label
     return list(scale_color(stops[-1][1], brightness)), stops[-1][2]
 
-def draw_avatar_buddy(sense, tick, st=None, orient=None, temp_f=None):
-    global AVATAR_STATE
+def draw_sense_animated_face(sense, tick, st=None, orient=None, temp_f=None):
+    global SENSE_FACE_STATE
     brightness = sense_brightness(st or {})
     white = list(scale_color((230,245,235), brightness))
     red = list(scale_color((255,70,50), brightness))
     amber = list(scale_color((255,180,45), brightness))
     blue = list(scale_color((50,130,255), brightness))
     pixels = [[0,0,0] for _ in range(64)]
-    eye, temp_band = avatar_temperature_color(temp_f, brightness)
+    eye, temp_band = sense_face_temperature_color(temp_f, brightness)
     try:
         roll = float((orient or {}).get('roll') or 0); pitch = float((orient or {}).get('pitch') or 0)
         # Sense HAT orientation can report near-level angles as ~358/359 degrees;
@@ -558,8 +558,8 @@ def draw_avatar_buddy(sense, tick, st=None, orient=None, temp_f=None):
     except Exception as e:
         accel_error = str(e)
         ax = max(-1.8, min(1.8, roll / 45.0)); ay = max(-1.8, min(1.8, pitch / 45.0)); az = 1.0
-    last = AVATAR_STATE.get('last_accel')
-    dt = max(0.05, now - float(AVATAR_STATE.get('last_accel_at') or now))
+    last = SENSE_FACE_STATE.get('last_accel')
+    dt = max(0.05, now - float(SENSE_FACE_STATE.get('last_accel_at') or now))
     jerk = 0.0
     if last:
         jerk = math.sqrt((ax-last[0])**2 + (ay-last[1])**2 + (az-last[2])**2) / dt
@@ -569,13 +569,13 @@ def draw_avatar_buddy(sense, tick, st=None, orient=None, temp_f=None):
     # interrupt happy mode, and tilt should read as a rare warning rather than the
     # default face while the Pi is carried at a normal angle.
     if jerk > 3.2 or motion > 0.95:
-        AVATAR_STATE['surprise_until'] = now + 1.1
+        SENSE_FACE_STATE['surprise_until'] = now + 1.1
     if motion < 0.035 and abs(roll) < 10 and abs(pitch) < 10:
-        AVATAR_STATE['still_since'] = float(AVATAR_STATE.get('still_since') or now)
+        SENSE_FACE_STATE['still_since'] = float(SENSE_FACE_STATE.get('still_since') or now)
     else:
-        AVATAR_STATE['still_since'] = 0.0
-    AVATAR_STATE['last_accel'] = (ax, ay, az); AVATAR_STATE['last_accel_at'] = now
-    still_seconds = (now - float(AVATAR_STATE.get('still_since') or now)) if AVATAR_STATE.get('still_since') else 0.0
+        SENSE_FACE_STATE['still_since'] = 0.0
+    SENSE_FACE_STATE['last_accel'] = (ax, ay, az); SENSE_FACE_STATE['last_accel_at'] = now
+    still_seconds = (now - float(SENSE_FACE_STATE.get('still_since') or now)) if SENSE_FACE_STATE.get('still_since') else 0.0
     blink = tick % 18 in (16,17)
     steep = abs(roll) > 48 or abs(pitch) > 48 or plane > 1.12
     try:
@@ -586,7 +586,7 @@ def draw_avatar_buddy(sense, tick, st=None, orient=None, temp_f=None):
     manual = str((st or {}).get('herbie_expression') or 'auto').strip().lower().replace('_','-').replace(' ', '-')
     if manual in allowed_herbie:
         expression = manual
-    elif now < float(AVATAR_STATE.get('surprise_until') or 0.0):
+    elif now < float(SENSE_FACE_STATE.get('surprise_until') or 0.0):
         expression = 'surprised'
     elif steep:
         expression = 'surprised'
@@ -659,7 +659,7 @@ def draw_avatar_buddy(sense, tick, st=None, orient=None, temp_f=None):
         coords(mouth_happy if tick % 8 < 4 else mouth_smile, white)
     sense_set_pixels(sense, pixels, st)
     with SENSE_LOCK:
-        SENSE_CACHE['avatar_buddy']={'model':'Herbie Map sensor-reactive trail buddy face; compact 8x8 Sense HAT fallback for the expanded 40-face Herbie sheet, grouped into happy, focused, sleepy/bored, worried/sad, angry, surprised/confused, party, love, and utility reaction states','expression': expression, 'blink': blink, 'steep_tilt': steep, 'roll': round(roll,1), 'pitch': round(pitch,1), 'accel': {'x': round(ax,3), 'y': round(ay,3), 'z': round(az,3)}, 'jerk': round(jerk,3), 'plane_magnitude': round(plane,3), 'still_seconds': round(still_seconds,1), 'temp_f': round(temp_value,1), 'temp_color': eye, 'temp_band': temp_band, 'accel_error': accel_error}
+        SENSE_CACHE['animated_face']={'model':'Sensor-reactive Sense HAT animated face. This is separate from the Herbie app companion and separate from the Whisplay AI chatbot.','expression': expression, 'blink': blink, 'steep_tilt': steep, 'roll': round(roll,1), 'pitch': round(pitch,1), 'accel': {'x': round(ax,3), 'y': round(ay,3), 'z': round(az,3)}, 'jerk': round(jerk,3), 'plane_magnitude': round(plane,3), 'still_seconds': round(still_seconds,1), 'temp_f': round(temp_value,1), 'temp_color': eye, 'temp_band': temp_band, 'accel_error': accel_error}
 
 def draw_custom_pixels(sense, st=None):
     st = st or {}
@@ -929,7 +929,7 @@ def sense_loop():
                 elif mode in ('compass','compass-arrow'): draw_compass(sense, yaw, st)
                 elif mode=='compass-cardinal': draw_compass_cardinal(sense, yaw, st)
                 elif mode=='rotation-test': draw_rotation_test(sense, st, tick)
-                elif mode=='avatar': draw_avatar_buddy(sense, tick, st, orient, temp_f)
+                elif mode=='avatar': draw_sense_animated_face(sense, tick, st, orient, temp_f)
                 elif mode=='level': draw_level(sense, orient, st)
                 elif mode=='weather':
                     if time.time()-last_text>8: text_once(sense, f'{temp_f:.0f}F {hum:.0f}% {pressure:.0f}mb', (0,120,180), sense_scroll_speed(st)); last_text=time.time()
@@ -1383,7 +1383,7 @@ def status():
     sense_text=sense.get('message') or ('sense-hat ok' if sense.get('ok') else 'sense-hat unavailable')
     if sense.get('ok') and sense.get('orientation'):
         o=sense.get('orientation') or {}; sense_text='sense-hat ok roll={:.1f} pitch={:.1f} yaw={:.1f} mode={}'.format(o.get('roll',0),o.get('pitch',0),o.get('yaw',0),sense.get('mode','compass'))
-    return {'ok': True, 'host': socket.gethostname(), 'port': PORT, 'https': https_status(), 'ip': ip, 'connection_mode': mode, **w, 'gps_device': gps.get('device'), 'gps': gps, 'sense_hat': sense_text, 'sense': sense, 'system': system_stats(), 'state': read_state(), 'time': time.time()}
+    return {'ok': True, 'host': socket.gethostname(), 'port': PORT, 'https': https_status(), 'ip': ip, 'connection_mode': mode, **w, 'gps_device': gps.get('device'), 'gps': gps, 'sense_hat': sense_text, 'sense': sense, 'audio': audio_status(), 'system': system_stats(), 'state': read_state(), 'time': time.time()}
 
 def _nmcli_lines(args, timeout=5):
     out = sh('nmcli -t ' + args + ' 2>/dev/null || true', timeout=timeout).get('output','')
@@ -2085,10 +2085,43 @@ def media_manifest():
     data=media_library_status()
     if not data['items']:
         data['starter_collections']=[
-            {'name':'Ambient starters','items':['rain','creek','forest','night insects','campfire','white noise'], 'note':'Generated in browser until real audio loops are installed.'},
+            {'name':'Ambient audio slots','items':['rain','creek','forest','night insects','campfire','white noise'], 'note':'Install real/legal audio loops; browser oscillator fallback is disabled for production sound quality.'},
             {'name':'Trail media folder','path':str(MEDIA_ROOT), 'note':'Add MP3/OGG/WAV/MP4/WEBM files here.'}
         ]
     return data
+
+def _audio_tool(name):
+    return sh('command -v '+shlex.quote(name), timeout=2).get('output','').strip()
+
+def audio_status():
+    # Whisplay audio should be real ALSA/Pulse/PipeWire in/out, not browser oscillator synthesis.
+    arecord_path=_audio_tool('arecord'); aplay_path=_audio_tool('aplay'); pactl_path=_audio_tool('pactl')
+    capture=sh('arecord -l 2>&1 || true', timeout=4).get('output','').strip() if arecord_path else ''
+    playback=sh('aplay -l 2>&1 || true', timeout=4).get('output','').strip() if aplay_path else ''
+    sinks=sh('pactl list short sinks 2>&1 || true', timeout=4).get('output','').strip() if pactl_path else ''
+    sources=sh('pactl list short sources 2>&1 || true', timeout=4).get('output','').strip() if pactl_path else ''
+    capture_ready=bool(capture and 'no soundcards found' not in capture.lower() and 'not found' not in capture.lower())
+    playback_ready=bool(playback and 'no soundcards found' not in playback.lower() and 'not found' not in playback.lower())
+    pulse_ready=bool((sinks or sources) and 'connection failure' not in (sinks+sources).lower())
+    whisplay_hint=any('whisplay' in x.lower() for x in [capture, playback, sinks, sources])
+    return {'ok': capture_ready and playback_ready, 'capture_ready': capture_ready, 'playback_ready': playback_ready, 'pulse_ready': pulse_ready, 'whisplay_detected': whisplay_hint, 'tools': {'arecord': bool(arecord_path), 'aplay': bool(aplay_path), 'pactl': bool(pactl_path)}, 'capture_devices': capture[-2400:], 'playback_devices': playback[-2400:], 'sinks': sinks[-1600:], 'sources': sources[-1600:], 'route_note': 'Select the Whisplay HAT as default ALSA/Pulse/PipeWire sink+source so chatbot recording, speech, music, and app sounds use the hat.'}
+
+def audio_record_test(payload=None):
+    payload=payload or {}; seconds=max(1, min(5, int(payload.get('seconds') or 2)))
+    device=str(payload.get('device') or 'default').strip() or 'default'
+    rate=int(payload.get('rate') or 48000)
+    channels=int(payload.get('channels') or 2)
+    if not _audio_tool('arecord'):
+        return {'ok': False, 'error':'arecord not installed; cannot test Whisplay microphone capture.'}
+    out=pathlib.Path('/tmp/mappi3-whisplay-record-test.wav')
+    # Whisplay wm8960 works reliably at 48 kHz; avoid `-f cd` because some Pi images
+    # point ALSA at speexrate_best without shipping that plugin.
+    cmd='timeout '+shlex.quote(str(seconds+2))+' arecord -q -D '+shlex.quote(device)+' -d '+shlex.quote(str(seconds))+' -r '+shlex.quote(str(rate))+' -f S16_LE -c '+shlex.quote(str(channels))+' '+shlex.quote(str(out))+' 2>&1'
+    rec=sh(cmd, timeout=seconds+6)
+    size=out.stat().st_size if out.exists() else 0
+    try: out.unlink()
+    except Exception: pass
+    return {'ok': bool(rec.get('ok') and size > 1000), 'seconds': seconds, 'device': device, 'rate': rate, 'channels': channels, 'bytes_recorded': size, 'output': rec.get('output','')[-1200:], 'message': 'Whisplay microphone capture test recorded audio bytes.' if size > 1000 else 'No useful microphone audio captured; check Whisplay HAT input routing/default source.'}
 
 GAME_ROOT = pathlib.Path('/var/lib/mappi3/games')
 
@@ -2334,6 +2367,7 @@ class Handler(http.server.SimpleHTTPRequestHandler):
             qs=urllib.parse.parse_qs(urllib.parse.urlparse(self.path).query); self.json_response(pi_weather({k:v[-1] for k,v in qs.items()})); return
         if self.path.startswith('/api/online-maintenance/log'): self.json_response(online_maintenance_log()); return
         if self.path.startswith('/api/media/library'): self.json_response(media_manifest()); return
+        if self.path.startswith('/api/audio/status'): self.json_response(audio_status()); return
         if self.path.startswith('/api/games/library'): self.json_response(game_library_status()); return
         if self.path.startswith('/api/plugins'): self.json_response(plugin_status()); return
         if self.path.startswith('/api/bluetooth/pan/status'): self.json_response(bluetooth_pan_status()); return
@@ -2358,6 +2392,7 @@ class Handler(http.server.SimpleHTTPRequestHandler):
         if self.path.startswith('/api/bluetooth/pan/disconnect'): self.json_response(bluetooth_pan_disconnect(payload)); return
         if self.path.startswith('/api/bluetooth/scan'): self.json_response(bluetooth_scan(payload)); return
         if self.path.startswith('/api/bluetooth/action/'): self.json_response(bluetooth_action(self.path.rsplit('/',1)[-1], payload)); return
+        if self.path.startswith('/api/audio/record-test'): self.json_response(audio_record_test(payload)); return
         if self.path.startswith('/api/command/'): self.json_response(command(self.path.rsplit('/',1)[-1], payload)); return
         self.send_error(404)
 
