@@ -151,6 +151,8 @@ def set_sense_mode(mode, payload=None):
     if 'hydrationAlarm' in payload and isinstance(payload.get('hydrationAlarm'), dict): st['hydration_alarm'] = payload.get('hydrationAlarm')
     if 'features' in payload and isinstance(payload.get('features'), dict): st['features'] = payload.get('features')
     if 'herbieExpression' in payload: st['herbie_expression'] = str(payload.get('herbieExpression') or 'auto')[:32]
+    if 'senseAvatarExpression' in payload: st['sense_avatar_expression'] = str(payload.get('senseAvatarExpression') or 'auto')[:32]
+    if 'sense_avatar_expression' in payload: st['sense_avatar_expression'] = str(payload.get('sense_avatar_expression') or 'auto')[:32]
     write_state(st)
     with SENSE_LOCK:
         SENSE_CACHE['mode'] = mode; SENSE_CACHE['message'] = f'Sense HAT mode set to {mode}'; SENSE_CACHE['updated'] = time.time()
@@ -162,11 +164,25 @@ def calibrate(target):
     return {'ok': True, 'target': target, 'message': messages.get(target, messages['all']), 'state': st.get('calibration', {})}
 
 
-def rotate_pixels_for_orientation(pixels, st=None):
+def sense_rotation(st=None):
     try:
         rotation = int((st or read_state()).get('sense_rotation') or 0) % 360
     except Exception:
         rotation = 0
+    return rotation if rotation in (0, 90, 180, 270) else (round(rotation / 90) * 90) % 360
+
+def sense_apply_rotation(sense, st=None):
+    rotation = sense_rotation(st)
+    try:
+        if getattr(sense, '_mappi3_rotation', None) != rotation and hasattr(sense, 'set_rotation'):
+            sense.set_rotation(rotation)
+            sense._mappi3_rotation = rotation
+    except Exception:
+        pass
+    return rotation
+
+def rotate_pixels_for_orientation(pixels, st=None):
+    rotation = sense_rotation(st)
     turns = (rotation // 90) % 4
     if turns == 0:
         return pixels
@@ -184,7 +200,19 @@ def rotate_pixels_for_orientation(pixels, st=None):
     return out
 
 def sense_set_pixels(sense, pixels, st=None):
-    sense.set_pixels(rotate_pixels_for_orientation(pixels, st))
+    # Real Sense HAT supports hardware/display rotation. Use that as the single
+    # source of truth so set_pixels(), clear(), and scrolling text all face the
+    # same direction. Tests/fallback displays without set_rotation get manual
+    # pixel rotation here.
+    sense_apply_rotation(sense, st)
+    if hasattr(sense, 'set_rotation'):
+        sense.set_pixels(pixels)
+    else:
+        sense.set_pixels(rotate_pixels_for_orientation(pixels, st))
+
+def sense_clear(sense, r=0, g=0, b=0, st=None):
+    sense_apply_rotation(sense, st)
+    sense.clear(int(r), int(g), int(b))
 
 def put_pixels(sense, coords, color=(0,140,30), st=None):
     pixels = [[0,0,0] for _ in range(64)]
@@ -209,8 +237,10 @@ def scale_color(color, brightness):
     factor=max(0.03, min(1.0, float(brightness)/255.0))
     return tuple(max(0, min(255, int(c*factor))) for c in color)
 
-def text_once(sense, text, color=(0,160,60), speed=0.06):
-    try: sense.show_message(str(text)[:96], text_colour=list(color), scroll_speed=speed)
+def text_once(sense, text, color=(0,160,60), speed=0.06, st=None):
+    try:
+        sense_apply_rotation(sense, st)
+        sense.show_message(str(text)[:96], text_colour=list(color), scroll_speed=speed)
     except Exception: pass
 
 
@@ -446,34 +476,34 @@ def draw_liquid(sense, orientation, tick, st=None):
             'raw_error': raw_error,
             'model': 'centered bottle-fill liquid + tilt drift + slosh shimmer + raw accel telemetry'
         }
-def draw_fire(sense, tick):
+def draw_fire(sense, tick, st=None):
     pixels=[]
     for y in range(8):
         for x in range(8):
             heat=max(0, 7-y + random.randint(-2,3) - abs(x-3.5)/2)
             pixels.append([min(180,int(heat*32)), min(90,int(heat*14)), 0])
-    sense_set_pixels(sense, pixels, st if 'st' in locals() else None)
+    sense_set_pixels(sense, pixels, st)
 
 def draw_flashlight(sense, st):
-    b = sense_brightness(st); sense.clear(b,b,b)
+    b = sense_brightness(st); sense_clear(sense, b, b, b, st)
 
-def draw_sos(sense, tick):
+def draw_sos(sense, tick, st=None):
     # White-only SOS beacon: no scrolling text, no red frames. Morse timing loops ... --- ...
     unit = SOS_MORSE_UNITS[(tick // 2) % len(SOS_MORSE_UNITS)]
     if unit:
-        b = sense_brightness(read_state())
-        sense.clear(b, b, b)
+        b = sense_brightness(st or read_state())
+        sense_clear(sense, b, b, b, st)
     else:
-        sense.clear(0, 0, 0)
+        sense_clear(sense, 0, 0, 0, st)
     with SENSE_LOCK:
         SENSE_CACHE['sos_display'] = {'mode':'white-only-morse', 'signal':'... --- ...', 'lit': bool(unit), 'unit': unit}
 
-def draw_weather(sense, temp, humidity, pressure):
+def draw_weather(sense, temp, humidity, pressure, st=None):
     msg=f'{temp:.0f}F {humidity:.0f}% {pressure:.0f}mb' if pressure else f'{temp:.0f}F {humidity:.0f}%'
-    text_once(sense, msg, (0,120,180), 0.055)
+    text_once(sense, msg, (0,120,180), 0.055, st)
 
 def draw_sun(sense, st):
-    text_once(sense, st.get('sun_message') or 'SUNRISE / SUNSET CHECK APP', (220,100,0), 0.055)
+    text_once(sense, st.get('sun_message') or 'SUNRISE / SUNSET CHECK APP', (220,100,0), 0.055, st)
 
 def draw_gps(sense, gps, st=None):
     mode=int(gps.get('mode') or 0); sats=int(gps.get('satellites') or 0); color=scale_color((180,0,0) if mode<2 else ((180,120,0) if mode==2 else (0,150,0)), sense_brightness(st or {}))
@@ -481,12 +511,12 @@ def draw_gps(sense, gps, st=None):
     for i in range(min(8,max(0,sats))): pixels[56+i]=list(color)
     for y in range(2,6):
         for x in range(2,6): pixels[y*8+x]=list(color)
-    sense_set_pixels(sense, pixels, st if 'st' in locals() else None)
+    sense_set_pixels(sense, pixels, st)
 
-def draw_bar(sense, value, color):
+def draw_bar(sense, value, color, st=None):
     n=max(0,min(64,int(value))); pixels=[[0,0,0] for _ in range(64)]
     for i in range(n): pixels[63-i]=list(color)
-    sense_set_pixels(sense, pixels, st if 'st' in locals() else None)
+    sense_set_pixels(sense, pixels, st)
 
 def draw_route_progress(sense, st):
     brightness=sense_brightness(st)
@@ -504,7 +534,7 @@ def draw_route_progress(sense, st):
             pixels.append(list(done))
         else:
             pixels.append(list(remaining))
-    sense_set_pixels(sense, pixels, st if 'st' in locals() else None)
+    sense_set_pixels(sense, pixels, st)
     with SENSE_LOCK:
         SENSE_CACHE['progress_meter']={'progress':progress,'percent':round(progress*100),'distance_miles':distance,'completed_leds':complete+1 if progress > 0 else 0,'finish_led':'green','remaining_leds':'white','completed_leds_color':'red'}
 
@@ -582,14 +612,19 @@ def draw_sense_animated_face(sense, tick, st=None, orient=None, temp_f=None):
         temp_value = float(temp_f) if temp_f is not None else 68.0
     except Exception:
         temp_value = 68.0
-    allowed_herbie = {'neutral','happy','excited','curious','thinking','side-eye','suspicious','confused','surprised','worried','sad','angry','annoyed','tired','yawning','determined','sleepy','blushing','laughing','cheeky','focused','wow','love','grateful','party-mode','high-af','chillin','meditating','bored','melting','sweating','overwhelmed','greetings','wink','thumbs-up','thumbs-down','facepalm','oh-no','face-with-tears','party-hard'}
-    manual = str((st or {}).get('herbie_expression') or 'auto').strip().lower().replace('_','-').replace(' ', '-')
-    if manual in allowed_herbie:
+    # Sense HAT avatar is its own tiny 8x8 animation lane. Do not let the rich
+    # Herbie app companion expression list drive this hardware face; many of
+    # those moods become unreadable blobs on LEDs. Keep it close to the earlier
+    # cheerful eyes+mouth style CAK3D liked, with only a few sensor-triggered
+    # variations.
+    allowed_sense_faces = {'happy','neutral','curious','blink','sleepy','bored','surprised','sweating','tired','wink'}
+    manual = str((st or {}).get('sense_avatar_expression') or 'auto').strip().lower().replace('_','-').replace(' ', '-')
+    if manual in allowed_sense_faces:
         expression = manual
     elif now < float(SENSE_FACE_STATE.get('surprise_until') or 0.0):
         expression = 'surprised'
     elif steep:
-        expression = 'surprised'
+        expression = 'curious'
     elif temp_value >= 88:
         expression = 'sweating'
     elif temp_value <= 40:
@@ -601,7 +636,7 @@ def draw_sense_animated_face(sense, tick, st=None, orient=None, temp_f=None):
     elif blink:
         expression = 'blink'
     else:
-        ambient = ['happy','neutral','curious','thinking','side-eye','suspicious','happy','focused','excited','laughing','cheeky','wow','grateful','chillin','determined','thumbs-up','wink','party-mode','love']
+        ambient = ['happy','happy','neutral','curious','happy','wink']
         expression = ambient[(tick // 12) % len(ambient)]
     def coords(points, color):
         for x,y in points:
@@ -711,23 +746,23 @@ def parse_color(value, default=(0,140,80)):
     except Exception: pass
     return default
 
-def draw_border(sense, color):
+def draw_border(sense, color, st=None):
     pixels=[[0,0,0] for _ in range(64)]
     for y in range(8):
         for x in range(8):
             if x in (0,7) or y in (0,7): pixels[y*8+x]=list(color)
-    sense_set_pixels(sense, pixels, st if 'st' in locals() else None)
+    sense_set_pixels(sense, pixels, st)
 
-def draw_water_icon(sense, color=(0,80,220)):
-    put_pixels(sense, [(3,0),(4,0),(2,1),(5,1),(2,2),(5,2),(1,3),(6,3),(1,4),(6,4),(2,5),(5,5),(3,6),(4,6),(3,7),(4,7)], color)
+def draw_water_icon(sense, color=(0,80,220), st=None):
+    put_pixels(sense, [(3,0),(4,0),(2,1),(5,1),(2,2),(5,2),(1,3),(6,3),(1,4),(6,4),(2,5),(5,5),(3,6),(4,6),(3,7),(4,7)], color, st)
 
-def draw_snake_frame(sense, tick, color=(0,220,70)):
+def draw_snake_frame(sense, tick, color=(0,220,70), st=None):
     pixels=[[0,0,0] for _ in range(64)]
     path=[(x,1) for x in range(1,7)] + [(6,y) for y in range(2,7)] + [(x,6) for x in range(5,0,-1)] + [(1,y) for y in range(5,1,-1)]
     for i in range(7):
         x,y=path[(tick+i)%len(path)]; pixels[y*8+x]=list(color)
     hx,hy=path[(tick+6)%len(path)]; pixels[hy*8+hx]=[255,255,255]
-    sense_set_pixels(sense, pixels, st if 'st' in locals() else None)
+    sense_set_pixels(sense, pixels, st)
 
 PACMAN_MAPS = [
     # 8x8 tribute layouts: # = electric-blue maze wall, . = pellet lane, o = power pellet.
@@ -910,7 +945,7 @@ def sense_loop():
     tick=0; last_text=0; last_gps={}; last_gps_at=0
     try:
         from sense_hat import SenseHat
-        sense=SenseHat(); sense.low_light=True; sense.clear(0,40,18)  # non-blocking startup flash; boot/message modes handle scrolling text
+        sense=SenseHat(); sense.low_light=True; sense_clear(sense, 0, 40, 18, read_state())  # non-blocking startup flash; boot/message modes handle scrolling text
         with SENSE_LOCK: SENSE_CACHE.update({'ok': True, 'message': 'Sense HAT display loop active', 'updated': time.time()})
         while True:
             st=read_state(); mode=normalize_mode(st.get('sense_mode') or 'compass')
@@ -932,37 +967,37 @@ def sense_loop():
                 elif mode=='avatar': draw_sense_animated_face(sense, tick, st, orient, temp_f)
                 elif mode=='level': draw_level(sense, orient, st)
                 elif mode=='weather':
-                    if time.time()-last_text>8: text_once(sense, f'{temp_f:.0f}F {hum:.0f}% {pressure:.0f}mb', (0,120,180), sense_scroll_speed(st)); last_text=time.time()
-                elif mode=='fire': draw_fire(sense,tick)
+                    if time.time()-last_text>8: text_once(sense, f'{temp_f:.0f}F {hum:.0f}% {pressure:.0f}mb', (0,120,180), sense_scroll_speed(st), st); last_text=time.time()
+                elif mode=='fire': draw_fire(sense,tick,st)
                 elif mode=='flashlight': draw_flashlight(sense,st)
-                elif mode=='sos': draw_sos(sense,tick)
+                elif mode=='sos': draw_sos(sense,tick,st)
                 elif mode=='message':
-                    if time.time()-last_text>6: text_once(sense, st.get('sense_message') or 'MAPPI3', (0,150,80), sense_scroll_speed(st)); last_text=time.time()
+                    if time.time()-last_text>6: text_once(sense, st.get('sense_message') or 'MAPPI3', (0,150,80), sense_scroll_speed(st), st); last_text=time.time()
                 elif mode=='boot':
-                    if time.time()-last_text>10: text_once(sense, st.get('boot_message') or 'WELCOME TO THE WILDERNESS', (0,120,20), sense_scroll_speed(st)); last_text=time.time()
+                    if time.time()-last_text>10: text_once(sense, st.get('boot_message') or 'WELCOME TO THE WILDERNESS', (0,120,20), sense_scroll_speed(st), st); last_text=time.time()
                 elif mode=='sun':
                     if time.time()-last_text>8: draw_sun(sense,st); last_text=time.time()
                 elif mode=='gps': draw_gps(sense,gps,st)
                 elif mode=='clock':
-                    if time.time()-last_text>5: text_once(sense, time.strftime('%I:%M %p'), (80,80,180), sense_scroll_speed(st)); last_text=time.time()
+                    if time.time()-last_text>5: text_once(sense, time.strftime('%I:%M %p'), (80,80,180), sense_scroll_speed(st), st); last_text=time.time()
                 elif mode=='progress': draw_route_progress(sense, st)
-                elif mode=='beacon': sense.clear(0, 0 if tick%2 else 80, 0 if tick%2 else 120)
+                elif mode=='beacon': sense_clear(sense, 0, 0 if tick%2 else 80, 0 if tick%2 else 120, st)
                 elif mode=='stars':
                     pixels=[[0,0,0] for _ in range(64)]
                     for _ in range(10): pixels[random.randrange(64)]=[random.choice([40,80,140]),random.choice([40,80,140]),random.choice([80,160,220])]
-                    sense_set_pixels(sense, pixels, st if 'st' in locals() else None)
-                elif mode=='temp': draw_bar(sense, max(0,min(64,(temp_f-20)/80*64)), (180 if temp_f>80 else 0,120,180 if temp_f<50 else 0))
-                elif mode=='humidity': draw_bar(sense, hum/100*64, (0,60,180))
-                elif mode=='pressure': draw_bar(sense, max(0,min(64,(pressure-970)/80*64)), (120,80,180))
+                    sense_set_pixels(sense, pixels, st)
+                elif mode=='temp': draw_bar(sense, max(0,min(64,(temp_f-20)/80*64)), (180 if temp_f>80 else 0,120,180 if temp_f<50 else 0), st)
+                elif mode=='humidity': draw_bar(sense, hum/100*64, (0,60,180), st)
+                elif mode=='pressure': draw_bar(sense, max(0,min(64,(pressure-970)/80*64)), (120,80,180), st)
                 elif mode=='custom':
                     draw_custom_pixels(sense, st)
-                elif mode=='border': draw_border(sense, parse_color(st.get('sense_color'), (0,170,85)))
+                elif mode=='border': draw_border(sense, parse_color(st.get('sense_color'), (0,170,85)), st)
                 elif mode=='magic8':
-                    if time.time()-last_text>7: text_once(sense, random.choice(['YES','NO','MAYBE','TRAIL SAYS YES','ASK AGAIN','WATCH WEATHER','DRINK WATER']), parse_color(st.get('sense_color'), (80,0,180)), sense_scroll_speed(st)); last_text=time.time()
-                elif mode=='water': draw_water_icon(sense, parse_color(st.get('sense_color'), (0,90,220)))
-                elif mode=='snake': draw_snake_frame(sense,tick,parse_color(st.get('sense_color'), (0,220,70)))
+                    if time.time()-last_text>7: text_once(sense, random.choice(['YES','NO','MAYBE','TRAIL SAYS YES','ASK AGAIN','WATCH WEATHER','DRINK WATER']), parse_color(st.get('sense_color'), (80,0,180)), sense_scroll_speed(st), st); last_text=time.time()
+                elif mode=='water': draw_water_icon(sense, parse_color(st.get('sense_color'), (0,90,220)), st)
+                elif mode=='snake': draw_snake_frame(sense,tick,parse_color(st.get('sense_color'), (0,220,70)), st)
                 if sense_alarm_due(st):
-                    draw_water_icon(sense, (0,120,255)); text_once(sense, 'DRINK 8OZ WATER', (0,120,255), sense_scroll_speed(st)); alarm=st.get('hydration_alarm') or {}; alarm['lastFiredAt']=time.time(); st['hydration_alarm']=alarm; write_state(st)
+                    draw_water_icon(sense, (0,120,255), st); text_once(sense, 'DRINK 8OZ WATER', (0,120,255), sense_scroll_speed(st), st); alarm=st.get('hydration_alarm') or {}; alarm['lastFiredAt']=time.time(); st['hydration_alarm']=alarm; write_state(st)
                 orient = dict(orient or {})
                 try:
                     level_x = round(float(orient.get('roll') or 0), 1); level_y = round(float(orient.get('pitch') or 0), 1)
