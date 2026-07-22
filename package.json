@@ -8,6 +8,7 @@
     "build": "vite build",
     "preview": "vite preview --host 0.0.0.0",
     "smoke": "node scripts/smoke.mjs",
+    "audit:pages": "node scripts/audit-pages.mjs",
     "tunnel": "npx --yes localtunnel --port 8080 --local-host 127.0.0.1 --subdomain mappi3-cak3d"
   },
   "dependencies": {
@@ -16,5 +17,8 @@
     "react": "latest",
     "react-dom": "latest",
     "vite": "latest"
+  },
+  "devDependencies": {
+    "jsdom": "^29.1.1"
   }
 }
