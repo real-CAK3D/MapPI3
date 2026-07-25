@@ -31,7 +31,7 @@ for script in ['mappi3_whisplay_common.py','mappi3_whisplay_dashboard.py','mappi
         assert 'def herbie_pawn_state' in src
         assert 'draw_herbie_mood' in src
         assert 'offline face loop' in src
-        assert 'all 40 faces rotate' in src
+        assert 'priority faces + cameos' in src
         print('HERBIE_MOOD_PAGE=PASS')
 appdir=pathlib.Path('/home/mappi3/.whisplay-daemon/app')
 for name in ['whisplay-mappi3-dashboard.json','whisplay-mappi3-ai-chat.json']:

@@ -607,7 +607,8 @@ def draw_sense_animated_face(sense, tick, st=None, orient=None, temp_f=None):
     SENSE_FACE_STATE['last_accel'] = (ax, ay, az); SENSE_FACE_STATE['last_accel_at'] = now
     still_seconds = (now - float(SENSE_FACE_STATE.get('still_since') or now)) if SENSE_FACE_STATE.get('still_since') else 0.0
     blink = tick % 18 in (16,17)
-    steep = abs(roll) > 48 or abs(pitch) > 48 or plane > 1.12
+    tilt_reactive = abs(roll) >= 8 or abs(pitch) >= 8 or plane > 0.18
+    steep = abs(roll) > 38 or abs(pitch) > 38 or plane > 0.82
     try:
         temp_value = float(temp_f) if temp_f is not None else 68.0
     except Exception:
@@ -624,6 +625,8 @@ def draw_sense_animated_face(sense, tick, st=None, orient=None, temp_f=None):
     elif now < float(SENSE_FACE_STATE.get('surprise_until') or 0.0):
         expression = 'surprised'
     elif steep:
+        expression = 'surprised'
+    elif tilt_reactive:
         expression = 'curious'
     elif temp_value >= 88:
         expression = 'sweating'
@@ -700,7 +703,7 @@ def draw_sense_animated_face(sense, tick, st=None, orient=None, temp_f=None):
         coords(mouth_happy if tick % 8 < 4 else mouth_smile, white)
     sense_set_pixels(sense, pixels, st)
     with SENSE_LOCK:
-        SENSE_CACHE['animated_face']={'model':'Sensor-reactive Sense HAT animated face. This is separate from the Herbie app companion and separate from the Whisplay AI chatbot.','expression': expression, 'blink': blink, 'steep_tilt': steep, 'roll': round(roll,1), 'pitch': round(pitch,1), 'accel': {'x': round(ax,3), 'y': round(ay,3), 'z': round(az,3)}, 'jerk': round(jerk,3), 'plane_magnitude': round(plane,3), 'still_seconds': round(still_seconds,1), 'temp_f': round(temp_value,1), 'temp_color': eye, 'temp_band': temp_band, 'accel_error': accel_error}
+        SENSE_CACHE['animated_face']={'model':'Sensor-reactive Sense HAT animated face. This is separate from the Herbie app companion and separate from the Whisplay AI chatbot.','expression': expression, 'blink': blink, 'tilt_reactive': tilt_reactive, 'steep_tilt': steep, 'roll': round(roll,1), 'pitch': round(pitch,1), 'accel': {'x': round(ax,3), 'y': round(ay,3), 'z': round(az,3)}, 'jerk': round(jerk,3), 'plane_magnitude': round(plane,3), 'still_seconds': round(still_seconds,1), 'temp_f': round(temp_value,1), 'temp_color': eye, 'temp_band': temp_band, 'accel_error': accel_error}
 
 def draw_custom_pixels(sense, st=None):
     st = st or {}

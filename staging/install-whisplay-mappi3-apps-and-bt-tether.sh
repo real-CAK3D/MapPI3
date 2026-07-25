@@ -449,7 +449,7 @@ def herbie_best_asset(options):
             continue
     return 'expressions/surprised'
 
-def herbie_tilt_direction(roll, pitch, threshold=16.0):
+def herbie_tilt_direction(roll, pitch, threshold=8.0):
     if roll is None or pitch is None:
         return None
     if max(abs(roll), abs(pitch)) < threshold:
@@ -458,7 +458,7 @@ def herbie_tilt_direction(roll, pitch, threshold=16.0):
         return 'left' if roll < 0 else 'right'
     return 'top' if pitch < 0 else 'bottom'
 
-def herbie_directional_tilt_face(roll, pitch, threshold=16.0):
+def herbie_directional_tilt_face(roll, pitch, threshold=8.0):
     direction = herbie_tilt_direction(roll, pitch, threshold)
     if not direction:
         return None
@@ -481,7 +481,7 @@ def whisplay_herbie_state(now=None, status=None, sense=None, net=None):
     except Exception: tilted = False
     try: hot = temp is not None and float(temp) >= 30
     except Exception: hot = False
-    tilt_reaction = herbie_directional_tilt_face(roll, pitch, threshold=16.0)
+    tilt_reaction = herbie_directional_tilt_face(roll, pitch, threshold=8.0)
     if herbie_high_af_now(now):
         return 'high-af', '4:20 trail minute'
     if status.get('_error'):
@@ -532,7 +532,7 @@ def herbie_pawn_state():
     now = datetime.datetime.now()
     hour = now.hour
     idle = herbie_idle_face(6.0)
-    tilt_reaction = herbie_directional_tilt_face(roll, pitch, threshold=16.0)
+    tilt_reaction = herbie_directional_tilt_face(roll, pitch, threshold=8.0)
     mood = idle
     reason = 'all-face wandering loop'
     accent = GREEN

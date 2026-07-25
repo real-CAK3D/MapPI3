@@ -182,7 +182,16 @@ mod.draw_sense_animated_face(blink_sense, 10, {**base_state, 'sense_avatar_expre
 blink_coords = {xy(i) for i in lit(blink_sense.frames[-1])}
 for center in [(1,1),(6,1)]:
     assert center in blink_coords, ('blink eye line missing center', center, sorted(blink_coords))
-assert {(0,1),(1,1),(2,1),(5,1),(6,1),(7,1)} <= blink_coords, ('blink line incomplete', sorted(blink_coords))
+assert {(1,1),(6,1),(2,6),(3,6),(4,6),(5,6)} <= blink_coords, ('blink line/smile incomplete', sorted(blink_coords))
+mod.SENSE_FACE_STATE = {'last_accel': None, 'last_accel_at': 0.0, 'surprise_until': 0.0, 'still_since': 0.0}
+tilt_sense = FakeSense()
+mod.draw_sense_animated_face(tilt_sense, 1, base_state, {'roll': 12.0, 'pitch': 0.0}, 68)
+tilt_cache = mod.sense_snapshot().get('animated_face', {})
+assert tilt_cache.get('tilt_reactive') is True and tilt_cache.get('expression') == 'curious', tilt_cache
+steep_sense = FakeSense()
+mod.draw_sense_animated_face(steep_sense, 1, base_state, {'roll': 42.0, 'pitch': 0.0}, 68)
+steep_cache = mod.sense_snapshot().get('animated_face', {})
+assert steep_cache.get('steep_tilt') is True and steep_cache.get('expression') == 'surprised', steep_cache
 
 for label, expected in [('Pac-Man','pacman'),('Animated Face','avatar'),('Compass NSEW','compass-cardinal'),('Bubble Level','level')]:
     data = mod.set_sense_mode(label, {'brightnessLevel': 4, 'routeProgress': 0.5, 'senseAvatarExpression': 'happy'})
