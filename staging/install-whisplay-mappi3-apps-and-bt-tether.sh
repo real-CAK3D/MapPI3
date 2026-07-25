@@ -119,32 +119,55 @@ HERBIE_ASSET_ROOTS = [
     Path('/opt/mappi3/app/assets/herbie'),
     Path('/home/ubuntu/MapPi3/public/assets/herbie'),
 ]
-HERBIE_EXPRESSIONS = {
+HERBIE_EXPRESSION_ORDER = (
     'neutral','happy','excited','curious','thinking','side-eye','suspicious','confused','surprised',
     'worried','sad','angry','annoyed','tired','yawning','determined','focused','bored','sleepy',
     'chillin','meditating','laughing','cheeky','wow','love','grateful','blushing','sweating','melting',
     'overwhelmed','high-af','party-mode','greetings','wink','thumbs-up','thumbs-down','facepalm',
     'oh-no','face-with-tears','party-hard'
-}
+)
+HERBIE_EXPRESSIONS = set(HERBIE_EXPRESSION_ORDER)
+HERBIE_IDLE_PRIORITY = ('happy','curious','thinking','focused','wink','grateful','excited','greetings','cheeky','love')
+HERBIE_RANDOM_CAMEOS = ('neutral','chillin','meditating','laughing','blushing','party-mode','party-hard','thumbs-up','side-eye','suspicious')
+HERBIE_SCENARIO_ONLY = ('high-af','worried','sad','angry','annoyed','tired','yawning','sweating','melting','overwhelmed','thumbs-down','facepalm','oh-no','face-with-tears')
 
 def herbie_asset_path(kind, name):
+    safe_kind = str(kind or 'expressions').strip().replace('..','').replace('/','-')
     safe = str(name or 'happy').strip().replace('..','').replace('/','-')
     for root in HERBIE_ASSET_ROOTS:
-        p = root / kind / f'{safe}.png'
-        if p.exists():
-            return p
+        p = root / safe_kind / f'{safe}.png'
+        try:
+            if p.exists() and os.access(p, os.R_OK):
+                return p
+        except OSError:
+            continue
     return None
+
+def herbie_asset_ref(kind, name):
+    return f'{kind}/{name}' if herbie_asset_path(kind, name) else None
+
+def herbie_asset_path_from_ref(ref):
+    raw = str(ref or 'happy').strip()
+    if '/' in raw:
+        kind, name = raw.split('/', 1)
+        return herbie_asset_path(kind, name)
+    return herbie_asset_path('expressions', raw)
+
+def herbie_asset_label(ref):
+    raw = str(ref or 'happy').strip()
+    return raw.split('/', 1)[-1].replace('-', ' ')
 
 def draw_face(mood='happy', caption='ready to roam', blink=False):
     mood = str(mood or 'happy')
-    if mood not in HERBIE_EXPRESSIONS:
+    p = herbie_asset_path_from_ref(mood)
+    if mood not in HERBIE_EXPRESSIONS and not p:
         mood = 'happy'
+        p = herbie_asset_path('expressions', mood)
     img = Image.new('RGB', (W, H), BG)
     d = ImageDraw.Draw(img)
-    accent = AMBER if mood in ('worried','confused','surprised','tired','yawning','sweating','oh-no') else GREEN
+    accent = AMBER if mood in ('worried','confused','surprised','tired','yawning','sweating','oh-no') or mood.startswith('turnarounds/') or mood.startswith('motions/') else GREEN
     d.rounded_rectangle((6, 6, W-7, H-7), 12, outline=accent, width=2, fill=(14, 28, 36))
     d.text((16, 14), 'Herbie', font=F_TITLE, fill=accent)
-    p = herbie_asset_path('expressions', mood)
     if p:
         try:
             face = Image.open(p).convert('RGBA')
@@ -198,7 +221,7 @@ PY
 cat > "$EXAMPLE_DIR/mappi3_whisplay_dashboard.py" <<'PY'
 #!/usr/bin/env python3
 from __future__ import annotations
-import json, random, time
+import datetime, json, random, time
 from urllib import request
 from mappi3_whisplay_common import *
 
@@ -209,9 +232,9 @@ seen_popup_events = set()
 popup_event = None
 popup_until = 0.0
 snake = {'body': [(4,4),(3,4),(2,4)], 'dir': (1,0), 'food': (6,4), 'score': 0, 'over': False, 'last_emit': 0.0}
-PAGES = ['Buddy Home','Field Kit','Compass+Level','Weather+Sky','Network','Safety','Snake Trail']
+PAGES = ['Buddy Home','Herbie','Field Kit','Compass+Level','Weather+Sky','Network','Safety','Snake Trail']
 
-def api(path, timeout=1.5):
+def api(path, timeout=5.0):
     try:
         with request.urlopen(API + path, timeout=timeout) as r:
             return json.loads(r.read().decode('utf-8'))
@@ -392,34 +415,194 @@ def render_snake():
     d.text((16,H-23),'press next · joystick parked',font=F_TINY,fill=DIM)
     return img
 
-def whisplay_herbie_state():
-    status = api('/api/status', timeout=1.0)
-    sense = sense_payload(api('/api/sense', timeout=1.0))
-    net = api('/api/network/status', timeout=1.0)
+def herbie_cycle(period=6.0, offset=0, pool=None):
+    pool = tuple(pool or HERBIE_EXPRESSION_ORDER)
+    idx = int(time.time() // max(1.0, float(period))) + int(offset)
+    return pool[idx % len(pool)]
+
+def herbie_idle_face(period=6.0, offset=0):
+    idx = int(time.time() // max(1.0, float(period))) + int(offset)
+    # Four friendly priority beats, then one random cameo. Scenario-only faces stay out of idle.
+    if idx % 5 == 4:
+        return HERBIE_RANDOM_CAMEOS[(idx // 5) % len(HERBIE_RANDOM_CAMEOS)]
+    return HERBIE_IDLE_PRIORITY[idx % len(HERBIE_IDLE_PRIORITY)]
+
+def herbie_high_af_now(now=None):
+    now = now or datetime.datetime.now()
+    return now.hour in (4, 16) and now.minute == 20
+
+TILT_DIRECTION_ASSETS = {
+    # Use the provided Herbie sheet: motion examples for left/right, turnaround sheet for top/bottom.
+    'left': (('motions','tilted-left'), ('expressions','side-eye'), ('expressions','curious')),
+    'right': (('motions','tilted-right'), ('expressions','suspicious'), ('expressions','cheeky')),
+    'top': (('turnarounds','top'), ('expressions','wow'), ('expressions','surprised')),
+    'bottom': (('turnarounds','bottom'), ('expressions','oh-no'), ('expressions','facepalm')),
+}
+
+def herbie_best_asset(options):
+    for kind, name in options:
+        try:
+            ref = herbie_asset_ref(kind, name)
+            if ref:
+                return ref
+        except Exception:
+            continue
+    return 'expressions/surprised'
+
+def herbie_tilt_direction(roll, pitch, threshold=16.0):
+    if roll is None or pitch is None:
+        return None
+    if max(abs(roll), abs(pitch)) < threshold:
+        return None
+    if abs(roll) >= abs(pitch):
+        return 'left' if roll < 0 else 'right'
+    return 'top' if pitch < 0 else 'bottom'
+
+def herbie_directional_tilt_face(roll, pitch, threshold=16.0):
+    direction = herbie_tilt_direction(roll, pitch, threshold)
+    if not direction:
+        return None
+    asset = herbie_best_asset(TILT_DIRECTION_ASSETS[direction])
+    label = {'left':'tilted left','right':'tilted right','top':'top view tilt','bottom':'bottom view tilt'}[direction]
+    return asset, label, direction
+
+def whisplay_herbie_state(now=None, status=None, sense=None, net=None):
+    now = now or datetime.datetime.now()
+    status = status if status is not None else api('/api/status', timeout=5.0)
+    sense = sense if sense is not None else sense_payload(api('/api/sense', timeout=5.0))
+    net = net if net is not None else api('/api/network/status', timeout=5.0)
     orient = sense.get('orientation') if isinstance(sense.get('orientation'), dict) else {}
-    roll = orient.get('roll', sense.get('roll'))
-    pitch = orient.get('pitch', sense.get('pitch'))
-    temp = sense.get('temperature') or sense.get('temp_c')
+    roll = signed_angle(orient.get('roll', sense.get('roll')))
+    pitch = signed_angle(orient.get('pitch', sense.get('pitch')))
+    temp = sense.get('temperature') if sense.get('temperature') is not None else sense.get('temp_c')
     battery = status.get('battery') if isinstance(status.get('battery'), dict) else {}
     low_battery = any(str(v).lower() in ('low','critical') for v in [battery.get('state'), battery.get('status')])
-    try: tilted = max(abs(float(roll or 0)), abs(float(pitch or 0))) >= 12
+    try: tilted = roll is not None and pitch is not None and max(abs(roll), abs(pitch)) >= 12
     except Exception: tilted = False
     try: hot = temp is not None and float(temp) >= 30
     except Exception: hot = False
+    tilt_reaction = herbie_directional_tilt_face(roll, pitch, threshold=16.0)
+    if herbie_high_af_now(now):
+        return 'high-af', '4:20 trail minute'
     if status.get('_error'):
-        return 'worried', 'API offline/cache mode'
+        return herbie_idle_face(5.0), 'offline face loop'
+    if tilt_reaction:
+        return tilt_reaction[0], tilt_reaction[1]
     if low_battery:
-        return 'worried', 'battery caution'
+        return ['worried','determined','thumbs-up','focused'][int(time.time() // 4) % 4], 'battery caution'
     if hot:
-        return 'sweating', f'temp {temp_f_text(temp)}'
+        return ['sweating','melting','wow','chillin'][int(time.time() // 4) % 4], f'temp {temp_f_text(temp)}'
     if tilted:
         return 'surprised', 'tilt reaction'
     if net.get('_error'):
-        return 'confused', 'network status unknown'
+        if status.get('hotspot_active') or status.get('connection_mode') == 'hotspot':
+            return herbie_idle_face(5.0, 7), 'field hotspot mode'
+        return ['confused','thinking','side-eye','focused'][int(time.time() // 4) % 4], 'network status unknown'
     if not net.get('has_default_route'):
-        return 'focused', 'field hotspot mode'
-    cycle = ['happy','curious','thinking','wink','grateful','determined']
-    return cycle[int(time.time() // 8) % len(cycle)], 'live Whisplay avatar'
+        return herbie_idle_face(5.0, 11), 'field hotspot mode'
+    return herbie_idle_face(5.0), 'live Whisplay avatar'
+
+def num(value, default=None):
+    try:
+        return float(value)
+    except Exception:
+        return default
+
+def signed_angle(value):
+    v = num(value)
+    if v is None:
+        return None
+    return ((v + 180.0) % 360.0) - 180.0
+
+def herbie_pawn_state():
+    status = api('/api/status', timeout=5.0)
+    sense = sense_payload(api('/api/sense', timeout=5.0))
+    net = api('/api/network/status', timeout=5.0)
+    weather = api('/api/weather?days=1', timeout=0.9)
+    orient = sense.get('orientation') if isinstance(sense.get('orientation'), dict) else {}
+    roll = signed_angle(orient.get('roll', sense.get('roll')))
+    pitch = signed_angle(orient.get('pitch', sense.get('pitch')))
+    temp_c = num(sense.get('temperature') if sense.get('temperature') is not None else sense.get('temp_c'))
+    humidity = num(sense.get('humidity'))
+    pressure = num(sense.get('pressure'))
+    compass = num(sense.get('compass') or sense.get('heading'))
+    battery = status.get('battery') if isinstance(status.get('battery'), dict) else {}
+    low_battery = any(str(v).lower() in ('low','critical') for v in [battery.get('state'), battery.get('status')])
+    api_available = not (status.get('_error') and sense.get('_error') and net.get('_error') and weather.get('_error'))
+    now = datetime.datetime.now()
+    hour = now.hour
+    idle = herbie_idle_face(6.0)
+    tilt_reaction = herbie_directional_tilt_face(roll, pitch, threshold=16.0)
+    mood = idle
+    reason = 'all-face wandering loop'
+    accent = GREEN
+    if herbie_high_af_now(now):
+        mood, reason, accent = 'high-af', '4:20 trail minute', GREEN
+    elif api_available and tilt_reaction:
+        mood, reason, accent = tilt_reaction[0], tilt_reaction[1], AMBER
+    elif api_available and low_battery:
+        mood, reason, accent = ['worried','determined','thumbs-up','focused'][int(time.time() // 4) % 4], 'battery caution', AMBER
+    elif api_available and temp_c is not None and temp_c >= 34:
+        mood, reason, accent = ['melting','sweating','wow','chillin'][int(time.time() // 4) % 4], f'hot field kit {temp_f_text(temp_c)}', RED
+    elif api_available and temp_c is not None and temp_c >= 29:
+        mood, reason, accent = ['sweating','chillin','wow','thumbs-up'][int(time.time() // 4) % 4], f'warm sensors {temp_f_text(temp_c)}', AMBER
+    elif api_available and roll is not None and pitch is not None and max(abs(roll), abs(pitch)) >= 45:
+        mood, reason, accent = 'oh-no', 'big tilt / picked up', AMBER
+    elif api_available and roll is not None and pitch is not None and max(abs(roll), abs(pitch)) >= 16:
+        mood, reason, accent = 'surprised', 'tilt reaction', AMBER
+    elif api_available and humidity is not None and humidity >= 88:
+        mood, reason, accent = ['overwhelmed','sweating','face-with-tears','determined'][int(time.time() // 4) % 4], f'humid air {round(humidity)}%', AMBER
+    elif api_available and (hour >= 22 or hour < 5):
+        mood, reason, accent = idle, 'night trail buddy awake', GREEN
+    elif api_available and 5 <= hour < 7:
+        mood, reason, accent = ['greetings','happy','excited','thumbs-up'][int(time.time() // 4) % 4], 'early trail wakeup', GREEN
+    elif api_available and net.get('_error'):
+        if status.get('hotspot_active') or status.get('connection_mode') == 'hotspot':
+            mood, reason, accent = herbie_idle_face(5.0, 7), 'offline hotspot trail mode', GREEN
+        else:
+            mood, reason, accent = ['confused','thinking','side-eye','focused'][int(time.time() // 4) % 4], 'network status unknown', AMBER
+    elif api_available and not net.get('has_default_route'):
+        mood, reason, accent = herbie_idle_face(5.0, 11), 'offline hotspot trail mode', GREEN
+    elif api_available and weather.get('current'):
+        mood, reason, accent = ['curious','happy','wow','focused'][int(time.time() // 4) % 4], 'watching live sky', BLUE
+    details = []
+    if temp_c is not None: details.append(f'temp {temp_f_text(temp_c)}')
+    if humidity is not None: details.append(f'hum {round(humidity)}%')
+    if pressure is not None: details.append(f'press {round(pressure)}hPa')
+    if roll is not None and pitch is not None: details.append(f'tilt r{round(roll)} p{round(pitch)}')
+    if compass is not None: details.append(f'head {round(compass)}°')
+    if status.get('_error'):
+        details.append('offline face loop')
+    details.append('priority faces + cameos')
+    return {'mood': mood, 'reason': reason, 'accent': accent, 'details': details[:5], 'idle': idle}
+
+def draw_herbie_mood():
+    state = herbie_pawn_state()
+    mood = state['mood']
+    accent = state['accent']
+    img = Image.new('RGB', (W, H), BG)
+    d = ImageDraw.Draw(img)
+    d.rounded_rectangle((6, 6, W-7, H-7), 12, outline=accent, width=2, fill=(12, 24, 34))
+    d.text((14, 12), 'Herbie', font=F_TITLE, fill=accent)
+    p = herbie_asset_path_from_ref(mood)
+    if p:
+        try:
+            face = Image.open(p).convert('RGBA')
+            face.thumbnail((196, 136), Image.LANCZOS)
+            x = (W - face.width) // 2
+            y = 44 + max(0, (132 - face.height) // 2)
+            img.paste(face, (x, y), face)
+            if int(time.time() * 2) % 29 == 0:
+                d.rounded_rectangle((74, y + int(face.height * .34), 166, y + int(face.height * .43)), 4, fill=(7, 18, 9), outline=(196, 215, 95), width=1)
+        except Exception:
+            pass
+    y = 184
+    d.text((16, y), herbie_asset_label(mood)[:25], font=F_BODY, fill=accent); y += 18
+    d.text((16, y), state['reason'][:28], font=F_SMALL, fill=WHITE); y += 15
+    for line in state['details'][:4]:
+        d.text((16, y), line[:30], font=F_TINY, fill=DIM); y += 12
+    d.text((16, H-23), 'offline mood loop · press next', font=F_TINY, fill=DIM)
+    return img
 
 def render():
     if popup_event and time.time() < popup_until: return render_popup(popup_event)
@@ -427,6 +610,7 @@ def render():
     if title == 'Buddy Home':
         mood, caption = whisplay_herbie_state()
         return draw_face(mood, caption, blink=(int(time.time() * 2) % 23 == 0))
+    if title == 'Herbie': return draw_herbie_mood()
     if title == 'Field Kit': return draw_card('Field Kit/Power', lines_fieldkit(), GREEN)
     if title == 'Compass+Level': return draw_card('Compass + Level', lines_compass(), BLUE)
     if title == 'Weather+Sky': return draw_card('Weather + Sky', lines_weather(), AMBER)
@@ -450,8 +634,9 @@ def main():
         last = 0
         while running:
             time.sleep(0.35); active = page % len(PAGES)
-            if poll_popup() or (popup_event and time.time() < popup_until) or active in (1,2,3,4,6):
-                if active == 6 and time.time() - last < 0.18: continue
+            if poll_popup() or (popup_event and time.time() < popup_until) or active in (0,1,2,3,4,5,7):
+                if active == 7 and time.time() - last < 0.18: continue
+                if active == 0 and time.time() - last < 5.0: continue
                 last = time.time(); show(hw, render())
     finally:
         hw.cleanup()
@@ -460,6 +645,10 @@ if __name__ == '__main__':
     main()
 PY
 chmod 0755 "$EXAMPLE_DIR/mappi3_whisplay_dashboard.py"
+# Herbie assets are read by the unprivileged Whisplay app process; keep them traversable/readable.
+if [ -d /opt/mappi3/app/assets/herbie ]; then
+  chmod -R a+rX /opt/mappi3/app/assets/herbie
+fi
 
 cat > "$EXAMPLE_DIR/mappi3_whisplay_ai_chat.py" <<'PY'
 #!/usr/bin/env python3

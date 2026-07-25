@@ -53,6 +53,10 @@
     "scanning": "/assets/herbie/motions/scanning.png",
     "low-battery": "/assets/herbie/motions/low-battery.png"
   },
+  "turnarounds": {
+    "top": "/assets/herbie/turnarounds/top.png",
+    "bottom": "/assets/herbie/turnarounds/bottom.png"
+  },
   "source": "CAK3D supplied Herbie Map expanded image avatar set",
-  "notes": "All labeled expression cards and motion/reaction examples from the expanded sheet are cropped; first-pass sheet preserved when present."
+  "notes": "All labeled expression cards, motion/reaction examples, and top/bottom turnaround crops from the expanded sheet are included; first-pass sheet preserved when present."
 }

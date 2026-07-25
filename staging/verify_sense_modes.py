@@ -167,14 +167,16 @@ for rotation in (0, 90, 180, 270):
     assert sense.frames[0][0] == [255, 0, 0] and sense.frames[0][1] == [0, 255, 0], 'hardware path double-rotated pixels'
 
 # Avatar face remains the readable cheerful 8x8 face lane CAK3D liked.
+# The current default is a compact happy-eye face, not the older hollow
+# glasses-style ring eyes. Keep the test pointed at the product intent:
+# awake/friendly, no oversized frame/glasses, and a readable smile.
 sense = FakeSense()
 mod.draw_sense_animated_face(sense, 1, base_state, orient, 68)
 coords = {xy(i) for i in lit(sense.frames[-1])}
 for forbidden in [(3,0),(4,0),(3,1),(4,1),(3,2),(4,2),(0,3),(7,3),(0,4),(7,4),(0,5),(7,5),(2,7),(3,7),(4,7),(5,7)]:
     assert forbidden not in coords, ('forbidden lit', forbidden, sorted(coords))
-for center in [(1,1),(6,1)]:
-    assert center not in coords, ('eye center lit', center)
-assert {(0,0),(2,0),(5,0),(7,0),(1,5),(6,5)} & coords
+assert {(1,1),(2,2),(6,1),(5,2)} <= coords, ('compact happy eyes missing', sorted(coords))
+assert {(1,5),(6,5),(2,6),(3,6),(4,6),(5,6)} <= coords, ('happy smile incomplete', sorted(coords))
 blink_sense = FakeSense()
 mod.draw_sense_animated_face(blink_sense, 10, {**base_state, 'sense_avatar_expression': 'blink'}, orient, 68)
 blink_coords = {xy(i) for i in lit(blink_sense.frames[-1])}

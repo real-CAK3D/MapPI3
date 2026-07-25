@@ -13,7 +13,7 @@ PACMAN_STATE = {}
 PACMAN_EVENT_SEQ = 0
 SENSE_FACE_STATE = {'last_accel': None, 'last_accel_at': 0.0, 'surprise_until': 0.0, 'still_since': 0.0}
 SENSE_MODES = ['compass','compass-arrow','compass-cardinal','rotation-test','liquid','pacman','weather','fire','flashlight','sos','message','boot','sun','gps','clock','progress','beacon','stars','temp','humidity','pressure','avatar','level','custom','border','magic8','water','snake']
-ALLOWED = {'status','restart-web','reboot','shutdown','update-app','gps-sample','toggle-hotspot','hotspot-on','connect-home-wifi','wifi-scan','wifi-save-network','wifi-connect-saved','network-status','tailscale-status','tailscale-login','remote-access-repair','sense-mode','calibrate','harden-hotspot','plugin-update','vnc-setup','vnc-disable','weather-refresh','noaa-refresh','online-maintenance','gps-diagnose','sense-diagnose','field-ai-verify','captive-setup','captive-disable','captive-status','gps-pps-setup','whisplay-test-popup','snake-trail-event','plugin-status','plugin-install','plugin-install-all','plugin-uninstall'}
+ALLOWED = {'status','restart-web','reboot','shutdown','update-app','gps-sample','toggle-hotspot','hotspot-on','connect-home-wifi','wifi-scan','wifi-save-network','wifi-connect-saved','network-status','tailscale-status','tailscale-login','remote-access-repair','sense-mode','calibrate','harden-hotspot','plugin-update','vnc-setup','vnc-disable','weather-refresh','noaa-refresh','online-maintenance','gps-diagnose','sense-diagnose','field-ai-verify','captive-setup','captive-disable','captive-status','gps-pps-setup','whisplay-test-popup','whisplay-input','whisplay-input-status','snake-trail-event','plugin-status','plugin-install','plugin-install-all','plugin-uninstall'}
 SENSE_CACHE = {'ok': False, 'mode': 'compass', 'message': 'Sense HAT display loop starting', 'updated': 0, 'joystick': {'seq': 0, 'direction': '', 'pressed': False, 'updated': 0}}
 SENSE_LOCK = threading.Lock()
 KEY_NAMES = {103:'up',108:'down',105:'left',106:'right',28:'press'}
@@ -629,21 +629,27 @@ def draw_sense_animated_face(sense, tick, st=None, orient=None, temp_f=None):
         expression = 'sweating'
     elif temp_value <= 40:
         expression = 'tired'
-    elif still_seconds > 28 and tick % 32 < 10:
-        expression = 'sleepy'
-    elif still_seconds > 14 and tick % 28 < 10:
-        expression = 'bored'
     elif blink:
         expression = 'blink'
     else:
-        ambient = ['happy','happy','neutral','curious','happy','wink']
+        # Default should read awake and friendly on the physical 8x8 face.
+        # Do not drift into bored/sleepy while sitting still; CAK3D wants
+        # Herbie up unless a real sensor/event asks for another expression.
+        ambient = ['happy','happy','curious','happy','wink','happy']
         expression = ambient[(tick // 12) % len(ambient)]
     def coords(points, color):
         for x,y in points:
             if 0 <= x < 8 and 0 <= y < 8:
                 pixels[y*8+x] = color
-    left_eye = [(0,0),(1,0),(2,0),(0,1),(2,1),(0,2),(1,2),(2,2)]
-    right_eye = [(5,0),(6,0),(7,0),(5,1),(7,1),(5,2),(6,2),(7,2)]
+    # Compact, expressive eyes: the older full 3x3 ring eyes read like
+    # glasses on the physical Sense HAT. Keep normal Herbie awake/cheerful
+    # with small asymmetric eyes, then only use big eyes for real surprise.
+    left_eye = [(1,1),(2,1),(1,2)]
+    right_eye = [(5,1),(6,1),(6,2)]
+    wide_left_eye = [(1,0),(2,0),(0,1),(1,1),(2,1),(1,2)]
+    wide_right_eye = [(5,0),(6,0),(6,1),(7,1),(5,1),(6,2)]
+    happy_left_eye = [(1,1),(2,2)]
+    happy_right_eye = [(5,2),(6,1)]
     mouth_happy = [(1,5),(2,6),(3,6),(4,6),(5,6),(6,5)]
     mouth_smile = [(1,5),(2,5),(3,6),(4,6),(5,5),(6,5)]
     mouth_flat = [(2,6),(3,6),(4,6),(5,6)]
@@ -655,7 +661,7 @@ def draw_sense_animated_face(sense, tick, st=None, orient=None, temp_f=None):
         coords([(0,1),(1,1),(2,1),(5,1),(6,1),(7,1)] if expression in ('blink','sleepy','tired','yawning','meditating') else left_eye + right_eye, eye)
         coords(mouth_open if expression == 'yawning' else (mouth_flat if expression in ('sleepy','tired','bored','meditating') else mouth_happy), white)
     elif expression in ('surprised','confused','wow','oh-no','overwhelmed'):
-        coords(left_eye + [(1,1)] + right_eye + [(6,1)], white)
+        coords(wide_left_eye + wide_right_eye, white)
         coords(mouth_open, amber)
         if expression in ('confused','overwhelmed'): coords([(0,6),(7,6)], blue)
     elif expression in ('worried','sad','annoyed','face-with-tears'):
@@ -690,7 +696,7 @@ def draw_sense_animated_face(sense, tick, st=None, orient=None, temp_f=None):
         coords([(0,1),(1,1),(2,1)] + right_eye, eye)
         coords(mouth_smile, white)
     else:
-        coords(left_eye + right_eye, eye)
+        coords((happy_left_eye + happy_right_eye) if tick % 8 < 4 else (left_eye + right_eye), eye)
         coords(mouth_happy if tick % 8 < 4 else mouth_smile, white)
     sense_set_pixels(sense, pixels, st)
     with SENSE_LOCK:
@@ -927,7 +933,19 @@ def draw_pacman_frame(sense, tick, st=None):
             continue
         color=(33,33,255) if state.get('power') and state['power'] % 4 != 0 else g['color']
         put(g['pos'], color)
-    put(state['pacman'], (255,60,0) if state.get('caught') else (PACMAN_YELLOW if not state.get('power') else (255,255,140)))
+    pac_color = (255,60,0) if state.get('caught') else (PACMAN_YELLOW if not state.get('power') else (255,255,140))
+    # One LED is too abstract to read as Pac-Man on the real 8x8. Draw a tiny
+    # two/three-pixel body when room allows, with a black wedge in front while
+    # the mouth is open, so the yellow character is recognizable again.
+    px, py = state['pacman']; dx, dy = state.get('dir') or (1,0)
+    pac_points = [(px, py)]
+    if dx:
+        pac_points += [(px, max(0, py-1)), (px, min(7, py+1))]
+    elif dy:
+        pac_points += [(max(0, px-1), py), (min(7, px+1), py)]
+    for pt in pac_points:
+        if pt in state['cells']:
+            put(pt, pac_color)
     if state.get('mouth_open') and not state.get('caught'):
         mouth=_pacman_step(state['pacman'], state.get('dir') or (1,0))
         if mouth in _pacman_neighbors(state['pacman'], state['cells']): pixels[mouth[1]*8+mouth[0]]=[0,0,0]
@@ -1000,7 +1018,13 @@ def sense_loop():
                     draw_water_icon(sense, (0,120,255), st); text_once(sense, 'DRINK 8OZ WATER', (0,120,255), sense_scroll_speed(st), st); alarm=st.get('hydration_alarm') or {}; alarm['lastFiredAt']=time.time(); st['hydration_alarm']=alarm; write_state(st)
                 orient = dict(orient or {})
                 try:
-                    level_x = round(float(orient.get('roll') or 0), 1); level_y = round(float(orient.get('pitch') or 0), 1)
+                    raw_level_x = float(orient.get('roll') or 0)
+                    raw_level_y = float(orient.get('pitch') or 0)
+                    # Sense HAT reports near-level angles as 357/358/359 degrees.
+                    # Normalize before classifying so a nearly level field kit does not
+                    # show as steep in API/UI while the animated face correctly stays calm.
+                    level_x = round(((raw_level_x + 180.0) % 360.0) - 180.0, 1)
+                    level_y = round(((raw_level_y + 180.0) % 360.0) - 180.0, 1)
                 except Exception:
                     level_x = level_y = 0.0
                 level_status = 'level' if max(abs(level_x), abs(level_y)) <= 4 else ('tilted' if max(abs(level_x), abs(level_y)) <= 15 else 'steep')
@@ -1018,6 +1042,16 @@ def sense_loop():
     except Exception as e:
         with SENSE_LOCK: SENSE_CACHE.update({'ok': False, 'message': f'Sense HAT unavailable: {e}', 'updated': time.time()})
 
+def cycle_sense_mode(direction):
+    st = read_state()
+    current = normalize_mode(st.get('sense_mode') or SENSE_CACHE.get('mode') or 'compass')
+    try:
+        idx = SENSE_MODES.index(current)
+    except ValueError:
+        idx = 0
+    step = 1 if direction == 'right' else -1
+    return set_sense_mode(SENSE_MODES[(idx + step) % len(SENSE_MODES)], {'joystickDirection': direction, 'source': 'sense-hat-joystick'})
+
 def joystick_loop():
     while True:
         try:
@@ -1031,13 +1065,18 @@ def joystick_loop():
                         _sec,_usec,etype,code,value=struct.unpack('llHHI',data)
                         if etype==1 and value==1 and code in KEY_NAMES:
                             direction=KEY_NAMES[code]
-                            # Joystick is an input source for games/app controls. Do not auto-cycle
-                            # Sense HAT display modes here; explicit app buttons/endpoints own display changes.
+                            mode_result = None
+                            if direction in ('left','right'):
+                                mode_result = cycle_sense_mode(direction)
                             with SENSE_LOCK:
                                 js=dict(SENSE_CACHE.get('joystick') or {})
                                 js.update({'seq': int(js.get('seq') or 0)+1,'direction':direction,'pressed':direction=='press','updated':time.time()})
+                                if mode_result:
+                                    js['cycled_mode'] = mode_result.get('sense_mode')
+                                    SENSE_CACHE['message']=f"Joystick {direction}: Sense HAT mode {mode_result.get('sense_mode')}"
+                                else:
+                                    SENSE_CACHE['message']=f'Joystick input: {direction}'
                                 SENSE_CACHE['joystick']=js
-                                SENSE_CACHE['message']=f'Joystick input: {direction}'
                     except BlockingIOError: time.sleep(0.05)
         except Exception as e:
             with SENSE_LOCK:
@@ -2011,6 +2050,66 @@ def disable_captive():
     return {'ok': True, 'message':'Phone stay-connected captive portal disabled', 'status': captive_status(), 'output': out.get('output','')[-800:]}
 
 
+def whisplay_input_status(payload=None):
+    st = read_state()
+    queue = st.get('whisplay_input_queue') or []
+    try:
+        since = int((payload or {}).get('since') or 0)
+    except Exception:
+        since = 0
+    if since:
+        queue = [item for item in queue if int(item.get('seq') or 0) > since]
+    safe_queue = []
+    for item in queue[-24:]:
+        safe_item = dict(item)
+        if safe_item.get('sensitive'):
+            safe_item['text'] = '[REDACTED]'
+            safe_item['value'] = '[REDACTED]'
+        safe_queue.append(safe_item)
+    return {'ok': True, 'command': 'whisplay-input-status', 'pending': len(queue), 'last_seq': int(st.get('whisplay_input_seq') or 0), 'queue': safe_queue, 'hint': 'Whisplay/AI helpers can poll /api/whisplay/input?since=N on the Pi hotspot.'}
+
+def whisplay_input(payload=None):
+    payload = payload or {}
+    kind = str(payload.get('kind') or payload.get('type') or 'text').strip().lower()[:24]
+    allowed_kinds = {'text','password','enter','backspace','tab','escape','up','down','left','right','press','clear'}
+    if kind not in allowed_kinds:
+        return {'ok': False, 'error': 'Unsupported Whisplay input kind', 'allowed': sorted(allowed_kinds)}
+    raw = str(payload.get('text') if 'text' in payload else payload.get('value') if 'value' in payload else '')
+    if kind in {'enter','backspace','tab','escape','up','down','left','right','press','clear'}:
+        raw = ''
+    raw = raw.replace('\r', '\n')[:160]
+    sensitive = bool(payload.get('sensitive') or kind == 'password')
+    st = read_state()
+    seq = int(st.get('whisplay_input_seq') or 0) + 1
+    item = {
+        'seq': seq,
+        'kind': kind,
+        'text': raw,
+        'value': raw,
+        'sensitive': sensitive,
+        'source': str(payload.get('source') or 'phone-bridge')[:32],
+        'created_at': time.time(),
+        'summary': f'{kind} queued' + ('' if not raw else f' ({len(raw)} chars)')
+    }
+    queue = list(st.get('whisplay_input_queue') or [])[-23:]
+    if kind == 'clear':
+        queue = []
+    else:
+        queue.append(item)
+    st['whisplay_input_seq'] = seq
+    st['whisplay_input_queue'] = queue
+    st['whisplay_input_updated_at'] = time.time()
+    write_state(st)
+    safe_item = dict(item)
+    if sensitive:
+        safe_item['text'] = '[REDACTED]'
+        safe_item['value'] = '[REDACTED]'
+    with SENSE_LOCK:
+        SENSE_CACHE['message'] = 'Whisplay phone input queued'
+        SENSE_CACHE['updated'] = time.time()
+        SENSE_CACHE['whisplay_input'] = {'last_seq': seq, 'kind': kind, 'sensitive': sensitive, 'queued': len(queue)}
+    return {'ok': True, 'command': 'whisplay-input', 'queued': len(queue), 'item': safe_item, 'status': whisplay_input_status({})}
+
 def whisplay_test_popup(payload=None):
     """Inject a deterministic popup event into the Pac-Man/Snake event bridge for Whisplay Dash visual tests."""
     global PACMAN_STATE
@@ -2089,6 +2188,8 @@ def command(name, payload=None):
     if name=='captive-status': return captive_status()
     if name=='gps-pps-setup': return setup_gps_pps(payload)
     if name=='whisplay-test-popup': return whisplay_test_popup(payload)
+    if name=='whisplay-input': return whisplay_input(payload)
+    if name=='whisplay-input-status': return whisplay_input_status(payload)
     if name=='snake-trail-event': return snake_trail_event(payload)
     if name=='restart-web': return sh('systemctl restart mappi3-web.service', timeout=10)
     if name=='reboot': return sh('systemctl reboot', timeout=3)
@@ -2407,6 +2508,8 @@ class Handler(http.server.SimpleHTTPRequestHandler):
         if self.path.startswith('/api/plugins'): self.json_response(plugin_status()); return
         if self.path.startswith('/api/bluetooth/pan/status'): self.json_response(bluetooth_pan_status()); return
         if self.path.startswith('/api/bluetooth/status'): self.json_response(bluetooth_status()); return
+        if self.path.startswith('/api/whisplay/input'):
+            qs=urllib.parse.parse_qs(urllib.parse.urlparse(self.path).query); self.json_response(whisplay_input_status({k:v[-1] for k,v in qs.items()})); return
         if self.path.startswith('/api/sense'): self.json_response({'ok': True, 'sense': sense_snapshot(), 'state': read_state(), 'available_modes': SENSE_MODES, 'time': time.time()}); return
         return super().do_GET()
     def do_DELETE(self):

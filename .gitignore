@@ -11,3 +11,6 @@ coverage/
 *.ts.net.key
 .vercel
 local-pi-imager/
+__pycache__/
+*.py[cod]
+staging/herbie_asset_backups/

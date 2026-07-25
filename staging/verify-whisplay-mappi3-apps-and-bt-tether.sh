@@ -19,8 +19,20 @@ PYTHONDONTWRITEBYTECODE=1 python3 - <<'PY'
 import json, pathlib
 base=pathlib.Path('/opt/whisplay/Whisplay-main/example')
 for script in ['mappi3_whisplay_common.py','mappi3_whisplay_dashboard.py','mappi3_whisplay_ai_chat.py']:
-    compile((base/script).read_text(encoding='utf-8'), str(base/script), 'exec')
+    src = (base/script).read_text(encoding='utf-8')
+    compile(src, str(base/script), 'exec')
     print(script + '=COMPILE_PASS')
+    if script == 'mappi3_whisplay_common.py':
+        assert 'HERBIE_EXPRESSION_ORDER' in src and 'party-hard' in src
+        print('HERBIE_EXPRESSION_ORDER=PASS')
+    if script == 'mappi3_whisplay_dashboard.py':
+        assert "'Herbie'" in src
+        assert ('MapPI3 API ' + 'offline') not in src
+        assert 'def herbie_pawn_state' in src
+        assert 'draw_herbie_mood' in src
+        assert 'offline face loop' in src
+        assert 'all 40 faces rotate' in src
+        print('HERBIE_MOOD_PAGE=PASS')
 appdir=pathlib.Path('/home/mappi3/.whisplay-daemon/app')
 for name in ['whisplay-mappi3-dashboard.json','whisplay-mappi3-ai-chat.json']:
     data=json.loads((appdir/name).read_text())
