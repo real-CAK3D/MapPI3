@@ -1,0 +1,122 @@
+{
+  "schema": "mappi3.networkOnlySources.v1",
+  "generated_at": "2026-07-26T20:06:44Z",
+  "offline_policy": "Anything listed here must be labeled network-only in field UI unless a dated cache/precomputed export is present on the Pi.",
+  "sources": [
+    {
+      "id": "trailsplits",
+      "name": "TrailSplits API",
+      "status": "network-only until cache terms verified",
+      "best_for": [
+        "trail-aware routing",
+        "hiking vector tiles",
+        "elevation sampling",
+        "snow forecasts"
+      ],
+      "offline_path": "pre-trip export to compact GeoJSON/MBTiles/elevation JSON if terms allow",
+      "label": "Requires network unless cached before hike."
+    },
+    {
+      "id": "openrouteservice",
+      "name": "openrouteservice",
+      "status": "network-only public API or self-host backend",
+      "best_for": [
+        "walking/hiking route planning",
+        "isochrones",
+        "elevation",
+        "POIs"
+      ],
+      "offline_path": "Garden/NukeBox self-host or pre-trip route export to GPX/GeoJSON",
+      "label": "Requires network/self-host reach unless route is downloaded."
+    },
+    {
+      "id": "osm-overpass",
+      "name": "OpenStreetMap + Overpass",
+      "status": "network-only for live queries",
+      "best_for": [
+        "raw trail geometries",
+        "route relations",
+        "POIs"
+      ],
+      "offline_path": "downloaded extracts/route packs/MBTiles; use politely and attribute OSM",
+      "label": "Live search requires network; downloaded extracts can work offline."
+    },
+    {
+      "id": "open-topo-data",
+      "name": "Open Topo Data",
+      "status": "network-only public API unless self-hosted/cache generated",
+      "best_for": [
+        "elevation points/profiles"
+      ],
+      "offline_path": "precompute elevation samples into route pack JSON",
+      "label": "Requires network unless elevation profile is cached."
+    },
+    {
+      "id": "waymarked-trails",
+      "name": "Waymarked Trails",
+      "status": "backend/import candidate, not Pi live dependency",
+      "best_for": [
+        "signed/named trail networks"
+      ],
+      "offline_path": "pre-trip import of route relation summaries/tiles",
+      "label": "Requires backend/network unless exported."
+    },
+    {
+      "id": "visible-planets",
+      "name": "Visible Planets API",
+      "status": "network-only unless precomputed",
+      "best_for": [
+        "current planet/moon altitude/azimuth"
+      ],
+      "offline_path": "precompute night-hike sky JSON for trip dates",
+      "label": "Requires network unless cached/precomputed."
+    },
+    {
+      "id": "ar00-space",
+      "name": "AR00.space Astronomy API",
+      "status": "network-only unless precomputed",
+      "best_for": [
+        "solar/lunar positions",
+        "bright stars",
+        "Messier objects"
+      ],
+      "offline_path": "precompute compact sky-event summaries",
+      "label": "Requires network unless cached/precomputed."
+    },
+    {
+      "id": "astrosky",
+      "name": "AstroSky",
+      "status": "network/self-host candidate",
+      "best_for": [
+        "moon phase",
+        "planets",
+        "ISS/meteor events"
+      ],
+      "offline_path": "self-host on Garden/NukeBox or export trip summaries",
+      "label": "Requires network/self-host reach unless synced."
+    },
+    {
+      "id": "stellarium-gaia",
+      "name": "Stellarium / Gaia Sky",
+      "status": "precompute-only on stronger machine",
+      "best_for": [
+        "charts",
+        "rich sky catalogs"
+      ],
+      "offline_path": "export static charts/images/JSON to Pi; do not run heavy planetarium stack on Zero",
+      "label": "Generated outputs can be offline; generators are not Pi-field runtime."
+    },
+    {
+      "id": "valhalla-osrm-wanderer",
+      "name": "Valhalla / OSRM / Wanderer",
+      "status": "server-backend candidates",
+      "best_for": [
+        "self-host route planning",
+        "trail catalog",
+        "GPX library"
+      ],
+      "offline_path": "run on Garden/NukeBox/server and sync selected GPX/GeoJSON/MBTiles summaries",
+      "label": "Not Pi Zero runtime; use synced outputs offline."
+    }
+  ]
+}

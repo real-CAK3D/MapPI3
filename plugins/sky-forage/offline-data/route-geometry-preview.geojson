@@ -1,0 +1,4517 @@
+{
+  "type": "FeatureCollection",
+  "schema": "mappi3.offlineGeoJsonPreview.v1",
+  "offline_safe": true,
+  "network_required": false,
+  "feature_count": 80,
+  "features": [
+    {
+      "type": "Feature",
+      "id": "nh-speck-pond-success-pond-alt",
+      "properties": {
+        "name": "Speck Pond via Success Pond Road NH \u2014 alternate approach",
+        "place": "Success Pond Road, New Hampshire",
+        "difficulty": "Hard",
+        "distanceMiles": 4.8,
+        "safety": "Seed geometry/preview; verify GPX/OSM/official source before hike."
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            -71.112792,
+            44.574767
+          ],
+          [
+            -71.112553,
+            44.574521
+          ],
+          [
+            -71.111188,
+            44.574764
+          ],
+          [
+            -71.10901,
+            44.574876
+          ],
+          [
+            -71.107173,
+            44.574633
+          ],
+          [
+            -71.10588700000001,
+            44.574624
+          ],
+          [
+            -71.10521700000001,
+            44.574119
+          ],
+          [
+            -71.103065,
+            44.573474
+          ],
+          [
+            -71.101805,
+            44.573708
+          ],
+          [
+            -71.100086,
+            44.573754
+          ],
+          [
+            -71.099142,
+            44.573315
+          ],
+          [
+            -71.098223,
+            44.573072
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "hh-ridge",
+      "properties": {
+        "name": "Hocking Hills Ridge Loop",
+        "place": "Logan, Ohio",
+        "difficulty": "Moderate",
+        "distanceMiles": 5.8,
+        "safety": "Seed geometry/preview; verify GPX/OSM/official source before hike."
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            -82.5412,
+            39.4261
+          ],
+          [
+            -82.5387,
+            39.4284
+          ],
+          [
+            -82.5368,
+            39.4316
+          ],
+          [
+            -82.5326,
+            39.433
+          ],
+          [
+            -82.5291,
+            39.4296
+          ],
+          [
+            -82.5412,
+            39.4261
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "rrg-sky",
+      "properties": {
+        "name": "Red River Gorge Skyline",
+        "place": "Slade, Kentucky",
+        "difficulty": "Hard",
+        "distanceMiles": 7.2,
+        "safety": "Seed geometry/preview; verify GPX/OSM/official source before hike."
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            -83.68,
+            37.79
+          ],
+          [
+            -83.66,
+            37.81
+          ],
+          [
+            -83.63,
+            37.84
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "mohican-scout",
+      "properties": {
+        "name": "Mohican River Scout Path",
+        "place": "Loudonville, Ohio",
+        "difficulty": "Easy",
+        "distanceMiles": 3.4,
+        "safety": "Seed geometry/preview; verify GPX/OSM/official source before hike."
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            -82.25,
+            40.6
+          ],
+          [
+            -82.23,
+            40.61
+          ],
+          [
+            -82.21,
+            40.63
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "me-baxter-knifes-edge",
+      "properties": {
+        "name": "Baxter Knife Edge Approach",
+        "place": "Millinocket, Maine",
+        "difficulty": "Hard",
+        "distanceMiles": 5.2,
+        "safety": "Seed geometry/preview; verify GPX/OSM/official source before hike."
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            -68.9213,
+            45.9042
+          ],
+          [
+            -68.9148,
+            45.908394
+          ],
+          [
+            -68.9083,
+            45.90724
+          ],
+          [
+            -68.9018,
+            45.902209
+          ],
+          [
+            -68.8953,
+            45.899717
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "me-acadia-beehive",
+      "properties": {
+        "name": "Acadia Beehive Loop",
+        "place": "Bar Harbor, Maine",
+        "difficulty": "Hard",
+        "distanceMiles": 1.6,
+        "safety": "Seed geometry/preview; verify GPX/OSM/official source before hike."
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            -68.1856,
+            44.3315
+          ],
+          [
+            -68.1791,
+            44.335694
+          ],
+          [
+            -68.1726,
+            44.33454
+          ],
+          [
+            -68.1661,
+            44.329509
+          ],
+          [
+            -68.1596,
+            44.327017
+          ],
+          [
+            -68.1531,
+            44.330243
+          ],
+          [
+            -68.1856,
+            44.3315
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "me-acadia-precipice",
+      "properties": {
+        "name": "Acadia Precipice Trail",
+        "place": "Bar Harbor, Maine",
+        "difficulty": "Hard",
+        "distanceMiles": 2.1,
+        "safety": "Seed geometry/preview; verify GPX/OSM/official source before hike."
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            -68.1887,
+            44.3498
+          ],
+          [
+            -68.1822,
+            44.353994
+          ],
+          [
+            -68.1757,
+            44.35284
+          ],
+          [
+            -68.1692,
+            44.347809
+          ],
+          [
+            -68.1627,
+            44.345317
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "me-camden-maiden-cliff",
+      "properties": {
+        "name": "Camden Hills Maiden Cliff",
+        "place": "Camden, Maine",
+        "difficulty": "Moderate",
+        "distanceMiles": 2.8,
+        "safety": "Seed geometry/preview; verify GPX/OSM/official source before hike."
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            -69.0641,
+            44.2475
+          ],
+          [
+            -69.0576,
+            44.251694
+          ],
+          [
+            -69.0511,
+            44.25054
+          ],
+          [
+            -69.0446,
+            44.245509
+          ],
+          [
+            -69.0381,
+            44.243017
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "me-grafton-table-rock",
+      "properties": {
+        "name": "Grafton Notch Table Rock",
+        "place": "Newry, Maine",
+        "difficulty": "Moderate",
+        "distanceMiles": 0.81,
+        "safety": "Seed geometry/preview; verify GPX/OSM/official source before hike."
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            -70.945077,
+            44.591021
+          ],
+          [
+            -70.944797,
+            44.590848
+          ],
+          [
+            -70.944717,
+            44.590811
+          ],
+          [
+            -70.944672,
+            44.590813
+          ],
+          [
+            -70.94467,
+            44.590865
+          ],
+          [
+            -70.944635,
+            44.590872
+          ],
+          [
+            -70.944347,
+            44.590547
+          ],
+          [
+            -70.944278,
+            44.590616
+          ],
+          [
+            -70.944189,
+            44.590474
+          ],
+          [
+            -70.944087,
+            44.590133
+          ],
+          [
+            -70.943844,
+            44.589668
+          ],
+          [
+            -70.943822,
+            44.589592
+          ],
+          [
+            -70.943871,
+            44.589459
+          ],
+          [
+            -70.943733,
+            44.589306
+          ],
+          [
+            -70.943327,
+            44.588983
+          ],
+          [
+            -70.943247,
+            44.589011
+          ],
+          [
+            -70.943216,
+            44.588967
+          ],
+          [
+            -70.943198,
+            44.588875
+          ],
+          [
+            -70.943163,
+            44.588739
+          ],
+          [
+            -70.94282,
+            44.588485
+          ],
+          [
+            -70.942722,
+            44.588482
+          ],
+          [
+            -70.942615,
+            44.588263
+          ],
+          [
+            -70.942608,
+            44.5882
+          ],
+          [
+            -70.94255,
+            44.588168
+          ],
+          [
+            -70.942579,
+            44.588098
+          ],
+          [
+            -70.942535,
+            44.588093
+          ],
+          [
+            -70.942526,
+            44.587968
+          ],
+          [
+            -70.94231,
+            44.587763
+          ],
+          [
+            -70.942194,
+            44.58783
+          ],
+          [
+            -70.942172,
+            44.587792
+          ],
+          [
+            -70.942185,
+            44.587743
+          ],
+          [
+            -70.94194,
+            44.587614
+          ],
+          [
+            -70.941844,
+            44.587564
+          ],
+          [
+            -70.941733,
+            44.587465
+          ],
+          [
+            -70.941669,
+            44.587416
+          ],
+          [
+            -70.941546,
+            44.587422
+          ],
+          [
+            -70.941368,
+            44.5875
+          ],
+          [
+            -70.941292,
+            44.587553
+          ],
+          [
+            -70.941265,
+            44.587587
+          ],
+          [
+            -70.941056,
+            44.587587
+          ],
+          [
+            -70.940889,
+            44.587529
+          ],
+          [
+            -70.940869,
+            44.587537
+          ],
+          [
+            -70.940782,
+            44.587507
+          ],
+          [
+            -70.940731,
+            44.587524
+          ],
+          [
+            -70.940664,
+            44.587519
+          ],
+          [
+            -70.940542,
+            44.587473
+          ],
+          [
+            -70.940511,
+            44.587492
+          ],
+          [
+            -70.940649,
+            44.587557
+          ],
+          [
+            -70.9408,
+            44.587598
+          ],
+          [
+            -70.940733,
+            44.587659
+          ],
+          [
+            -70.940624,
+            44.587752
+          ],
+          [
+            -70.940511,
+            44.587752
+          ],
+          [
+            -70.940415,
+            44.58782
+          ],
+          [
+            -70.940339,
+            44.587871
+          ],
+          [
+            -70.940219,
+            44.587762
+          ],
+          [
+            -70.940114,
+            44.587762
+          ],
+          [
+            -70.940061,
+            44.587708
+          ],
+          [
+            -70.940012,
+            44.587665
+          ],
+          [
+            -70.939938,
+            44.587694
+          ],
+          [
+            -70.939865,
+            44.587728
+          ],
+          [
+            -70.939778,
+            44.587751
+          ],
+          [
+            -70.939751,
+            44.587782
+          ],
+          [
+            -70.939709,
+            44.587762
+          ],
+          [
+            -70.93968,
+            44.587792
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "me-tumbledown-brook",
+      "properties": {
+        "name": "Tumbledown Brook Trail",
+        "place": "Weld, Maine",
+        "difficulty": "Hard",
+        "distanceMiles": 5.6,
+        "safety": "Seed geometry/preview; verify GPX/OSM/official source before hike."
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            -70.5387,
+            44.7232
+          ],
+          [
+            -70.5322,
+            44.727394
+          ],
+          [
+            -70.5257,
+            44.72624
+          ],
+          [
+            -70.5192,
+            44.721209
+          ],
+          [
+            -70.5127,
+            44.718717
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "me-bradbury-summit",
+      "properties": {
+        "name": "Bradbury Mountain Summit Loop",
+        "place": "Pownal, Maine",
+        "difficulty": "Easy",
+        "distanceMiles": 1.4,
+        "safety": "Seed geometry/preview; verify GPX/OSM/official source before hike."
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            -70.1804,
+            43.9045
+          ],
+          [
+            -70.1739,
+            43.908694
+          ],
+          [
+            -70.1674,
+            43.90754
+          ],
+          [
+            -70.1609,
+            43.902509
+          ],
+          [
+            -70.1544,
+            43.900017
+          ],
+          [
+            -70.1479,
+            43.903243
+          ],
+          [
+            -70.1804,
+            43.9045
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "me-sebago-douglas",
+      "properties": {
+        "name": "Sebago Douglas Mountain Loop",
+        "place": "Sebago, Maine",
+        "difficulty": "Moderate",
+        "distanceMiles": 2.3,
+        "safety": "Seed geometry/preview; verify GPX/OSM/official source before hike."
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            -70.7049,
+            43.8812
+          ],
+          [
+            -70.6984,
+            43.885394
+          ],
+          [
+            -70.6919,
+            43.88424
+          ],
+          [
+            -70.6854,
+            43.879209
+          ],
+          [
+            -70.6789,
+            43.876717
+          ],
+          [
+            -70.6724,
+            43.879943
+          ],
+          [
+            -70.7049,
+            43.8812
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "nh-franconia-ridge",
+      "properties": {
+        "name": "Franconia Ridge Loop",
+        "place": "Lincoln, New Hampshire",
+        "difficulty": "Hard",
+        "distanceMiles": 8.9,
+        "safety": "Seed geometry/preview; verify GPX/OSM/official source before hike."
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            -71.6819,
+            44.1428
+          ],
+          [
+            -71.6754,
+            44.146994
+          ],
+          [
+            -71.6689,
+            44.14584
+          ],
+          [
+            -71.6624,
+            44.140809
+          ],
+          [
+            -71.6559,
+            44.138317
+          ],
+          [
+            -71.6494,
+            44.141543
+          ],
+          [
+            -71.6819,
+            44.1428
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "nh-mount-major",
+      "properties": {
+        "name": "Mount Major Main Trail",
+        "place": "Alton, New Hampshire",
+        "difficulty": "Moderate",
+        "distanceMiles": 3.8,
+        "safety": "Seed geometry/preview; verify GPX/OSM/official source before hike."
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            -71.2713,
+            43.5127
+          ],
+          [
+            -71.2648,
+            43.516894
+          ],
+          [
+            -71.2583,
+            43.51574
+          ],
+          [
+            -71.2518,
+            43.510709
+          ],
+          [
+            -71.2453,
+            43.508217
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "vt-camel-hump",
+      "properties": {
+        "name": "Camel\u2019s Hump Burrows Trail",
+        "place": "Huntington, Vermont",
+        "difficulty": "Hard",
+        "distanceMiles": 6.0,
+        "safety": "Seed geometry/preview; verify GPX/OSM/official source before hike."
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            -72.8868,
+            44.3196
+          ],
+          [
+            -72.8803,
+            44.323794
+          ],
+          [
+            -72.8738,
+            44.32264
+          ],
+          [
+            -72.8673,
+            44.317609
+          ],
+          [
+            -72.8608,
+            44.315117
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "ma-wachusett-loop",
+      "properties": {
+        "name": "Mount Wachusett Loop",
+        "place": "Princeton, Massachusetts",
+        "difficulty": "Moderate",
+        "distanceMiles": 3.9,
+        "safety": "Seed geometry/preview; verify GPX/OSM/official source before hike."
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            -71.8879,
+            42.4883
+          ],
+          [
+            -71.8814,
+            42.492494
+          ],
+          [
+            -71.8749,
+            42.49134
+          ],
+          [
+            -71.8684,
+            42.486309
+          ],
+          [
+            -71.8619,
+            42.483817
+          ],
+          [
+            -71.8554,
+            42.487043
+          ],
+          [
+            -71.8879,
+            42.4883
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "ny-breakneck-ridge",
+      "properties": {
+        "name": "Breakneck Ridge Short Loop",
+        "place": "Cold Spring, New York",
+        "difficulty": "Hard",
+        "distanceMiles": 3.2,
+        "safety": "Seed geometry/preview; verify GPX/OSM/official source before hike."
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            -73.9787,
+            41.4439
+          ],
+          [
+            -73.9722,
+            41.448094
+          ],
+          [
+            -73.9657,
+            41.44694
+          ],
+          [
+            -73.9592,
+            41.441909
+          ],
+          [
+            -73.9527,
+            41.439417
+          ],
+          [
+            -73.9462,
+            41.442643
+          ],
+          [
+            -73.9787,
+            41.4439
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "pa-ricketts-falls",
+      "properties": {
+        "name": "Ricketts Glen Falls Loop",
+        "place": "Benton, Pennsylvania",
+        "difficulty": "Hard",
+        "distanceMiles": 7.1,
+        "safety": "Seed geometry/preview; verify GPX/OSM/official source before hike."
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            -76.2922,
+            41.3292
+          ],
+          [
+            -76.2857,
+            41.333394
+          ],
+          [
+            -76.2792,
+            41.33224
+          ],
+          [
+            -76.2727,
+            41.327209
+          ],
+          [
+            -76.2662,
+            41.324717
+          ],
+          [
+            -76.2597,
+            41.327943
+          ],
+          [
+            -76.2922,
+            41.3292
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "wv-dolly-sods-bear-rocks",
+      "properties": {
+        "name": "Dolly Sods Bear Rocks",
+        "place": "Davis, West Virginia",
+        "difficulty": "Moderate",
+        "distanceMiles": 4.7,
+        "safety": "Seed geometry/preview; verify GPX/OSM/official source before hike."
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            -79.3033,
+            39.0638
+          ],
+          [
+            -79.2968,
+            39.067994
+          ],
+          [
+            -79.2903,
+            39.06684
+          ],
+          [
+            -79.2838,
+            39.061809
+          ],
+          [
+            -79.2773,
+            39.059317
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "ky-natural-bridge-loop",
+      "properties": {
+        "name": "Natural Bridge Original Trail",
+        "place": "Slade, Kentucky",
+        "difficulty": "Moderate",
+        "distanceMiles": 2.5,
+        "safety": "Seed geometry/preview; verify GPX/OSM/official source before hike."
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            -83.6854,
+            37.7773
+          ],
+          [
+            -83.6789,
+            37.781494
+          ],
+          [
+            -83.6724,
+            37.78034
+          ],
+          [
+            -83.6659,
+            37.775309
+          ],
+          [
+            -83.6594,
+            37.772817
+          ],
+          [
+            -83.6529,
+            37.776043
+          ],
+          [
+            -83.6854,
+            37.7773
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "oh-old-mans-cave",
+      "properties": {
+        "name": "Old Man\u2019s Cave Gorge Trail",
+        "place": "Logan, Ohio",
+        "difficulty": "Easy",
+        "distanceMiles": 1.9,
+        "safety": "Seed geometry/preview; verify GPX/OSM/official source before hike."
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            -82.5402,
+            39.4372
+          ],
+          [
+            -82.5337,
+            39.441394
+          ],
+          [
+            -82.5272,
+            39.44024
+          ],
+          [
+            -82.5207,
+            39.435209
+          ],
+          [
+            -82.5142,
+            39.432717
+          ],
+          [
+            -82.5077,
+            39.435943
+          ],
+          [
+            -82.5402,
+            39.4372
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "oh-ash-cave-rim",
+      "properties": {
+        "name": "Ash Cave Rim and Gorge",
+        "place": "Logan, Ohio",
+        "difficulty": "Easy",
+        "distanceMiles": 1.2,
+        "safety": "Seed geometry/preview; verify GPX/OSM/official source before hike."
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            -82.5451,
+            39.3957
+          ],
+          [
+            -82.5386,
+            39.399894
+          ],
+          [
+            -82.5321,
+            39.39874
+          ],
+          [
+            -82.5256,
+            39.393709
+          ],
+          [
+            -82.5191,
+            39.391217
+          ],
+          [
+            -82.5126,
+            39.394443
+          ],
+          [
+            -82.5451,
+            39.3957
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "me-pleasant-mountain",
+      "properties": {
+        "name": "Pleasant Mountain Ledges Trail",
+        "place": "Bridgton, Maine",
+        "difficulty": "Moderate",
+        "distanceMiles": 3.6,
+        "safety": "Seed geometry/preview; verify GPX/OSM/official source before hike."
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            -70.8158,
+            44.0586
+          ],
+          [
+            -70.8093,
+            44.062794
+          ],
+          [
+            -70.8028,
+            44.06164
+          ],
+          [
+            -70.7963,
+            44.056609
+          ],
+          [
+            -70.7898,
+            44.054117
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "me-moxie-falls",
+      "properties": {
+        "name": "Moxie Falls Trail",
+        "place": "The Forks, Maine",
+        "difficulty": "Easy",
+        "distanceMiles": 1.7,
+        "safety": "Seed geometry/preview; verify GPX/OSM/official source before hike."
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            -69.9511,
+            45.3182
+          ],
+          [
+            -69.9446,
+            45.322394
+          ],
+          [
+            -69.9381,
+            45.32124
+          ],
+          [
+            -69.9316,
+            45.316209
+          ],
+          [
+            -69.9251,
+            45.313717
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "la-thorncrag-loop",
+      "properties": {
+        "name": "Thorncrag Bird Sanctuary Loop",
+        "place": "Lewiston, Maine",
+        "difficulty": "Easy",
+        "distanceMiles": 2.1,
+        "safety": "Seed geometry/preview; verify GPX/OSM/official source before hike."
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            -70.1788,
+            44.1059
+          ],
+          [
+            -70.1733,
+            44.109551
+          ],
+          [
+            -70.1678,
+            44.108883
+          ],
+          [
+            -70.1623,
+            44.104686
+          ],
+          [
+            -70.1568,
+            44.101925
+          ],
+          [
+            -70.1513,
+            44.103867
+          ],
+          [
+            -70.1788,
+            44.1059
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "la-mount-apatite-loop",
+      "properties": {
+        "name": "Mount Apatite Park Loop",
+        "place": "Auburn, Maine",
+        "difficulty": "Easy",
+        "distanceMiles": 3.2,
+        "safety": "Seed geometry/preview; verify GPX/OSM/official source before hike."
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            -70.2608,
+            44.0791
+          ],
+          [
+            -70.2553,
+            44.082751
+          ],
+          [
+            -70.2498,
+            44.082083
+          ],
+          [
+            -70.2443,
+            44.077886
+          ],
+          [
+            -70.2388,
+            44.075125
+          ],
+          [
+            -70.2333,
+            44.077067
+          ],
+          [
+            -70.2608,
+            44.0791
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "la-androscoggin-riverlands",
+      "properties": {
+        "name": "Androscoggin Riverlands Homestead Trail",
+        "place": "Turner, Maine",
+        "difficulty": "Moderate",
+        "distanceMiles": 5.4,
+        "safety": "Seed geometry/preview; verify GPX/OSM/official source before hike."
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            -70.2018,
+            44.2167
+          ],
+          [
+            -70.1963,
+            44.220351
+          ],
+          [
+            -70.1908,
+            44.219683
+          ],
+          [
+            -70.1853,
+            44.215486
+          ],
+          [
+            -70.1798,
+            44.212725
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "la-riverwalk-loop",
+      "properties": {
+        "name": "Lewiston-Auburn Riverwalk",
+        "place": "Lewiston / Auburn, Maine",
+        "difficulty": "Easy",
+        "distanceMiles": 2.4,
+        "safety": "Seed geometry/preview; verify GPX/OSM/official source before hike."
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            -70.2212,
+            44.0964
+          ],
+          [
+            -70.2157,
+            44.100051
+          ],
+          [
+            -70.2102,
+            44.099383
+          ],
+          [
+            -70.2047,
+            44.095186
+          ],
+          [
+            -70.1992,
+            44.092425
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "la-range-ponds-loop",
+      "properties": {
+        "name": "Range Ponds Shoreline Loop",
+        "place": "Poland, Maine",
+        "difficulty": "Easy",
+        "distanceMiles": 2.3,
+        "safety": "Seed geometry/preview; verify GPX/OSM/official source before hike."
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            -70.4016,
+            44.0308
+          ],
+          [
+            -70.3961,
+            44.034451
+          ],
+          [
+            -70.3906,
+            44.033783
+          ],
+          [
+            -70.3851,
+            44.029586
+          ],
+          [
+            -70.3796,
+            44.026825
+          ],
+          [
+            -70.3741,
+            44.028767
+          ],
+          [
+            -70.4016,
+            44.0308
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "la-david-rancourt-preserve",
+      "properties": {
+        "name": "David Rancourt River Preserve",
+        "place": "Lewiston, Maine",
+        "difficulty": "Easy",
+        "distanceMiles": 1.8,
+        "safety": "Seed geometry/preview; verify GPX/OSM/official source before hike."
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            -70.1615,
+            44.0685
+          ],
+          [
+            -70.156,
+            44.072151
+          ],
+          [
+            -70.1505,
+            44.071483
+          ],
+          [
+            -70.145,
+            44.067286
+          ],
+          [
+            -70.1395,
+            44.064525
+          ],
+          [
+            -70.134,
+            44.066467
+          ],
+          [
+            -70.1615,
+            44.0685
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "la-sherwood-forest",
+      "properties": {
+        "name": "Sherwood Forest Conservation Loop",
+        "place": "Auburn, Maine",
+        "difficulty": "Easy",
+        "distanceMiles": 1.6,
+        "safety": "Seed geometry/preview; verify GPX/OSM/official source before hike."
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            -70.2384,
+            44.0717
+          ],
+          [
+            -70.2329,
+            44.075351
+          ],
+          [
+            -70.2274,
+            44.074683
+          ],
+          [
+            -70.2219,
+            44.070486
+          ],
+          [
+            -70.2164,
+            44.067725
+          ],
+          [
+            -70.2109,
+            44.069667
+          ],
+          [
+            -70.2384,
+            44.0717
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "la-lake-auburn-overlook",
+      "properties": {
+        "name": "Lake Auburn Overlook Walk",
+        "place": "Auburn, Maine",
+        "difficulty": "Easy",
+        "distanceMiles": 1.9,
+        "safety": "Seed geometry/preview; verify GPX/OSM/official source before hike."
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            -70.2397,
+            44.1235
+          ],
+          [
+            -70.2342,
+            44.127151
+          ],
+          [
+            -70.2287,
+            44.126483
+          ],
+          [
+            -70.2232,
+            44.122286
+          ],
+          [
+            -70.2177,
+            44.119525
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "me-tumbledown-loop-trail",
+      "properties": {
+        "name": "Tumbledown Loop Trail",
+        "place": "Weld, Maine",
+        "difficulty": "Hard",
+        "distanceMiles": 4.9,
+        "safety": "Seed geometry/preview; verify GPX/OSM/official source before hike."
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            -70.5276,
+            44.7194
+          ],
+          [
+            -70.5221,
+            44.723051
+          ],
+          [
+            -70.5166,
+            44.722383
+          ],
+          [
+            -70.5111,
+            44.718186
+          ],
+          [
+            -70.5056,
+            44.715425
+          ],
+          [
+            -70.5001,
+            44.717367
+          ],
+          [
+            -70.5276,
+            44.7194
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "me-tumbledown-parker-ridge",
+      "properties": {
+        "name": "Tumbledown Parker Ridge Trail",
+        "place": "Weld, Maine",
+        "difficulty": "Hard",
+        "distanceMiles": 5.1,
+        "safety": "Seed geometry/preview; verify GPX/OSM/official source before hike."
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            -70.5239,
+            44.7208
+          ],
+          [
+            -70.5184,
+            44.724451
+          ],
+          [
+            -70.5129,
+            44.723783
+          ],
+          [
+            -70.5074,
+            44.719586
+          ],
+          [
+            -70.5019,
+            44.716825
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "me-little-jackson",
+      "properties": {
+        "name": "Little Jackson Mountain Trail",
+        "place": "Weld, Maine",
+        "difficulty": "Hard",
+        "distanceMiles": 6.3,
+        "safety": "Seed geometry/preview; verify GPX/OSM/official source before hike."
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            -70.5522,
+            44.7558
+          ],
+          [
+            -70.5467,
+            44.759451
+          ],
+          [
+            -70.5412,
+            44.758783
+          ],
+          [
+            -70.5357,
+            44.754586
+          ],
+          [
+            -70.5302,
+            44.751825
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "me-blueberry-mountain-stone-house",
+      "properties": {
+        "name": "Blueberry Mountain Stone House Trail",
+        "place": "Evans Notch / Stow, Maine",
+        "difficulty": "Moderate",
+        "distanceMiles": 4.0,
+        "safety": "Seed geometry/preview; verify GPX/OSM/official source before hike."
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            -70.9717,
+            44.2805
+          ],
+          [
+            -70.9662,
+            44.284151
+          ],
+          [
+            -70.9607,
+            44.283483
+          ],
+          [
+            -70.9552,
+            44.279286
+          ],
+          [
+            -70.9497,
+            44.276525
+          ],
+          [
+            -70.9442,
+            44.278467
+          ],
+          [
+            -70.9717,
+            44.2805
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "me-mount-blue-trail",
+      "properties": {
+        "name": "Mount Blue Trail",
+        "place": "Weld, Maine",
+        "difficulty": "Hard",
+        "distanceMiles": 3.6,
+        "safety": "Seed geometry/preview; verify GPX/OSM/official source before hike."
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            -70.4076,
+            44.7105
+          ],
+          [
+            -70.4021,
+            44.714151
+          ],
+          [
+            -70.3966,
+            44.713483
+          ],
+          [
+            -70.3911,
+            44.709286
+          ],
+          [
+            -70.3856,
+            44.706525
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "me-center-hill-nature",
+      "properties": {
+        "name": "Center Hill Nature Trail",
+        "place": "Mount Blue State Park, Maine",
+        "difficulty": "Easy",
+        "distanceMiles": 0.9,
+        "safety": "Seed geometry/preview; verify GPX/OSM/official source before hike."
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            -70.4145,
+            44.7076
+          ],
+          [
+            -70.409,
+            44.711251
+          ],
+          [
+            -70.4035,
+            44.710583
+          ],
+          [
+            -70.398,
+            44.706386
+          ],
+          [
+            -70.3925,
+            44.703625
+          ],
+          [
+            -70.387,
+            44.705567
+          ],
+          [
+            -70.4145,
+            44.7076
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "me-speck-pond-route26-at",
+      "properties": {
+        "name": "Speck Pond via Route 26 Newry / Grafton Notch AT",
+        "place": "Route 26 trailhead near Table Rock, Newry, Maine",
+        "difficulty": "Hard",
+        "distanceMiles": 3.09,
+        "safety": "Seed geometry/preview; verify GPX/OSM/official source before hike."
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            -71.022792,
+            44.559767
+          ],
+          [
+            -71.022553,
+            44.559521
+          ],
+          [
+            -71.021188,
+            44.559764
+          ],
+          [
+            -71.01901,
+            44.559876
+          ],
+          [
+            -71.017173,
+            44.559633
+          ],
+          [
+            -71.015887,
+            44.559624
+          ],
+          [
+            -71.015217,
+            44.559119
+          ],
+          [
+            -71.013065,
+            44.558474
+          ],
+          [
+            -71.011805,
+            44.558708
+          ],
+          [
+            -71.010086,
+            44.558754
+          ],
+          [
+            -71.009142,
+            44.558315
+          ],
+          [
+            -71.008223,
+            44.558072
+          ],
+          [
+            -71.006412,
+            44.557773
+          ],
+          [
+            -71.005349,
+            44.557614
+          ],
+          [
+            -71.004247,
+            44.557773
+          ],
+          [
+            -71.003053,
+            44.55723
+          ],
+          [
+            -71.002254,
+            44.557165
+          ],
+          [
+            -71.001793,
+            44.557127
+          ],
+          [
+            -71.000218,
+            44.557212
+          ],
+          [
+            -70.998867,
+            44.557249
+          ],
+          [
+            -70.99863,
+            44.557342
+          ],
+          [
+            -70.998814,
+            44.55766
+          ],
+          [
+            -70.999123,
+            44.55786
+          ],
+          [
+            -70.999294,
+            44.558153
+          ],
+          [
+            -70.999662,
+            44.558673
+          ],
+          [
+            -70.999628,
+            44.559016
+          ],
+          [
+            -70.999706,
+            44.559876
+          ],
+          [
+            -70.999575,
+            44.560662
+          ],
+          [
+            -70.999628,
+            44.561307
+          ],
+          [
+            -70.999414,
+            44.561849
+          ],
+          [
+            -70.998029,
+            44.562513
+          ],
+          [
+            -70.996847,
+            44.562913
+          ],
+          [
+            -70.995318,
+            44.56318
+          ],
+          [
+            -70.994366,
+            44.562946
+          ],
+          [
+            -70.993274,
+            44.562435
+          ],
+          [
+            -70.992618,
+            44.561868
+          ],
+          [
+            -70.990433,
+            44.56239
+          ],
+          [
+            -70.988748,
+            44.563013
+          ],
+          [
+            -70.986142,
+            44.563202
+          ],
+          [
+            -70.98466,
+            44.562802
+          ],
+          [
+            -70.983505,
+            44.562101
+          ],
+          [
+            -70.981289,
+            44.561946
+          ],
+          [
+            -70.979947,
+            44.562068
+          ],
+          [
+            -70.979063,
+            44.562001
+          ],
+          [
+            -70.97862,
+            44.561968
+          ],
+          [
+            -70.977918,
+            44.562257
+          ],
+          [
+            -70.977933,
+            44.562824
+          ],
+          [
+            -70.977075,
+            44.563513
+          ],
+          [
+            -70.975515,
+            44.564147
+          ],
+          [
+            -70.975718,
+            44.564681
+          ],
+          [
+            -70.974688,
+            44.565092
+          ],
+          [
+            -70.974266,
+            44.564892
+          ],
+          [
+            -70.973591,
+            44.564676
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "me-old-speck-at-route26",
+      "properties": {
+        "name": "Old Speck via Appalachian Trail",
+        "place": "Grafton Notch, Maine",
+        "difficulty": "Hard",
+        "distanceMiles": 3.01,
+        "safety": "Seed geometry/preview; verify GPX/OSM/official source before hike."
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            -70.947076,
+            44.589978
+          ],
+          [
+            -70.947366,
+            44.590249
+          ],
+          [
+            -70.947615,
+            44.590362
+          ],
+          [
+            -70.947915,
+            44.59046
+          ],
+          [
+            -70.948181,
+            44.590549
+          ],
+          [
+            -70.948561,
+            44.590625
+          ],
+          [
+            -70.948863,
+            44.59066
+          ],
+          [
+            -70.949711,
+            44.590495
+          ],
+          [
+            -70.95012,
+            44.590404
+          ],
+          [
+            -70.950337,
+            44.590179
+          ],
+          [
+            -70.950665,
+            44.589934
+          ],
+          [
+            -70.950788,
+            44.58972
+          ],
+          [
+            -70.951037,
+            44.588779
+          ],
+          [
+            -70.951003,
+            44.58832
+          ],
+          [
+            -70.951147,
+            44.58823
+          ],
+          [
+            -70.951705,
+            44.588391
+          ],
+          [
+            -70.952242,
+            44.588656
+          ],
+          [
+            -70.952448,
+            44.588704
+          ],
+          [
+            -70.952725,
+            44.588895
+          ],
+          [
+            -70.953186,
+            44.588981
+          ],
+          [
+            -70.953245,
+            44.588876
+          ],
+          [
+            -70.953159,
+            44.588341
+          ],
+          [
+            -70.95343,
+            44.588347
+          ],
+          [
+            -70.954133,
+            44.588698
+          ],
+          [
+            -70.954355,
+            44.588735
+          ],
+          [
+            -70.954505,
+            44.588798
+          ],
+          [
+            -70.954669,
+            44.588907
+          ],
+          [
+            -70.954827,
+            44.588916
+          ],
+          [
+            -70.955039,
+            44.588853
+          ],
+          [
+            -70.955297,
+            44.588811
+          ],
+          [
+            -70.955503,
+            44.588727
+          ],
+          [
+            -70.955546,
+            44.588299
+          ],
+          [
+            -70.95575,
+            44.588154
+          ],
+          [
+            -70.95619,
+            44.588251
+          ],
+          [
+            -70.956458,
+            44.588395
+          ],
+          [
+            -70.956868,
+            44.588782
+          ],
+          [
+            -70.95707,
+            44.588874
+          ],
+          [
+            -70.957666,
+            44.588751
+          ],
+          [
+            -70.958384,
+            44.588689
+          ],
+          [
+            -70.958593,
+            44.588591
+          ],
+          [
+            -70.958797,
+            44.58866
+          ],
+          [
+            -70.958861,
+            44.588779
+          ],
+          [
+            -70.958821,
+            44.588994
+          ],
+          [
+            -70.958376,
+            44.589176
+          ],
+          [
+            -70.958092,
+            44.589396
+          ],
+          [
+            -70.958043,
+            44.589484
+          ],
+          [
+            -70.958097,
+            44.589604
+          ],
+          [
+            -70.957909,
+            44.589638
+          ],
+          [
+            -70.957571,
+            44.589619
+          ],
+          [
+            -70.957193,
+            44.589579
+          ],
+          [
+            -70.956836,
+            44.589869
+          ],
+          [
+            -70.956839,
+            44.590146
+          ],
+          [
+            -70.956842,
+            44.590916
+          ],
+          [
+            -70.956818,
+            44.591216
+          ],
+          [
+            -70.957016,
+            44.591546
+          ],
+          [
+            -70.957204,
+            44.591787
+          ],
+          [
+            -70.957402,
+            44.591848
+          ],
+          [
+            -70.957703,
+            44.591745
+          ],
+          [
+            -70.957968,
+            44.591764
+          ],
+          [
+            -70.95803,
+            44.591967
+          ],
+          [
+            -70.958167,
+            44.592228
+          ],
+          [
+            -70.958352,
+            44.592259
+          ],
+          [
+            -70.959122,
+            44.591986
+          ],
+          [
+            -70.960039,
+            44.592003
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "me-eyebrow-old-speck-loop",
+      "properties": {
+        "name": "Eyebrow + Old Speck Loop",
+        "place": "Grafton Notch, Maine",
+        "difficulty": "Hard",
+        "distanceMiles": 5.43,
+        "safety": "Seed geometry/preview; verify GPX/OSM/official source before hike."
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            -70.956836,
+            44.589869
+          ],
+          [
+            -70.956791,
+            44.589868
+          ],
+          [
+            -70.956544,
+            44.589902
+          ],
+          [
+            -70.956397,
+            44.58991
+          ],
+          [
+            -70.956331,
+            44.589965
+          ],
+          [
+            -70.956125,
+            44.589982
+          ],
+          [
+            -70.955958,
+            44.590084
+          ],
+          [
+            -70.955864,
+            44.590208
+          ],
+          [
+            -70.955826,
+            44.590384
+          ],
+          [
+            -70.955676,
+            44.590481
+          ],
+          [
+            -70.955543,
+            44.590622
+          ],
+          [
+            -70.955718,
+            44.590647
+          ],
+          [
+            -70.955913,
+            44.590694
+          ],
+          [
+            -70.956042,
+            44.590744
+          ],
+          [
+            -70.956202,
+            44.590821
+          ],
+          [
+            -70.956341,
+            44.590913
+          ],
+          [
+            -70.956254,
+            44.591034
+          ],
+          [
+            -70.955951,
+            44.591119
+          ],
+          [
+            -70.95578,
+            44.591178
+          ],
+          [
+            -70.955679,
+            44.5913
+          ],
+          [
+            -70.955568,
+            44.591404
+          ],
+          [
+            -70.955495,
+            44.591536
+          ],
+          [
+            -70.955254,
+            44.591551
+          ],
+          [
+            -70.955216,
+            44.591625
+          ],
+          [
+            -70.955066,
+            44.591841
+          ],
+          [
+            -70.954944,
+            44.592022
+          ],
+          [
+            -70.954909,
+            44.592144
+          ],
+          [
+            -70.95501,
+            44.592387
+          ],
+          [
+            -70.955202,
+            44.592553
+          ],
+          [
+            -70.95524,
+            44.592645
+          ],
+          [
+            -70.95524,
+            44.592836
+          ],
+          [
+            -70.955184,
+            44.59309
+          ],
+          [
+            -70.955184,
+            44.593238
+          ],
+          [
+            -70.955153,
+            44.593385
+          ],
+          [
+            -70.954944,
+            44.593574
+          ],
+          [
+            -70.954724,
+            44.593797
+          ],
+          [
+            -70.954522,
+            44.593939
+          ],
+          [
+            -70.95439,
+            44.59412
+          ],
+          [
+            -70.954278,
+            44.594301
+          ],
+          [
+            -70.953936,
+            44.59446
+          ],
+          [
+            -70.953678,
+            44.594658
+          ],
+          [
+            -70.953532,
+            44.594738
+          ],
+          [
+            -70.953529,
+            44.594869
+          ],
+          [
+            -70.953497,
+            44.595048
+          ],
+          [
+            -70.953407,
+            44.595132
+          ],
+          [
+            -70.953393,
+            44.595249
+          ],
+          [
+            -70.953323,
+            44.595391
+          ],
+          [
+            -70.953253,
+            44.595512
+          ],
+          [
+            -70.953089,
+            44.595532
+          ],
+          [
+            -70.952915,
+            44.59545
+          ],
+          [
+            -70.952786,
+            44.595311
+          ],
+          [
+            -70.952716,
+            44.595261
+          ],
+          [
+            -70.952427,
+            44.595247
+          ],
+          [
+            -70.952155,
+            44.595172
+          ],
+          [
+            -70.951946,
+            44.595147
+          ],
+          [
+            -70.951835,
+            44.595142
+          ],
+          [
+            -70.951713,
+            44.594924
+          ],
+          [
+            -70.951692,
+            44.594822
+          ],
+          [
+            -70.951549,
+            44.59474
+          ],
+          [
+            -70.951734,
+            44.594517
+          ],
+          [
+            -70.951706,
+            44.594373
+          ],
+          [
+            -70.95158,
+            44.594313
+          ],
+          [
+            -70.951496,
+            44.594197
+          ],
+          [
+            -70.951493,
+            44.594147
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "me-table-rock-grafton-notch",
+      "properties": {
+        "name": "Table Rock Trail",
+        "place": "Grafton Notch, Maine",
+        "difficulty": "Moderate",
+        "distanceMiles": 0.81,
+        "safety": "Seed geometry/preview; verify GPX/OSM/official source before hike."
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            -70.945077,
+            44.591021
+          ],
+          [
+            -70.944797,
+            44.590848
+          ],
+          [
+            -70.944717,
+            44.590811
+          ],
+          [
+            -70.944672,
+            44.590813
+          ],
+          [
+            -70.94467,
+            44.590865
+          ],
+          [
+            -70.944635,
+            44.590872
+          ],
+          [
+            -70.944347,
+            44.590547
+          ],
+          [
+            -70.944278,
+            44.590616
+          ],
+          [
+            -70.944189,
+            44.590474
+          ],
+          [
+            -70.944087,
+            44.590133
+          ],
+          [
+            -70.943844,
+            44.589668
+          ],
+          [
+            -70.943822,
+            44.589592
+          ],
+          [
+            -70.943871,
+            44.589459
+          ],
+          [
+            -70.943733,
+            44.589306
+          ],
+          [
+            -70.943327,
+            44.588983
+          ],
+          [
+            -70.943247,
+            44.589011
+          ],
+          [
+            -70.943216,
+            44.588967
+          ],
+          [
+            -70.943198,
+            44.588875
+          ],
+          [
+            -70.943163,
+            44.588739
+          ],
+          [
+            -70.94282,
+            44.588485
+          ],
+          [
+            -70.942722,
+            44.588482
+          ],
+          [
+            -70.942615,
+            44.588263
+          ],
+          [
+            -70.942608,
+            44.5882
+          ],
+          [
+            -70.94255,
+            44.588168
+          ],
+          [
+            -70.942579,
+            44.588098
+          ],
+          [
+            -70.942535,
+            44.588093
+          ],
+          [
+            -70.942526,
+            44.587968
+          ],
+          [
+            -70.94231,
+            44.587763
+          ],
+          [
+            -70.942194,
+            44.58783
+          ],
+          [
+            -70.942172,
+            44.587792
+          ],
+          [
+            -70.942185,
+            44.587743
+          ],
+          [
+            -70.94194,
+            44.587614
+          ],
+          [
+            -70.941844,
+            44.587564
+          ],
+          [
+            -70.941733,
+            44.587465
+          ],
+          [
+            -70.941669,
+            44.587416
+          ],
+          [
+            -70.941546,
+            44.587422
+          ],
+          [
+            -70.941368,
+            44.5875
+          ],
+          [
+            -70.941292,
+            44.587553
+          ],
+          [
+            -70.941265,
+            44.587587
+          ],
+          [
+            -70.941056,
+            44.587587
+          ],
+          [
+            -70.940889,
+            44.587529
+          ],
+          [
+            -70.940869,
+            44.587537
+          ],
+          [
+            -70.940782,
+            44.587507
+          ],
+          [
+            -70.940731,
+            44.587524
+          ],
+          [
+            -70.940664,
+            44.587519
+          ],
+          [
+            -70.940542,
+            44.587473
+          ],
+          [
+            -70.940511,
+            44.587492
+          ],
+          [
+            -70.940649,
+            44.587557
+          ],
+          [
+            -70.9408,
+            44.587598
+          ],
+          [
+            -70.940733,
+            44.587659
+          ],
+          [
+            -70.940624,
+            44.587752
+          ],
+          [
+            -70.940511,
+            44.587752
+          ],
+          [
+            -70.940415,
+            44.58782
+          ],
+          [
+            -70.940339,
+            44.587871
+          ],
+          [
+            -70.940219,
+            44.587762
+          ],
+          [
+            -70.940114,
+            44.587762
+          ],
+          [
+            -70.940061,
+            44.587708
+          ],
+          [
+            -70.940012,
+            44.587665
+          ],
+          [
+            -70.939938,
+            44.587694
+          ],
+          [
+            -70.939865,
+            44.587728
+          ],
+          [
+            -70.939778,
+            44.587751
+          ],
+          [
+            -70.939751,
+            44.587782
+          ],
+          [
+            -70.939709,
+            44.587762
+          ],
+          [
+            -70.93968,
+            44.587792
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "me-baldpate-west-peak-at",
+      "properties": {
+        "name": "Baldpate West Peak via AT",
+        "place": "Grafton Notch, Maine",
+        "difficulty": "Hard",
+        "distanceMiles": 5.8,
+        "safety": "Seed geometry/preview; verify GPX/OSM/official source before hike."
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            -70.9024,
+            44.5987
+          ],
+          [
+            -70.8969,
+            44.602351
+          ],
+          [
+            -70.8914,
+            44.601683
+          ],
+          [
+            -70.8859,
+            44.597486
+          ],
+          [
+            -70.8804,
+            44.594725
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "me-baldpate-east-peak-at",
+      "properties": {
+        "name": "Baldpate East Peak via AT",
+        "place": "Grafton Notch, Maine",
+        "difficulty": "Hard",
+        "distanceMiles": 8.0,
+        "safety": "Seed geometry/preview; verify GPX/OSM/official source before hike."
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            -70.9021,
+            44.5991
+          ],
+          [
+            -70.8966,
+            44.602751
+          ],
+          [
+            -70.8911,
+            44.602083
+          ],
+          [
+            -70.8856,
+            44.597886
+          ],
+          [
+            -70.8801,
+            44.595125
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "me-puzzle-mountain-grafton-loop",
+      "properties": {
+        "name": "Puzzle Mountain via Grafton Loop Trail",
+        "place": "Newry, Maine",
+        "difficulty": "Hard",
+        "distanceMiles": 7.0,
+        "safety": "Seed geometry/preview; verify GPX/OSM/official source before hike."
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            -70.8582,
+            44.5607
+          ],
+          [
+            -70.8527,
+            44.564351
+          ],
+          [
+            -70.8472,
+            44.563683
+          ],
+          [
+            -70.8417,
+            44.559486
+          ],
+          [
+            -70.8362,
+            44.556725
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "me-sunday-river-whitecap",
+      "properties": {
+        "name": "Sunday River Whitecap",
+        "place": "Newry, Maine",
+        "difficulty": "Hard",
+        "distanceMiles": 5.8,
+        "safety": "Seed geometry/preview; verify GPX/OSM/official source before hike."
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            -70.8441,
+            44.5048
+          ],
+          [
+            -70.8386,
+            44.508451
+          ],
+          [
+            -70.8331,
+            44.507783
+          ],
+          [
+            -70.8276,
+            44.503586
+          ],
+          [
+            -70.8221,
+            44.500825
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "me-step-falls-preserve",
+      "properties": {
+        "name": "Step Falls Preserve Trail",
+        "place": "Newry, Maine",
+        "difficulty": "Easy",
+        "distanceMiles": 1.1,
+        "safety": "Seed geometry/preview; verify GPX/OSM/official source before hike."
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            -70.8426,
+            44.5294
+          ],
+          [
+            -70.8371,
+            44.533051
+          ],
+          [
+            -70.8316,
+            44.532383
+          ],
+          [
+            -70.8261,
+            44.528186
+          ],
+          [
+            -70.8206,
+            44.525425
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "me-screw-auger-falls",
+      "properties": {
+        "name": "Screw Auger Falls Walk",
+        "place": "Grafton Notch, Maine",
+        "difficulty": "Easy",
+        "distanceMiles": 0.4,
+        "safety": "Seed geometry/preview; verify GPX/OSM/official source before hike."
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            -70.9467,
+            44.5902
+          ],
+          [
+            -70.9412,
+            44.593851
+          ],
+          [
+            -70.9357,
+            44.593183
+          ],
+          [
+            -70.9302,
+            44.588986
+          ],
+          [
+            -70.9247,
+            44.586225
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "me-moose-cave-mother-walker",
+      "properties": {
+        "name": "Moose Cave + Mother Walker Falls",
+        "place": "Grafton Notch, Maine",
+        "difficulty": "Easy",
+        "distanceMiles": 0.8,
+        "safety": "Seed geometry/preview; verify GPX/OSM/official source before hike."
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            -70.9582,
+            44.5789
+          ],
+          [
+            -70.9527,
+            44.582551
+          ],
+          [
+            -70.9472,
+            44.581883
+          ],
+          [
+            -70.9417,
+            44.577686
+          ],
+          [
+            -70.9362,
+            44.574925
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "me-mahoosuc-notch-at",
+      "properties": {
+        "name": "Mahoosuc Notch AT Segment",
+        "place": "Newry, Maine",
+        "difficulty": "Hard",
+        "distanceMiles": 9.32,
+        "safety": "Seed geometry/preview; verify GPX/OSM/official source before hike."
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            -70.958006,
+            44.571933
+          ],
+          [
+            -70.95871,
+            44.571892
+          ],
+          [
+            -70.960636,
+            44.57188
+          ],
+          [
+            -70.962554,
+            44.571792
+          ],
+          [
+            -70.963221,
+            44.571644
+          ],
+          [
+            -70.963357,
+            44.57156
+          ],
+          [
+            -70.963601,
+            44.571544
+          ],
+          [
+            -70.963896,
+            44.571359
+          ],
+          [
+            -70.964306,
+            44.57126
+          ],
+          [
+            -70.964467,
+            44.571151
+          ],
+          [
+            -70.964577,
+            44.570904
+          ],
+          [
+            -70.964727,
+            44.570675
+          ],
+          [
+            -70.964819,
+            44.57061
+          ],
+          [
+            -70.964896,
+            44.57035
+          ],
+          [
+            -70.965071,
+            44.570067
+          ],
+          [
+            -70.965199,
+            44.569857
+          ],
+          [
+            -70.965242,
+            44.569708
+          ],
+          [
+            -70.965588,
+            44.569421
+          ],
+          [
+            -70.965999,
+            44.569032
+          ],
+          [
+            -70.966337,
+            44.568716
+          ],
+          [
+            -70.967251,
+            44.567977
+          ],
+          [
+            -70.967418,
+            44.567881
+          ],
+          [
+            -70.967477,
+            44.567776
+          ],
+          [
+            -70.968078,
+            44.567312
+          ],
+          [
+            -70.968375,
+            44.567104
+          ],
+          [
+            -70.968794,
+            44.566783
+          ],
+          [
+            -70.969518,
+            44.566238
+          ],
+          [
+            -70.970285,
+            44.565651
+          ],
+          [
+            -70.970435,
+            44.565527
+          ],
+          [
+            -70.970749,
+            44.565433
+          ],
+          [
+            -70.971283,
+            44.565413
+          ],
+          [
+            -70.97158,
+            44.56551
+          ],
+          [
+            -70.971607,
+            44.565584
+          ],
+          [
+            -70.971769,
+            44.56557
+          ],
+          [
+            -70.97201,
+            44.565487
+          ],
+          [
+            -70.97238,
+            44.565451
+          ],
+          [
+            -70.972463,
+            44.565317
+          ],
+          [
+            -70.972525,
+            44.565095
+          ],
+          [
+            -70.972629,
+            44.564985
+          ],
+          [
+            -70.972785,
+            44.564721
+          ],
+          [
+            -70.972605,
+            44.564599
+          ],
+          [
+            -70.972417,
+            44.564373
+          ],
+          [
+            -70.972251,
+            44.564086
+          ],
+          [
+            -70.9722,
+            44.563935
+          ],
+          [
+            -70.971975,
+            44.563735
+          ],
+          [
+            -70.971755,
+            44.56366
+          ],
+          [
+            -70.971366,
+            44.563322
+          ],
+          [
+            -70.971108,
+            44.563029
+          ],
+          [
+            -70.97106,
+            44.562867
+          ],
+          [
+            -70.971119,
+            44.562749
+          ],
+          [
+            -70.971444,
+            44.562533
+          ],
+          [
+            -70.97152,
+            44.562428
+          ],
+          [
+            -70.971556,
+            44.562231
+          ],
+          [
+            -70.971554,
+            44.562223
+          ],
+          [
+            -70.971704,
+            44.562071
+          ],
+          [
+            -70.971976,
+            44.561885
+          ],
+          [
+            -70.972065,
+            44.561856
+          ],
+          [
+            -70.972136,
+            44.561809
+          ],
+          [
+            -70.972191,
+            44.561776
+          ],
+          [
+            -70.972235,
+            44.561538
+          ],
+          [
+            -70.972329,
+            44.561301
+          ],
+          [
+            -70.972262,
+            44.561101
+          ],
+          [
+            -70.972302,
+            44.561015
+          ],
+          [
+            -70.972302,
+            44.560809
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "me-popham-morse-mountain",
+      "properties": {
+        "name": "Morse Mountain to Seawall Beach",
+        "place": "Phippsburg, Maine",
+        "difficulty": "Moderate",
+        "distanceMiles": 3.8,
+        "safety": "Seed geometry/preview; verify GPX/OSM/official source before hike."
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            -69.857014,
+            43.732831
+          ],
+          [
+            -69.843989,
+            43.738922
+          ],
+          [
+            -69.838232,
+            43.742106
+          ],
+          [
+            -69.836968,
+            43.743494
+          ],
+          [
+            -69.831211,
+            43.746678
+          ],
+          [
+            -69.818186,
+            43.752769
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "me-bald-pate-preserve",
+      "properties": {
+        "name": "Bald Pate Mountain Preserve Loop",
+        "place": "Bridgton, Maine",
+        "difficulty": "Moderate",
+        "distanceMiles": 2.6,
+        "safety": "Seed geometry/preview; verify GPX/OSM/official source before hike."
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            -70.7719,
+            44.0472
+          ],
+          [
+            -70.777664,
+            44.056304
+          ],
+          [
+            -70.795459,
+            44.056304
+          ],
+          [
+            -70.801615,
+            44.0472
+          ],
+          [
+            -70.792419,
+            44.038096
+          ],
+          [
+            -70.78095,
+            44.038096
+          ],
+          [
+            -70.77292,
+            44.0472
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "me-morse-baldwin-hill",
+      "properties": {
+        "name": "Baldwin Hill Conservation Loop",
+        "place": "Fayette, Maine",
+        "difficulty": "Easy",
+        "distanceMiles": 1.9,
+        "safety": "Seed geometry/preview; verify GPX/OSM/official source before hike."
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            -70.0386,
+            44.4084
+          ],
+          [
+            -70.044088,
+            44.417067
+          ],
+          [
+            -70.06103,
+            44.417067
+          ],
+          [
+            -70.06689,
+            44.4084
+          ],
+          [
+            -70.058135,
+            44.399733
+          ],
+          [
+            -70.047216,
+            44.399733
+          ],
+          [
+            -70.039571,
+            44.4084
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "me-blueberry-mountain",
+      "properties": {
+        "name": "Blueberry Mountain via Stone House Trail",
+        "place": "Evans Notch, Maine",
+        "difficulty": "Moderate",
+        "distanceMiles": 4.4,
+        "safety": "Seed geometry/preview; verify GPX/OSM/official source before hike."
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            -70.986916,
+            44.252604
+          ],
+          [
+            -70.980771,
+            44.261986
+          ],
+          [
+            -70.982169,
+            44.26835
+          ],
+          [
+            -70.988231,
+            44.27285
+          ],
+          [
+            -70.989629,
+            44.279214
+          ],
+          [
+            -70.983484,
+            44.288596
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "me-caribou-speckled",
+      "properties": {
+        "name": "Caribou Mountain Loop",
+        "place": "Evans Notch, Maine",
+        "difficulty": "Hard",
+        "distanceMiles": 6.8,
+        "safety": "Seed geometry/preview; verify GPX/OSM/official source before hike."
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            -70.9357,
+            44.2692
+          ],
+          [
+            -70.943123,
+            44.280923
+          ],
+          [
+            -70.966037,
+            44.280923
+          ],
+          [
+            -70.973963,
+            44.2692
+          ],
+          [
+            -70.962122,
+            44.257477
+          ],
+          [
+            -70.947353,
+            44.257477
+          ],
+          [
+            -70.937013,
+            44.2692
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "me-bigelow-avery",
+      "properties": {
+        "name": "Bigelow Avery Peak Approach",
+        "place": "Stratton, Maine",
+        "difficulty": "Hard",
+        "distanceMiles": 8.2,
+        "safety": "Seed geometry/preview; verify GPX/OSM/official source before hike."
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            -70.26985,
+            45.117757
+          ],
+          [
+            -70.269186,
+            45.128144
+          ],
+          [
+            -70.277814,
+            45.134814
+          ],
+          [
+            -70.292186,
+            45.139186
+          ],
+          [
+            -70.300814,
+            45.145856
+          ],
+          [
+            -70.30015,
+            45.156243
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "me-cutler-coast",
+      "properties": {
+        "name": "Cutler Bold Coast Trail",
+        "place": "Cutler, Maine",
+        "difficulty": "Hard",
+        "distanceMiles": 9.2,
+        "safety": "Seed geometry/preview; verify GPX/OSM/official source before hike."
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            -67.186,
+            44.657
+          ],
+          [
+            -67.194291,
+            44.670094
+          ],
+          [
+            -67.219887,
+            44.670094
+          ],
+          [
+            -67.228741,
+            44.657
+          ],
+          [
+            -67.215513,
+            44.643906
+          ],
+          [
+            -67.199017,
+            44.643906
+          ],
+          [
+            -67.187467,
+            44.657
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "me-gulf-hagas",
+      "properties": {
+        "name": "Gulf Hagas Rim Trail",
+        "place": "Brownville, Maine",
+        "difficulty": "Hard",
+        "distanceMiles": 8.6,
+        "safety": "Seed geometry/preview; verify GPX/OSM/official source before hike."
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            -69.2924,
+            45.474
+          ],
+          [
+            -69.300533,
+            45.486845
+          ],
+          [
+            -69.325641,
+            45.486845
+          ],
+          [
+            -69.334327,
+            45.474
+          ],
+          [
+            -69.321351,
+            45.461155
+          ],
+          [
+            -69.305169,
+            45.461155
+          ],
+          [
+            -69.293839,
+            45.474
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "me-deb-sconeag",
+      "properties": {
+        "name": "Deboullie Mountain Loop",
+        "place": "T15 R9 WELS, Maine",
+        "difficulty": "Moderate",
+        "distanceMiles": 5.8,
+        "safety": "Seed geometry/preview; verify GPX/OSM/official source before hike."
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            -68.8212,
+            46.942
+          ],
+          [
+            -68.828228,
+            46.953099
+          ],
+          [
+            -68.849923,
+            46.953099
+          ],
+          [
+            -68.857428,
+            46.942
+          ],
+          [
+            -68.846216,
+            46.930901
+          ],
+          [
+            -68.832234,
+            46.930901
+          ],
+          [
+            -68.822443,
+            46.942
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "me-mount-kineo",
+      "properties": {
+        "name": "Mount Kineo Indian Trail",
+        "place": "Moosehead Lake, Maine",
+        "difficulty": "Moderate",
+        "distanceMiles": 3.4,
+        "safety": "Seed geometry/preview; verify GPX/OSM/official source before hike."
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            -69.7196,
+            45.699
+          ],
+          [
+            -69.72568,
+            45.708602
+          ],
+          [
+            -69.74445,
+            45.708602
+          ],
+          [
+            -69.750943,
+            45.699
+          ],
+          [
+            -69.741243,
+            45.689398
+          ],
+          [
+            -69.729146,
+            45.689398
+          ],
+          [
+            -69.720676,
+            45.699
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "nh-lonesome-lake",
+      "properties": {
+        "name": "Lonesome Lake Loop",
+        "place": "Franconia Notch, New Hampshire",
+        "difficulty": "Moderate",
+        "distanceMiles": 3.2,
+        "safety": "Seed geometry/preview; verify GPX/OSM/official source before hike."
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            -71.6658,
+            44.141
+          ],
+          [
+            -71.671801,
+            44.150478
+          ],
+          [
+            -71.690328,
+            44.150478
+          ],
+          [
+            -71.696736,
+            44.141
+          ],
+          [
+            -71.687162,
+            44.131522
+          ],
+          [
+            -71.675222,
+            44.131522
+          ],
+          [
+            -71.666862,
+            44.141
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "nh-mount-willard",
+      "properties": {
+        "name": "Mount Willard Trail",
+        "place": "Crawford Notch, New Hampshire",
+        "difficulty": "Moderate",
+        "distanceMiles": 3.1,
+        "safety": "Seed geometry/preview; verify GPX/OSM/official source before hike."
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            -71.406291,
+            44.201753
+          ],
+          [
+            -71.403148,
+            44.210262
+          ],
+          [
+            -71.406952,
+            44.215993
+          ],
+          [
+            -71.415048,
+            44.220007
+          ],
+          [
+            -71.418852,
+            44.225738
+          ],
+          [
+            -71.415709,
+            44.234247
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "nh-cardigan-west-ridge",
+      "properties": {
+        "name": "Mount Cardigan West Ridge",
+        "place": "Orange, New Hampshire",
+        "difficulty": "Moderate",
+        "distanceMiles": 3.0,
+        "safety": "Seed geometry/preview; verify GPX/OSM/official source before hike."
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            -71.903092,
+            43.634569
+          ],
+          [
+            -71.902462,
+            43.642338
+          ],
+          [
+            -71.908732,
+            43.647348
+          ],
+          [
+            -71.919268,
+            43.650652
+          ],
+          [
+            -71.925538,
+            43.655662
+          ],
+          [
+            -71.924908,
+            43.663431
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "nh-welch-dickey",
+      "properties": {
+        "name": "Welch-Dickey Loop",
+        "place": "Thornton, New Hampshire",
+        "difficulty": "Moderate",
+        "distanceMiles": 4.4,
+        "safety": "Seed geometry/preview; verify GPX/OSM/official source before hike."
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            -71.5716,
+            43.904
+          ],
+          [
+            -71.578075,
+            43.914226
+          ],
+          [
+            -71.598064,
+            43.914226
+          ],
+          [
+            -71.604979,
+            43.904
+          ],
+          [
+            -71.594649,
+            43.893774
+          ],
+          [
+            -71.581766,
+            43.893774
+          ],
+          [
+            -71.572746,
+            43.904
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "nh-chocorua-piper",
+      "properties": {
+        "name": "Mount Chocorua via Piper Trail",
+        "place": "Albany, New Hampshire",
+        "difficulty": "Hard",
+        "distanceMiles": 7.8,
+        "safety": "Seed geometry/preview; verify GPX/OSM/official source before hike."
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            -71.247537,
+            43.944112
+          ],
+          [
+            -71.251531,
+            43.950704
+          ],
+          [
+            -71.264634,
+            43.953652
+          ],
+          [
+            -71.283366,
+            43.954348
+          ],
+          [
+            -71.296469,
+            43.957296
+          ],
+          [
+            -71.300463,
+            43.963888
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "vt-mount-pisgah",
+      "properties": {
+        "name": "Mount Pisgah South Trail",
+        "place": "Westmore, Vermont",
+        "difficulty": "Moderate",
+        "distanceMiles": 4.0,
+        "safety": "Seed geometry/preview; verify GPX/OSM/official source before hike."
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            -72.062427,
+            44.757518
+          ],
+          [
+            -72.05093,
+            44.765041
+          ],
+          [
+            -72.046794,
+            44.76962
+          ],
+          [
+            -72.047206,
+            44.77238
+          ],
+          [
+            -72.04307,
+            44.776959
+          ],
+          [
+            -72.031573,
+            44.784482
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "vt-sterling-pond",
+      "properties": {
+        "name": "Sterling Pond Trail",
+        "place": "Stowe, Vermont",
+        "difficulty": "Moderate",
+        "distanceMiles": 2.3,
+        "safety": "Seed geometry/preview; verify GPX/OSM/official source before hike."
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            -72.768381,
+            44.54352
+          ],
+          [
+            -72.760269,
+            44.551216
+          ],
+          [
+            -72.758734,
+            44.556281
+          ],
+          [
+            -72.761266,
+            44.559719
+          ],
+          [
+            -72.759731,
+            44.564784
+          ],
+          [
+            -72.751619,
+            44.57248
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "ma-blue-hills-skyline",
+      "properties": {
+        "name": "Blue Hills Skyline Section",
+        "place": "Milton, Massachusetts",
+        "difficulty": "Moderate",
+        "distanceMiles": 5.4,
+        "safety": "Seed geometry/preview; verify GPX/OSM/official source before hike."
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            -71.097728,
+            42.194965
+          ],
+          [
+            -71.090845,
+            42.204896
+          ],
+          [
+            -71.091966,
+            42.211625
+          ],
+          [
+            -71.098034,
+            42.216375
+          ],
+          [
+            -71.099155,
+            42.223104
+          ],
+          [
+            -71.092272,
+            42.233035
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "ma-mount-greylock",
+      "properties": {
+        "name": "Mount Greylock Cheshire Harbor",
+        "place": "Adams, Massachusetts",
+        "difficulty": "Hard",
+        "distanceMiles": 6.2,
+        "safety": "Seed geometry/preview; verify GPX/OSM/official source before hike."
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            -73.160791,
+            42.618348
+          ],
+          [
+            -73.156816,
+            42.628632
+          ],
+          [
+            -73.161214,
+            42.635567
+          ],
+          [
+            -73.170786,
+            42.640433
+          ],
+          [
+            -73.175184,
+            42.647368
+          ],
+          [
+            -73.171209,
+            42.657652
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "ny-adk-cascade-porter",
+      "properties": {
+        "name": "Cascade and Porter Mountains",
+        "place": "Lake Placid, New York",
+        "difficulty": "Hard",
+        "distanceMiles": 6.0,
+        "safety": "Seed geometry/preview; verify GPX/OSM/official source before hike."
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            -73.848324,
+            44.200518
+          ],
+          [
+            -73.847403,
+            44.209907
+          ],
+          [
+            -73.854762,
+            44.215985
+          ],
+          [
+            -73.867238,
+            44.220015
+          ],
+          [
+            -73.874597,
+            44.226093
+          ],
+          [
+            -73.873676,
+            44.235482
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "ny-adk-mount-jo",
+      "properties": {
+        "name": "Mount Jo Loop",
+        "place": "Lake Placid, New York",
+        "difficulty": "Moderate",
+        "distanceMiles": 2.6,
+        "safety": "Seed geometry/preview; verify GPX/OSM/official source before hike."
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            -73.9504,
+            44.183
+          ],
+          [
+            -73.956164,
+            44.192104
+          ],
+          [
+            -73.973959,
+            44.192104
+          ],
+          [
+            -73.980115,
+            44.183
+          ],
+          [
+            -73.970919,
+            44.173896
+          ],
+          [
+            -73.95945,
+            44.173896
+          ],
+          [
+            -73.95142,
+            44.183
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "pa-pinnacle-pulpit",
+      "properties": {
+        "name": "Pinnacle and Pulpit Rock Loop",
+        "place": "Hamburg, Pennsylvania",
+        "difficulty": "Hard",
+        "distanceMiles": 8.7,
+        "safety": "Seed geometry/preview; verify GPX/OSM/official source before hike."
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            -75.9223,
+            40.596
+          ],
+          [
+            -75.930473,
+            40.608907
+          ],
+          [
+            -75.955703,
+            40.608907
+          ],
+          [
+            -75.96443,
+            40.596
+          ],
+          [
+            -75.951392,
+            40.583093
+          ],
+          [
+            -75.935131,
+            40.583093
+          ],
+          [
+            -75.923746,
+            40.596
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "wv-seneca-rocks",
+      "properties": {
+        "name": "Seneca Rocks Trail",
+        "place": "Seneca Rocks, West Virginia",
+        "difficulty": "Moderate",
+        "distanceMiles": 3.2,
+        "safety": "Seed geometry/preview; verify GPX/OSM/official source before hike."
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            -79.389958,
+            38.821381
+          ],
+          [
+            -79.378915,
+            38.828453
+          ],
+          [
+            -79.374865,
+            38.832727
+          ],
+          [
+            -79.375135,
+            38.835273
+          ],
+          [
+            -79.371085,
+            38.839547
+          ],
+          [
+            -79.360042,
+            38.846619
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "va-old-rag",
+      "properties": {
+        "name": "Old Rag Circuit",
+        "place": "Syria, Virginia",
+        "difficulty": "Hard",
+        "distanceMiles": 9.1,
+        "safety": "Seed geometry/preview; verify GPX/OSM/official source before hike."
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            -78.266,
+            38.571
+          ],
+          [
+            -78.274291,
+            38.584094
+          ],
+          [
+            -78.299887,
+            38.584094
+          ],
+          [
+            -78.308741,
+            38.571
+          ],
+          [
+            -78.295513,
+            38.557906
+          ],
+          [
+            -78.279017,
+            38.557906
+          ],
+          [
+            -78.267467,
+            38.571
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "me-vinal-falls",
+      "properties": {
+        "name": "Vinal Falls",
+        "place": "Vinalhaven, Maine",
+        "difficulty": "Easy",
+        "distanceMiles": 1.0,
+        "safety": "Seed geometry/preview; verify GPX/OSM/official source before hike."
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            -68.847934,
+            44.081897
+          ],
+          [
+            -68.841934,
+            44.084897
+          ],
+          [
+            -68.835934,
+            44.087897
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "me-moxie-falls-real",
+      "properties": {
+        "name": "Moxie Falls real POI",
+        "place": "The Forks, Maine",
+        "difficulty": "Easy",
+        "distanceMiles": 1.2,
+        "safety": "Seed geometry/preview; verify GPX/OSM/official source before hike."
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            -69.944209,
+            45.358937
+          ],
+          [
+            -69.937009,
+            45.362537
+          ],
+          [
+            -69.929809,
+            45.366137
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "me-little-wilson-lower-falls",
+      "properties": {
+        "name": "Little Wilson Lower Falls",
+        "place": "Elliottsville, Maine",
+        "difficulty": "Moderate",
+        "distanceMiles": 2.0,
+        "safety": "Seed geometry/preview; verify GPX/OSM/official source before hike."
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            -69.46083,
+            45.369661
+          ],
+          [
+            -69.44883,
+            45.375661
+          ],
+          [
+            -69.43683,
+            45.381661
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "me-big-niagara-falls",
+      "properties": {
+        "name": "Big Niagara Falls",
+        "place": "Baxter State Park, Maine",
+        "difficulty": "Moderate",
+        "distanceMiles": 2.4,
+        "safety": "Seed geometry/preview; verify GPX/OSM/official source before hike."
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            -69.051875,
+            45.862146
+          ],
+          [
+            -69.037475,
+            45.869346
+          ],
+          [
+            -69.023075,
+            45.876546
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "me-screw-auger-falls-real",
+      "properties": {
+        "name": "Screw Auger Falls real POI",
+        "place": "Grafton Notch, Maine",
+        "difficulty": "Easy",
+        "distanceMiles": 0.6,
+        "safety": "Seed geometry/preview; verify GPX/OSM/official source before hike."
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            -69.308152,
+            45.481089
+          ],
+          [
+            -69.304552,
+            45.482889
+          ],
+          [
+            -69.300952,
+            45.484689
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "me-buttermilk-falls",
+      "properties": {
+        "name": "Buttermilk Falls",
+        "place": "Maine",
+        "difficulty": "Easy",
+        "distanceMiles": 1.0,
+        "safety": "Seed geometry/preview; verify GPX/OSM/official source before hike."
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            -69.333065,
+            45.485981
+          ],
+          [
+            -69.327065,
+            45.488981
+          ],
+          [
+            -69.321065,
+            45.491981
+          ]
+        ]
+      }
+    }
+  ]
+}

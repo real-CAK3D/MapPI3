@@ -1,0 +1,98 @@
+{
+  "schema": "mappi3.offlineSkyPack.v1",
+  "id": "mappi3-night-hike-sky-static-v1",
+  "generated_at": "2026-07-26T20:06:44Z",
+  "offline_safe": true,
+  "network_required": false,
+  "position_default": {
+    "label": "Lewiston / Sabbatus line, Maine 04240",
+    "lat": 44.1004,
+    "lon": -70.2148
+  },
+  "features": [
+    "offline safety/camp sky checklist",
+    "constellation pointer reference",
+    "moon-phase interpretation guide",
+    "sunset/night-hike planning rules",
+    "network-only source labels"
+  ],
+  "bright_objects_reference": [
+    {
+      "name": "Moon",
+      "kind": "moon",
+      "field_use": "light level, tide/visibility context, camp orientation",
+      "offline_note": "Exact phase/altitude should be refreshed/precomputed when network or Garden/NukeBox tools are available."
+    },
+    {
+      "name": "Venus",
+      "kind": "planet",
+      "field_use": "bright evening/morning object cue",
+      "offline_note": "Use as a likely bright-object explainer only; exact visibility changes by date."
+    },
+    {
+      "name": "Jupiter",
+      "kind": "planet",
+      "field_use": "very bright steady planet cue",
+      "offline_note": "Exact altitude/azimuth needs pre-trip calculation or network."
+    },
+    {
+      "name": "Saturn",
+      "kind": "planet",
+      "field_use": "steady planet cue when visible",
+      "offline_note": "Exact visibility needs pre-trip calculation or network."
+    },
+    {
+      "name": "Polaris",
+      "kind": "star",
+      "field_use": "north reference in Northern Hemisphere",
+      "bearing": "near true north",
+      "altitude_rule": "Altitude roughly equals latitude; near 44 degrees high for Lewiston/Maine."
+    }
+  ],
+  "constellation_reference": [
+    {
+      "name": "Ursa Major / Big Dipper",
+      "season": "spring/summer evenings strong in Maine",
+      "bearing_hint": "north to northwest arcs",
+      "field_use": "pointer stars lead toward Polaris"
+    },
+    {
+      "name": "Cassiopeia",
+      "season": "fall/winter evenings strong",
+      "bearing_hint": "north/northeast to northwest",
+      "field_use": "W/M shaped counterweight to Big Dipper around Polaris"
+    },
+    {
+      "name": "Orion",
+      "season": "winter evenings",
+      "bearing_hint": "south/southeast to southwest",
+      "field_use": "easy belt reference; good cold-season orientation cue"
+    },
+    {
+      "name": "Cygnus / Northern Cross",
+      "season": "summer/fall evenings",
+      "bearing_hint": "overhead to west",
+      "field_use": "Milky Way/northern-cross marker on dark trails"
+    },
+    {
+      "name": "Scorpius",
+      "season": "summer low south",
+      "bearing_hint": "low southern sky",
+      "field_use": "southern horizon seasonal marker; can be blocked by terrain/trees"
+    }
+  ],
+  "field_rules": [
+    "Carry real navigation/emergency tools; sky features are orientation/planning aids only.",
+    "Pre-download or precompute exact Sun/Moon/planet data before hikes where timing matters.",
+    "If network is unavailable, use cached/precomputed summaries and conservative turnaround/headlamp timing.",
+    "Weather/cloud cover overrides astronomy planning; check NOAA/NWS cache when online."
+  ],
+  "pretrip_cache_targets": [
+    "sunrise/sunset",
+    "civil/nautical twilight",
+    "moon phase/rise/set",
+    "visible planets altitude/azimuth",
+    "NOAA/NWS forecast/alerts",
+    "route corridor map tiles/elevation summaries"
+  ]
+}

@@ -1,0 +1,33 @@
+{
+  "schema": "mappi3.offlinePackManifest.v1",
+  "id": "sky-forage-trail-offline-pass-20260726",
+  "name": "Sky/Forage + Trail offline starter pack",
+  "generated_at": "2026-07-26T20:06:44Z",
+  "offline_safe": true,
+  "network_required": false,
+  "install_root": "/var/lib/mappi3/offline-packs/sky-forage",
+  "files": [
+    {
+      "name": "network-only-sources.json",
+      "size_bytes": 4147,
+      "sha256": "c1bbd37c7bc490422ac54bb68c8098369874e5fa9cf57c916a8ca637071c84a7"
+    },
+    {
+      "name": "night-sky-static.json",
+      "size_bytes": 3416,
+      "sha256": "fc8d9d6b15dbdd6e5bd3bc4762d8968ab92279cf8ba98e67e61a23ddcb9fd13d"
+    },
+    {
+      "name": "route-geometry-preview.geojson",
+      "size_bytes": 90905,
+      "sha256": "b7716ce5a0d6770550f7f71f301ec66a2ebb36cf1844d1bcd82eb2acef56bbb5"
+    },
+    {
+      "name": "trail-route-catalog.compact.json",
+      "size_bytes": 272180,
+      "sha256": "be68c6726ba78a71c6623837e6446d912af53ac95c4d931cc4a01bc7d748fc32"
+    }
+  ],
+  "network_only_registry": "network-only-sources.json",
+  "policy": "Pack is safe to display offline over the MapPI3 hotspot. Live API services stay marked network-only unless their data is cached/precomputed into this folder. MapPI3 assists but does not replace official/current trail, weather, medical, navigation, or emergency tools."
+}

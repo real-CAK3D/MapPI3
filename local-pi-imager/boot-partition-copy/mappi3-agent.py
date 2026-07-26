@@ -2,6 +2,7 @@
 import base64, fcntl, hashlib, http.server, io, json, math, os, pathlib, random, shlex, shutil, socket, sqlite3, ssl, struct, subprocess, threading, time, urllib.parse, urllib.request, uuid
 APP_DIR = pathlib.Path('/opt/mappi3/app')
 STATE = pathlib.Path('/var/lib/mappi3/state.json')
+OFFLINE_PACK_ROOT = pathlib.Path('/var/lib/mappi3/offline-packs')
 PORT = int(os.environ.get('MAPPI3_PORT','5050'))
 HTTPS_PORT = int(os.environ.get('MAPPI3_HTTPS_PORT','5443'))
 CERT_DIR = pathlib.Path('/var/lib/mappi3/certs')
@@ -13,7 +14,7 @@ PACMAN_STATE = {}
 PACMAN_EVENT_SEQ = 0
 SENSE_FACE_STATE = {'last_accel': None, 'last_accel_at': 0.0, 'surprise_until': 0.0, 'still_since': 0.0}
 SENSE_MODES = ['compass','compass-arrow','compass-cardinal','rotation-test','liquid','pacman','weather','fire','flashlight','sos','message','boot','sun','gps','clock','progress','beacon','stars','temp','humidity','pressure','avatar','level','custom','border','magic8','water','snake']
-ALLOWED = {'status','restart-web','reboot','shutdown','update-app','gps-sample','toggle-hotspot','hotspot-on','connect-home-wifi','wifi-scan','wifi-save-network','wifi-connect-saved','network-status','tailscale-status','tailscale-login','remote-access-repair','sense-mode','calibrate','harden-hotspot','plugin-update','vnc-setup','vnc-disable','weather-refresh','noaa-refresh','online-maintenance','gps-diagnose','sense-diagnose','field-ai-verify','captive-setup','captive-disable','captive-status','gps-pps-setup','whisplay-test-popup','whisplay-input','whisplay-input-status','snake-trail-event','plugin-status','plugin-install','plugin-install-all','plugin-uninstall','audio-tts-test','audio-ambient-test'}
+ALLOWED = {'status','restart-web','reboot','shutdown','update-app','gps-sample','toggle-hotspot','hotspot-on','connect-home-wifi','wifi-scan','wifi-save-network','wifi-connect-saved','network-status','tailscale-status','tailscale-login','remote-access-repair','sense-mode','calibrate','harden-hotspot','plugin-update','vnc-setup','vnc-disable','weather-refresh','noaa-refresh','hourly-online-refresh','online-maintenance','gps-diagnose','sense-diagnose','field-ai-verify','captive-setup','captive-disable','captive-status','gps-pps-setup','whisplay-test-popup','whisplay-input','whisplay-input-status','snake-trail-event','plugin-status','plugin-install','plugin-install-all','plugin-uninstall','audio-tts-test','audio-ambient-test'}
 SENSE_CACHE = {'ok': False, 'mode': 'compass', 'message': 'Sense HAT display loop starting', 'updated': 0, 'joystick': {'seq': 0, 'direction': '', 'pressed': False, 'updated': 0}}
 SENSE_LOCK = threading.Lock()
 KEY_NAMES = {103:'up',108:'down',105:'left',106:'right',28:'press'}
@@ -2139,6 +2140,69 @@ def online_maintenance_log():
     except Exception as e: content=str(e)
     return {'ok': p.exists(), 'log': str(p), 'content': content}
 
+def _whisplay_rpc(cmd, payload=None, timeout=1.2):
+    sock_path=pathlib.Path('/tmp/whisplay-daemon.sock')
+    if not sock_path.exists(): sock_path=pathlib.Path('/run/whisplay-daemon.sock')
+    if not sock_path.exists(): return {'ok': False, 'cmd': cmd, 'error': 'Whisplay daemon socket not found'}
+    req={'version': 1, 'cmd': cmd, 'payload': payload or {}}
+    try:
+        with socket.socket(socket.AF_UNIX, socket.SOCK_STREAM) as sock:
+            sock.settimeout(timeout); sock.connect(str(sock_path)); sock.sendall((json.dumps(req)+'\n').encode())
+            raw=sock.recv(65536).decode('utf-8','replace').strip()
+        if not raw: return {'ok': False, 'cmd': cmd, 'error': 'empty Whisplay daemon reply'}
+        try:
+            data=json.loads(raw.splitlines()[-1])
+            if isinstance(data, dict): data.setdefault('ok', bool(data.get('ok', True))); data.setdefault('cmd', cmd); return data
+        except Exception: pass
+        return {'ok': True, 'cmd': cmd, 'text': raw[:2000]}
+    except Exception as e:
+        return {'ok': False, 'cmd': cmd, 'error': str(e)}
+
+def whisplay_display_status(payload=None):
+    health=_whisplay_rpc('health.ping')
+    apps=_whisplay_rpc('app.list')
+    fg={}
+    for cmd in ('app.foreground','app.get_foreground','foreground.get','display.status'):
+        fg=_whisplay_rpc(cmd)
+        if fg.get('ok') and not fg.get('error'): break
+    screen={}
+    for src in (health.get('payload'), health.get('screen'), health):
+        if isinstance(src, dict):
+            screen = src.get('screen') if isinstance(src.get('screen'), dict) else src
+            if screen.get('width') or screen.get('height'): break
+    display={'screen': screen or {'width': 240, 'height': 280, 'pixel_format': 'RGB565'}, 'health': health, 'apps': apps.get('apps') or apps.get('payload') or apps, 'foreground': fg, 'foreground_app_id': fg.get('foreground_app_id') or fg.get('app_id') or fg.get('id') or fg.get('foreground')}
+    return {'ok': bool(health.get('ok')), 'display': display, 'screen': display['screen'], 'note': 'Whisplay HAT display mirror metadata for the app companion. If the daemon exposes foreground/screen state, Herbie locks to it and disables independent motion.'}
+
+def time_sync_status(payload=None):
+    tracking=sh('chronyc tracking 2>&1 || true', timeout=5).get('output','')
+    sources=sh('chronyc sources -v 2>&1 || true', timeout=5).get('output','')
+    timedate=sh('timedatectl 2>&1 || true', timeout=5).get('output','')
+    pps=sh('ls -l /dev/pps* 2>&1 || true', timeout=3).get('output','').strip()
+    return {'ok': True, 'reference_pps': ('Reference ID    : PPS' in tracking or '#* PPS' in sources), 'tracking': tracking[-2000:], 'sources': sources[-2400:], 'timedatectl': timedate[-1600:], 'pps_devices': pps, 'policy': 'GPS/PPS/chrony are preferred; cached weather/offline app remain usable if network time is briefly unavailable after power loss.'}
+
+def hourly_online_refresh(payload=None):
+    payload=payload or {}; lat=payload.get('lat') or '44.1004'; lon=payload.get('lon') or '-70.2148'; tz=payload.get('timezone') or 'America/New_York'
+    net=network_status({}); route_ok=bool(net.get('has_default_route'))
+    results={'network': net, 'route_ok': route_ok, 'started_at': time.time()}
+    if not route_ok:
+        results['ok']=True; results['skipped']='offline/no default route; keeping cached weather/manuals and local app bundle'; return results
+    results['weather']=pi_weather({'lat': lat, 'lon': lon, 'timezone': tz, 'days': payload.get('days') or 7, 'force': True})
+    results['noaa']=noaa_weather({'lat': lat, 'lon': lon, 'force': True})
+    upd=sh('if [ -x /usr/local/bin/mappi3-update-app.sh ] && [ -f /var/lib/mappi3/update/mappi3-dist.tar.gz ]; then MAPPI3_UPDATE_SRC=/var/lib/mappi3/update/mappi3-dist.tar.gz /usr/local/bin/mappi3-update-app.sh --if-newer; else echo "no staged online app bundle; skipping app update"; fi 2>&1 || true', timeout=180)
+    results['app_update']={'ok': upd.get('ok'), 'output': upd.get('output','')[-1600:], 'policy': 'hourly refresh only applies /var/lib/mappi3/update/mappi3-dist.tar.gz; boot-partition bundles stay manual/firstboot only'}
+    st=read_state(); st['hourly_online_refresh_at']=time.time(); st['hourly_online_refresh_route_ok']=route_ok; write_state(st)
+    results['ok']=True; results['finished_at']=time.time(); return results
+
+def maintenance_status(payload=None):
+    weather_cache=pathlib.Path('/var/lib/mappi3/weather-cache.json')
+    noaa_cache=pathlib.Path('/var/lib/mappi3/noaa-weather-cache.json')
+    def cache_info(path):
+        try:
+            data=json.loads(path.read_text()); fetched=float(data.get('fetched_at') or path.stat().st_mtime); return {'exists': True, 'age_seconds': round(time.time()-fetched), 'source': data.get('source'), 'ok': data.get('ok')}
+        except Exception: return {'exists': path.exists()}
+    timers=sh('systemctl list-timers --all mappi3-hourly-online-refresh.timer 2>&1 || true', timeout=5).get('output','')
+    return {'ok': True, 'network': network_status({}), 'weather_cache': cache_info(weather_cache), 'noaa_cache': cache_info(noaa_cache), 'time_sync': time_sync_status({}), 'timer': timers[-2000:], 'policy': 'Hourly refresh is network-aware: refresh weather/NOAA and apply a staged app bundle only when a default route exists; otherwise it exits cleanly and preserves offline cache.'}
+
 def harden_hotspot():
     cmds = [
         "nmcli connection modify MapPI3-hotspot connection.autoconnect yes connection.autoconnect-priority 999 connection.autoconnect-retries 0 connection.wait-device-timeout 0 802-11-wireless.band bg 802-11-wireless.channel 1 802-11-wireless.powersave 2 ipv4.method shared ipv4.addresses 10.42.0.1/24 ipv4.never-default yes ipv6.method ignore || true",
@@ -2171,6 +2235,34 @@ def plugin_update(payload):
 
 PLUGIN_ROOTS = [pathlib.Path('/opt/mappi3/plugins'), pathlib.Path('/var/lib/mappi3/plugins-src'), pathlib.Path('/boot/mappi3/plugins')]
 PLUGIN_STATE = pathlib.Path('/var/lib/mappi3/plugins')
+
+def offline_pack_status(payload=None):
+    OFFLINE_PACK_ROOT.mkdir(parents=True, exist_ok=True)
+    packs=[]
+    for d in sorted([x for x in OFFLINE_PACK_ROOT.iterdir() if x.is_dir()]):
+        manifest_path=d/'MANIFEST.json'
+        manifest={}
+        errors=[]
+        if manifest_path.exists():
+            try:
+                manifest=json.loads(manifest_path.read_text(errors='ignore'))
+            except Exception as e:
+                errors.append(f'manifest parse failed: {e}')
+        files=[]
+        total=0
+        for p in sorted([x for x in d.iterdir() if x.is_file()]):
+            try:
+                size=p.stat().st_size; total += size
+                item={'name':p.name,'size_bytes':size,'url':'/offline-packs/'+urllib.parse.quote(d.name)+'/'+urllib.parse.quote(p.name)}
+                if p.name == 'MANIFEST.json': item['kind']='manifest'
+                elif p.suffix.lower() in ('.json','.geojson'): item['kind']='json'
+                else: item['kind']=p.suffix.lower().lstrip('.') or 'file'
+                files.append(item)
+            except Exception as e:
+                errors.append(f'{p.name}: {e}')
+        network_registry=manifest.get('network_only_registry') if isinstance(manifest,dict) else None
+        packs.append({'id':manifest.get('id') or d.name,'name':manifest.get('name') or d.name.replace('-',' ').title(),'folder':str(d),'manifest':str(manifest_path),'manifest_ok':bool(manifest),'offline_safe':bool(manifest.get('offline_safe', True)),'network_required':bool(manifest.get('network_required', False)),'network_only_registry':network_registry,'file_count':len(files),'size_bytes':total,'size_mb':round(total/1024/1024,3),'files':files,'policy':manifest.get('policy') or 'Offline pack files are local Pi hotspot resources. Live APIs remain network-only unless cached/precomputed into the pack.','errors':errors})
+    return {'ok': True, 'root':str(OFFLINE_PACK_ROOT), 'count':len(packs), 'packs':packs, 'network_only_policy':'Trail/map/weather/astronomy public APIs must be shown as network-only unless a dated cache or precomputed export exists in an installed offline pack.', 'safety':'MapPI3 assists with field planning and recall but does not replace official/current maps, forecasts, medical care, emergency comms, or navigation tools.', 'time':time.time()}
 
 def _safe_plugin_id(value):
     raw=str(value or '').strip().lower()
@@ -2428,6 +2520,7 @@ def command(name, payload=None):
     if name=='vnc-disable': return disable_vnc()
     if name=='weather-refresh': return pi_weather(payload)
     if name=='noaa-refresh': return noaa_weather(payload)
+    if name=='hourly-online-refresh': return hourly_online_refresh(payload)
     if name=='online-maintenance': return start_online_maintenance(payload)
     if name=='gps-diagnose': return gps_diagnose()
     if name=='sense-diagnose': return sense_diagnose(payload)
@@ -2869,6 +2962,12 @@ class Handler(http.server.SimpleHTTPRequestHandler):
                 if str(target).startswith(str(GAME_ROOT.resolve())) and target.is_file(): return str(target)
             except Exception: pass
             return str(APP_DIR/'index.html')
+        if path.startswith('/offline-packs/'):
+            rel=urllib.parse.unquote(path[len('/offline-packs/'):]).lstrip('/'); target=(OFFLINE_PACK_ROOT/rel).resolve()
+            try:
+                if str(target).startswith(str(OFFLINE_PACK_ROOT.resolve())) and target.is_file(): return str(target)
+            except Exception: pass
+            return str(APP_DIR/'index.html')
         p=APP_DIR/path.lstrip('/')
         if p.is_dir(): p=p/'index.html'
         if not p.exists(): p=APP_DIR/'index.html'
@@ -2898,13 +2997,17 @@ class Handler(http.server.SimpleHTTPRequestHandler):
         if self.path.startswith('/api/weather'):
             qs=urllib.parse.parse_qs(urllib.parse.urlparse(self.path).query); self.json_response(pi_weather({k:v[-1] for k,v in qs.items()})); return
         if self.path.startswith('/api/online-maintenance/log'): self.json_response(online_maintenance_log()); return
+        if self.path.startswith('/api/maintenance/status'): self.json_response(maintenance_status()); return
         if self.path.startswith('/api/media/library'): self.json_response(media_manifest()); return
         if self.path.startswith('/api/audio/status'): self.json_response(audio_status()); return
         if self.path.startswith('/api/power/status'): self.json_response(power_status()); return
         if self.path.startswith('/api/games/library'): self.json_response(game_library_status()); return
+        if self.path.startswith('/api/offline-packs/status'): self.json_response(offline_pack_status()); return
         if self.path.startswith('/api/plugins'): self.json_response(plugin_status()); return
         if self.path.startswith('/api/bluetooth/pan/status'): self.json_response(bluetooth_pan_status()); return
         if self.path.startswith('/api/bluetooth/status'): self.json_response(bluetooth_status()); return
+        if self.path.startswith('/api/time/status'): self.json_response(time_sync_status()); return
+        if self.path.startswith('/api/whisplay/display/status'): self.json_response(whisplay_display_status()); return
         if self.path.startswith('/api/whisplay/ai/status'): self.json_response(whisplay_ai_status()); return
         if self.path.startswith('/api/whisplay/input'):
             qs=urllib.parse.parse_qs(urllib.parse.urlparse(self.path).query); self.json_response(whisplay_input_status({k:v[-1] for k,v in qs.items()})); return

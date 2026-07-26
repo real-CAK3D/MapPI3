@@ -9,9 +9,13 @@
     "sky",
     "cameraOverlay",
     "forage",
-    "wildFoodSafety"
+    "wildFoodSafety",
+    "offlineTrailPack",
+    "offlineSkyPack",
+    "networkOnlyLabels"
   ],
   "offline_safe": true,
   "installed_marker": "/var/lib/mappi3/plugins/sky-forage/installed.json",
-  "description": "Sky/forage guide storage ready; pages are built into the app."
+  "offline_pack_root": "/var/lib/mappi3/offline-packs/sky-forage",
+  "description": "Sky/forage guide storage plus a compact offline trail/sky starter pack. Live public APIs stay network-only unless cached/precomputed."
 }
