@@ -13,7 +13,7 @@ PACMAN_STATE = {}
 PACMAN_EVENT_SEQ = 0
 SENSE_FACE_STATE = {'last_accel': None, 'last_accel_at': 0.0, 'surprise_until': 0.0, 'still_since': 0.0}
 SENSE_MODES = ['compass','compass-arrow','compass-cardinal','rotation-test','liquid','pacman','weather','fire','flashlight','sos','message','boot','sun','gps','clock','progress','beacon','stars','temp','humidity','pressure','avatar','level','custom','border','magic8','water','snake']
-ALLOWED = {'status','restart-web','reboot','shutdown','update-app','gps-sample','toggle-hotspot','hotspot-on','connect-home-wifi','wifi-scan','wifi-save-network','wifi-connect-saved','network-status','tailscale-status','tailscale-login','remote-access-repair','sense-mode','calibrate','harden-hotspot','plugin-update','vnc-setup','vnc-disable','weather-refresh','noaa-refresh','online-maintenance','gps-diagnose','sense-diagnose','field-ai-verify','captive-setup','captive-disable','captive-status','gps-pps-setup','whisplay-test-popup','whisplay-input','whisplay-input-status','snake-trail-event','plugin-status','plugin-install','plugin-install-all','plugin-uninstall'}
+ALLOWED = {'status','restart-web','reboot','shutdown','update-app','gps-sample','toggle-hotspot','hotspot-on','connect-home-wifi','wifi-scan','wifi-save-network','wifi-connect-saved','network-status','tailscale-status','tailscale-login','remote-access-repair','sense-mode','calibrate','harden-hotspot','plugin-update','vnc-setup','vnc-disable','weather-refresh','noaa-refresh','online-maintenance','gps-diagnose','sense-diagnose','field-ai-verify','captive-setup','captive-disable','captive-status','gps-pps-setup','whisplay-test-popup','whisplay-input','whisplay-input-status','snake-trail-event','plugin-status','plugin-install','plugin-install-all','plugin-uninstall','audio-tts-test','audio-ambient-test'}
 SENSE_CACHE = {'ok': False, 'mode': 'compass', 'message': 'Sense HAT display loop starting', 'updated': 0, 'joystick': {'seq': 0, 'direction': '', 'pressed': False, 'updated': 0}}
 SENSE_LOCK = threading.Lock()
 KEY_NAMES = {103:'up',108:'down',105:'left',106:'right',28:'press'}
@@ -2413,6 +2413,8 @@ def command(name, payload=None):
     if name=='whisplay-input': return whisplay_input(payload)
     if name=='whisplay-input-status': return whisplay_input_status(payload)
     if name=='snake-trail-event': return snake_trail_event(payload)
+    if name=='audio-tts-test': return audio_tts_test(payload)
+    if name=='audio-ambient-test': return audio_ambient_test(payload)
     if name=='restart-web': return sh('systemctl restart mappi3-web.service', timeout=10)
     if name=='reboot': return sh('systemctl reboot', timeout=3)
     if name=='shutdown': return sh('systemctl poweroff', timeout=3)
@@ -2503,6 +2505,103 @@ def audio_play_test(payload=None):
         try: wav.unlink()
         except Exception: pass
 
+PIPER_BIN = pathlib.Path('/opt/mappi3/voice/piper/piper')
+PIPER_VOICE = pathlib.Path('/opt/mappi3/voice/en_US-amy-low.onnx')
+PIPER_CONFIG = pathlib.Path('/opt/mappi3/voice/en_US-amy-low.onnx.json')
+AMBIENT_ROOT = MEDIA_ROOT / 'ambient'
+
+
+def tts_status():
+    return {
+        'piper_bin': str(PIPER_BIN),
+        'piper_installed': PIPER_BIN.exists() and os.access(PIPER_BIN, os.X_OK),
+        'voice': str(PIPER_VOICE),
+        'voice_installed': PIPER_VOICE.exists() and PIPER_CONFIG.exists(),
+        'voice_label': 'Piper en_US-amy-low',
+    }
+
+
+def _resample_wav_mono_16bit(src, dst, target_rate=48000):
+    import wave, struct
+    with wave.open(str(src), 'rb') as r:
+        nch = r.getnchannels(); width = r.getsampwidth(); rate = r.getframerate(); raw = r.readframes(r.getnframes())
+    if width != 2:
+        raise ValueError('Piper WAV sample width is not 16-bit PCM; cannot resample without external codec.')
+    samples = struct.unpack('<' + 'h' * (len(raw) // 2), raw)
+    if nch > 1:
+        samples = tuple(int(sum(samples[i:i+nch]) / nch) for i in range(0, len(samples), nch))
+        nch = 1
+    if rate != target_rate:
+        out_len = max(1, int(len(samples) * target_rate / rate))
+        resampled = []
+        for i in range(out_len):
+            src_i = min(len(samples) - 1, int(i * rate / target_rate))
+            resampled.append(samples[src_i])
+        samples = tuple(resampled)
+        rate = target_rate
+    frames = struct.pack('<' + 'h' * len(samples), *samples)
+    with wave.open(str(dst), 'wb') as w:
+        w.setnchannels(1); w.setsampwidth(2); w.setframerate(rate); w.writeframes(frames)
+    return {'rate': rate, 'channels': 1, 'sample_width': 2, 'bytes': len(frames)}
+
+
+def audio_tts_test(payload=None):
+    payload = payload or {}
+    text = str(payload.get('text') or 'MapPI3 voice check. Herbie is ready for the trail.').strip()[:240]
+    device = str(payload.get('device') or 'default').strip() or 'default'
+    st = tts_status()
+    if not _audio_tool('aplay'):
+        return {'ok': False, 'error': 'aplay not installed; cannot play TTS through Whisplay.'}
+    if not (st['piper_installed'] and st['voice_installed']):
+        return {'ok': False, 'status': st, 'error': 'Piper binary or voice model missing.'}
+    raw_wav = pathlib.Path('/tmp/mappi3-piper-tts-test-raw.wav')
+    play_wav = pathlib.Path('/tmp/mappi3-piper-tts-test-48k.wav')
+    try:
+        cmd = 'printf %s '+shlex.quote(text)+' | '+shlex.quote(str(PIPER_BIN))+' --model '+shlex.quote(str(PIPER_VOICE))+' --config '+shlex.quote(str(PIPER_CONFIG))+' --output_file '+shlex.quote(str(raw_wav))+' 2>&1'
+        gen = sh(cmd, timeout=45)
+        raw_size = raw_wav.stat().st_size if raw_wav.exists() else 0
+        if not gen.get('ok') or raw_size < 1000:
+            return {'ok': False, 'status': st, 'bytes': raw_size, 'generate_output': gen.get('output','')[-1600:], 'error': 'Piper failed to generate useful WAV audio.'}
+        converted = _resample_wav_mono_16bit(raw_wav, play_wav, 48000)
+        play_size = play_wav.stat().st_size if play_wav.exists() else 0
+        play = sh('timeout 15 aplay -q -D '+shlex.quote(device)+' '+shlex.quote(str(play_wav))+' 2>&1', timeout=18)
+        return {'ok': bool(play.get('ok')), 'status': st, 'text': text, 'device': device, 'raw_bytes': raw_size, 'play_bytes': play_size, 'converted': converted, 'play_output': play.get('output','')[-1200:], 'message': 'Piper voice generated WAV, resampled to Whisplay-friendly 48 kHz, and played through default ALSA.' if play.get('ok') else 'Piper generated WAV but playback failed.'}
+    finally:
+        for wav in (raw_wav, play_wav):
+            try: wav.unlink()
+            except Exception: pass
+
+
+def ambient_status():
+    AMBIENT_ROOT.mkdir(parents=True, exist_ok=True)
+    attribution = []
+    attr = AMBIENT_ROOT / 'ATTRIBUTION.json'
+    try:
+        attribution = json.loads(attr.read_text()) if attr.exists() else []
+    except Exception:
+        attribution = []
+    files = []
+    for p in sorted(AMBIENT_ROOT.glob('*')):
+        if p.is_file() and p.suffix.lower() in ('.wav', '.ogg', '.mp3', '.flac'):
+            files.append({'file': p.name, 'path': str(p), 'kind': p.suffix.lower().lstrip('.'), 'size_bytes': p.stat().st_size, 'playable_now': p.suffix.lower() == '.wav'})
+    return {'ok': bool(files), 'root': str(AMBIENT_ROOT), 'count': len(files), 'files': files, 'attribution': attribution, 'policy': 'Ambient sounds must be real sound-pack files with attribution; WAV files are used for direct ALSA/Whisplay playback.'}
+
+
+def audio_ambient_test(payload=None):
+    payload = payload or {}
+    device = str(payload.get('device') or 'default').strip() or 'default'
+    requested = str(payload.get('file') or '').strip().replace('..','').replace('/','')
+    st = ambient_status()
+    wavs = [AMBIENT_ROOT / f['file'] for f in st['files'] if f['file'].endswith('.wav')]
+    chosen = AMBIENT_ROOT / requested if requested else (wavs[0] if wavs else pathlib.Path(''))
+    if not chosen.exists() or chosen.suffix.lower() != '.wav':
+        return {'ok': False, 'status': st, 'error': 'No playable ambient WAV selected/found. Convert real pack audio to WAV first.'}
+    if not _audio_tool('aplay'):
+        return {'ok': False, 'status': st, 'error': 'aplay not installed; cannot play ambient audio through Whisplay.'}
+    play = sh('timeout 12 aplay -q -D '+shlex.quote(device)+' '+shlex.quote(str(chosen))+' 2>&1', timeout=15)
+    return {'ok': bool(play.get('ok')), 'status': st, 'file': chosen.name, 'device': device, 'play_output': play.get('output','')[-1200:], 'message': 'Real attributed ambient sound-pack WAV played through Whisplay/default ALSA.' if play.get('ok') else 'Ambient file exists but playback failed.'}
+
+
 def whisplay_ai_status(payload=None):
     env_path=pathlib.Path('/etc/mappi3/whisplay-ai.env')
     env_exists=env_path.exists()
@@ -2523,7 +2622,8 @@ def whisplay_ai_status(payload=None):
             try:
                 data=json.loads(txt); ollama['reachable']=True; ollama['models']=[m.get('name') for m in data.get('models',[]) if isinstance(m,dict)][:12]
             except Exception: pass
-    return {'ok': bool(audio.get('capture_ready') and audio.get('playback_ready')), 'audio': audio, 'power': power, 'tools': tools, 'ollama': ollama, 'talk_ready': bool(audio.get('playback_ready') and (tools.get('espeak') or tools.get('espeak-ng') or tools.get('piper') or ollama.get('reachable'))), 'hear_ready': bool(audio.get('capture_ready') and (tools.get('whisper.cpp') or tools.get('whisper-cli') or tools.get('arecord'))), 'notes': ['Hear path requires microphone capture plus STT command/model for full offline transcription.', 'Talk path requires Whisplay playback plus local TTS or chatbot speech backend.', 'Home-mode AI can use NukeBox Ollama at http://10.42.0.38:11434 when reachable on the MapPI3 hotspot.']}
+    tts=tts_status(); ambient=ambient_status()
+    return {'ok': bool(audio.get('capture_ready') and audio.get('playback_ready')), 'audio': audio, 'power': power, 'tools': tools, 'tts': tts, 'ambient': ambient, 'ollama': ollama, 'talk_ready': bool(audio.get('playback_ready') and (tools.get('espeak') or tools.get('espeak-ng') or tools.get('piper') or tts.get('piper_installed') or ollama.get('reachable'))), 'hear_ready': bool(audio.get('capture_ready') and (tools.get('whisper.cpp') or tools.get('whisper-cli') or tools.get('arecord'))), 'notes': ['Hear path requires microphone capture plus STT command/model for full offline transcription.', 'Talk path uses Whisplay playback plus Piper local TTS when installed; home-mode chat can use NukeBox Ollama.', 'Home-mode AI can use NukeBox Ollama at http://10.42.0.38:11434 when reachable on the MapPI3 hotspot.', 'Ambient path uses real attributed sound-pack files under /var/lib/mappi3/media/ambient; WAV copies are used for direct ALSA playback.']}
 
 GAME_ROOT = pathlib.Path('/var/lib/mappi3/games')
 
@@ -2800,6 +2900,8 @@ class Handler(http.server.SimpleHTTPRequestHandler):
         if self.path.startswith('/api/bluetooth/action/'): self.json_response(bluetooth_action(self.path.rsplit('/',1)[-1], payload)); return
         if self.path.startswith('/api/audio/record-test'): self.json_response(audio_record_test(payload)); return
         if self.path.startswith('/api/audio/play-test'): self.json_response(audio_play_test(payload)); return
+        if self.path.startswith('/api/audio/tts-test'): self.json_response(audio_tts_test(payload)); return
+        if self.path.startswith('/api/audio/ambient-test'): self.json_response(audio_ambient_test(payload)); return
         if self.path.startswith('/api/command/'): self.json_response(command(self.path.rsplit('/',1)[-1], payload)); return
         self.send_error(404)
 
