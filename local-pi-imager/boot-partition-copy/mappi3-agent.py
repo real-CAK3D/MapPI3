@@ -1243,14 +1243,32 @@ def import_available(module):
 
 def field_ai_backend_status():
     py={'PIL': import_available('PIL'), 'numpy': import_available('numpy'), 'onnxruntime': import_available('onnxruntime'), 'tflite_runtime': import_available('tflite_runtime'), 'pyzbar': import_available('pyzbar'), 'pytesseract': import_available('pytesseract')}
-    bins={name: bool(sh(f'command -v {name}', timeout=2).get('ok')) for name in ['tesseract','zbarimg']}
+    bins={name: bool(sh(f'command -v {name}', timeout=2).get('ok')) for name in ['tesseract','zbarimg','mappi3-tflite-runner']}
+    tflite_runner={'available': bool(bins.get('mappi3-tflite-runner')), 'path': None, 'active_smoke_verified': False, 'engine': None}
+    if tflite_runner['available']:
+        cmd_path=sh('command -v mappi3-tflite-runner', timeout=2)
+        if cmd_path.get('ok'):
+            tflite_runner['path']=str(cmd_path.get('out','')).strip()
+    manifest=CANDIDATE_MODEL_DIR/'MANIFEST.json'
+    if manifest.exists():
+        try:
+            data=json.loads(manifest.read_text(errors='ignore'))
+            runtime=data.get('runtime',{}) if isinstance(data,dict) else {}
+            tflite_runner['active_smoke_verified']=bool(runtime.get('active_smoke_verified'))
+            tflite_runner['engine']=runtime.get('engine')
+            if runtime.get('runner') and not tflite_runner.get('path'):
+                tflite_runner['path']=runtime.get('runner')
+        except Exception:
+            pass
+    tflite_active=bool(tflite_runner.get('available') and tflite_runner.get('active_smoke_verified'))
     ready={
         'barcode': py.get('pyzbar') or bins.get('zbarimg') or bins.get('tesseract'),
         'ocr': py.get('pytesseract') or bins.get('tesseract'),
-        'image_classifiers': py.get('onnxruntime') or py.get('tflite_runtime'),
+        'image_classifiers': py.get('onnxruntime') or py.get('tflite_runtime') or tflite_active,
+        'tflite_runner': tflite_active,
         'pillow_features': py.get('PIL')
     }
-    return {'python_modules': py, 'binaries': bins, 'ready': ready, 'policy':'Barcode/OCR backends can run real local decoding when zbar/pyzbar/tesseract are installed. Plant/fungi/animal/cloud/rock still need vetted model files before authoritative recognition.'}
+    return {'python_modules': py, 'binaries': bins, 'tflite_runner': tflite_runner, 'ready': ready, 'policy':'Barcode/OCR backends can run real local decoding when zbar/pyzbar/tesseract are installed. TensorFlow Lite C runner can run a tiny general visual cue/router only after live smoke verification; do not present image classifier guesses as authoritative species, medical, weather, or geology recognition. Debian ONNX runtime remains blocked on this Pi after illegal-instruction failure.'}
 
 def category_specialist_ready(category, specialist_installed=None, backends=None):
     specialist_installed=specialist_installed or []
