@@ -1168,7 +1168,10 @@ FIELD_AI_CATEGORIES = [
     {'id':'auto','name':'Identify automatically','model':'router-lite','input':'image','ready':True},
     {'id':'plant','name':'Plant / tree / leaf / flower','model':'mobilenetv3-small-int8-plants-ne-v1.tflite','input':'image','ready':False},
     {'id':'mushroom','name':'Mushroom / fungi','model':'mobilenetv3-small-int8-fungi-ne-v1.tflite','input':'image','ready':False},
-    {'id':'animal','name':'Animal / bird / mammal','model':'mobilenetv3-small-int8-fauna-ne-v1.tflite','input':'image','ready':False},
+    {'id':'animal','name':'Animal / mammal','model':'mobilenetv3-small-int8-fauna-ne-v1.tflite','input':'image','ready':False},
+    {'id':'bird','name':'Bird','model':'mobilenetv3-small-int8-birds-ne-v1.tflite','input':'image','ready':False},
+    {'id':'reptile','name':'Reptile / amphibian','model':'mobilenetv3-small-int8-reptiles-ne-v1.tflite','input':'image','ready':False},
+    {'id':'fish','name':'Fish','model':'mobilenetv3-small-int8-fish-ne-v1.tflite','input':'image','ready':False},
     {'id':'bug','name':'Bug / insect / spider','model':'mobilenetv3-small-int8-insects-ne-v1.tflite','input':'image','ready':False},
     {'id':'track','name':'Animal track / scat','model':'track-router-ne-v1.tflite','input':'image','ready':False},
     {'id':'cloud','name':'Cloud / weather observation','model':'mobilenetv3-small-int8-clouds-v1.tflite','input':'image','ready':False},
@@ -1185,6 +1188,9 @@ FIELD_GUIDE_SEED = [
     ('water-hemlock','Water hemlock','Cicuta maculata','poisonous plants','Deadly wetland carrot-family plant.','Umbel flowers, wet habitat, compound leaves, chambered root.','Wet meadows, stream banks, marshes.','New England and North America.','Spring through fall.','Extremely poisonous if ingested.','Not edible.','Wild carrot, angelica, elderberry, other umbel plants.','Never sample wild carrot-family roots/stems without expert ID.','Suspected ingestion is emergency; call poison control/EMS.','Avoid unknown wetland umbel plants.','Photo whole plant, leaf, stem, flower, habitat; do not handle bare-handed.','0.60','MapPI3 offline safety guide.'),
     ('amanita-warning','Amanita / deadly mushroom warning','Amanita spp.','mushrooms and fungi','Some Amanita species are deadly and can resemble edible mushrooms.','Look for cap, gills, ring, volva/base, spore color, habitat; many features hidden.','Woods, lawns, near host trees depending species.','New England has dangerous Amanita species.','Summer/fall common.','Potentially deadly.','Never treat as edible from photo ID.','Edible mushrooms can be confused with deadly Amanita/Galerina/Lepiota.','MapPI3 never certifies mushrooms safe to eat.','Suspected mushroom poisoning: save specimen/photos and seek emergency/poison control help.','Photo top, underside, full stem, base/volva, nearby trees, bruising.','Need multiple photos and expert ID.','0.95','MapPI3 mushroom safety rule.'),
     ('black-bear','Black bear','Ursus americanus','mammals','Large omnivore; usually avoids humans but food-conditioned bears are dangerous.','Large body, rounded ears, tracks with five toes/claws.','Forests, mountains, campsites.','Maine/New England.','Active spring-fall; denning winter.','Danger if surprised, cubs nearby, or food-conditioned.','Not applicable.','Large dog/coyote tracks can confuse track photos.','Do not approach; secure food; back away calmly.','Attack/injury requires emergency care.','Make noise, keep dog controlled, store food properly.','Photo tracks with scale, scat, or distant animal only.','0.75','MapPI3 wildlife safety seed.'),
+    ('black-capped-chickadee','Black-capped chickadee','Poecile atricapillus','birds','Small common songbird cue for offline bird routing.','Small round head, black cap and bib, white cheeks, gray back, buff sides; often heard calling chick-a-dee-dee-dee.','Mixed woods, yards, trail edges, feeders.','Maine/New England and northern North America.','Year-round resident in New England.','Low handling risk; do not disturb nests or capture wildlife.','Not applicable.','Other chickadees, nuthatches, small warblers in poor photos.','Observe from distance; do not bait or disturb nests.','Wildlife injury/animal bite requires real first aid; app is only a field cue.','Use behavior, song notes, habitat, and multiple photos before guessing species.','Photo side profile, head, wing, tail, perch/habitat; add song notes if possible.','0.45','MapPI3 offline bird seed.'),
+    ('garter-snake','Common garter snake','Thamnophis sirtalis','reptiles and amphibians','Common nonvenomous snake cue for reptile/amphibian routing.','Slender snake with longitudinal stripes, variable colors, often near damp cover.','Wet meadows, yards, forests, pond edges, stone walls.','Common in New England.','Spring through fall; basking on warm days.','Most are low danger but can bite/musk; never handle unknown snakes.','Not applicable.','Ribbon snakes, water snakes, juvenile snakes; venomous species elsewhere.','Observe from distance; do not pick up unknown snakes.','Suspected venomous bite, allergic reaction, or severe swelling needs emergency care.','Use as a caution cue only; keep distance and identify local venomous species before trips.','Photo from safe distance showing whole body, head, pattern, habitat, scale.','0.45','MapPI3 offline reptile seed.'),
+    ('brook-trout','Brook trout','Salvelinus fontinalis','fish and aquatic animals','Cold-water fish cue for offline fish/aquatic routing.','Dark back with wormlike markings, light spots with blue halos, orange lower fins with white leading edges.','Cold clean streams, ponds, mountain brooks.','Native/common in parts of New England.','Visible/caught depending season and regulations.','Low direct danger; water crossings, hooks, and regulations matter.','Only harvest where legal and positively identified; follow local rules.','Brown trout, young salmonids, other chars/trout in poor photos.','Do not trespass or violate fishing regulations; handle fish ethically.','Hook injuries or cold-water exposure require real first aid.','Use local regulations and conservation rules; app does not grant harvest permission.','Photo whole fish in water/net if legal, side markings, fins, habitat; avoid harming wildlife for photos.','0.45','MapPI3 offline fish seed.'),
     ('tick-warning','Tick / small arthropod caution','Ixodida / field arthropod cue','insects and spiders','Small dark arthropod reference for bug/spider/tick routing and bite-prevention reminders.','Tiny dark oval body, legs close to body, often found on clothing, skin, pets, grass, or leaf litter.','Tall grass, brush, leaf litter, animal trails, campsites.','Common in New England.','Spring through fall; active during mild weather.','Bite/vector risk varies; do not handle unknown bugs bare-handed.','Not edible.','Small beetles, seeds, dirt specks, spiders, other arthropods.','Use tweezers for attached ticks, clean skin, save/photo specimen if symptoms occur.','Seek medical guidance for fever, expanding rash, severe reaction, or embedded mouthparts concern.','Use as a caution cue only; verify with scale and clear close-up.','Close focused top photo, scale reference, body/leg view, where it was found.','0.55','MapPI3 offline arthropod safety seed.'),
     ('track-reference','Animal track / scat field cue','Track/scat reference','animal tracks and scat','Reference record for track/scat routing when the app sees ground marks rather than the animal.','Look for print shape, toe count, claw marks, stride, trail pattern, scat size, and scale.','Mud, snow, sand, trail edges, stream banks, campsites.','Universal field cue.','Any season; snow/mud preserve tracks best.','Wildlife proximity risk; scat can carry pathogens.','Not applicable.','Dog/coyote/fox/bobcat/bear/deer tracks overlap without scale and gait context.','Do not touch scat bare-handed; keep distance from fresh signs, dens, carcasses, or cubs.','Bites/scratches require real first aid; possible rabies exposure needs urgent care.','Use scale, stride, habitat, and freshness before guessing species.','Photo track with ruler/boot/coin scale, trail pattern, nearby scat, habitat context.','0.50','MapPI3 offline track safety seed.'),
     ('survival-priorities','Survival priorities checklist','Fixed offline reference','survival guide','A fixed reminder for field priorities when offline, lost, injured, cold, overheated, or low on supplies.','Stop, breathe, assess hazards, tell someone your plan if possible, mark location, preserve battery, water, shelter, warmth, signaling, navigation.','Any field setting.','Universal.','Any time.','Risk depends on exposure, injury, weather, water, and navigation state.','Not applicable.','Panic, bad shortcuts, unsafe water, exposure, delayed emergency call.','Do not rely on MapPI3 as your only navigation/emergency tool.','Call emergency services/use beacon when life safety is in question.','Prioritize immediate safety over app interaction.','No photo required; record location, conditions, injury, water/shelter/battery state.','1.0','MapPI3 curated survival reference.'),
@@ -1209,7 +1215,7 @@ def field_ai_db():
 
 PROTOTYPE_MODEL_BY_CATEGORY = {
     'auto':'plant-green-prototypes-v1.json','plant':'plant-green-prototypes-v1.json','mushroom':'fungi-color-prototypes-v1.json',
-    'animal':'animal-track-prototypes-v1.json','track':'animal-track-prototypes-v1.json','bug':'insect-closeup-prototypes-v1.json',
+    'animal':'animal-track-prototypes-v1.json','bird':'animal-track-prototypes-v1.json','reptile':'animal-track-prototypes-v1.json','fish':'animal-track-prototypes-v1.json','track':'animal-track-prototypes-v1.json','bug':'insect-closeup-prototypes-v1.json',
     'cloud':'cloud-color-prototypes-v1.json','rock':'rock-mineral-prototypes-v1.json','barcode':'barcode-ocr-prototypes-v1.json',
     'ocr':'barcode-ocr-prototypes-v1.json','injury':'injury-safety-prototypes-v1.json'
 }
@@ -1220,6 +1226,9 @@ SPECIALIST_BACKEND_BY_CATEGORY = {
     'plant':['tflite-runtime','onnxruntime'],
     'mushroom':['tflite-runtime','onnxruntime'],
     'animal':['tflite-runtime','onnxruntime'],
+    'bird':['tflite-runtime','onnxruntime'],
+    'reptile':['tflite-runtime','onnxruntime'],
+    'fish':['tflite-runtime','onnxruntime'],
     'bug':['tflite-runtime','onnxruntime'],
     'track':['tflite-runtime','onnxruntime'],
     'cloud':['tflite-runtime','onnxruntime'],
@@ -1291,6 +1300,12 @@ def _species_by_category(conn, category):
         rows=conn.execute("SELECT * FROM species WHERE category LIKE '%mushroom%' OR category LIKE '%fungi%' LIMIT 8").fetchall()
     elif category=='animal':
         rows=conn.execute("SELECT * FROM species WHERE category LIKE '%mammal%' OR category LIKE '%animal%' LIMIT 8").fetchall()
+    elif category=='bird':
+        rows=conn.execute("SELECT * FROM species WHERE category LIKE '%bird%' OR category LIKE '%animal%' OR category LIKE '%track%' LIMIT 8").fetchall()
+    elif category=='reptile':
+        rows=conn.execute("SELECT * FROM species WHERE category LIKE '%reptile%' OR category LIKE '%amphibian%' OR category LIKE '%animal%' OR category LIKE '%track%' LIMIT 8").fetchall()
+    elif category=='fish':
+        rows=conn.execute("SELECT * FROM species WHERE category LIKE '%fish%' OR category LIKE '%aquatic%' OR category LIKE '%animal%' OR category LIKE '%track%' LIMIT 8").fetchall()
     elif category=='bug':
         rows=conn.execute("SELECT * FROM species WHERE category LIKE '%insect%' OR category LIKE '%spider%' OR category LIKE '%arthropod%' LIMIT 8").fetchall()
     elif category=='track':
@@ -1331,6 +1346,88 @@ def basic_image_model(image_path, category):
     except Exception as e:
         return {'engine':'unavailable','error':str(e),'guess':'Image stored; install Pillow/TFLite model for feature inference','confidence':0}
 
+
+
+
+def _model_labels_for(model_path):
+    for suffix in ['.labels.txt','.txt','.labels','.json']:
+        lp=pathlib.Path(str(model_path)+suffix)
+        if lp.exists():
+            try:
+                if lp.suffix=='.json':
+                    data=json.loads(lp.read_text(errors='ignore'))
+                    if isinstance(data, list): return [str(x) for x in data]
+                    if isinstance(data, dict): return [str(x) for x in (data.get('labels') or data.get('classes') or [])]
+                return [line.strip() for line in lp.read_text(errors='ignore').splitlines() if line.strip()]
+            except Exception: pass
+    return []
+
+def _find_specialist_model(category):
+    wanted=[]
+    cat=next((c for c in FIELD_AI_CATEGORIES if c.get('id')==category), {})
+    if cat.get('model'): wanted.append(str(cat.get('model')).lower())
+    wanted += [category.lower()]
+    try:
+        for ext in SPECIALIST_MODEL_EXTENSIONS:
+            for f in sorted(BUILTIN_MODEL_DIR.glob('*'+ext)):
+                low=f.name.lower()
+                if any(w and (w == low or w in low) for w in wanted): return f
+    except Exception: pass
+    return None
+
+def run_specialist_image_model(image_path, category):
+    """Run one local small specialist model if installed; never loads more than one."""
+    model=_find_specialist_model(category)
+    if not model or not image_path:
+        return {'available': False, 'reason':'no specialist model file installed for category', 'model_path': str(model) if model else ''}
+    labels=_model_labels_for(model)
+    ext=model.suffix.lower()
+    try:
+        from PIL import Image
+        import numpy as np
+        img=Image.open(image_path).convert('RGB').resize((224,224))
+        arr=np.asarray(img)
+    except Exception as e:
+        return {'available': True, 'ok': False, 'model_path': str(model), 'error':'image preprocessing failed: '+str(e)}
+    try:
+        if ext == '.tflite':
+            try:
+                from tflite_runtime.interpreter import Interpreter
+            except Exception:
+                from tensorflow.lite.python.interpreter import Interpreter
+            interp=Interpreter(model_path=str(model), num_threads=1); interp.allocate_tensors()
+            inp=interp.get_input_details()[0]; out=interp.get_output_details()[0]
+            shape=inp.get('shape') or [1,224,224,3]
+            h,w=int(shape[1]),int(shape[2])
+            x=np.asarray(Image.open(image_path).convert('RGB').resize((w,h)))
+            if inp.get('dtype').__name__ == 'uint8':
+                x=x.astype('uint8')
+            else:
+                x=(x.astype('float32')/255.0)
+            x=np.expand_dims(x,0)
+            interp.set_tensor(inp['index'], x); interp.invoke()
+            scores=interp.get_tensor(out['index']).reshape(-1)
+            engine='tflite-runtime'
+        elif ext == '.onnx':
+            import onnxruntime as ort
+            sess=ort.InferenceSession(str(model), providers=['CPUExecutionProvider'])
+            inp=sess.get_inputs()[0]
+            shape=inp.shape
+            h=int(shape[2] if len(shape)==4 and isinstance(shape[2], int) else 224); w=int(shape[3] if len(shape)==4 and isinstance(shape[3], int) else 224)
+            x=np.asarray(Image.open(image_path).convert('RGB').resize((w,h))).astype('float32')/255.0
+            x=np.transpose(x,(2,0,1))[None,:,:,:]
+            scores=sess.run(None, {inp.name:x})[0].reshape(-1)
+            engine='onnxruntime'
+        else:
+            return {'available': True, 'ok': False, 'model_path': str(model), 'error':'model extension present but runner not implemented for '+ext}
+        idxs=list(np.argsort(scores)[-5:][::-1])
+        top=[]
+        for i in idxs:
+            score=float(scores[i])
+            top.append({'label': labels[i] if i < len(labels) else f'class_{i}', 'index': int(i), 'score': round(score,5), 'confidence': round(max(0,min(100,score*100)),1)})
+        return {'available': True, 'ok': True, 'engine': engine, 'model_path': str(model), 'labels_loaded': len(labels), 'top_predictions': top[:5], 'memory_policy':'loaded one small specialist model for this category only'}
+    except Exception as e:
+        return {'available': True, 'ok': False, 'model_path': str(model), 'error': str(e)[:500], 'hint':'Install tflite-runtime or onnxruntime and a vetted INT8/small model with labels.'}
 
 def decode_barcode_or_ocr(image_path, category='barcode'):
     result={'engine':'none','available':False,'decoded':[], 'text':'', 'notes':[]}
@@ -1384,7 +1481,8 @@ def decode_barcode_or_ocr(image_path, category='barcode'):
 
 def prototype_model_match(category, vision):
     ensure_builtin_models()
-    name=PROTOTYPE_MODEL_BY_CATEGORY.get(category)
+    category_alias={'bird':'animal','reptile':'animal','fish':'animal'}.get(category, category)
+    name=PROTOTYPE_MODEL_BY_CATEGORY.get(category_alias)
     if not name or not vision or not isinstance(vision.get('features'), dict): return None
     try:
         model=json.loads((BUILTIN_MODEL_DIR/name).read_text())
@@ -1402,6 +1500,7 @@ def prototype_model_match(category, vision):
 
 def field_ai_analyze(payload):
     category=str(payload.get('category') or 'auto').lower(); notes=str(payload.get('notes') or '')[:500]
+    category_alias={'bird':'animal','reptile':'animal','fish':'animal'}.get(category, category)
     image_data=payload.get('image') or ''
     image_path=''
     image_info={'received': False}
@@ -1416,22 +1515,26 @@ def field_ai_analyze(payload):
     else:
         obs_id='obs-'+uuid.uuid4().hex[:12]
     conn=field_ai_db(); candidates=_species_by_category(conn, category)
-    vision = basic_image_model(image_path, category) if image_path else {'engine':'none','guess':'No image supplied','confidence':0}
+    vision = basic_image_model(image_path, category_alias) if image_path else {'engine':'none','guess':'No image supplied','confidence':0}
     prototype = prototype_model_match(category, vision) if image_path else None
     specialist_backend = decode_barcode_or_ocr(image_path, category) if image_path and category in ('barcode','ocr') else None
+    specialist_model = run_specialist_image_model(image_path, category) if image_path and category not in ('barcode','ocr','firstaid','survival') else None
     primary=candidates[0] if candidates else {}
     model_ready=category_specialist_ready(category) or any(c['id']==category and c.get('ready') for c in FIELD_AI_CATEGORIES)
     confidence=42 if category not in ('injury','firstaid','survival') else 100
     if category=='mushroom': confidence=36
+    if specialist_model and specialist_model.get('ok') and specialist_model.get('top_predictions'):
+        top=specialist_model['top_predictions'][0]; confidence=int(top.get('confidence') or 0)
+        primary={**primary, 'id':'specialist-model-result', 'common_name':top.get('label') or primary.get('common_name','Specialist model result'), 'scientific_name':'local '+specialist_model.get('engine','specialist model'), 'identification_features':'A category-specific local model returned this top label. Still verify with field marks and safety notes.', 'dangerous_lookalikes': primary.get('dangerous_lookalikes','Unknown lookalikes require expert/local confirmation.'), 'additional_photo_requirements': primary.get('additional_photo_requirements','Take additional angles and habitat/scale photos.')}
     if specialist_backend and specialist_backend.get('decoded'):
         confidence=88
         primary={**primary, 'id':'decoded-code-or-text', 'common_name':'Decoded barcode/OCR text', 'scientific_name':'local zbar/tesseract backend', 'identification_features':'Real local barcode/OCR backend returned decoded data; review privately before sharing.', 'dangerous_lookalikes':'Damaged labels, reflections, partial codes, private IDs.', 'additional_photo_requirements':'Straight-on full code/label photo with borders visible.'}
     alternatives=[{'id':c['id'],'name':c['common_name'],'confidence':max(5, confidence-(i+1)*9),'category':c['category']} for i,c in enumerate(candidates[1:4])]
-    warnings=['Possible identification only. Do not consume any wild plant or mushroom based only on this result.','Specialist species model files are not installed yet; this response uses the safe reference/database fallback unless a barcode/OCR backend returned decoded text.']
+    warnings=['Possible identification only. Do not consume any wild plant or mushroom based only on this result.','If no vetted specialist model is installed for this category, this response uses safe reference/prototype fallback. Do not consume or medically act on photo ID alone.']
     if category in ('injury','firstaid'):
         warnings=['This app cannot diagnose bites, burns, rashes, wounds, infections, poisoning, or allergic reactions from an image.','Emergency signs: trouble breathing, facial/throat swelling, confusion, fainting, uncontrolled bleeding, severe burns, rapidly spreading redness, suspected venomous bite, shock, severe allergic reaction.']
     if category=='cloud': warnings=['Cloud photo only: not a reliable forecast. Use pressure, wind, radar/weather source when available, and leave exposed areas early if thunder/lightning threatens.']
-    result={'ok': True,'observation_id': obs_id,'category': category,'router': {'selected_category': category, 'model_ready': model_ready, 'plugin': next((c for c in FIELD_AI_CATEGORIES if c['id']==category), FIELD_AI_CATEGORIES[0])},'image': image_info,'possible_identification': {'id': primary.get('id','reference'), 'name': primary.get('common_name','Offline reference guidance'), 'scientific_name': primary.get('scientific_name',''), 'confidence': confidence, 'confirmed': False},'alternatives': alternatives,'vision_model': vision, 'prototype_model': prototype, 'specialist_backend': specialist_backend, 'visible_features': [f"Local image model: {vision.get('guess')} ({vision.get('engine')})", (f"Specialist backend: {specialist_backend.get('engine')} decoded {len(specialist_backend.get('decoded') or [])} item(s)" if specialist_backend and specialist_backend.get('decoded') else ''), primary.get('identification_features','Collect multiple angles and habitat context.') if primary else 'Collect additional photos.'],'dangerous_lookalikes': primary.get('dangerous_lookalikes','Unknown lookalikes require expert/local confirmation.') if primary else 'Unknown','safety_warnings': warnings,'additional_photos_requested': (primary.get('additional_photo_requirements') if primary else 'Top, underside, stem/base, whole organism, habitat, scale reference.'),'recommended_next_steps': ['Take 2-4 more photos from different angles with scale/context.','Compare against offline field-guide record and dangerous lookalikes.','Prototype JSON models are active now; install/enable specialist INT8/TFLite/ONNX/OCR backend next for stronger inference.'],'field_guide': primary,'offline_reference_matches': candidates[:5],'history_saved': True,'limitations': 'This is an offline-first plugin scaffold and safety/reference fallback. Barcode/OCR can use real local backends when installed; species/geology/weather recognition needs vetted model files.'}
+    result={'ok': True,'observation_id': obs_id,'category': category,'router': {'selected_category': category, 'model_ready': model_ready, 'plugin': next((c for c in FIELD_AI_CATEGORIES if c['id']==category), FIELD_AI_CATEGORIES[0])},'image': image_info,'possible_identification': {'id': primary.get('id','reference'), 'name': primary.get('common_name','Offline reference guidance'), 'scientific_name': primary.get('scientific_name',''), 'confidence': confidence, 'confirmed': False},'alternatives': alternatives,'vision_model': vision, 'prototype_model': prototype, 'specialist_backend': specialist_backend, 'specialist_model': specialist_model, 'visible_features': [f"Local image model: {vision.get('guess')} ({vision.get('engine')})", (f"Specialist backend: {specialist_backend.get('engine')} decoded {len(specialist_backend.get('decoded') or [])} item(s)" if specialist_backend and specialist_backend.get('decoded') else ''), primary.get('identification_features','Collect multiple angles and habitat context.') if primary else 'Collect additional photos.'],'dangerous_lookalikes': primary.get('dangerous_lookalikes','Unknown lookalikes require expert/local confirmation.') if primary else 'Unknown','safety_warnings': warnings,'additional_photos_requested': (primary.get('additional_photo_requirements') if primary else 'Top, underside, stem/base, whole organism, habitat, scale reference.'),'recommended_next_steps': ['Take 2-4 more photos from different angles with scale/context.','Compare against offline field-guide record and dangerous lookalikes.','Prototype JSON models are active now; install/enable specialist INT8/TFLite/ONNX/OCR backend next for stronger inference.'],'field_guide': primary,'offline_reference_matches': candidates[:5],'history_saved': True,'limitations': 'This is an offline-first plugin scaffold and safety/reference fallback. Barcode/OCR can use real local backends when installed; species/geology/weather recognition needs vetted model files.'}
     conn.execute('INSERT OR REPLACE INTO observations VALUES (?,?,?,?,?,?)', (obs_id, time.time(), category, image_path, json.dumps(result), notes)); conn.commit(); conn.close()
     return result
 
@@ -1455,12 +1558,128 @@ def field_ai_vote_correction(payload):
 def field_ai_clear_history():
     conn=field_ai_db(); conn.execute('DELETE FROM observations'); conn.commit(); conn.close(); return {'ok': True, 'message': 'Field AI observation history cleared.'}
 
+
+
+def _read_first_existing(paths, max_len=400):
+    for path in paths:
+        try:
+            q=pathlib.Path(path)
+            if q.exists():
+                return str(q), q.read_text(errors='ignore').strip()[:max_len]
+        except Exception:
+            pass
+    return '', ''
+
+def _float_or_none(value):
+    try:
+        if value is None or str(value).strip()=='': return None
+        return float(str(value).strip())
+    except Exception:
+        return None
+
+def _command_json_or_text(cmd, timeout=5):
+    out=sh(cmd, timeout=timeout)
+    text=(out.get('output') or '').strip()
+    data=None
+    if text:
+        try: data=json.loads(text)
+        except Exception: data=None
+    return {'ok': out.get('ok'), 'code': out.get('code'), 'text': text[-2000:], 'json': data}
+
+def _pisugar_server_query():
+    """Query common PiSugar daemon socket/protocol variants without requiring extra deps."""
+    candidates=[]
+    for host, port in [('127.0.0.1',8423),('127.0.0.1',8424)]:
+        for line in ['get battery\n','get battery_power_plugged\n','get battery_charging\n','get model\n']:
+            try:
+                with socket.create_connection((host, port), timeout=0.9) as sock:
+                    sock.sendall(line.encode())
+                    sock.settimeout(0.9)
+                    reply=sock.recv(512).decode('utf-8','replace').strip()
+                    candidates.append({'transport':'tcp','host':host,'port':port,'command':line.strip(),'reply':reply})
+            except Exception:
+                pass
+    for path in ['/tmp/pisugar-server.sock','/var/run/pisugar-server.sock','/run/pisugar-server.sock']:
+        try:
+            if not pathlib.Path(path).exists(): continue
+            for line in ['get battery\n','get battery_power_plugged\n','get battery_charging\n','get model\n']:
+                with socket.socket(socket.AF_UNIX, socket.SOCK_STREAM) as sock:
+                    sock.settimeout(0.9); sock.connect(path); sock.sendall(line.encode())
+                    reply=sock.recv(512).decode('utf-8','replace').strip()
+                    candidates.append({'transport':'unix','path':path,'command':line.strip(),'reply':reply})
+        except Exception:
+            pass
+    return candidates
+
+def _parse_pisugar_replies(replies):
+    parsed={}
+    for item in replies or []:
+        cmd=str(item.get('command') or '').lower(); rep=str(item.get('reply') or '').strip()
+        nums=[]
+        for part in rep.replace(':',' ').replace('=',' ').replace('%',' ').split():
+            v=_float_or_none(part)
+            if v is not None: nums.append(v)
+        low=rep.lower()
+        if 'battery' in cmd and 'power_plugged' not in cmd and 'charging' not in cmd and nums:
+            parsed['percent']=max(0,min(100,nums[-1]))
+        if 'power_plugged' in cmd:
+            parsed['battery_input_power_connected']=any(x in low for x in ['true','yes','1','plugged','connected']) or (nums and nums[-1] > 0)
+        if 'charging' in cmd:
+            parsed['charging']=any(x in low for x in ['true','yes','1','charging']) or (nums and nums[-1] > 0)
+        if 'model' in cmd and rep:
+            parsed['model']=rep
+    return parsed
+
+def power_status():
+    """Return honest Pi/PiSugar power data without faking unavailable readings."""
+    services=[_systemd_state(name) for name in ['pisugar-server.service','pisugar-power-manager.service','pisugar.service']]
+    bins={name: bool(sh('command -v '+shlex.quote(name), timeout=2).get('ok')) for name in ['pisugar-power-manager','pisugar-server','pisugar-programmer','vcgencmd','i2cdetect','i2cget']}
+    sysfs_supply=[]
+    try:
+        for d in pathlib.Path('/sys/class/power_supply').iterdir():
+            if not d.is_dir(): continue
+            entry={'name':d.name, 'path':str(d)}
+            for key in ['type','status','capacity','voltage_now','current_now','online','present','model_name','manufacturer']:
+                try:
+                    fp=d/key
+                    if fp.exists(): entry[key]=fp.read_text(errors='ignore').strip()
+                except Exception: pass
+            sysfs_supply.append(entry)
+    except Exception: pass
+    throttle_raw=''
+    if bins.get('vcgencmd'):
+        throttle_raw=sh('vcgencmd get_throttled 2>&1 || true', timeout=4).get('output','').strip()
+    cli={}
+    for exe, cmd in [('pisugar-power-manager','pisugar-power-manager --get 2>&1 || true'), ('pisugar-server','pisugar-server --help 2>&1 | head -20 || true')]:
+        if bins.get(exe): cli[exe]= _command_json_or_text(cmd, timeout=5)
+    replies=_pisugar_server_query()
+    parsed=_parse_pisugar_replies(replies)
+    percent=parsed.get('percent'); charging=parsed.get('charging'); battery_input=parsed.get('battery_input_power_connected')
+    source='pisugar-daemon' if replies else 'unavailable'
+    for ps in sysfs_supply:
+        cap=_float_or_none(ps.get('capacity'))
+        if percent is None and cap is not None: percent=cap; source='sysfs-power-supply'
+        st=str(ps.get('status') or '').lower()
+        if charging is None and st: charging='charging' in st
+        online=str(ps.get('online') or '').strip()
+        if battery_input is None and online in ('0','1'): battery_input=(online=='1')
+    status_label='unknown'
+    if percent is not None:
+        status_label='ready' if percent >= 35 else ('caution' if percent >= 15 else 'problem')
+    elif any(s.get('active')=='active' for s in services) or replies or sysfs_supply:
+        status_label='caution'
+    note=[]
+    if percent is None: note.append('PiSugar percentage not exposed by installed daemon/sysfs yet.')
+    if battery_input is None: note.append('Battery input/USB-C plugged state not exposed yet.')
+    note.append('Pi input power is inferred because the Pi is running; separate Pi-vs-battery input sensing depends on PiSugar daemon/I2C support.')
+    return {'ok': True, 'status': status_label, 'source': source, 'percent': percent, 'charging': charging, 'battery_input_power_connected': battery_input, 'pi_power_connected': True, 'pisugar': {'services': services, 'tools': bins, 'daemon_replies': replies[-12:], 'parsed': parsed, 'cli': cli}, 'sysfs_power_supply': sysfs_supply, 'pi': {'vcgencmd_available': bins.get('vcgencmd'), 'throttled': throttle_raw, 'undervoltage_warning': ('under-voltage detected' if throttle_raw and throttle_raw not in ('throttled=0x0','0x0') else '')}, 'notes': note, 'time': time.time()}
+
 def status():
     gps=gps_status(); sense=sense_snapshot(); ip=sh('hostname -I || true',timeout=5)['output'].strip(); w=wifi_info(); mode='hotspot' if w['hotspot_active'] else ('home-wifi' if w['home_wifi_ssid'] else 'local-pi')
     sense_text=sense.get('message') or ('sense-hat ok' if sense.get('ok') else 'sense-hat unavailable')
     if sense.get('ok') and sense.get('orientation'):
         o=sense.get('orientation') or {}; sense_text='sense-hat ok roll={:.1f} pitch={:.1f} yaw={:.1f} mode={}'.format(o.get('roll',0),o.get('pitch',0),o.get('yaw',0),sense.get('mode','compass'))
-    return {'ok': True, 'host': socket.gethostname(), 'port': PORT, 'https': https_status(), 'ip': ip, 'connection_mode': mode, **w, 'gps_device': gps.get('device'), 'gps': gps, 'sense_hat': sense_text, 'sense': sense, 'audio': audio_status(), 'system': system_stats(), 'state': read_state(), 'time': time.time()}
+    return {'ok': True, 'host': socket.gethostname(), 'port': PORT, 'https': https_status(), 'ip': ip, 'connection_mode': mode, **w, 'gps_device': gps.get('device'), 'gps': gps, 'sense_hat': sense_text, 'sense': sense, 'audio': audio_status(), 'power': power_status(), 'system': system_stats(), 'state': read_state(), 'time': time.time()}
 
 def _nmcli_lines(args, timeout=5):
     out = sh('nmcli -t ' + args + ' 2>/dev/null || true', timeout=timeout).get('output','')
@@ -2262,6 +2481,50 @@ def audio_record_test(payload=None):
     except Exception: pass
     return {'ok': bool(rec.get('ok') and size > 1000), 'seconds': seconds, 'device': device, 'rate': rate, 'channels': channels, 'bytes_recorded': size, 'output': rec.get('output','')[-1200:], 'message': 'Whisplay microphone capture test recorded audio bytes.' if size > 1000 else 'No useful microphone audio captured; check Whisplay HAT input routing/default source.'}
 
+
+
+def audio_play_test(payload=None):
+    payload=payload or {}; seconds=max(1, min(4, int(payload.get('seconds') or 2)))
+    device=str(payload.get('device') or 'default').strip() or 'default'
+    if not _audio_tool('aplay'):
+        return {'ok': False, 'error':'aplay not installed; cannot test Whisplay speaker playback.'}
+    wav=pathlib.Path('/tmp/mappi3-whisplay-play-test.wav')
+    try:
+        import wave
+        rate=48000; frames=rate*seconds
+        with wave.open(str(wav),'wb') as w:
+            w.setnchannels(1); w.setsampwidth(2); w.setframerate(rate)
+            for i in range(frames):
+                amp=int(12000*math.sin(2*math.pi*880*i/rate))
+                w.writeframes(struct.pack('<h', amp))
+        out=sh('timeout '+shlex.quote(str(seconds+3))+' aplay -q -D '+shlex.quote(device)+' '+shlex.quote(str(wav))+' 2>&1', timeout=seconds+5)
+        return {'ok': bool(out.get('ok')), 'seconds': seconds, 'device': device, 'output': out.get('output','')[-1200:], 'message': 'Whisplay speaker playback test sent a short tone.' if out.get('ok') else 'Speaker playback command failed; check default sink/device.'}
+    finally:
+        try: wav.unlink()
+        except Exception: pass
+
+def whisplay_ai_status(payload=None):
+    env_path=pathlib.Path('/etc/mappi3/whisplay-ai.env')
+    env_exists=env_path.exists()
+    ollama_host='http://10.42.0.38:11434'
+    try:
+        if env_exists:
+            for line in env_path.read_text(errors='ignore').splitlines():
+                if line.strip().startswith('OLLAMA_HOST='):
+                    ollama_host=line.split('=',1)[1].strip().strip('"\'') or ollama_host
+    except Exception: pass
+    audio=audio_status(); power=power_status()
+    tools={name: bool(sh('command -v '+shlex.quote(name), timeout=2).get('ok')) for name in ['arecord','aplay','pactl','espeak','espeak-ng','piper','whisper.cpp','whisper-cli','ollama','curl']}
+    ollama={'host': ollama_host, 'reachable': False, 'models': []}
+    if tools.get('curl'):
+        res=sh('timeout 5 curl -fsS '+shlex.quote(ollama_host.rstrip('/')+'/api/tags')+' 2>/dev/null || true', timeout=7)
+        txt=res.get('output','').strip()
+        if txt:
+            try:
+                data=json.loads(txt); ollama['reachable']=True; ollama['models']=[m.get('name') for m in data.get('models',[]) if isinstance(m,dict)][:12]
+            except Exception: pass
+    return {'ok': bool(audio.get('capture_ready') and audio.get('playback_ready')), 'audio': audio, 'power': power, 'tools': tools, 'ollama': ollama, 'talk_ready': bool(audio.get('playback_ready') and (tools.get('espeak') or tools.get('espeak-ng') or tools.get('piper') or ollama.get('reachable'))), 'hear_ready': bool(audio.get('capture_ready') and (tools.get('whisper.cpp') or tools.get('whisper-cli') or tools.get('arecord'))), 'notes': ['Hear path requires microphone capture plus STT command/model for full offline transcription.', 'Talk path requires Whisplay playback plus local TTS or chatbot speech backend.', 'Home-mode AI can use NukeBox Ollama at http://10.42.0.38:11434 when reachable on the MapPI3 hotspot.']}
+
 GAME_ROOT = pathlib.Path('/var/lib/mappi3/games')
 
 def game_library_status():
@@ -2507,10 +2770,12 @@ class Handler(http.server.SimpleHTTPRequestHandler):
         if self.path.startswith('/api/online-maintenance/log'): self.json_response(online_maintenance_log()); return
         if self.path.startswith('/api/media/library'): self.json_response(media_manifest()); return
         if self.path.startswith('/api/audio/status'): self.json_response(audio_status()); return
+        if self.path.startswith('/api/power/status'): self.json_response(power_status()); return
         if self.path.startswith('/api/games/library'): self.json_response(game_library_status()); return
         if self.path.startswith('/api/plugins'): self.json_response(plugin_status()); return
         if self.path.startswith('/api/bluetooth/pan/status'): self.json_response(bluetooth_pan_status()); return
         if self.path.startswith('/api/bluetooth/status'): self.json_response(bluetooth_status()); return
+        if self.path.startswith('/api/whisplay/ai/status'): self.json_response(whisplay_ai_status()); return
         if self.path.startswith('/api/whisplay/input'):
             qs=urllib.parse.parse_qs(urllib.parse.urlparse(self.path).query); self.json_response(whisplay_input_status({k:v[-1] for k,v in qs.items()})); return
         if self.path.startswith('/api/sense'): self.json_response({'ok': True, 'sense': sense_snapshot(), 'state': read_state(), 'available_modes': SENSE_MODES, 'time': time.time()}); return
@@ -2534,6 +2799,7 @@ class Handler(http.server.SimpleHTTPRequestHandler):
         if self.path.startswith('/api/bluetooth/scan'): self.json_response(bluetooth_scan(payload)); return
         if self.path.startswith('/api/bluetooth/action/'): self.json_response(bluetooth_action(self.path.rsplit('/',1)[-1], payload)); return
         if self.path.startswith('/api/audio/record-test'): self.json_response(audio_record_test(payload)); return
+        if self.path.startswith('/api/audio/play-test'): self.json_response(audio_play_test(payload)); return
         if self.path.startswith('/api/command/'): self.json_response(command(self.path.rsplit('/',1)[-1], payload)); return
         self.send_error(404)
 
