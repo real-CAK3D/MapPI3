@@ -1091,6 +1091,7 @@ FIELD_AI_ROOT = pathlib.Path('/var/lib/mappi3/field-ai')
 FIELD_AI_DB = FIELD_AI_ROOT / 'field_guide.db'
 FIELD_AI_UPLOADS = FIELD_AI_ROOT / 'uploads'
 BUILTIN_MODEL_DIR = pathlib.Path('/opt/mappi3/models')
+CANDIDATE_MODEL_DIR = pathlib.Path('/opt/mappi3/model-candidates')
 BUILTIN_JSON_MODELS = {
     'cloud-color-prototypes-v1.json': {
         'id':'cloud-color-prototypes-v1','kind':'prototype-classifier','version':'1.0','features':['green_ratio','blue_ratio','orange_ratio','dark_ratio','bright_ratio','edge_mean_scaled'],
@@ -1281,13 +1282,21 @@ def field_ai_status():
     model_dir=BUILTIN_MODEL_DIR
     installed=[]
     if model_dir.exists(): installed=sorted([p.name for p in model_dir.glob('*') if p.is_file()])
+    candidate_models=[]
+    candidate_manifest={}
+    if CANDIDATE_MODEL_DIR.exists():
+        candidate_models=sorted([p.name for p in CANDIDATE_MODEL_DIR.glob('*') if p.is_file()])
+        manifest=CANDIDATE_MODEL_DIR/'MANIFEST.json'
+        if manifest.exists():
+            try: candidate_manifest=json.loads(manifest.read_text(errors='ignore'))
+            except Exception: candidate_manifest={}
     prototype_expected=sorted(set(BUILTIN_JSON_MODELS.keys()))
     prototype_installed=[name for name in prototype_expected if name in installed]
     specialist_installed=[name for name in installed if pathlib.Path(name).suffix.lower() in SPECIALIST_MODEL_EXTENSIONS]
     specialist_expected=[c['model'] for c in FIELD_AI_CATEGORIES if str(c.get('model','')).endswith(('.tflite','.onnx','.ncnn')) or str(c.get('model','')).startswith('future-')]
     backend_status=field_ai_backend_status()
     backend_categories_ready=[cat for cat in SPECIALIST_BACKEND_BY_CATEGORY if category_specialist_ready(cat, specialist_installed, backend_status)]
-    return {'ok': True, 'offline': True, 'database': str(FIELD_AI_DB), 'species_records': species, 'observations': obs, 'corrections': corrections, 'model_dir': str(model_dir), 'installed_models': installed, 'installed_prototype_models': prototype_installed, 'expected_prototype_models': prototype_expected, 'missing_prototype_models': [name for name in prototype_expected if name not in prototype_installed], 'installed_specialist_models': specialist_installed, 'installed_specialist_backends': backend_categories_ready, 'specialist_backend_status': backend_status, 'expected_future_specialist_models': specialist_expected, 'specialist_models_ready': bool(specialist_installed or backend_categories_ready), 'capability_tier': 'prototype-cue-pack + backend hooks' if prototype_installed else 'curated-reference-fallback', 'plugins': plugins, 'model_policy': 'Current offline AI has prototype JSON cue matching, curated field-guide fallback, and real local barcode/OCR hooks when zbar/tesseract/pyzbar/pytesseract are installed. It is not authoritative species, medical, weather, or geology recognition until vetted specialist models/backends are installed and live-verified.', 'memory_policy': 'Zero 2 W: one model loaded at a time; image resize target 224/320; prefer small INT8/TFLite/ONNX; avoid PyTorch on Pi'}
+    return {'ok': True, 'offline': True, 'database': str(FIELD_AI_DB), 'species_records': species, 'observations': obs, 'corrections': corrections, 'model_dir': str(model_dir), 'installed_models': installed, 'candidate_model_dir': str(CANDIDATE_MODEL_DIR), 'candidate_models': candidate_models, 'candidate_manifest': candidate_manifest, 'installed_prototype_models': prototype_installed, 'expected_prototype_models': prototype_expected, 'missing_prototype_models': [name for name in prototype_expected if name not in prototype_installed], 'installed_specialist_models': specialist_installed, 'installed_specialist_backends': backend_categories_ready, 'specialist_backend_status': backend_status, 'expected_future_specialist_models': specialist_expected, 'specialist_models_ready': bool(specialist_installed or backend_categories_ready), 'capability_tier': 'prototype-cue-pack + backend hooks' if prototype_installed else 'curated-reference-fallback', 'plugins': plugins, 'model_policy': 'Current offline AI has prototype JSON cue matching, curated field-guide fallback, real local barcode/OCR hooks, and optional candidate-model inventory. Candidate TFLite files are not promoted to active specialist recognition until a Pi-Zero-safe runtime is installed and live inference is verified. Do not present image classifier guesses as authoritative species, medical, weather, or geology recognition.', 'memory_policy': 'Zero 2 W: one model loaded at a time; image resize target 224/320; prefer small INT8/TFLite/NCNN; avoid PyTorch and unsafe ONNX runtime on this Pi'}
 
 def _species_by_category(conn, category):
     if category=='auto':
@@ -2613,8 +2622,11 @@ def whisplay_ai_status(payload=None):
                     ollama_host=line.split('=',1)[1].strip().strip('"\'') or ollama_host
     except Exception: pass
     audio=audio_status(); power=power_status()
-    tools={name: bool(sh('command -v '+shlex.quote(name), timeout=2).get('ok')) for name in ['arecord','aplay','pactl','espeak','espeak-ng','piper','whisper.cpp','whisper-cli','ollama','curl']}
-    ollama={'host': ollama_host, 'reachable': False, 'models': []}
+    tools={name: bool(sh('command -v '+shlex.quote(name), timeout=2).get('ok')) for name in ['arecord','aplay','pactl','espeak','espeak-ng','piper','mappi3-whisper-stt','whisper.cpp','whisper-cli','ollama','curl']}
+    whisper_bin=pathlib.Path('/opt/mappi3/stt/whisper.cpp/whisper-bin-ubuntu-arm64/whisper-cli')
+    whisper_model=pathlib.Path('/opt/mappi3/stt/models/ggml-tiny.en.bin')
+    stt={'engine':'whisper.cpp','wrapper':'mappi3-whisper-stt','wrapper_installed':tools.get('mappi3-whisper-stt'), 'binary':str(whisper_bin), 'binary_installed':whisper_bin.exists(), 'model':str(whisper_model), 'model_installed':whisper_model.exists(), 'model_tier':'tiny.en', 'policy':'Short offline commands only on Pi Zero 2 W; use NukeBox for heavier AI/STT when available.'}
+    ollama={'host': ollama_host, 'reachable': False, 'models': [], 'link': ollama_host.rstrip('/')}
     if tools.get('curl'):
         res=sh('timeout 5 curl -fsS '+shlex.quote(ollama_host.rstrip('/')+'/api/tags')+' 2>/dev/null || true', timeout=7)
         txt=res.get('output','').strip()
@@ -2623,7 +2635,7 @@ def whisplay_ai_status(payload=None):
                 data=json.loads(txt); ollama['reachable']=True; ollama['models']=[m.get('name') for m in data.get('models',[]) if isinstance(m,dict)][:12]
             except Exception: pass
     tts=tts_status(); ambient=ambient_status()
-    return {'ok': bool(audio.get('capture_ready') and audio.get('playback_ready')), 'audio': audio, 'power': power, 'tools': tools, 'tts': tts, 'ambient': ambient, 'ollama': ollama, 'talk_ready': bool(audio.get('playback_ready') and (tools.get('espeak') or tools.get('espeak-ng') or tools.get('piper') or tts.get('piper_installed') or ollama.get('reachable'))), 'hear_ready': bool(audio.get('capture_ready') and (tools.get('whisper.cpp') or tools.get('whisper-cli') or tools.get('arecord'))), 'notes': ['Hear path requires microphone capture plus STT command/model for full offline transcription.', 'Talk path uses Whisplay playback plus Piper local TTS when installed; home-mode chat can use NukeBox Ollama.', 'Home-mode AI can use NukeBox Ollama at http://10.42.0.38:11434 when reachable on the MapPI3 hotspot.', 'Ambient path uses real attributed sound-pack files under /var/lib/mappi3/media/ambient; WAV copies are used for direct ALSA playback.']}
+    return {'ok': bool(audio.get('capture_ready') and audio.get('playback_ready')), 'audio': audio, 'power': power, 'tools': tools, 'tts': tts, 'stt': stt, 'ambient': ambient, 'ollama': ollama, 'nukebox': {'ollama_host': ollama_host.rstrip('/'), 'reachable': ollama.get('reachable'), 'models': ollama.get('models', []), 'preferred_for': ['heavier chat/inference', 'embeddings', 'home-mode AI']}, 'talk_ready': bool(audio.get('playback_ready') and (tools.get('espeak') or tools.get('espeak-ng') or tools.get('piper') or tts.get('piper_installed') or ollama.get('reachable'))), 'hear_ready': bool(audio.get('capture_ready') and (tools.get('mappi3-whisper-stt') or stt.get('binary_installed') or tools.get('whisper.cpp') or tools.get('whisper-cli') or tools.get('arecord'))), 'notes': ['Hear path uses Whisplay microphone capture plus tiny whisper.cpp STT when installed; keep clips short on Pi Zero 2 W.', 'Talk path uses Whisplay playback plus Piper local TTS when installed; home-mode chat can use NukeBox Ollama.', 'Home-mode AI can use NukeBox Ollama at http://10.42.0.38:11434 when reachable on the MapPI3 hotspot.', 'Ambient path uses real attributed sound-pack files under /var/lib/mappi3/media/ambient; WAV copies are used for direct ALSA playback.']}
 
 GAME_ROOT = pathlib.Path('/var/lib/mappi3/games')
 
