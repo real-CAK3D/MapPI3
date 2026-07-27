@@ -2,6 +2,8 @@
 import base64, fcntl, hashlib, http.server, io, json, math, os, pathlib, random, shlex, shutil, socket, sqlite3, ssl, struct, subprocess, threading, time, urllib.parse, urllib.request, uuid
 APP_DIR = pathlib.Path('/opt/mappi3/app')
 STATE = pathlib.Path('/var/lib/mappi3/state.json')
+TIMELINE_DB = pathlib.Path(os.environ.get('MAPPI3_TIMELINE_DB', '/var/lib/mappi3/timeline.sqlite3'))
+TIMELINE_SCHEMA_VERSION = 1
 OFFLINE_PACK_ROOT = pathlib.Path('/var/lib/mappi3/offline-packs')
 PORT = int(os.environ.get('MAPPI3_PORT','5050'))
 HTTPS_PORT = int(os.environ.get('MAPPI3_HTTPS_PORT','5443'))
@@ -17,6 +19,7 @@ SENSE_MODES = ['compass','compass-arrow','compass-cardinal','rotation-test','liq
 ALLOWED = {'status','restart-web','reboot','shutdown','update-app','gps-sample','toggle-hotspot','hotspot-on','connect-home-wifi','wifi-scan','wifi-save-network','wifi-connect-saved','network-status','tailscale-status','tailscale-login','remote-access-repair','sense-mode','calibrate','harden-hotspot','plugin-update','vnc-setup','vnc-disable','weather-refresh','noaa-refresh','hourly-online-refresh','online-maintenance','gps-diagnose','sense-diagnose','field-ai-verify','captive-setup','captive-disable','captive-status','gps-pps-setup','whisplay-test-popup','whisplay-input','whisplay-input-status','snake-trail-event','plugin-status','plugin-install','plugin-install-all','plugin-uninstall','audio-tts-test','audio-ambient-test'}
 SENSE_CACHE = {'ok': False, 'mode': 'compass', 'message': 'Sense HAT display loop starting', 'updated': 0, 'joystick': {'seq': 0, 'direction': '', 'pressed': False, 'updated': 0}}
 SENSE_LOCK = threading.Lock()
+TIMELINE_LOCK = threading.RLock()
 KEY_NAMES = {103:'up',108:'down',105:'left',106:'right',28:'press'}
 COMPASS_PATTERNS = {
     'N': [(3,0),(4,0),(3,1),(4,1),(2,2),(5,2),(3,2),(4,2),(3,3),(4,3),(3,4),(4,4),(3,5),(4,5),(3,6),(4,6),(3,7),(4,7)],
@@ -2946,6 +2949,258 @@ def serve_http(port=PORT, use_https=False):
         httpd.socket = ctx.wrap_socket(httpd.socket, server_side=True)
     httpd.serve_forever()
 
+
+TIMELINE_SCHEMA_SQL = """
+PRAGMA journal_mode=WAL;
+PRAGMA foreign_keys=ON;
+CREATE TABLE IF NOT EXISTS metadata (key TEXT PRIMARY KEY, value TEXT NOT NULL, updated_at REAL NOT NULL);
+CREATE TABLE IF NOT EXISTS trips (id TEXT PRIMARY KEY, route_id TEXT, route_name TEXT, title TEXT, state TEXT NOT NULL DEFAULT 'active', started_at REAL NOT NULL, updated_at REAL NOT NULL, ended_at REAL, paused_at REAL, resumed_at REAL, cumulative_distance_m REAL DEFAULT 0, summary_json TEXT NOT NULL DEFAULT '{}', route_json TEXT NOT NULL DEFAULT '{}', archived INTEGER NOT NULL DEFAULT 0);
+CREATE TABLE IF NOT EXISTS gps_samples (id TEXT PRIMARY KEY, trip_id TEXT NOT NULL, timestamp REAL NOT NULL, lat REAL, lon REAL, alt REAL, accuracy_m REAL, speed_mps REAL, track_deg REAL, fix_mode INTEGER DEFAULT 0, stale INTEGER NOT NULL DEFAULT 0, source TEXT DEFAULT 'gpsd', raw_json TEXT NOT NULL DEFAULT '{}', FOREIGN KEY(trip_id) REFERENCES trips(id) ON DELETE CASCADE);
+CREATE TABLE IF NOT EXISTS sensor_samples (id TEXT PRIMARY KEY, trip_id TEXT NOT NULL, timestamp REAL NOT NULL, temp_c REAL, humidity REAL, pressure_hpa REAL, battery_percent REAL, charging INTEGER, source TEXT DEFAULT 'sensehat', raw_json TEXT NOT NULL DEFAULT '{}', FOREIGN KEY(trip_id) REFERENCES trips(id) ON DELETE CASCADE);
+CREATE TABLE IF NOT EXISTS timeline_events (id TEXT PRIMARY KEY, trip_id TEXT NOT NULL, timestamp REAL NOT NULL, category TEXT NOT NULL DEFAULT 'note', event_type TEXT NOT NULL DEFAULT 'note', title TEXT NOT NULL DEFAULT 'Timeline event', description TEXT DEFAULT '', lat REAL, lon REAL, source TEXT DEFAULT 'manual', severity TEXT DEFAULT 'info', hidden INTEGER NOT NULL DEFAULT 0, metadata_json TEXT NOT NULL DEFAULT '{}', created_at REAL NOT NULL, updated_at REAL NOT NULL, FOREIGN KEY(trip_id) REFERENCES trips(id) ON DELETE CASCADE);
+CREATE TABLE IF NOT EXISTS timeline_ranges (id TEXT PRIMARY KEY, trip_id TEXT NOT NULL, start_timestamp REAL NOT NULL, end_timestamp REAL, range_type TEXT NOT NULL, title TEXT NOT NULL DEFAULT 'Timeline range', description TEXT DEFAULT '', severity TEXT DEFAULT 'info', source TEXT DEFAULT 'recorder', metadata_json TEXT NOT NULL DEFAULT '{}', created_at REAL NOT NULL, updated_at REAL NOT NULL, FOREIGN KEY(trip_id) REFERENCES trips(id) ON DELETE CASCADE);
+CREATE TABLE IF NOT EXISTS media_items (id TEXT PRIMARY KEY, trip_id TEXT NOT NULL, captured_at REAL NOT NULL, event_id TEXT, media_type TEXT NOT NULL DEFAULT 'photo', path TEXT NOT NULL, thumbnail_path TEXT, metadata_json TEXT NOT NULL DEFAULT '{}', FOREIGN KEY(trip_id) REFERENCES trips(id) ON DELETE CASCADE, FOREIGN KEY(event_id) REFERENCES timeline_events(id) ON DELETE SET NULL);
+CREATE INDEX IF NOT EXISTS idx_gps_trip_timestamp ON gps_samples (trip_id, timestamp);
+CREATE INDEX IF NOT EXISTS idx_sensor_trip_timestamp ON sensor_samples (trip_id, timestamp);
+CREATE INDEX IF NOT EXISTS idx_event_trip_timestamp ON timeline_events (trip_id, timestamp);
+CREATE INDEX IF NOT EXISTS idx_event_category_timestamp ON timeline_events (trip_id, category, timestamp);
+CREATE INDEX IF NOT EXISTS idx_range_trip_start ON timeline_ranges (trip_id, start_timestamp);
+CREATE INDEX IF NOT EXISTS idx_media_trip_timestamp ON media_items (trip_id, captured_at);
+"""
+
+
+def timeline_now_ms():
+    return round(time.time() * 1000)
+
+
+def timeline_id(prefix):
+    return f"{prefix}-{uuid.uuid4().hex[:12]}"
+
+
+def timeline_json(value):
+    try:
+        return json.dumps(value if value is not None else {}, separators=(',', ':'), sort_keys=True)
+    except Exception:
+        return '{}'
+
+
+def timeline_decode(value):
+    try:
+        return json.loads(value or '{}')
+    except Exception:
+        return {}
+
+
+def timeline_row(row):
+    data = dict(row)
+    for key in ('summary_json', 'route_json', 'raw_json', 'metadata_json'):
+        if key in data:
+            data[key[:-5] if key.endswith('_json') else key] = timeline_decode(data.pop(key))
+    for key in ('archived', 'hidden', 'stale', 'charging'):
+        if key in data and data[key] is not None:
+            data[key] = bool(data[key])
+    return data
+
+
+def timeline_conn():
+    TIMELINE_DB.parent.mkdir(parents=True, exist_ok=True)
+    conn = sqlite3.connect(str(TIMELINE_DB), timeout=15)
+    conn.row_factory = sqlite3.Row
+    conn.execute('PRAGMA foreign_keys=ON')
+    conn.executescript(TIMELINE_SCHEMA_SQL)
+    conn.execute('INSERT OR REPLACE INTO metadata(key,value,updated_at) VALUES (?,?,?)', ('timeline_schema_version', str(TIMELINE_SCHEMA_VERSION), timeline_now_ms()))
+    conn.commit()
+    return conn
+
+
+def timeline_latest_active_trip(conn):
+    return conn.execute("SELECT * FROM trips WHERE archived=0 AND state IN ('active','paused') ORDER BY started_at DESC LIMIT 1").fetchone()
+
+
+def timeline_get_trip(conn, trip_id):
+    row = conn.execute('SELECT * FROM trips WHERE id=?', (trip_id,)).fetchone()
+    return timeline_row(row) if row else None
+
+
+def timeline_list_trips():
+    with TIMELINE_LOCK, timeline_conn() as conn:
+        rows = conn.execute('SELECT * FROM trips WHERE archived=0 ORDER BY started_at DESC LIMIT 50').fetchall()
+        active = timeline_latest_active_trip(conn)
+        return {'ok': True, 'schema_version': TIMELINE_SCHEMA_VERSION, 'active_trip_id': active['id'] if active else None, 'trips': [timeline_row(r) for r in rows], 'storage': 'sqlite-local', 'path': str(TIMELINE_DB)}
+
+
+def timeline_start_trip(payload=None):
+    payload = payload or {}; now = timeline_now_ms(); trip_id = str(payload.get('id') or timeline_id('trip'))[:80]
+    route = payload.get('route') if isinstance(payload.get('route'), dict) else {}
+    route_id = str(payload.get('route_id') or route.get('id') or '')[:120]
+    route_name = str(payload.get('route_name') or route.get('name') or 'MapPI3 field trip')[:160]
+    title = str(payload.get('title') or route_name or 'MapPI3 field trip')[:180]
+    with TIMELINE_LOCK, timeline_conn() as conn:
+        conn.execute("UPDATE trips SET state='paused', paused_at=?, updated_at=? WHERE state='active'", (now, now))
+        conn.execute('INSERT OR REPLACE INTO trips(id,route_id,route_name,title,state,started_at,updated_at,summary_json,route_json) VALUES (?,?,?,?,?,?,?,?,?)', (trip_id, route_id, route_name, title, 'active', float(payload.get('started_at') or now), now, timeline_json(payload.get('summary') or {}), timeline_json(route)))
+        conn.execute('INSERT OR REPLACE INTO timeline_events(id,trip_id,timestamp,category,event_type,title,description,source,severity,metadata_json,created_at,updated_at) VALUES (?,?,?,?,?,?,?,?,?,?,?,?)', (timeline_id('evt'), trip_id, now, 'route', 'trip-start', 'Trip recording started', 'Pi local SQLite recorder opened this trip.', 'recorder', 'info', timeline_json({'caution': 'local recorder event'}), now, now))
+        conn.commit()
+        return {'ok': True, 'trip': timeline_get_trip(conn, trip_id), 'message': 'Trip recording started in local SQLite archive.'}
+
+
+def timeline_set_trip_state(trip_id, state, payload=None):
+    payload = payload or {}; now = timeline_now_ms(); allowed = {'pause':'paused', 'resume':'active', 'end':'ended'}; new_state = allowed.get(state, state)
+    with TIMELINE_LOCK, timeline_conn() as conn:
+        if not timeline_get_trip(conn, trip_id): return {'ok': False, 'error': 'trip_not_found', 'trip_id': trip_id}
+        updates = {'paused':'paused_at', 'active':'resumed_at', 'ended':'ended_at'}
+        col = updates.get(new_state, 'updated_at')
+        conn.execute(f"UPDATE trips SET state=?, {col}=?, updated_at=? WHERE id=?", (new_state, now, now, trip_id))
+        event_type = {'paused':'trip-paused', 'active':'trip-resumed', 'ended':'trip-ended'}.get(new_state, 'trip-state')
+        title = {'paused':'Trip paused', 'active':'Trip resumed', 'ended':'Trip ended'}.get(new_state, 'Trip state updated')
+        conn.execute('INSERT INTO timeline_events(id,trip_id,timestamp,category,event_type,title,description,source,severity,metadata_json,created_at,updated_at) VALUES (?,?,?,?,?,?,?,?,?,?,?,?)', (timeline_id('evt'), trip_id, now, 'device', event_type, title, str(payload.get('description') or ''), 'recorder', 'info', timeline_json({'state': new_state}), now, now))
+        conn.commit()
+        return {'ok': True, 'trip': timeline_get_trip(conn, trip_id)}
+
+
+def timeline_add_event(trip_id, payload=None):
+    payload = payload or {}; now = timeline_now_ms(); event_id = str(payload.get('id') or timeline_id('evt'))[:100]
+    with TIMELINE_LOCK, timeline_conn() as conn:
+        if not timeline_get_trip(conn, trip_id): return {'ok': False, 'error': 'trip_not_found', 'trip_id': trip_id}
+        conn.execute('INSERT OR REPLACE INTO timeline_events(id,trip_id,timestamp,category,event_type,title,description,lat,lon,source,severity,hidden,metadata_json,created_at,updated_at) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)', (event_id, trip_id, float(payload.get('timestamp') or now), str(payload.get('category') or 'note')[:48], str(payload.get('event_type') or payload.get('eventType') or 'note')[:64], str(payload.get('title') or 'Timeline event')[:180], str(payload.get('description') or '')[:1200], payload.get('lat'), payload.get('lon'), str(payload.get('source') or 'manual')[:64], str(payload.get('severity') or 'info')[:32], 1 if payload.get('hidden') else 0, timeline_json(payload.get('metadata') or {}), float(payload.get('created_at') or now), now))
+        conn.commit()
+        row = conn.execute('SELECT * FROM timeline_events WHERE id=?', (event_id,)).fetchone()
+        return {'ok': True, 'event': timeline_row(row)}
+
+
+def timeline_patch_event(trip_id, event_id, payload=None):
+    payload = payload or {}; allowed = {'timestamp','category','event_type','title','description','lat','lon','source','severity','hidden'}; now = timeline_now_ms()
+    if 'eventType' in payload and 'event_type' not in payload: payload['event_type'] = payload['eventType']
+    with TIMELINE_LOCK, timeline_conn() as conn:
+        row = conn.execute('SELECT * FROM timeline_events WHERE trip_id=? AND id=?', (trip_id, event_id)).fetchone()
+        if not row: return {'ok': False, 'error': 'event_not_found', 'trip_id': trip_id, 'event_id': event_id}
+        fields = [(k, payload[k]) for k in allowed if k in payload]
+        if 'metadata' in payload: fields.append(('metadata_json', timeline_json(payload.get('metadata') or {})))
+        if fields:
+            fields.append(('updated_at', now)); sql = ', '.join([f'{k}=?' for k,_ in fields]); vals = [v for _,v in fields] + [trip_id, event_id]
+            conn.execute(f'UPDATE timeline_events SET {sql} WHERE trip_id=? AND id=?', vals); conn.commit()
+        row = conn.execute('SELECT * FROM timeline_events WHERE trip_id=? AND id=?', (trip_id, event_id)).fetchone()
+        return {'ok': True, 'event': timeline_row(row)}
+
+
+def timeline_hide_event(trip_id, event_id):
+    return timeline_patch_event(trip_id, event_id, {'hidden': 1, 'metadata': {'hidden_reason': 'dismissed from API'}})
+
+
+def timeline_add_gps_sample(trip_id, payload=None):
+    payload = payload or {}; now = timeline_now_ms(); sample_id = str(payload.get('id') or timeline_id('gps'))[:100]
+    tpv = payload.get('tpv') if isinstance(payload.get('tpv'), dict) else payload
+    with TIMELINE_LOCK, timeline_conn() as conn:
+        if not timeline_get_trip(conn, trip_id): return {'ok': False, 'error': 'trip_not_found', 'trip_id': trip_id}
+        conn.execute('INSERT OR REPLACE INTO gps_samples(id,trip_id,timestamp,lat,lon,alt,accuracy_m,speed_mps,track_deg,fix_mode,stale,source,raw_json) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?)', (sample_id, trip_id, float(payload.get('timestamp') or now), tpv.get('lat'), tpv.get('lon'), tpv.get('alt') or tpv.get('altHAE') or tpv.get('altMSL'), tpv.get('accuracy') or tpv.get('accuracy_m'), tpv.get('speed') or tpv.get('speed_mps'), tpv.get('track') or tpv.get('track_deg'), int(tpv.get('mode') or tpv.get('fix_mode') or 0), 1 if payload.get('stale') else 0, str(payload.get('source') or 'gpsd')[:64], timeline_json(payload)))
+        conn.commit()
+        return {'ok': True, 'sample_id': sample_id}
+
+
+def timeline_add_sensor_sample(trip_id, payload=None):
+    payload = payload or {}; now = timeline_now_ms(); sample_id = str(payload.get('id') or timeline_id('sensor'))[:100]
+    with TIMELINE_LOCK, timeline_conn() as conn:
+        if not timeline_get_trip(conn, trip_id): return {'ok': False, 'error': 'trip_not_found', 'trip_id': trip_id}
+        conn.execute('INSERT OR REPLACE INTO sensor_samples(id,trip_id,timestamp,temp_c,humidity,pressure_hpa,battery_percent,charging,source,raw_json) VALUES (?,?,?,?,?,?,?,?,?,?)', (sample_id, trip_id, float(payload.get('timestamp') or now), payload.get('temp_c') or payload.get('temperature_c'), payload.get('humidity'), payload.get('pressure_hpa') or payload.get('pressure'), payload.get('battery_percent'), None if payload.get('charging') is None else (1 if payload.get('charging') else 0), str(payload.get('source') or 'sensehat')[:64], timeline_json(payload)))
+        conn.commit()
+        return {'ok': True, 'sample_id': sample_id}
+
+
+def timeline_add_range(trip_id, payload=None):
+    payload = payload or {}; now = timeline_now_ms(); range_id = str(payload.get('id') or timeline_id('range'))[:100]
+    with TIMELINE_LOCK, timeline_conn() as conn:
+        if not timeline_get_trip(conn, trip_id): return {'ok': False, 'error': 'trip_not_found', 'trip_id': trip_id}
+        conn.execute('INSERT OR REPLACE INTO timeline_ranges(id,trip_id,start_timestamp,end_timestamp,range_type,title,description,severity,source,metadata_json,created_at,updated_at) VALUES (?,?,?,?,?,?,?,?,?,?,?,?)', (range_id, trip_id, float(payload.get('start_timestamp') or payload.get('startTimestamp') or payload.get('timestamp') or now), payload.get('end_timestamp') or payload.get('endTimestamp'), str(payload.get('range_type') or payload.get('type') or 'rest')[:64], str(payload.get('title') or 'Timeline range')[:180], str(payload.get('description') or '')[:1200], str(payload.get('severity') or 'info')[:32], str(payload.get('source') or 'recorder')[:64], timeline_json(payload.get('metadata') or {}), float(payload.get('created_at') or now), now))
+        conn.commit()
+        return {'ok': True, 'range_id': range_id}
+
+
+def timeline_window(trip_id, query=None):
+    query = query or {}; start = query.get('start'); end = query.get('end')
+    where = ['trip_id=?', 'hidden=0']; vals = [trip_id]
+    if start: where.append('timestamp>=?'); vals.append(float(start))
+    if end: where.append('timestamp<=?'); vals.append(float(end))
+    gps_where = ['trip_id=?']; gps_vals = [trip_id]
+    if start: gps_where.append('timestamp>=?'); gps_vals.append(float(start))
+    if end: gps_where.append('timestamp<=?'); gps_vals.append(float(end))
+    range_where = ['trip_id=?']; range_vals = [trip_id]
+    if start: range_where.append('(end_timestamp IS NULL OR end_timestamp>=?)'); range_vals.append(float(start))
+    if end: range_where.append('start_timestamp<=?'); range_vals.append(float(end))
+    with TIMELINE_LOCK, timeline_conn() as conn:
+        trip = timeline_get_trip(conn, trip_id)
+        if not trip: return {'ok': False, 'error': 'trip_not_found', 'trip_id': trip_id}
+        events = [timeline_row(r) for r in conn.execute(f"SELECT * FROM timeline_events WHERE {' AND '.join(where)} ORDER BY timestamp LIMIT 500", vals).fetchall()]
+        gps = [timeline_row(r) for r in conn.execute(f"SELECT * FROM gps_samples WHERE {' AND '.join(gps_where)} ORDER BY timestamp LIMIT 1500", gps_vals).fetchall()]
+        sensors = [timeline_row(r) for r in conn.execute(f"SELECT * FROM sensor_samples WHERE {' AND '.join(gps_where)} ORDER BY timestamp LIMIT 600", gps_vals).fetchall()]
+        ranges = [timeline_row(r) for r in conn.execute(f"SELECT * FROM timeline_ranges WHERE {' AND '.join(range_where)} ORDER BY start_timestamp LIMIT 250", range_vals).fetchall()]
+        return {'ok': True, 'trip': trip, 'events': events, 'ranges': ranges, 'gps_samples': gps, 'sensor_samples': sensors, 'summary': {'event_count': len(events), 'range_count': len(ranges), 'gps_sample_count': len(gps), 'sensor_sample_count': len(sensors), 'window_start': start, 'window_end': end, 'missing_data_is_explicit': True}}
+
+
+def timeline_state_at(trip_id, query=None):
+    query = query or {}; ts = float(query.get('timestamp') or timeline_now_ms())
+    with TIMELINE_LOCK, timeline_conn() as conn:
+        trip = timeline_get_trip(conn, trip_id)
+        if not trip: return {'ok': False, 'error': 'trip_not_found', 'trip_id': trip_id}
+        gps = conn.execute('SELECT * FROM gps_samples WHERE trip_id=? AND timestamp<=? ORDER BY timestamp DESC LIMIT 1', (trip_id, ts)).fetchone()
+        sensor = conn.execute('SELECT * FROM sensor_samples WHERE trip_id=? AND timestamp<=? ORDER BY timestamp DESC LIMIT 1', (trip_id, ts)).fetchone()
+        ranges = conn.execute('SELECT * FROM timeline_ranges WHERE trip_id=? AND start_timestamp<=? AND (end_timestamp IS NULL OR end_timestamp>=?) ORDER BY start_timestamp', (trip_id, ts, ts)).fetchall()
+        return {'ok': True, 'trip': trip, 'timestamp': ts, 'gps': timeline_row(gps) if gps else None, 'sensor': timeline_row(sensor) if sensor else None, 'active_ranges': [timeline_row(r) for r in ranges], 'missing_gps': gps is None, 'missing_sensor': sensor is None}
+
+
+def timeline_event_get(trip_id, event_id):
+    with TIMELINE_LOCK, timeline_conn() as conn:
+        row = conn.execute('SELECT * FROM timeline_events WHERE trip_id=? AND id=? AND hidden=0', (trip_id, event_id)).fetchone()
+        return {'ok': bool(row), 'event': timeline_row(row) if row else None, 'error': None if row else 'event_not_found'}
+
+
+def timeline_search(trip_id, query=None):
+    needle = str((query or {}).get('query') or '').strip().lower()
+    if not needle: return {'ok': True, 'query': '', 'results': []}
+    like = f'%{needle}%'
+    with TIMELINE_LOCK, timeline_conn() as conn:
+        rows = conn.execute("""SELECT * FROM timeline_events WHERE trip_id=? AND hidden=0 AND (lower(title) LIKE ? OR lower(description) LIKE ? OR lower(category) LIKE ? OR lower(event_type) LIKE ? OR lower(metadata_json) LIKE ?) ORDER BY timestamp LIMIT 100""", (trip_id, like, like, like, like, like)).fetchall()
+        return {'ok': True, 'query': needle, 'results': [timeline_row(r) for r in rows]}
+
+
+def timeline_api_get(path):
+    parsed = urllib.parse.urlparse(path); parts = [p for p in parsed.path.split('/') if p]; query = {k:v[-1] for k,v in urllib.parse.parse_qs(parsed.query).items()}
+    if parts == ['api','trips']: return timeline_list_trips()
+    if len(parts) >= 3 and parts[:2] == ['api','trips']:
+        trip_id = urllib.parse.unquote(parts[2])
+        if len(parts) == 3:
+            with TIMELINE_LOCK, timeline_conn() as conn: return {'ok': True, 'trip': timeline_get_trip(conn, trip_id)}
+        if parts[3] == 'timeline' and len(parts) == 4: return timeline_window(trip_id, query)
+        if parts[3] == 'state-at': return timeline_state_at(trip_id, query)
+        if parts[3] == 'events' and len(parts) == 5: return timeline_event_get(trip_id, urllib.parse.unquote(parts[4]))
+        if parts[3] == 'timeline' and len(parts) >= 5 and parts[4] == 'search': return timeline_search(trip_id, query)
+    return {'ok': False, 'error': 'not_found'}
+
+
+def timeline_api_post(path, payload=None):
+    parsed = urllib.parse.urlparse(path); parts = [p for p in parsed.path.split('/') if p]
+    if parts == ['api','trips','start']: return timeline_start_trip(payload)
+    if len(parts) >= 4 and parts[:2] == ['api','trips']:
+        trip_id = urllib.parse.unquote(parts[2]); action = parts[3]
+        if action in ('pause','resume','end'): return timeline_set_trip_state(trip_id, action, payload)
+        if action == 'events': return timeline_add_event(trip_id, payload)
+        if action in ('gps-samples','gps'): return timeline_add_gps_sample(trip_id, payload)
+        if action in ('sensor-samples','sensors'): return timeline_add_sensor_sample(trip_id, payload)
+        if action == 'ranges': return timeline_add_range(trip_id, payload)
+    return {'ok': False, 'error': 'not_found'}
+
+
+def timeline_api_patch(path, payload=None):
+    parts = [p for p in urllib.parse.urlparse(path).path.split('/') if p]
+    if len(parts) == 5 and parts[:2] == ['api','trips'] and parts[3] == 'events':
+        return timeline_patch_event(urllib.parse.unquote(parts[2]), urllib.parse.unquote(parts[4]), payload)
+    return {'ok': False, 'error': 'not_found'}
+
+
+def timeline_api_delete(path):
+    parts = [p for p in urllib.parse.urlparse(path).path.split('/') if p]
+    if len(parts) == 5 and parts[:2] == ['api','trips'] and parts[3] == 'events':
+        return timeline_hide_event(urllib.parse.unquote(parts[2]), urllib.parse.unquote(parts[4]))
+    return {'ok': False, 'error': 'not_found'}
+
 class Handler(http.server.SimpleHTTPRequestHandler):
     def translate_path(self, path):
         path=urllib.parse.urlparse(path).path
@@ -2973,7 +3228,7 @@ class Handler(http.server.SimpleHTTPRequestHandler):
         if not p.exists(): p=APP_DIR/'index.html'
         return str(p)
     def end_headers(self):
-        self.send_header('Access-Control-Allow-Origin','*'); self.send_header('Access-Control-Allow-Headers','Content-Type'); self.send_header('Access-Control-Allow-Methods','GET,POST,OPTIONS'); self.send_header('Cache-Control','no-store' if self.path.startswith('/api/') else 'public, max-age=60'); super().end_headers()
+        self.send_header('Access-Control-Allow-Origin','*'); self.send_header('Access-Control-Allow-Headers','Content-Type'); self.send_header('Access-Control-Allow-Methods','GET,POST,PATCH,DELETE,OPTIONS'); self.send_header('Cache-Control','no-store' if self.path.startswith('/api/') else 'public, max-age=60'); super().end_headers()
     def do_OPTIONS(self): self.send_response(204); self.end_headers()
     def json_response(self, data):
         raw=json.dumps(data).encode(); self.send_response(200); self.send_header('Content-Type','application/json'); self.send_header('Content-Length',str(len(raw))); self.end_headers(); self.wfile.write(raw)
@@ -2982,6 +3237,7 @@ class Handler(http.server.SimpleHTTPRequestHandler):
             length=int(self.headers.get('Content-Length','0') or 0); return json.loads(self.rfile.read(length).decode() or '{}') if length else {}
         except Exception: return {}
     def do_GET(self):
+        if self.path.startswith('/api/trips'): self.json_response(timeline_api_get(self.path)); return
         if self.path.startswith('/api/status'): self.json_response(status()); return
         if self.path.startswith('/api/network/status'): self.json_response(network_status()); return
         if self.path.startswith('/api/wifi/scan'): self.json_response(wifi_scan()); return
@@ -3014,10 +3270,16 @@ class Handler(http.server.SimpleHTTPRequestHandler):
         if self.path.startswith('/api/sense'): self.json_response({'ok': True, 'sense': sense_snapshot(), 'state': read_state(), 'available_modes': SENSE_MODES, 'time': time.time()}); return
         return super().do_GET()
     def do_DELETE(self):
+        if self.path.startswith('/api/trips'): self.json_response(timeline_api_delete(self.path)); return
         if self.path.startswith('/api/field-ai/history'): self.json_response(field_ai_clear_history()); return
+        self.send_error(404)
+    def do_PATCH(self):
+        payload=self.read_json()
+        if self.path.startswith('/api/trips'): self.json_response(timeline_api_patch(self.path, payload)); return
         self.send_error(404)
     def do_POST(self):
         payload=self.read_json()
+        if self.path.startswith('/api/trips'): self.json_response(timeline_api_post(self.path, payload)); return
         if self.path.startswith('/api/wifi-home'): self.json_response(connect_home_wifi(payload)); return
         if self.path.startswith('/api/wifi/scan'): self.json_response(wifi_scan(payload)); return
         if self.path.startswith('/api/wifi/save'): self.json_response(wifi_save_network(payload)); return

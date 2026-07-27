@@ -83,10 +83,30 @@ async function assertLoads(label, expectedText) {
 
 const results = [];
 results.push(await assertLoads('Overview initial', 'Overview'));
-for (const top of ['Explore','Navigate','Exercise','Survival','Settings']) {
+for (const top of ['Explore','Navigate','Adventure','Exercise','Survival','Settings']) {
   failures.length = 0;
-  await clickText(top);
-  results.push(await assertLoads(`Top tab: ${top}`, top === 'Navigate' ? ['Active hike navigation','Drive GPS'] : top));
+  const tabButton = [...window.document.querySelectorAll('.tabs-grid button')].find(btn => norm(btn.textContent) === top);
+  if (!tabButton) throw new Error(`Missing top tab: ${top}`);
+  tabButton.dispatchEvent(new window.MouseEvent('click', { bubbles: true, cancelable: true }));
+  await new Promise(r => window.setTimeout(r, 160));
+  results.push(await assertLoads(`Top tab: ${top}`, top === 'Navigate' ? ['Active hike navigation','Drive GPS'] : top === 'Adventure' ? ['Adventure Timeline','Add event','performance + privacy pass','Phase 6 performance, days + export','Replay + search'] : top === 'Survival' ? ['Survival + MapPI3new','Emergency Mode','Survival Trainer'] : top));
+}
+await clickText('Adventure');
+await clickText('Play replay');
+results.push(await assertLoads('Adventure replay controls', ['Replay + search','Play replay','Speed']));
+const searchInput = [...window.document.querySelectorAll('input')].find(el => String(el.placeholder || '').includes('Search notes'));
+if (!searchInput) throw new Error('Missing Adventure timeline search input');
+const valueSetter = Object.getOwnPropertyDescriptor(window.HTMLInputElement.prototype, 'value').set;
+valueSetter.call(searchInput, 'water');
+searchInput.dispatchEvent(new window.Event('input', { bubbles: true }));
+await new Promise(r => window.setTimeout(r, 160));
+results.push(await assertLoads('Adventure search results', ['Water','water','Search']));
+await clickText('Survival');
+for (const sub of ['Emergency Mode','Survival Trainer']) {
+  failures.length = 0;
+  await clickText(sub);
+  const expect = sub === 'Emergency Mode' ? ['Decimal degrees','DMS','UTM','Save timeline emergency event','MapPI3 does not contact 911/SAR'] : ['Survival trainer','Lost trail scenario','First aid decision','Never eat wild foods'];
+  results.push(await assertLoads(`Survival subtab: ${sub}`, expect));
 }
 await clickText('Explore');
 for (const sub of ['Routes','Weather','Plan','Pack','Brief']) {

@@ -245,3 +245,176 @@ body[data-theme="alpine-minimal"] input,body[data-theme="alpine-minimal"] select
 
 /* Production weather animations: current + forecast cards */
 .weather-hero-grid{display:grid;grid-template-columns:140px 1fr;gap:12px;align-items:center;margin:12px 0}.weather-animation{position:relative;width:96px;height:76px;display:inline-grid;place-items:center;overflow:hidden;border-radius:22px;background:linear-gradient(180deg,rgba(75,210,255,.18),rgba(0,0,0,.18));border:1px solid rgba(255,255,255,.12);box-shadow:inset 0 0 22px rgba(0,0,0,.3)}.weather-card-live h2 .weather-animation{width:54px;height:44px;margin-right:8px;vertical-align:middle}.weather-day-card .weather-animation{width:100%;height:92px}.weather-animation em{position:relative;z-index:5;font-style:normal;font-size:26px;filter:drop-shadow(0 2px 6px rgba(0,0,0,.45));animation:weather-bob 2.8s ease-in-out infinite}.weather-animation .sun-core{position:absolute;right:15%;top:13%;width:32px;height:32px;border-radius:50%;background:radial-gradient(circle,#fff6a8,#ffc642 62%,rgba(255,168,38,.18));box-shadow:0 0 26px rgba(255,214,90,.72);animation:weather-pulse 3.6s ease-in-out infinite}.weather-animation .cloud{position:absolute;z-index:2;border-radius:999px;background:rgba(236,248,255,.82);filter:drop-shadow(0 8px 10px rgba(0,0,0,.22));animation:weather-drift 6s ease-in-out infinite}.weather-animation .cloud:before,.weather-animation .cloud:after{content:"";position:absolute;border-radius:50%;background:inherit}.weather-animation .cloud-a{left:18%;top:37%;width:58%;height:18px}.weather-animation .cloud-a:before{width:22px;height:22px;left:9px;bottom:3px}.weather-animation .cloud-a:after{width:28px;height:28px;right:10px;bottom:1px}.weather-animation .cloud-b{left:38%;top:48%;width:46%;height:14px;opacity:.7;animation-delay:-1.4s}.weather-animation .cloud-b:before{width:18px;height:18px;left:6px;bottom:2px}.weather-animation .cloud-b:after{width:20px;height:20px;right:6px;bottom:1px}.weather-sun .cloud,.weather-sun-hot .cloud{opacity:.18}.weather-clouds .sun-core,.weather-rain .sun-core,.weather-snow .sun-core,.weather-fog .sun-core{opacity:.46}.weather-storm .sun-core{opacity:.18}.weather-animation i{position:absolute;z-index:3;top:58%;left:calc(14% + (var(--i) * 9%));width:3px;height:15px;border-radius:999px;background:#8ee7ff;animation:weather-fall .9s linear infinite;animation-delay:calc(var(--i) * -.12s)}.weather-snow i{width:6px;height:6px;border-radius:50%;background:#f6fbff;animation-duration:1.7s}.weather-fog i{left:9%;width:80%;height:2px;background:rgba(230,240,235,.58);animation:weather-fog 3.2s ease-in-out infinite}.weather-fog i:nth-of-type(2n){top:70%;animation-delay:-1.2s}.weather-animation .bolt{position:absolute;z-index:4;left:48%;top:43%;color:#ffe56f;font-size:30px;text-shadow:0 0 12px rgba(255,230,80,.95);animation:weather-flash 1.8s steps(2,end) infinite}@keyframes weather-bob{0%,100%{transform:translateY(0)}50%{transform:translateY(-4px)}}@keyframes weather-pulse{0%,100%{transform:scale(1);opacity:.95}50%{transform:scale(1.08);opacity:1}}@keyframes weather-drift{0%,100%{transform:translateX(-3px)}50%{transform:translateX(4px)}}@keyframes weather-fall{from{transform:translateY(-10px);opacity:0}30%{opacity:1}to{transform:translateY(28px);opacity:0}}@keyframes weather-fog{0%,100%{transform:translateX(-12px);opacity:.32}50%{transform:translateX(14px);opacity:.76}}@keyframes weather-flash{0%,82%,100%{opacity:.25}86%,94%{opacity:1}}@media(max-width:760px){.weather-hero-grid{grid-template-columns:1fr}.weather-hero-grid .weather-animation{width:100%;height:94px}.weather-summary{grid-template-columns:repeat(2,1fr)}}
+
+/* Adventure Timeline Phase 1 */
+.adventure-timeline-screen{position:relative;overflow:hidden}.adventure-head h2{margin-bottom:4px}.adventure-summary{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin:12px 0}.adventure-summary>div{background:rgba(0,0,0,.22);border:1px solid rgba(255,255,255,.1);border-radius:16px;padding:11px}.adventure-summary strong{display:block;font-size:19px;color:#d9ffc6}.adventure-summary span{display:block;font-size:12px;color:#c5d3bd}.timeline-controls{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin:12px 0}.follow-map-toggle{display:inline-flex;align-items:center;gap:7px;border:1px solid rgba(255,255,255,.14);border-radius:999px;background:rgba(255,255,255,.08);padding:8px 11px;font-size:13px;font-weight:900;color:#d9ffc6}.timeline-layer-panel{margin:12px 0;padding:12px;border-radius:20px;background:rgba(0,0,0,.22);border:1px solid rgba(75,210,255,.16)}.timeline-layer-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(126px,1fr));gap:8px}.timeline-layer-grid button{text-align:left;border:1px solid rgba(255,255,255,.12);background:rgba(255,255,255,.06);opacity:.58}.timeline-layer-grid button.enabled{opacity:1;border-color:rgba(156,227,108,.48);background:rgba(156,227,108,.13)}.timeline-empty{display:grid;gap:4px;margin:14px 0;padding:16px;border-radius:18px;border:1px dashed rgba(255,255,255,.22);background:rgba(0,0,0,.2)}.timeline-empty span{color:#c5d3bd}.timeline-stage{position:relative;margin:16px 0 18px;padding:28px 0 8px}.timeline-playhead{position:absolute;top:0;bottom:0;left:50%;z-index:3;display:grid;place-items:start center;gap:4px;transform:translateX(-50%);pointer-events:none;color:#d9ffc6;font-size:10px;font-weight:1000;letter-spacing:.08em;text-shadow:0 0 12px #000}.timeline-playhead span{display:block;width:3px;height:182px;border-radius:999px;background:linear-gradient(#d9ffc6,#4bd2ff);box-shadow:0 0 20px rgba(156,227,108,.85)}.timeline-track{position:relative;min-height:190px;overflow-x:auto;overflow-y:hidden;border-radius:24px;border:1px solid rgba(255,255,255,.14);background:linear-gradient(180deg,rgba(255,255,255,.06),rgba(0,0,0,.24));scroll-snap-type:x proximity;padding:22px 52vw 48px;width:100%;background-image:linear-gradient(90deg,rgba(156,227,108,.24),rgba(75,210,255,.2)),repeating-linear-gradient(90deg,transparent 0 88px,rgba(255,255,255,.12) 88px 90px)}.timeline-track:before{content:"";position:absolute;left:0;right:0;top:94px;height:4px;background:linear-gradient(90deg,#9ce36c,#4bd2ff,#ffd36a);box-shadow:0 0 18px rgba(75,210,255,.45)}.timeline-pin{position:absolute;left:var(--pin-left);top:48px;display:grid;grid-template-rows:auto auto auto;gap:2px;width:132px;min-height:94px;transform:translateX(-50%);scroll-snap-align:center;text-align:center;border:1px solid color-mix(in srgb,var(--pin-color) 65%,white 10%);border-radius:18px;background:rgba(5,14,9,.9);color:#f2f7ed;padding:8px;box-shadow:0 14px 34px rgba(0,0,0,.32),0 0 18px color-mix(in srgb,var(--pin-color) 34%,transparent);white-space:normal}.timeline-pin:after{content:"";position:absolute;left:50%;bottom:-17px;width:3px;height:20px;background:var(--pin-color);transform:translateX(-50%)}.timeline-pin.active{z-index:2;background:linear-gradient(160deg,rgba(156,227,108,.24),rgba(5,14,9,.96));border-color:#d9ffc6;box-shadow:0 18px 40px rgba(0,0,0,.44),0 0 0 3px rgba(156,227,108,.2),0 0 24px var(--pin-color)}.timeline-pin.severity-caution{border-color:#ffdd66}.pin-icon{font-size:23px}.timeline-pin strong{font-size:12px;line-height:1.12}.timeline-pin em{font-size:11px;color:#c5d3bd;font-style:normal}.timeline-ruler{position:absolute;left:24px;right:24px;bottom:14px;display:flex;justify-content:space-between;color:#c5d3bd;font-size:11px}.adventure-map-detail{display:grid;grid-template-columns:1.15fr .85fr;gap:14px;align-items:start}.adventure-map .leaflet-shell{height:390px}.timeline-detail-sheet{border:1px solid rgba(255,255,255,.14);border-radius:24px;background:linear-gradient(155deg,rgba(255,255,255,.1),rgba(0,0,0,.25));padding:14px;box-shadow:0 18px 44px rgba(0,0,0,.24)}.detail-grabber{width:52px;height:5px;border-radius:999px;background:rgba(255,255,255,.32);margin:0 auto 10px}.timeline-fact-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:12px 0}.timeline-fact-grid span{display:grid;gap:3px;border-radius:14px;background:rgba(0,0,0,.22);border:1px solid rgba(255,255,255,.09);padding:9px;color:#c5d3bd;font-size:12px}.timeline-fact-grid strong{color:#d9ffc6;font-size:11px;text-transform:uppercase;letter-spacing:.06em}@media(max-width:860px){.adventure-summary{grid-template-columns:repeat(2,1fr)}.adventure-map-detail{grid-template-columns:1fr}.timeline-detail-sheet{position:sticky;bottom:10px;z-index:4}.timeline-track{padding-left:54vw;padding-right:54vw}.timeline-pin{width:118px}.adventure-map .leaflet-shell{height:310px}}@media(max-width:560px){.adventure-summary,.timeline-fact-grid{grid-template-columns:1fr}.timeline-controls button{flex:1}.timeline-layer-grid{grid-template-columns:1fr 1fr}.timeline-track{min-height:204px}.timeline-playhead span{height:195px}.timeline-pin{top:52px;width:110px;padding:7px}.timeline-pin strong{font-size:11px}}
+
+
+/* Adventure Timeline Phase 2 */
+.timeline-add-event{margin:12px 0;padding:14px;border-radius:20px;border:1px solid rgba(156,227,108,.28);background:linear-gradient(180deg,rgba(156,227,108,.12),rgba(0,0,0,.24))}.timeline-form-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin:10px 0}.timeline-form-grid label{display:grid;gap:5px;font-size:12px;font-weight:900;color:#d9ffc6;text-transform:uppercase;letter-spacing:.04em}.timeline-form-grid label.wide{grid-column:1/-1}.timeline-form-grid input,.timeline-form-grid select,.timeline-form-grid textarea{width:100%;border-radius:12px;border:1px solid rgba(255,255,255,.16);background:rgba(0,0,0,.35);color:#f6f7eb;padding:10px;font:inherit;text-transform:none;letter-spacing:normal}.timeline-range-band{position:absolute;left:var(--range-left);width:var(--range-width);top:38px;bottom:42px;z-index:0;border-radius:18px;border:1px solid rgba(255,255,255,.18);background:rgba(75,210,255,.16);color:#eaf6ff;font-size:10px;font-weight:1000;display:flex;align-items:flex-start;justify-content:center;padding-top:8px;text-align:center;pointer-events:auto;box-shadow:inset 0 0 18px rgba(0,0,0,.28)}.range-rest{background:rgba(156,227,108,.13);border-color:rgba(156,227,108,.28)}.range-gps-outage{background:rgba(255,221,102,.18);border-color:rgba(255,221,102,.42);color:#fff6c4}.range-route-deviation,.range-emergency-mode{background:rgba(255,119,119,.18);border-color:rgba(255,119,119,.48)}.timeline-track .timeline-pin{z-index:2}.timeline-ruler{z-index:3}@media(max-width:760px){.timeline-form-grid{grid-template-columns:1fr}.timeline-range-band{font-size:9px;writing-mode:vertical-rl;align-items:center;padding-top:0}}
+
+/* Adventure Timeline Phase 3 */
+.timeline-signal-panel{margin:12px 0;padding:14px;border-radius:20px;border:1px solid rgba(95,198,255,.25);background:linear-gradient(180deg,rgba(95,198,255,.11),rgba(0,0,0,.24));box-shadow:inset 0 1px 0 rgba(255,255,255,.08)}.timeline-signal-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;margin-top:10px}.timeline-signal-grid span{display:grid;gap:3px;min-height:58px;padding:10px;border-radius:14px;background:rgba(0,0,0,.25);border:1px solid rgba(255,255,255,.1);color:#e8f7ff}.timeline-signal-grid strong{font-size:11px;text-transform:uppercase;letter-spacing:.05em;color:#9cdcff}.timeline-range-band.range-gps-outage{border-color:rgba(95,198,255,.55);background:linear-gradient(90deg,rgba(95,198,255,.22),rgba(95,198,255,.08))}.timeline-range-band.range-rest{border-color:rgba(156,227,108,.55);background:linear-gradient(90deg,rgba(156,227,108,.2),rgba(156,227,108,.08))}.timeline-range-band.range-route-deviation{border-color:rgba(255,196,87,.7);background:linear-gradient(90deg,rgba(255,196,87,.26),rgba(255,122,87,.12))}.timeline-pin.severity-caution{box-shadow:0 0 0 2px rgba(255,196,87,.22),0 10px 28px rgba(0,0,0,.32)}.timeline-pin.severity-caution .pin-icon{filter:drop-shadow(0 0 6px rgba(255,196,87,.55))}@media (max-width:720px){.timeline-signal-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.timeline-signal-panel{padding:12px}.timeline-signal-grid span{min-height:54px}}
+.adventure-summary{grid-template-columns:repeat(auto-fit,minmax(92px,1fr))}
+
+/* Adventure Timeline Phase 4 */
+.timeline-replay-panel{margin:12px 0;padding:14px;border-radius:20px;border:1px solid rgba(255,255,255,.14);background:linear-gradient(180deg,rgba(255,255,255,.08),rgba(0,0,0,.26))}.timeline-replay-controls{display:flex;flex-wrap:wrap;gap:8px;align-items:center}.timeline-replay-controls label{display:flex;gap:7px;align-items:center;font-size:12px;font-weight:900;text-transform:uppercase;color:#d9ffc6}.timeline-replay-controls select{min-height:34px;border-radius:12px;border:1px solid rgba(255,255,255,.16);background:#122015;color:#f4ffee;padding:0 8px}.replay-progress{position:relative;flex:1 1 140px;min-height:34px;border-radius:999px;border:1px solid rgba(156,227,108,.24);background:rgba(0,0,0,.25);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:900;color:#d9ffc6;overflow:hidden}.replay-progress i{position:absolute;inset:0 auto 0 0;width:var(--replay-left);background:linear-gradient(90deg,rgba(156,227,108,.3),rgba(95,198,255,.22));z-index:0}.replay-progress{isolation:isolate}.timeline-search-row{display:flex;gap:8px;margin-top:10px}.timeline-search-row input{flex:1;min-width:0;border-radius:14px;border:1px solid rgba(255,255,255,.14);background:rgba(0,0,0,.24);color:#f4ffee;padding:10px}.timeline-search-results{display:grid;gap:7px;margin-top:10px}.timeline-search-results button{display:grid;grid-template-columns:auto 1fr auto;gap:8px;align-items:center;text-align:left;border:1px solid rgba(255,255,255,.12);background:rgba(0,0,0,.22);border-radius:14px;padding:9px;color:#f4ffee}.timeline-search-results em{font-size:11px;color:#c5d3bd}@media (max-width:720px){.timeline-replay-controls{align-items:stretch}.timeline-replay-controls button,.timeline-replay-controls label,.replay-progress{flex:1 1 42%}.timeline-search-row{flex-direction:column}}
+
+/* Adventure Timeline Phase 6 */
+.timeline-phase6-panel,
+.timeline-cluster-panel {
+  border: 1px solid rgba(156, 227, 108, 0.25);
+  border-radius: 18px;
+  padding: 1rem;
+  margin: 1rem 0;
+  background: linear-gradient(145deg, rgba(18, 42, 28, 0.9), rgba(8, 18, 24, 0.92));
+  box-shadow: 0 12px 30px rgba(0,0,0,0.18);
+}
+.timeline-budget-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+  gap: 0.65rem;
+  margin: 0.75rem 0;
+}
+.timeline-budget-grid span,
+.timeline-export-panel,
+.timeline-cluster-list button {
+  border: 1px solid rgba(255,255,255,0.1);
+  border-radius: 14px;
+  padding: 0.7rem;
+  background: rgba(255,255,255,0.055);
+}
+.timeline-budget-grid strong,
+.timeline-day-selector strong,
+.timeline-cluster-list strong {
+  display: block;
+  color: var(--accent, #9ce36c);
+}
+.timeline-day-selector {
+  display: flex;
+  gap: 0.55rem;
+  overflow-x: auto;
+  padding: 0.2rem 0 0.7rem;
+  -webkit-overflow-scrolling: touch;
+}
+.timeline-day-selector button {
+  min-width: 132px;
+  text-align: left;
+  border-radius: 16px;
+  border: 1px solid rgba(255,255,255,0.12);
+  background: rgba(255,255,255,0.06);
+}
+.timeline-day-selector button.enabled,
+.timeline-layer-grid button.enabled {
+  border-color: rgba(156, 227, 108, 0.65);
+  box-shadow: inset 0 0 0 1px rgba(156, 227, 108, 0.25);
+}
+.timeline-day-selector span,
+.timeline-cluster-list em {
+  display: block;
+  font-size: 0.78rem;
+  color: var(--muted, #a9b9b0);
+}
+.timeline-export-panel label {
+  display: grid;
+  gap: 0.3rem;
+  margin-bottom: 0.65rem;
+}
+.timeline-export-panel select {
+  width: 100%;
+}
+.timeline-export-panel .button-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+.timeline-cluster-list {
+  display: grid;
+  gap: 0.45rem;
+}
+.timeline-cluster-list button {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  gap: 0.65rem;
+  align-items: center;
+  text-align: left;
+}
+.timeline-pin {
+  transform: translateX(-50%) translateY(calc((var(--pin-lane, 0) * 0.42rem) - 0.25rem));
+}
+.timeline-pin.timeline-cluster {
+  border-style: dashed;
+  min-width: 7.5rem;
+  background: linear-gradient(180deg, color-mix(in srgb, var(--pin-color, #9ce36c) 28%, rgba(5,18,12,0.95)), rgba(5,18,12,0.94));
+}
+.timeline-pin.timeline-cluster .pin-icon {
+  border-radius: 999px;
+  outline: 2px solid rgba(255,255,255,0.24);
+}
+@media (max-width: 720px) {
+  .timeline-budget-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .timeline-export-panel .button-row button { flex: 1 1 45%; }
+  .timeline-pin.timeline-cluster { min-width: 6.5rem; }
+}
+
+/* Adventure Timeline Phase 7 */
+.phase7-emergency {
+  border: 2px solid rgba(255, 95, 95, 0.75);
+  background: radial-gradient(circle at 12% 0%, rgba(255, 95, 95, 0.26), rgba(20, 8, 8, 0.94) 54%, rgba(0, 0, 0, 0.96));
+  box-shadow: 0 0 0 2px rgba(255,255,255,0.08), 0 22px 60px rgba(0,0,0,0.35);
+}
+.emergency-coordinate-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 0.7rem;
+  margin: 1rem 0;
+}
+.emergency-coordinate-grid article,
+.emergency-exit-card {
+  border: 1px solid rgba(255,255,255,0.18);
+  border-radius: 16px;
+  padding: 0.85rem;
+  background: rgba(0,0,0,0.34);
+}
+.emergency-coordinate-grid strong {
+  display: block;
+  color: #ffd2d2;
+  font-size: 0.75rem;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+.emergency-coordinate-grid span {
+  display: block;
+  margin-top: 0.25rem;
+  font-size: 1.05rem;
+  font-weight: 900;
+  word-break: break-word;
+}
+.emergency-checklist {
+  display: grid;
+  gap: 0.45rem;
+  margin: 1rem 0;
+}
+.survival-trainer .trainer-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 0.8rem;
+  margin: 1rem 0;
+}
+.trainer-card summary {
+  display: grid;
+  gap: 0.35rem;
+  cursor: pointer;
+}
+.trainer-card summary span {
+  color: var(--muted, #a9b9b0);
+  font-size: 0.9rem;
+}
+.alert.compact {
+  padding: 0.55rem 0.7rem;
+  margin-top: 0.55rem;
+}
+@media (max-width: 720px) {
+  .phase7-emergency .button-row button { flex: 1 1 100%; }
+  .emergency-coordinate-grid { grid-template-columns: 1fr; }
+}
