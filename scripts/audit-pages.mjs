@@ -83,13 +83,13 @@ async function assertLoads(label, expectedText) {
 
 const results = [];
 results.push(await assertLoads('Overview initial', 'Overview'));
-for (const top of ['Explore','Navigate','Adventure','Exercise','Survival','Settings']) {
+for (const top of ['Explore','Navigate','Camp','Adventure','Exercise','Survival','Settings']) {
   failures.length = 0;
   const tabButton = [...window.document.querySelectorAll('.tabs-grid button')].find(btn => norm(btn.textContent) === top);
   if (!tabButton) throw new Error(`Missing top tab: ${top}`);
   tabButton.dispatchEvent(new window.MouseEvent('click', { bubbles: true, cancelable: true }));
   await new Promise(r => window.setTimeout(r, 160));
-  results.push(await assertLoads(`Top tab: ${top}`, top === 'Navigate' ? ['Active hike navigation','Drive GPS'] : top === 'Adventure' ? ['Adventure Timeline','Add event','performance + privacy pass','Phase 6 performance, days + export','Replay + search'] : top === 'Survival' ? ['Survival + MapPI3new','Emergency Mode','Survival Trainer'] : top));
+  results.push(await assertLoads(`Top tab: ${top}`, top === 'Navigate' ? ['Active hike navigation','Drive GPS'] : top === 'Camp' ? ['Camp','camp mode','Camp Plan'] : top === 'Adventure' ? ['Adventure Timeline','Add event','mobile calm view','Replay + search'] : top === 'Survival' ? ['Survival + MapPI3new','Emergency Mode','Survival Trainer'] : top));
 }
 await clickText('Adventure');
 await clickText('Play replay');
@@ -116,11 +116,18 @@ for (const sub of ['Routes','Weather','Plan','Pack','Brief']) {
   results.push(await assertLoads(`Explore subtab: ${sub}`, expect));
 }
 await clickText('Navigate');
-for (const sub of ['Current Hike','Drive GPS','Field Kit','Bluetooth','Sense HAT','Sky','Nature AI','Ambiance','Games']) {
+for (const sub of ['Current Hike','Drive GPS','Field Kit','Bluetooth','Sense HAT','Sky','Games']) {
   failures.length = 0;
   await clickText(sub);
-  const expect = sub === 'Current Hike' ? 'Active hike navigation' : sub === 'Ambiance' ? 'Offline Library' : sub;
+  const expect = sub === 'Current Hike' ? 'Active hike navigation' : sub;
   results.push(await assertLoads(`Navigate subtab: ${sub}`, expect));
+}
+await clickText('Camp');
+for (const sub of ['Camp Plan','Ambiance','Weather Watch','Area Risks','Guide AI','Nature AI']) {
+  failures.length = 0;
+  await clickText(sub);
+  const expect = sub === 'Camp Plan' ? ['Camp','camp mode'] : sub === 'Ambiance' ? 'Camp Ambiance' : sub === 'Weather Watch' ? 'Weather center' : sub === 'Area Risks' ? 'Survival' : sub === 'Guide AI' ? 'Camp Guide AI' : 'Nature AI';
+  results.push(await assertLoads(`Camp subtab: ${sub}`, expect));
 }
 
 const failed = results.filter(r => !r.ok);

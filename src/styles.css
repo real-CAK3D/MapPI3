@@ -243,6 +243,9 @@ body[data-theme="alpine-minimal"] input,body[data-theme="alpine-minimal"] select
 .herbie-companion .mini-progress,.nature-ai-screen .mini-progress,.library-screen .mini-progress{position:static!important;display:none!important}
 .herbie-stage{isolation:isolate}.herbie-whisplay-mirror{display:grid;gap:3px;margin-top:8px;padding:8px 10px;border:1px solid rgba(75,210,255,.24);border-radius:14px;background:rgba(0,0,0,.2)}.herbie-whisplay-mirror strong{color:#dfffe6}.herbie-whisplay-mirror span,.herbie-whisplay-mirror small{color:#bdd5c2}
 
+/* Camp hub */
+.camp-screen .settings-nav,.camp-screen .hub-tabs{position:sticky;top:8px;z-index:12}.camp-hero-grid{display:grid;grid-template-columns:minmax(0,1.15fr) minmax(260px,.85fr);gap:12px;align-items:stretch;margin:10px 0 14px}.camp-plan-panel .overview-hero{min-height:100%;display:flex;flex-direction:column;justify-content:space-between}.camp-check-grid .plugin-pack-card{border-color:rgba(196,215,95,.18);background:linear-gradient(145deg,rgba(19,34,20,.74),rgba(8,13,10,.84))}.camp-check-grid .plugin-pack-card strong{color:#eaffd9}.camp-screen .library-screen{border-color:rgba(75,210,255,.18)}@media(max-width:760px){.camp-hero-grid{grid-template-columns:1fr}.camp-check-grid{grid-template-columns:1fr}.camp-screen .settings-nav,.camp-screen .hub-tabs{top:0}}
+
 /* Production weather animations: current + forecast cards */
 .weather-hero-grid{display:grid;grid-template-columns:140px 1fr;gap:12px;align-items:center;margin:12px 0}.weather-animation{position:relative;width:96px;height:76px;display:inline-grid;place-items:center;overflow:hidden;border-radius:22px;background:linear-gradient(180deg,rgba(75,210,255,.18),rgba(0,0,0,.18));border:1px solid rgba(255,255,255,.12);box-shadow:inset 0 0 22px rgba(0,0,0,.3)}.weather-card-live h2 .weather-animation{width:54px;height:44px;margin-right:8px;vertical-align:middle}.weather-day-card .weather-animation{width:100%;height:92px}.weather-animation em{position:relative;z-index:5;font-style:normal;font-size:26px;filter:drop-shadow(0 2px 6px rgba(0,0,0,.45));animation:weather-bob 2.8s ease-in-out infinite}.weather-animation .sun-core{position:absolute;right:15%;top:13%;width:32px;height:32px;border-radius:50%;background:radial-gradient(circle,#fff6a8,#ffc642 62%,rgba(255,168,38,.18));box-shadow:0 0 26px rgba(255,214,90,.72);animation:weather-pulse 3.6s ease-in-out infinite}.weather-animation .cloud{position:absolute;z-index:2;border-radius:999px;background:rgba(236,248,255,.82);filter:drop-shadow(0 8px 10px rgba(0,0,0,.22));animation:weather-drift 6s ease-in-out infinite}.weather-animation .cloud:before,.weather-animation .cloud:after{content:"";position:absolute;border-radius:50%;background:inherit}.weather-animation .cloud-a{left:18%;top:37%;width:58%;height:18px}.weather-animation .cloud-a:before{width:22px;height:22px;left:9px;bottom:3px}.weather-animation .cloud-a:after{width:28px;height:28px;right:10px;bottom:1px}.weather-animation .cloud-b{left:38%;top:48%;width:46%;height:14px;opacity:.7;animation-delay:-1.4s}.weather-animation .cloud-b:before{width:18px;height:18px;left:6px;bottom:2px}.weather-animation .cloud-b:after{width:20px;height:20px;right:6px;bottom:1px}.weather-sun .cloud,.weather-sun-hot .cloud{opacity:.18}.weather-clouds .sun-core,.weather-rain .sun-core,.weather-snow .sun-core,.weather-fog .sun-core{opacity:.46}.weather-storm .sun-core{opacity:.18}.weather-animation i{position:absolute;z-index:3;top:58%;left:calc(14% + (var(--i) * 9%));width:3px;height:15px;border-radius:999px;background:#8ee7ff;animation:weather-fall .9s linear infinite;animation-delay:calc(var(--i) * -.12s)}.weather-snow i{width:6px;height:6px;border-radius:50%;background:#f6fbff;animation-duration:1.7s}.weather-fog i{left:9%;width:80%;height:2px;background:rgba(230,240,235,.58);animation:weather-fog 3.2s ease-in-out infinite}.weather-fog i:nth-of-type(2n){top:70%;animation-delay:-1.2s}.weather-animation .bolt{position:absolute;z-index:4;left:48%;top:43%;color:#ffe56f;font-size:30px;text-shadow:0 0 12px rgba(255,230,80,.95);animation:weather-flash 1.8s steps(2,end) infinite}@keyframes weather-bob{0%,100%{transform:translateY(0)}50%{transform:translateY(-4px)}}@keyframes weather-pulse{0%,100%{transform:scale(1);opacity:.95}50%{transform:scale(1.08);opacity:1}}@keyframes weather-drift{0%,100%{transform:translateX(-3px)}50%{transform:translateX(4px)}}@keyframes weather-fall{from{transform:translateY(-10px);opacity:0}30%{opacity:1}to{transform:translateY(28px);opacity:0}}@keyframes weather-fog{0%,100%{transform:translateX(-12px);opacity:.32}50%{transform:translateX(14px);opacity:.76}}@keyframes weather-flash{0%,82%,100%{opacity:.25}86%,94%{opacity:1}}@media(max-width:760px){.weather-hero-grid{grid-template-columns:1fr}.weather-hero-grid .weather-animation{width:100%;height:94px}.weather-summary{grid-template-columns:repeat(2,1fr)}}
 
@@ -351,10 +354,125 @@ body[data-theme="alpine-minimal"] input,body[data-theme="alpine-minimal"] select
   border-radius: 999px;
   outline: 2px solid rgba(255,255,255,0.24);
 }
+.timeline-density-bar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.45rem;
+  align-items: center;
+  margin: 0.6rem 0 0.8rem;
+  padding: 0.55rem;
+  border: 1px solid rgba(156,227,108,0.22);
+  border-radius: 18px;
+  background: rgba(0,0,0,0.22);
+}
+.timeline-density-bar span {
+  flex: 1 1 100%;
+  font-weight: 1000;
+  color: #d9ffc6;
+  text-transform: uppercase;
+  letter-spacing: 0.055em;
+  font-size: 0.74rem;
+}
+.timeline-density-bar button,
+.timeline-panel-toggle {
+  border: 1px solid rgba(255,255,255,0.13);
+  background: rgba(255,255,255,0.065);
+}
+.timeline-density-bar button.enabled {
+  border-color: rgba(156,227,108,0.68);
+  background: rgba(156,227,108,0.16);
+  box-shadow: inset 0 0 0 1px rgba(156,227,108,0.22);
+}
+.timeline-density-bar small {
+  flex: 1 1 100%;
+  color: var(--muted, #a9b9b0);
+}
+.timeline-panel-toggle {
+  display: flex;
+  width: 100%;
+  justify-content: space-between;
+  gap: 0.75rem;
+  align-items: center;
+  text-align: left;
+  border-radius: 16px;
+  padding: 0.8rem;
+  color: #f4ffee;
+}
+.timeline-panel-toggle span {
+  display: grid;
+  gap: 0.15rem;
+}
+.timeline-panel-toggle strong {
+  color: #d9ffc6;
+}
+.timeline-panel-toggle em {
+  color: var(--muted, #a9b9b0);
+  font-size: 0.78rem;
+  font-style: normal;
+}
+.timeline-panel-toggle b {
+  display: grid;
+  place-items: center;
+  width: 2rem;
+  height: 2rem;
+  border-radius: 999px;
+  background: rgba(156,227,108,0.13);
+  color: #d9ffc6;
+  font-size: 1.35rem;
+}
+.timeline-density-field .timeline-track {
+  min-height: 168px;
+  padding-top: 18px;
+  padding-bottom: 40px;
+}
+.timeline-density-field .timeline-pin {
+  top: 46px;
+  width: 108px;
+  min-height: 78px;
+  padding: 7px;
+}
+.timeline-density-field .timeline-pin strong {
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+.timeline-density-field .timeline-pin em {
+  display: none;
+}
+.timeline-density-field .timeline-pin.timeline-cluster {
+  min-width: 4.8rem;
+  width: 4.8rem;
+}
+.timeline-density-field .timeline-pin.timeline-cluster strong {
+  -webkit-line-clamp: 1;
+}
+.timeline-density-field .timeline-playhead span {
+  height: 162px;
+}
 @media (max-width: 720px) {
   .timeline-budget-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .timeline-export-panel .button-row button { flex: 1 1 45%; }
   .timeline-pin.timeline-cluster { min-width: 6.5rem; }
+  .timeline-density-bar button { flex: 1 1 30%; padding-inline: 0.35rem; }
+  .timeline-collapsible-panel { padding: 0.55rem; margin: 0.65rem 0; }
+  .timeline-panel-toggle { padding: 0.65rem; }
+  .timeline-density-field .timeline-track { min-height: 148px; padding-left: 57vw; padding-right: 57vw; }
+  .timeline-density-field .timeline-playhead span { height: 142px; }
+  .timeline-density-field .timeline-pin { top: 42px; width: 92px; min-height: 66px; border-radius: 14px; }
+  .timeline-density-field .timeline-pin .pin-icon { font-size: 18px; }
+  .timeline-density-field .timeline-pin strong { font-size: 10px; }
+  .timeline-density-field .timeline-pin.timeline-cluster { min-width: 4.1rem; width: 4.1rem; }
+}
+@media (max-width: 560px) {
+  .timeline-density-bar span,
+  .timeline-density-bar small { text-align: center; }
+  .timeline-density-bar button { flex: 1 1 100%; }
+  .timeline-density-field .timeline-track { min-height: 132px; background-image: linear-gradient(90deg,rgba(156,227,108,.2),rgba(75,210,255,.16)),repeating-linear-gradient(90deg,transparent 0 66px,rgba(255,255,255,.1) 66px 68px); }
+  .timeline-density-field .timeline-playhead span { height: 126px; }
+  .timeline-density-field .timeline-pin { width: 82px; min-height: 58px; padding: 5px; }
+  .timeline-density-field .timeline-pin:after { height: 14px; bottom: -12px; }
+  .timeline-density-field .timeline-pin.timeline-cluster { min-width: 3.6rem; width: 3.6rem; }
 }
 
 /* Adventure Timeline Phase 7 */

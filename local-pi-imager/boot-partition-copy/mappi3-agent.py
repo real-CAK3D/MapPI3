@@ -2173,8 +2173,10 @@ def whisplay_display_status(payload=None):
         if isinstance(src, dict):
             screen = src.get('screen') if isinstance(src.get('screen'), dict) else src
             if screen.get('width') or screen.get('height'): break
-    display={'screen': screen or {'width': 240, 'height': 280, 'pixel_format': 'RGB565'}, 'health': health, 'apps': apps.get('apps') or apps.get('payload') or apps, 'foreground': fg, 'foreground_app_id': fg.get('foreground_app_id') or fg.get('app_id') or fg.get('id') or fg.get('foreground')}
-    return {'ok': bool(health.get('ok')), 'display': display, 'screen': display['screen'], 'note': 'Whisplay HAT display mirror metadata for the app companion. If the daemon exposes foreground/screen state, Herbie locks to it and disables independent motion.'}
+    sense=sense_snapshot()
+    animated_face=sense.get('animated_face') if isinstance(sense.get('animated_face'), dict) else {}
+    display={'screen': screen or {'width': 240, 'height': 280, 'pixel_format': 'RGB565'}, 'health': health, 'apps': apps.get('apps') or apps.get('payload') or apps, 'foreground': fg, 'foreground_app_id': fg.get('foreground_app_id') or fg.get('app_id') or fg.get('id') or fg.get('foreground'), 'animated_face': animated_face}
+    return {'ok': bool(health.get('ok')), 'display': display, 'screen': display['screen'], 'animated_face': animated_face, 'note': 'Whisplay HAT display mirror metadata for the app companion. Herbie mirrors animated_face expression and disables independent motion/hover.'}
 
 def time_sync_status(payload=None):
     tracking=sh('chronyc tracking 2>&1 || true', timeout=5).get('output','')
