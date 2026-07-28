@@ -232,7 +232,7 @@ seen_popup_events = set()
 popup_event = None
 popup_until = 0.0
 snake = {'body': [(4,4),(3,4),(2,4)], 'dir': (1,0), 'food': (6,4), 'score': 0, 'over': False, 'last_emit': 0.0}
-PAGES = ['Buddy Home','Herbie','Field Kit','Compass+Level','Weather+Sky','Network','Safety','Snake Trail']
+PAGES = ['Buddy Home','Herbie','Field Kit','Compass+Level','Weather+Sky','Network','Safety']
 
 def api(path, timeout=5.0):
     try:
@@ -269,7 +269,7 @@ def temp_f_text(value_c):
     return '—' if value_f is None else f'{round(value_f,1)}F'
 
 def lines_fieldkit():
-    status = api('/api/status'); net = api('/api/network/status'); sense = sense_payload(api('/api/sense'))
+    status = api('/api/status'); net = api('/api/network/status'); sense = sense_payload(api('/api/sense')); power = api('/api/power/status')
     stats = status.get('stats') if isinstance(status.get('stats'), dict) else status.get('system') if isinstance(status.get('system'), dict) else {}
     disk = stats.get('disk') if isinstance(stats.get('disk'), dict) else {}
     mem = stats.get('memory') if isinstance(stats.get('memory'), dict) else {}
@@ -306,7 +306,20 @@ def lines_fieldkit():
     if temp_num is not None: lines.append(f'CPU temp: {temp_f_text(temp_num)}')
     if mem_pct is not None: lines.append(f'RAM: {mem_pct}% used')
     if disk.get('free_gb') is not None: lines.append(f'disk: {disk.get("free_gb")}GB free')
-    lines.append('battery: UNKNOWN/no UPS')
+    if isinstance(power, dict) and not power.get('_error') and power.get('ok', True):
+        pct = power.get('percent')
+        source = power.get('source') or 'power-api'
+        charging = power.get('charging')
+        plugged = power.get('battery_input_power_connected')
+        pct_text = f'{round(float(pct))}%' if isinstance(pct, (int, float)) else 'unknown%'
+        state = 'charging' if charging is True else 'not charging' if charging is False else 'charge ?'
+        input_state = 'input on' if plugged is True else 'input off' if plugged is False else 'input ?'
+        lines.append(f'battery: {pct_text} {state}')
+        lines.append(f'PiSugar: {input_state} · {source}')
+    else:
+        err = power.get('_error') if isinstance(power, dict) else 'unavailable'
+        lines.append('battery: unavailable')
+        lines.append(f'PiSugar: {str(err)[:18]}')
     lines.append('power: dim + burst GPS')
     return lines[:12]
 
@@ -615,7 +628,6 @@ def render():
     if title == 'Compass+Level': return draw_card('Compass + Level', lines_compass(), BLUE)
     if title == 'Weather+Sky': return draw_card('Weather + Sky', lines_weather(), AMBER)
     if title == 'Network': return draw_card('Network', lines_network(), BLUE)
-    if title == 'Snake Trail': return render_snake()
     return draw_card('Trail Safety', lines_safety(), AMBER)
 
 def main():
@@ -634,8 +646,7 @@ def main():
         last = 0
         while running:
             time.sleep(0.35); active = page % len(PAGES)
-            if poll_popup() or (popup_event and time.time() < popup_until) or active in (0,1,2,3,4,5,7):
-                if active == 7 and time.time() - last < 0.18: continue
+            if poll_popup() or (popup_event and time.time() < popup_until) or active in (0,1,2,3,4,5):
                 if active == 0 and time.time() - last < 5.0: continue
                 last = time.time(); show(hw, render())
     finally:

@@ -1,6 +1,25 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
+cat >&2 <<'MSG'
+ERROR: install-whisplay-sense-joystick.sh is parked.
+
+Maple live-field finding, 2026-07-28:
+- Routing the Sense HAT joystick directly into Whisplay made Whisplay open the
+  Sense HAT event node via both explicit by-path discovery and the generic
+  /dev/input/event* fallback.
+- The live Pi then showed sensehat-joystick I2C read failures (-121), and raw
+  isolated /dev/input/event2 monitors saw zero events even after stopping
+  Whisplay/MapPI3 and reloading sensehat_joystick.
+- Do not reinstall this Whisplay joystick reader until the raw kernel event lane
+  is healthy again and a single-owner input bridge is designed.
+
+Rollback/live note:
+- Live Whisplay keyboard.py was backed up and patched to skip the Sense HAT
+  joystick, including fallback event scanning.
+MSG
+exit 2
+
 TS="$(date -u +%Y%m%dT%H%M%SZ)"
 TARGET=""
 for p in \

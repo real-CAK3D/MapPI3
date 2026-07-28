@@ -9,11 +9,12 @@ function routeToPoints(route) {
 }
 
 function iconFor(point) {
+  const size = Math.max(24, Math.min(54, Number(point.size || 30)));
   return L.divIcon({
-    className: `mappi3-waypoint-icon ${point.custom ? 'custom' : 'stock'}`,
+    className: `mappi3-waypoint-icon ${point.custom ? 'custom' : 'stock'} ${point.markerClass || ''}`,
     html: `<span>${point.icon || (point.custom ? '✚' : '•')}</span>`,
-    iconSize: [30, 30],
-    iconAnchor: [15, 15]
+    iconSize: [size, size],
+    iconAnchor: [size / 2, size / 2]
   });
 }
 
@@ -28,7 +29,7 @@ function segmentSlice(routePoints, routeMiles, segment) {
   return routePoints.slice(Math.max(0, startIndex - 1), Math.max(startIndex + 1, endIndex + 1));
 }
 
-export default function LiveLeafletMap({ trace = [], center = defaultCenter, active = false, route = null, waypoints = [], onMapClick = null, onWaypointMove = null, onViewChange = null }) {
+export default function LiveLeafletMap({ trace = [], center = defaultCenter, active = false, route = null, waypoints = [], onMapClick = null, onWaypointMove = null, onViewChange = null, showCenterMarker = true }) {
   const [tileStatus, setTileStatus] = useState('loading map tiles');
   const formatCoord = (point) => Array.isArray(point) ? `${Number(point[0]).toFixed(5)}, ${Number(point[1]).toFixed(5)}` : 'GPS pending';
   const mapRef = useRef(null);
@@ -141,19 +142,23 @@ export default function LiveLeafletMap({ trace = [], center = defaultCenter, act
 
     if (tracePoints.length > 1) layerRef.current.line = L.polyline(tracePoints, { color: '#4bd2ff', weight: 6, opacity: 0.9 }).addTo(map);
     else layerRef.current.line = null;
-    layerRef.current.marker = L.circleMarker(latest, {
-      radius: 9,
-      color: '#dff1ff',
-      weight: 3,
-      fillColor: active ? '#58a8ff' : (route?.color || '#9ce36c'),
-      fillOpacity: 0.9
-    }).bindTooltip(`Live GPS / map point · ${formatCoord(latest)}`, { direction: 'top' }).bindPopup(`<strong>Live GPS / map point</strong><br>${formatCoord(latest)}<br>${active ? 'tracking live movement' : 'selected route/start point'}`).addTo(map);
+    if (showCenterMarker) {
+      layerRef.current.marker = L.circleMarker(latest, {
+        radius: 9,
+        color: '#dff1ff',
+        weight: 3,
+        fillColor: active ? '#58a8ff' : (route?.color || '#9ce36c'),
+        fillOpacity: 0.9
+      }).bindTooltip(`Live GPS / map point · ${formatCoord(latest)}`, { direction: 'top' }).bindPopup(`<strong>Live GPS / map point</strong><br>${formatCoord(latest)}<br>${active ? 'tracking live movement' : 'selected route/start point'}`).addTo(map);
+    } else {
+      layerRef.current.marker = null;
+    }
 
     const waypointPoints = (waypoints || []).filter(point => Number.isFinite(point.lat) && Number.isFinite(point.lon)).map(point => [point.lat, point.lon]);
     const boundsPoints = [...routePoints, ...tracePoints, ...waypointPoints];
     if (boundsPoints.length > 1) map.fitBounds(L.latLngBounds(boundsPoints), { padding: [24, 24], maxZoom: 17 });
     else map.setView(latest, 15);
-  }, [points, tracePoints, routePoints, routeMiles, waypoints, center, active, onWaypointMove, route]);
+  }, [points, tracePoints, routePoints, routeMiles, waypoints, center, active, onWaypointMove, route, showCenterMarker]);
 
   const latestPoint = points[points.length - 1] || center;
   return <div className={`leaflet-shell ${onMapClick ? 'draw-active' : ''}`} data-tile-status={tileStatus}><div className="map-fallback-label">{tileStatus} · GPS {formatCoord(latestPoint)}</div>{onMapClick && <><div className="map-center-crosshair" aria-hidden="true">⌖</div><div className="draw-map-hint">pan/zoom map, tap + or use Add map center</div></>}<div ref={containerRef} className="leaflet-map" /></div>;
