@@ -77,6 +77,29 @@ function passiveWifiAwareness(networkLive = null, wifiScan = null) {
 }
 const herbieAsset = (kind, name) => `/assets/herbie/${kind}/${name}.png`;
 function signedTiltDegrees(value) { const n = Number(value); return Number.isFinite(n) ? ((n + 180) % 360) - 180 : NaN; }
+function accelTiltDegrees(value, z = 1) {
+  const v = Number(value); const zv = Math.max(0.001, Math.abs(Number(z) || 1));
+  return Number.isFinite(v) ? Math.atan2(v, zv) * 180 / Math.PI : NaN;
+}
+function liveSenseTiltAxes(liveSense = {}) {
+  const orient = liveSense.orientation || {};
+  const liquid = liveSense.liquid_display || liveSense.liquidDisplay || {};
+  const accel = liquid.display_accel || liquid.raw_accel || liveSense.display_accel || liveSense.raw_accel || {};
+  const az = accel.z ?? liquid.gz ?? 1;
+  const accelRoll = accelTiltDegrees(accel.x, az);
+  const accelPitch = accelTiltDegrees(accel.y, az);
+  const orientRoll = signedTiltDegrees(orient.level_x ?? orient.roll);
+  const orientPitch = signedTiltDegrees(orient.level_y ?? orient.pitch);
+  const accelMagnitude = Math.max(Math.abs(accelRoll), Math.abs(accelPitch));
+  const orientMagnitude = Math.max(Math.abs(orientRoll), Math.abs(orientPitch));
+  // In live liquid mode the API's raw/display accel changes every frame while
+  // orientation degrees can stay nearly frozen, so prefer accel-derived degrees
+  // as soon as it shows a field-readable tilt.
+  if (Number.isFinite(accelRoll) && Number.isFinite(accelPitch) && (accelMagnitude >= 5 || !Number.isFinite(orientRoll) || !Number.isFinite(orientPitch) || orientMagnitude < 5)) {
+    return { roll: accelRoll, pitch: accelPitch, source: 'liquid accel' };
+  }
+  return { roll: orientRoll, pitch: orientPitch, source: orient.level_status || 'orientation' };
+}
 function safeHerbieDisplayValue(value, fallback = '') {
   if (value == null || value === false) return fallback;
   if (typeof value === 'string' || typeof value === 'number') return String(value);
@@ -88,10 +111,9 @@ function herbieCompanionState({ settings = {}, progress = 0.34, tick = 0, mode =
   const manual = settings.herbieExpression || settings.demoAvatarExpression || 'auto';
   const liveSense = senseLive?.sense || senseLive?.state || senseLive || {};
   const liveOrient = liveSense.orientation || {};
-  const liveRoll = signedTiltDegrees(liveOrient.level_x ?? liveOrient.roll);
-  const livePitch = signedTiltDegrees(liveOrient.level_y ?? liveOrient.pitch);
-  const roll = Number.isFinite(liveRoll) ? liveRoll : Number(settings.levelX || settings.demoRoll || 0);
-  const pitch = Number.isFinite(livePitch) ? livePitch : Number(settings.levelY || settings.demoPitch || 0);
+  const liveTiltAxes = liveSenseTiltAxes(liveSense);
+  const roll = Number.isFinite(liveTiltAxes.roll) ? liveTiltAxes.roll : Number(settings.levelX || settings.demoRoll || 0);
+  const pitch = Number.isFinite(liveTiltAxes.pitch) ? liveTiltAxes.pitch : Number(settings.levelY || settings.demoPitch || 0);
   const displayFace = whisplayDisplay?.animated_face || whisplayDisplay?.display?.animated_face || whisplayDisplay?.display?.face || whisplayDisplay?.face || null;
   const liveFace = displayFace || liveSense.animated_face || liveSense.avatar_buddy || {};
   const liveFaceExpression = herbieExpressions.includes(liveFace.expression || liveFace.mood) ? (liveFace.expression || liveFace.mood) : '';
@@ -103,13 +125,17 @@ function herbieCompanionState({ settings = {}, progress = 0.34, tick = 0, mode =
   const battery = Number(settings.batteryPercent ?? settings.piBatteryPercent ?? 100);
   const tiltMagnitude = Math.max(Math.abs(roll), Math.abs(pitch));
   const tilt = tiltMagnitude >= 8;
-  const tiltDirection = !tilt ? null : (Math.abs(roll) >= Math.abs(pitch) ? (roll < 0 ? 'left' : 'right') : (pitch < 0 ? 'top' : 'bottom'));
+  const tiltDirection = !tilt ? null : (Math.abs(roll) >= Math.abs(pitch) ? (roll < 0 ? 'right' : 'left') : (pitch < 0 ? 'top' : 'bottom'));
   const tiltAsset = tiltDirection === 'left' ? { kind:'motions', name:'tilted-left', motion:'tilted-left', label:'tilted left' }
     : tiltDirection === 'right' ? { kind:'motions', name:'tilted-right', motion:'tilted-right', label:'tilted right' }
     : tiltDirection === 'top' ? { kind:'turnarounds', name:'top', motion:'turnaround-top', label:'top view tilt' }
     : tiltDirection === 'bottom' ? { kind:'turnarounds', name:'bottom', motion:'turnaround-bottom', label:'bottom view tilt' }
     : null;
   const lowBattery = Number.isFinite(battery) && battery <= 20;
+  const liveJerk = Number(liveFace.jerk ?? liveSense.jerk ?? liveSense.motion?.jerk ?? 0);
+  const liveMotionKind = String(liveSense.herbie_motion?.kind || liveSense.motion_event?.kind || liveFace.motion || '').toLowerCase();
+  const shakeSignal = liveMotionKind.includes('shake') || liveJerk >= 5.2;
+  const joltSignal = !shakeSignal && (liveMotionKind.includes('jolt') || liveJerk >= 2.2 || liveFaceExpression === 'surprised');
   const routePct = Math.max(0, Math.min(1, Number(progress || 0)));
   const hour = Number(settings.demoHour ?? new Date().getHours());
   const cycle = [
@@ -122,13 +148,15 @@ function herbieCompanionState({ settings = {}, progress = 0.34, tick = 0, mode =
   let buddyMood = manual && manual !== 'auto' ? 'manual' : activeCycle[Math.floor(tick / 5) % activeCycle.length];
   let motion = 'idle';
   let reason = whisplayOk ? 'mirroring Whisplay HAT state' : 'ambient companion loop';
-  const liveTiltDetail = liveSense?.ok ? `Sense HAT ${liveOrient.level_status || 'tilt'} ${Math.round(roll)}°/${Math.round(pitch)}°${tiltAsset ? ` · ${tiltAsset.label}` : ''}` : 'motion/tilt reaction';
+  const liveTiltDetail = liveSense?.ok ? `Sense HAT ${liveTiltAxes.source || liveOrient.level_status || 'tilt'} ${Math.round(roll)}°/${Math.round(pitch)}°${tiltAsset ? ` · ${tiltAsset.label}` : ''}` : 'motion/tilt reaction';
   if (manual === 'auto') {
-    if (whisplayOk && liveFaceExpression) { expression = liveFaceExpression; motion = 'idle'; reason = `Whisplay HAT mirror · ${whisplayForeground || 'display active'} · ${liveFaceExpression}`; buddyMood = ['sleepy','tired','yawning','bored'].includes(liveFaceExpression) ? 'sleepy' : ['curious','focused','thinking','wink'].includes(liveFaceExpression) ? 'curious' : 'excited'; }
+    if (shakeSignal) { expression = 'surprised'; motion = 'shaking'; reason = `${whisplayOk ? 'Whisplay/Sense shake mirror' : 'Sense HAT shake'} · short-lived motion reaction`; buddyMood = 'excited'; }
+    else if (joltSignal) { expression = 'surprised'; motion = 'shaking'; reason = `${whisplayOk ? 'Whisplay/Sense jolt mirror' : 'Sense HAT jolt'} · short-lived motion reaction`; buddyMood = 'curious'; }
+    else if (tilt && tiltAsset) { expression = getHerbieRule(settings, 'motion', 'surprised'); motion = tiltAsset.motion; reason = `${whisplayOk ? 'Whisplay/Sense tilt mirror' : 'Sense HAT tilt'} · ${liveTiltDetail}`; buddyMood = 'curious'; }
+    else if (whisplayOk && liveFaceExpression) { expression = liveFaceExpression; motion = 'idle'; reason = `Whisplay HAT mirror · ${whisplayForeground || 'display active'} · ${liveFaceExpression}`; buddyMood = ['sleepy','tired','yawning','bored'].includes(liveFaceExpression) ? 'sleepy' : ['curious','focused','thinking','wink'].includes(liveFaceExpression) ? 'curious' : 'excited'; }
     else if (whisplayOk) { expression = getHerbieRule(settings, 'default', 'focused'); motion = 'idle'; reason = `Whisplay HAT mirror · ${whisplayForeground || 'display active'}${whisplayScreen.width ? ` · ${whisplayScreen.width}×${whisplayScreen.height || '?'} ${whisplayScreen.pixel_format || ''}` : ''}`; buddyMood = 'curious'; }
     else if (lowBattery) { expression = getHerbieRule(settings, 'lowBattery', 'worried'); motion = 'idle'; reason = 'battery caution'; }
     else if (liveFaceExpression) { expression = liveFaceExpression; motion = 'idle'; reason = liveSense.mode === 'avatar' ? `mirroring Sense HAT face · ${liveFaceExpression}` : `mirroring live face · ${liveFaceExpression}`; buddyMood = ['sleepy','tired','yawning','bored'].includes(liveFaceExpression) ? 'sleepy' : ['curious','focused','thinking','wink'].includes(liveFaceExpression) ? 'curious' : 'excited'; }
-    else if (tilt && tiltAsset) { expression = getHerbieRule(settings, 'motion', 'surprised'); motion = tiltAsset.motion; reason = liveTiltDetail; }
     else if (/pac[- ]?man|game/i.test(mode)) { expression = getHerbieRule(settings, 'pacman', 'party-mode'); motion = 'bouncing'; reason = 'game mode energy'; }
     else if (/compass|scan|gps/i.test(mode)) { expression = getHerbieRule(settings, 'gps', 'focused'); motion = 'scanning'; reason = 'navigation scan'; }
     else if (networkLive || wifiScan?.networks?.length) { buddyMood = wifiMood.mood; expression = getHerbieRule(settings, 'wifi', wifiMood.expression); motion = 'idle'; reason = wifiMood.reason; }
@@ -146,10 +174,12 @@ function herbieCompanionState({ settings = {}, progress = 0.34, tick = 0, mode =
   if (manual !== 'auto' && ['melting','sweating','high-af'].includes(expression)) motion = 'spinning';
   const motionExpression = herbieMotionExpressionMap[motion];
   if (manual === 'auto' && motionExpression && herbieExpressions.includes(motionExpression)) expression = getHerbieRule(settings, motion === 'bouncing' ? 'pacman' : motion === 'scanning' ? 'gps' : motion === 'low-battery' ? 'lowBattery' : 'motion', motionExpression);
-  const mirrorLocked = whisplayOk;
-  const poseAsset = !mirrorLocked && tiltAsset && motion === tiltAsset.motion ? tiltAsset : null;
+  const poseAsset = manual === 'auto' && tiltAsset && motion === tiltAsset.motion ? tiltAsset
+    : manual === 'auto' && motion === 'shaking' ? { kind:'motions', name:'shaking', motion:'shaking', label:'shake/jolt reaction' }
+    : null;
+  const mirrorLocked = whisplayOk && !poseAsset;
   const imageAsset = poseAsset || { kind: 'expressions', name: expression };
-  return { expression, motion: mirrorLocked ? 'idle' : motion, reason, buddyMood, wifiDetail: wifiMood.detail, whisplayOk, whisplayForeground, whisplayScreen, liveFace, blinking: mirrorLocked ? false : (motion === 'blink' || (!liveFaceExpression && tick % 12 === 10)), tilted: mirrorLocked ? false : (motion.startsWith('tilted') || motion.startsWith('turnaround')), motionAsset: false, turnaroundAsset: Boolean(poseAsset && poseAsset.kind === 'turnarounds'), imageAsset };
+  return { expression, motion: mirrorLocked ? 'idle' : motion, reason, buddyMood, wifiDetail: wifiMood.detail, whisplayOk, whisplayForeground, whisplayScreen, liveFace, blinking: mirrorLocked ? false : (motion === 'blink' || (!liveFaceExpression && tick % 12 === 10)), tilted: Boolean(poseAsset), motionAsset: false, turnaroundAsset: Boolean(poseAsset && poseAsset.kind === 'turnarounds'), imageAsset };
 }
 function HerbieCompanionPanel({ settings = {}, setSettings, progress = 0.34, tick = 0, mode = 'Herbie', networkLive = null, wifiScan = null, senseLive = null, whisplayDisplay = null }) {
   const herbie = herbieCompanionState({ settings, progress, tick, mode, networkLive, wifiScan, senseLive, whisplayDisplay });

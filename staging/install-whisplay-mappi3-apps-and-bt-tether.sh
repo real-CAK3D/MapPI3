@@ -221,7 +221,7 @@ PY
 cat > "$EXAMPLE_DIR/mappi3_whisplay_dashboard.py" <<'PY'
 #!/usr/bin/env python3
 from __future__ import annotations
-import datetime, json, random, time
+import datetime, json, math, random, time
 from urllib import request
 from mappi3_whisplay_common import *
 
@@ -233,6 +233,7 @@ popup_event = None
 popup_until = 0.0
 snake = {'body': [(4,4),(3,4),(2,4)], 'dir': (1,0), 'food': (6,4), 'score': 0, 'over': False, 'last_emit': 0.0}
 PAGES = ['Buddy Home','Herbie','Field Kit','Compass+Level','Weather+Sky','Network','Safety']
+HERBIE_MOTION_STATE = {'last_accel': None, 'last_at': 0.0, 'hits': [], 'event': None, 'event_until': 0.0, 'peak': 0.0}
 
 def api(path, timeout=5.0):
     try:
@@ -468,7 +469,7 @@ def herbie_tilt_direction(roll, pitch, threshold=8.0):
     if max(abs(roll), abs(pitch)) < threshold:
         return None
     if abs(roll) >= abs(pitch):
-        return 'left' if roll < 0 else 'right'
+        return 'right' if roll < 0 else 'left'
     return 'top' if pitch < 0 else 'bottom'
 
 def herbie_directional_tilt_face(roll, pitch, threshold=8.0):
@@ -481,12 +482,21 @@ def herbie_directional_tilt_face(roll, pitch, threshold=8.0):
 
 def whisplay_herbie_state(now=None, status=None, sense=None, net=None):
     now = now or datetime.datetime.now()
-    status = status if status is not None else api('/api/status', timeout=5.0)
-    sense = sense if sense is not None else sense_payload(api('/api/sense', timeout=5.0))
-    net = net if net is not None else api('/api/network/status', timeout=5.0)
-    orient = sense.get('orientation') if isinstance(sense.get('orientation'), dict) else {}
-    roll = signed_angle(orient.get('roll', sense.get('roll')))
-    pitch = signed_angle(orient.get('pitch', sense.get('pitch')))
+    # Tilt is the live interaction path, so read the fast Sense endpoint first and
+    # short-circuit before slower status/network probes. On the Pi, /api/sense is
+    # ~tens of ms while status/network can take 1-2s when services are busy/offline.
+    sense = sense if sense is not None else sense_payload(api('/api/sense', timeout=0.25))
+    roll, pitch, tilt_source = sense_tilt_axes(sense)
+    motion_reaction = herbie_motion_reaction(sense)
+    tilt_reaction = herbie_directional_tilt_face(roll, pitch, threshold=8.0)
+    if herbie_high_af_now(now):
+        return 'high-af', '4:20 trail minute'
+    if motion_reaction:
+        return motion_reaction[0], motion_reaction[1]
+    if tilt_reaction:
+        return tilt_reaction[0], tilt_reaction[1]
+    status = status if status is not None else api('/api/status', timeout=0.35)
+    net = net if net is not None else api('/api/network/status', timeout=0.6)
     temp = sense.get('temperature') if sense.get('temperature') is not None else sense.get('temp_c')
     battery = status.get('battery') if isinstance(status.get('battery'), dict) else {}
     low_battery = any(str(v).lower() in ('low','critical') for v in [battery.get('state'), battery.get('status')])
@@ -494,13 +504,8 @@ def whisplay_herbie_state(now=None, status=None, sense=None, net=None):
     except Exception: tilted = False
     try: hot = temp is not None and float(temp) >= 30
     except Exception: hot = False
-    tilt_reaction = herbie_directional_tilt_face(roll, pitch, threshold=8.0)
-    if herbie_high_af_now(now):
-        return 'high-af', '4:20 trail minute'
     if status.get('_error'):
         return herbie_idle_face(5.0), 'offline face loop'
-    if tilt_reaction:
-        return tilt_reaction[0], tilt_reaction[1]
     if low_battery:
         return ['worried','determined','thumbs-up','focused'][int(time.time() // 4) % 4], 'battery caution'
     if hot:
@@ -527,14 +532,119 @@ def signed_angle(value):
         return None
     return ((v + 180.0) % 360.0) - 180.0
 
-def herbie_pawn_state():
-    status = api('/api/status', timeout=5.0)
-    sense = sense_payload(api('/api/sense', timeout=5.0))
-    net = api('/api/network/status', timeout=5.0)
-    weather = api('/api/weather?days=1', timeout=0.9)
+def accel_angle(value, z=1.0):
+    v = num(value)
+    zv = max(0.001, abs(num(z, 1.0) or 1.0))
+    if v is None:
+        return None
+    try:
+        return math.degrees(math.atan2(v, zv))
+    except Exception:
+        return None
+
+def sense_tilt_axes(sense):
+    sense = sense if isinstance(sense, dict) else {}
     orient = sense.get('orientation') if isinstance(sense.get('orientation'), dict) else {}
-    roll = signed_angle(orient.get('roll', sense.get('roll')))
-    pitch = signed_angle(orient.get('pitch', sense.get('pitch')))
+    liquid = sense.get('liquid_display') if isinstance(sense.get('liquid_display'), dict) else {}
+    accel = liquid.get('display_accel') if isinstance(liquid.get('display_accel'), dict) else {}
+    if not accel:
+        accel = liquid.get('raw_accel') if isinstance(liquid.get('raw_accel'), dict) else {}
+    if not accel:
+        accel = sense.get('display_accel') if isinstance(sense.get('display_accel'), dict) else {}
+    if not accel:
+        accel = sense.get('raw_accel') if isinstance(sense.get('raw_accel'), dict) else {}
+    accel_roll = accel_angle(accel.get('x'), accel.get('z', liquid.get('gz', 1.0))) if accel else None
+    accel_pitch = accel_angle(accel.get('y'), accel.get('z', liquid.get('gz', 1.0))) if accel else None
+    orient_roll = signed_angle(orient.get('level_x', orient.get('roll', sense.get('roll'))))
+    orient_pitch = signed_angle(orient.get('level_y', orient.get('pitch', sense.get('pitch'))))
+    try:
+        accel_mag = max(abs(accel_roll), abs(accel_pitch))
+    except Exception:
+        accel_mag = 0.0
+    try:
+        orient_mag = max(abs(orient_roll), abs(orient_pitch))
+    except Exception:
+        orient_mag = 0.0
+    # Live liquid mode updates display_accel every frame while orientation degrees
+    # can remain near-frozen; prefer accel-derived tilt once it is readable.
+    if accel_roll is not None and accel_pitch is not None and (accel_mag >= 5.0 or orient_roll is None or orient_pitch is None or orient_mag < 5.0):
+        return accel_roll, accel_pitch, 'liquid accel'
+    return orient_roll, orient_pitch, orient.get('level_status') or 'orientation'
+
+def sense_accel_vector(sense):
+    sense = sense if isinstance(sense, dict) else {}
+    liquid = sense.get('liquid_display') if isinstance(sense.get('liquid_display'), dict) else {}
+    accel = liquid.get('display_accel') if isinstance(liquid.get('display_accel'), dict) else {}
+    if not accel:
+        accel = liquid.get('raw_accel') if isinstance(liquid.get('raw_accel'), dict) else {}
+    if not accel:
+        accel = sense.get('display_accel') if isinstance(sense.get('display_accel'), dict) else {}
+    if not accel:
+        accel = sense.get('raw_accel') if isinstance(sense.get('raw_accel'), dict) else {}
+    if not accel:
+        face = sense.get('animated_face') if isinstance(sense.get('animated_face'), dict) else {}
+        accel = face.get('accel') if isinstance(face.get('accel'), dict) else {}
+    x = num(accel.get('x')); y = num(accel.get('y')); z = num(accel.get('z'))
+    if x is None or y is None or z is None:
+        return None
+    return (x, y, z)
+
+def herbie_motion_reaction(sense, now=None):
+    now = time.time() if now is None else float(now)
+    if HERBIE_MOTION_STATE.get('event') and now < float(HERBIE_MOTION_STATE.get('event_until') or 0.0):
+        return HERBIE_MOTION_STATE['event']
+    vec = sense_accel_vector(sense)
+    face = sense.get('animated_face') if isinstance(sense, dict) and isinstance(sense.get('animated_face'), dict) else {}
+    face_jerk = num(face.get('jerk'))
+    if vec is None:
+        return None
+    last = HERBIE_MOTION_STATE.get('last_accel')
+    last_at = float(HERBIE_MOTION_STATE.get('last_at') or 0.0)
+    HERBIE_MOTION_STATE['last_accel'] = vec
+    HERBIE_MOTION_STATE['last_at'] = now
+    if not last or now - last_at > 2.0:
+        return None
+    dx = vec[0] - last[0]; dy = vec[1] - last[1]; dz = vec[2] - last[2]
+    delta = math.sqrt(dx*dx + dy*dy + dz*dz)
+    jerk = max(delta / max(0.05, now - last_at), face_jerk or 0.0)
+    hits = [t for t in HERBIE_MOTION_STATE.get('hits', []) if now - t <= 1.2]
+    if delta >= 0.22 or jerk >= 2.2:
+        hits.append(now)
+    HERBIE_MOTION_STATE['hits'] = hits
+    event = None
+    if len(hits) >= 3:
+        event = ('motions/shaking', 'shake streak', 'shake', max(jerk, delta))
+        HERBIE_MOTION_STATE['hits'] = []
+        hold = 1.35
+    elif delta >= 0.48 or (face_jerk is not None and face_jerk >= 3.6):
+        event = ('expressions/surprised', 'sudden jolt', 'jolt', max(jerk, delta))
+        hold = 0.85
+    if event:
+        HERBIE_MOTION_STATE['event'] = event
+        HERBIE_MOTION_STATE['event_until'] = now + hold
+        HERBIE_MOTION_STATE['peak'] = event[3]
+        return event
+    return None
+
+def herbie_pawn_state():
+    sense = sense_payload(api('/api/sense', timeout=0.25))
+    roll, pitch, tilt_source = sense_tilt_axes(sense)
+    now = datetime.datetime.now()
+    hour = now.hour
+    idle = herbie_idle_face(6.0)
+    motion_reaction = herbie_motion_reaction(sense)
+    tilt_reaction = herbie_directional_tilt_face(roll, pitch, threshold=8.0)
+    if herbie_high_af_now(now):
+        return {'mood': 'high-af', 'reason': '4:20 trail minute', 'accent': GREEN, 'details': ['fast tilt lane', 'priority faces + cameos'], 'idle': idle}
+    if motion_reaction:
+        details = [f'motion {motion_reaction[2]} peak {round(motion_reaction[3],1)}', 'short-lived sensor reaction', 'priority faces + cameos']
+        return {'mood': motion_reaction[0], 'reason': motion_reaction[1], 'accent': AMBER, 'details': details, 'idle': idle}
+    if tilt_reaction:
+        details = [f'tilt {tilt_source} r{round(roll)} p{round(pitch)}', 'fast Sense-only reaction', 'priority faces + cameos']
+        return {'mood': tilt_reaction[0], 'reason': tilt_reaction[1], 'accent': AMBER, 'details': details, 'idle': idle}
+    status = api('/api/status', timeout=0.35)
+    net = api('/api/network/status', timeout=0.6)
+    weather = api('/api/weather?days=1', timeout=0.6)
     temp_c = num(sense.get('temperature') if sense.get('temperature') is not None else sense.get('temp_c'))
     humidity = num(sense.get('humidity'))
     pressure = num(sense.get('pressure'))
@@ -542,10 +652,6 @@ def herbie_pawn_state():
     battery = status.get('battery') if isinstance(status.get('battery'), dict) else {}
     low_battery = any(str(v).lower() in ('low','critical') for v in [battery.get('state'), battery.get('status')])
     api_available = not (status.get('_error') and sense.get('_error') and net.get('_error') and weather.get('_error'))
-    now = datetime.datetime.now()
-    hour = now.hour
-    idle = herbie_idle_face(6.0)
-    tilt_reaction = herbie_directional_tilt_face(roll, pitch, threshold=8.0)
     mood = idle
     reason = 'all-face wandering loop'
     accent = GREEN
@@ -582,7 +688,7 @@ def herbie_pawn_state():
     if temp_c is not None: details.append(f'temp {temp_f_text(temp_c)}')
     if humidity is not None: details.append(f'hum {round(humidity)}%')
     if pressure is not None: details.append(f'press {round(pressure)}hPa')
-    if roll is not None and pitch is not None: details.append(f'tilt r{round(roll)} p{round(pitch)}')
+    if roll is not None and pitch is not None: details.append(f'tilt {tilt_source} r{round(roll)} p{round(pitch)}')
     if compass is not None: details.append(f'head {round(compass)}°')
     if status.get('_error'):
         details.append('offline face loop')
@@ -645,7 +751,7 @@ def main():
     try:
         last = 0
         while running:
-            time.sleep(0.35); active = page % len(PAGES)
+            time.sleep(0.18); active = page % len(PAGES)
             if poll_popup() or (popup_event and time.time() < popup_until) or active in (0,1,2,3,4,5):
                 if active == 0 and time.time() - last < 5.0: continue
                 last = time.time(); show(hw, render())

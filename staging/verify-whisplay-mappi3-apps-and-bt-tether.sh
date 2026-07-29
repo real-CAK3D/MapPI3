@@ -32,7 +32,14 @@ for script in ['mappi3_whisplay_common.py','mappi3_whisplay_dashboard.py','mappi
         assert 'draw_herbie_mood' in src
         assert 'offline face loop' in src
         assert 'priority faces + cameos' in src
+        assert 'TILT_DIRECTION_ASSETS' in src
+        assert "('motions','tilted-left')" in src
+        assert "('motions','tilted-right')" in src
+        assert "('turnarounds','top')" in src
+        assert "('turnarounds','bottom')" in src
+        assert "orient.get('level_x'" in src and "orient.get('level_y'" in src
         print('HERBIE_MOOD_PAGE=PASS')
+        print('HERBIE_DIRECTIONAL_TILT=PASS')
 appdir=pathlib.Path('/home/mappi3/.whisplay-daemon/app')
 for name in ['whisplay-mappi3-dashboard.json','whisplay-mappi3-ai-chat.json']:
     data=json.loads((appdir/name).read_text())
