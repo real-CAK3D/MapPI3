@@ -12,6 +12,8 @@
     "tunnel": "npx --yes localtunnel --port 8080 --local-host 127.0.0.1 --subdomain mappi3-cak3d"
   },
   "dependencies": {
+    "@amcharts/amcharts5": "^5.20.0",
+    "@amcharts/amcharts5-geodata": "^5.1.6",
     "@vitejs/plugin-react": "latest",
     "leaflet": "^1.9.4",
     "react": "latest",

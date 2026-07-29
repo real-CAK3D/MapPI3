@@ -1,100 +1,405 @@
-import React, { useMemo } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
+import * as am5 from '@amcharts/amcharts5';
+import * as am5map from '@amcharts/amcharts5/map';
+import am5themes_Animated from '@amcharts/amcharts5/themes/Animated';
+import am5geodata_worldLow from '@amcharts/amcharts5-geodata/worldLow';
 
-const KIND_COLORS = {
-  home: '#ffd36a',
-  event: '#5ee7ff',
-  gps: '#9ce36c',
-  trail: '#ff8bd1',
-  walk: '#c69cff',
-  route: '#ffffff',
-  default: '#5ee7ff'
-};
+function supportsAmChartsCanvas() {
+  try {
+    const canvas = document.createElement('canvas');
+    const context = canvas.getContext && canvas.getContext('2d');
+    return Boolean(context && typeof context.createImageData === 'function');
+  } catch (_error) {
+    return false;
+  }
+}
 
-function safePoint(point, index) {
+function safePoint(point) {
   const lat = Number(point?.lat);
   const lon = Number(point?.lon);
-  if (!Number.isFinite(lat) || !Number.isFinite(lon)) return null;
+  if (![lat, lon].every(Number.isFinite)) return null;
   return {
-    id: point.id || `atlas-${index}`,
-    title: point.name || point.label || 'Trail point',
-    type: point.type || point.sourceLabel || point.kind || 'MapPI3 point',
+    id: String(point.id || `${point.kind || 'point'}-${lat.toFixed(3)}-${lon.toFixed(3)}`),
+    name: String(point.name || point.type || 'Adventure point'),
+    kind: String(point.kind || 'event'),
     lat,
     lon,
-    kind: point.kind || 'default',
-    count: Number(point.count || 1),
-    size: Math.max(5, Math.min(22, Number(point.size || 12) / 3)),
-    notes: point.notes || ''
+    size: Math.max(5, Math.min(18, Number(point.size || 9) / 3)),
+    value: Math.max(20, Math.min(450, Number(point.count || 1) * 45)),
+    notes: String(point.notes || point.type || '')
   };
 }
 
-function radians(value) { return (Number(value) || 0) * Math.PI / 180; }
-function projectPoint(point, home) {
-  const lat = radians(point.lat);
-  const lon = radians(point.lon - (home?.lon || 0));
-  const yTilt = radians(Math.max(-42, Math.min(42, (home?.lat || 0) / 2)));
-  const cosLat = Math.cos(lat);
-  const x = cosLat * Math.sin(lon);
-  const y = Math.sin(lat) * Math.cos(yTilt) - cosLat * Math.cos(lon) * Math.sin(yTilt);
-  const z = Math.sin(lat) * Math.sin(yTilt) + cosLat * Math.cos(lon) * Math.cos(yTilt);
-  return { ...point, x: 250 + x * 178, y: 250 - y * 178, visible: z > -0.18, depth: z };
+function countryIdForPoint(point) {
+  const { lat, lon } = point;
+  if (lat >= 24 && lat <= 72 && lon >= -170 && lon <= -52) return lon < -141 ? 'US' : 'US';
+  if (lat >= 42 && lat <= 84 && lon >= -141 && lon <= -52) return 'CA';
+  if (lat >= 14 && lat <= 33 && lon >= -118 && lon <= -86) return 'MX';
+  if (lat >= 49 && lat <= 61 && lon >= -8 && lon <= 2) return 'GB';
+  if (lat >= 41 && lat <= 51 && lon >= -5 && lon <= 9) return 'FR';
+  if (lat >= 47 && lat <= 55 && lon >= 5 && lon <= 16) return 'DE';
+  if (lat >= 35 && lat <= 47 && lon >= 6 && lon <= 19) return 'IT';
+  if (lat >= 30 && lat <= 46 && lon >= 129 && lon <= 146) return 'JP';
+  return lon < -30 ? 'US' : lon < 60 ? 'DE' : 'JP';
 }
-function arcPath(a, b) {
-  const mx = (a.x + b.x) / 2;
-  const my = (a.y + b.y) / 2 - Math.max(28, Math.abs(a.x - b.x) * 0.18);
-  return `M ${a.x.toFixed(1)} ${a.y.toFixed(1)} Q ${mx.toFixed(1)} ${my.toFixed(1)} ${b.x.toFixed(1)} ${b.y.toFixed(1)}`;
+
+function atlasSankeyData(points) {
+  const home = points.find(point => point.kind === 'home') || points[0];
+  const travel = points.filter(point => point !== home);
+  if (!home || !travel.length) {
+    return [
+      { sourceId: 'US', targetId: 'CA', value: 120 },
+      { sourceId: 'US', targetId: 'JP', value: 80 },
+      { sourceId: 'DE', targetId: 'FR', value: 90 }
+    ];
+  }
+  const homeCountry = countryIdForPoint(home);
+  const seen = new Map();
+  travel.forEach((point) => {
+    const country = countryIdForPoint(point);
+    const key = `${homeCountry}-${country}`;
+    const current = seen.get(key) || { sourceId: homeCountry, targetId: country, value: 0 };
+    current.value += point.value;
+    seen.set(key, current);
+  });
+  const rows = Array.from(seen.values()).filter(row => row.sourceId !== row.targetId);
+  return rows.length ? rows : [{ sourceId: 'US', targetId: 'CA', value: 120 }, { sourceId: 'US', targetId: 'JP', value: 80 }];
+}
+
+function createCodePenGlobe(container, points) {
+  const root = am5.Root.new(container);
+
+  const coffeeTheme = am5.Theme.new(root);
+  coffeeTheme.rule('InterfaceColors').setAll({
+    primaryButton: am5.color(0x8b5e3c),
+    primaryButtonHover: am5.color(0x5c3a1e),
+    primaryButtonDown: am5.color(0x3c1e0e),
+    primaryButtonActive: am5.color(0xc4956a),
+    primaryButtonText: am5.color(0xf5ece0),
+    secondaryButton: am5.color(0xe8d5b7),
+    secondaryButtonHover: am5.color(0xd4c4a8),
+    secondaryButtonDown: am5.color(0xc4956a),
+    secondaryButtonText: am5.color(0x3c1e0e),
+    background: am5.color(0xe8d5b7),
+    text: am5.color(0x3c1e0e)
+  });
+
+  root.setThemes([am5themes_Animated.new(root), coffeeTheme]);
+
+  root.container.set('background', am5.Rectangle.new(root, {
+    fill: am5.color(0xf0e6d6),
+    fillPattern: am5.GrainPattern.new(root, {
+      density: 0.4,
+      maxOpacity: 0.07,
+      colors: [am5.color(0x000000)]
+    })
+  }));
+
+  const espresso = am5.color(0x3c1e0e);
+  const darkRoast = am5.color(0x5c3a1e);
+  const mediumRoast = am5.color(0x8b5e3c);
+  const lightRoast = am5.color(0xc4956a);
+  const crema = am5.color(0xe8d5b7);
+  const cream = am5.color(0xf5ece0);
+
+  const chart = root.container.children.push(am5map.MapChart.new(root, {
+    panX: 'rotateX',
+    panY: 'rotateY',
+    projection: am5map.geoOrthographic(),
+    rotationX: -15,
+    rotationY: -20,
+    minZoomLevel: 0.5,
+    zoomLevel: 0.9
+  }));
+
+  const bgSeries = chart.series.push(am5map.MapPolygonSeries.new(root, {}));
+  bgSeries.mapPolygons.template.setAll({
+    fill: am5.color(0xede4d4),
+    fillOpacity: 1,
+    strokeOpacity: 0
+  });
+  bgSeries.data.push({ geometry: am5map.getGeoRectangle(90, 180, -90, -180) });
+
+  const graticuleSeries = chart.series.push(am5map.GraticuleSeries.new(root, {}));
+  graticuleSeries.mapLines.template.setAll({
+    stroke: mediumRoast,
+    strokeOpacity: 0.15,
+    strokeWidth: 0.5
+  });
+
+  const polygonSeries = chart.series.push(am5map.MapPolygonSeries.new(root, {
+    geoJSON: am5geodata_worldLow
+  }));
+  polygonSeries.mapPolygons.template.setAll({
+    fill: cream,
+    stroke: lightRoast,
+    strokeWidth: 0.5,
+    strokeOpacity: 0.5
+  });
+
+  const producerIds = ['BR', 'VN', 'CO', 'ET', 'ID', 'HN'];
+  const hubIds = ['DE', 'BE', 'IT', 'US'];
+  const consumerIds = ['FR', 'PL', 'SE', 'RU', 'GB', 'NL', 'GR', 'AT', 'CA', 'JP'];
+
+  polygonSeries.events.on('datavalidated', function () {
+    am5.array.each(polygonSeries.dataItems, function (di) {
+      const id = di.get('id');
+      if (id && producerIds.includes(id)) {
+        di.get('mapPolygon').setAll({ fill: am5.color(0x8fae7e) });
+      } else if (id && hubIds.includes(id)) {
+        di.get('mapPolygon').setAll({ fill: am5.color(0xc4a878) });
+      } else if (id && consumerIds.includes(id)) {
+        di.get('mapPolygon').setAll({ fill: am5.color(0xddc8a0) });
+      }
+    });
+  });
+
+  const sankeySeries = chart.series.push(am5map.MapSankeySeries.new(root, {
+    polygonSeries,
+    maxWidth: 2,
+    controlPointDistance: 0.4,
+    resolution: 60,
+    nodePadding: 0.3
+  }));
+
+  sankeySeries.mapPolygons.template.setAll({
+    fill: mediumRoast,
+    fillOpacity: 0.65,
+    strokeOpacity: 0,
+    tooltipText: '{sourceNode.name} > {targetNode.name}\n{value} trail weight'
+  });
+
+  sankeySeries.nodes.mapPolygons.template.setAll({
+    fill: espresso,
+    stroke: crema,
+    strokeWidth: 1.5,
+    fillOpacity: 0.95,
+    strokeOpacity: 1,
+    tooltipText: '{name}\n{sum} atlas weight'
+  });
+
+  sankeySeries.bullets.push(function () {
+    return am5.Bullet.new(root, {
+      locationX: 0,
+      autoRotate: true,
+      sprite: am5.Graphics.new(root, {
+        svgPath: 'M-4,-2.5 C-4,-5 -1.5,-6.5 1,-6.5 C3.5,-6.5 5,-4.5 5,-2 C5,1 3,3.5 0.5,5 C-0.5,5.7 -1.5,5.7 -2.5,5 C-5,3.5 -6,1 -4,-2.5 Z M-1,-5 C-1,-1 -1,2 -0.5,4.5',
+        fill: espresso,
+        stroke: darkRoast,
+        strokeWidth: 0.5,
+        centerX: am5.p50,
+        centerY: am5.p50,
+        scale: 0.35,
+        visible: false
+      })
+    });
+  });
+
+  sankeySeries.data.setAll(atlasSankeyData(points));
+
+  const countryNames = {
+    BR: 'Brazil', VN: 'Vietnam', CO: 'Colombia', ET: 'Ethiopia',
+    ID: 'Indonesia', HN: 'Honduras', DE: 'Germany', BE: 'Belgium',
+    IT: 'Italy', US: 'United States / Home trails', FR: 'France', PL: 'Poland',
+    SE: 'Sweden', RU: 'Russia', GB: 'United Kingdom', NL: 'Netherlands',
+    GR: 'Greece', AT: 'Austria', CA: 'Canada', JP: 'Japan', MX: 'Mexico'
+  };
+
+  sankeySeries.events.on('datavalidated', function () {
+    am5.array.each(sankeySeries.nodes.dataItems, function (di) {
+      const id = di.get('id');
+      if (id && countryNames[id]) di.set('name', countryNames[id]);
+    });
+
+    am5.array.each(sankeySeries.dataItems, function (dataItem) {
+      const bullets = dataItem.bullets;
+      if (bullets) {
+        am5.array.each(bullets, function (bullet) {
+          const randomDur = 3000 + Math.random() * 3000;
+          const delay = Math.random() * randomDur;
+          setTimeout(function () {
+            if (root.isDisposed()) return;
+            const sprite = bullet.get('sprite');
+            if (sprite) sprite.set('visible', true);
+            bullet.animate({
+              key: 'locationX',
+              from: 0,
+              to: 1,
+              duration: randomDur,
+              easing: am5.ease.linear,
+              loops: Infinity
+            });
+          }, delay);
+        });
+      }
+    });
+  });
+
+  const pointSeries = chart.series.push(am5map.MapPointSeries.new(root, {
+    latitudeField: 'lat',
+    longitudeField: 'lon'
+  }));
+  pointSeries.bullets.push(function (_root, _series, dataItem) {
+    const data = dataItem.dataContext || {};
+    const isHome = data.kind === 'home';
+    return am5.Bullet.new(root, {
+      sprite: am5.Circle.new(root, {
+        radius: isHome ? 8 : 5,
+        fill: isHome ? am5.color(0x3c1e0e) : am5.color(0x8b5e3c),
+        stroke: isHome ? am5.color(0xf5ece0) : am5.color(0xe8d5b7),
+        strokeWidth: isHome ? 3 : 2,
+        tooltipText: '{name}\n{notes}'
+      })
+    });
+  });
+  pointSeries.data.setAll(points.map(point => ({ ...point, geometry: { type:'Point', coordinates:[point.lon, point.lat] } })));
+
+  const titleCont = chart.children.push(am5.Container.new(root, {
+    layout: root.verticalLayout,
+    x: am5.p50,
+    centerX: am5.p50,
+    y: am5.p100,
+    centerY: am5.p100,
+    position: 'absolute',
+    paddingBottom: 16
+  }));
+
+  titleCont.children.push(am5.Label.new(root, {
+    text: 'MapPI3 Adventure Globe',
+    fontSize: 18,
+    fontWeight: '600',
+    fill: espresso,
+    x: am5.p50,
+    centerX: am5.p50
+  }));
+
+  titleCont.children.push(am5.Label.new(root, {
+    text: '(One summary point per hike / trail / place)',
+    fontSize: 11,
+    fill: mediumRoast,
+    x: am5.p50,
+    centerX: am5.p50
+  }));
+
+  const switchCont = chart.children.push(am5.Container.new(root, {
+    layout: root.horizontalLayout,
+    x: 20,
+    y: 40
+  }));
+
+  switchCont.children.push(am5.Label.new(root, {
+    centerY: am5.p50,
+    text: 'Globe',
+    fill: espresso,
+    fontSize: 13
+  }));
+
+  const switchButton = switchCont.children.push(am5.Button.new(root, {
+    themeTags: ['switch'],
+    centerY: am5.p50,
+    icon: am5.Circle.new(root, {
+      themeTags: ['icon']
+    })
+  }));
+
+  const easing = am5.ease.inOut(am5.ease.cubic);
+  const duration = 1500;
+  const fadeDuration = 300;
+
+  function zoomToGlobe() {
+    chart.set('projection', am5map.geoOrthographic());
+    chart.set('panX', 'rotateX');
+    chart.set('panY', 'rotateY');
+    chart.animate({ key: 'rotationX', to: -15, duration, easing });
+    chart.animate({ key: 'rotationY', to: -20, duration, easing });
+    bgSeries.mapPolygons.template.set('fillOpacity', 1);
+    chart.set('minZoomLevel', 0.9);
+    chart.animate({ key: 'zoomLevel', to: 0.9, duration, easing });
+  }
+
+  function zoomToMap() {
+    chart.set('projection', am5map.geoMercator());
+    chart.set('panX', 'translateX');
+    chart.set('panY', 'translateY');
+    chart.animate({ key: 'rotationX', to: 0, duration, easing });
+    chart.animate({ key: 'rotationY', to: 0, duration, easing });
+    bgSeries.mapPolygons.template.set('fillOpacity', 0);
+    chart.set('minZoomLevel', 1);
+    chart.animate({ key: 'zoomLevel', to: 1.7, duration, easing });
+  }
+
+  switchButton.on('active', function () {
+    chart.goHome(duration);
+    setTimeout(function () {
+      if (!root.isDisposed()) chart.seriesContainer.animate({ key: 'opacity', to: 0, duration: fadeDuration });
+    }, duration - fadeDuration);
+    setTimeout(function () {
+      if (root.isDisposed()) return;
+      if (switchButton.get('active')) zoomToMap();
+      else zoomToGlobe();
+      chart.seriesContainer.animate({ key: 'opacity', to: 1, duration: fadeDuration });
+    }, duration);
+  });
+
+  switchCont.children.push(am5.Label.new(root, {
+    centerY: am5.p50,
+    text: 'Map',
+    fill: espresso,
+    fontSize: 13
+  }));
+
+  const zoomControl = chart.set('zoomControl', am5map.ZoomControl.new(root, {}));
+  zoomControl.homeButton.set('visible', true);
+
+  let rotationAnimation = chart.animate({
+    key: 'rotationX',
+    from: -15,
+    to: -15 + 360,
+    duration: 120000,
+    loops: Infinity,
+    easing: am5.ease.linear
+  });
+
+  chart.chartContainer.events.on('pointerdown', function () {
+    if (rotationAnimation) {
+      rotationAnimation.stop();
+      rotationAnimation = null;
+    }
+  });
+
+  chart.appear(1000, 100);
+  return root;
 }
 
 export default function AdventureGlobeAtlas({ points = [] }) {
-  const data = useMemo(() => (points || []).map(safePoint).filter(Boolean), [points]);
-  const home = data.find(point => point.kind === 'home') || data[0] || { lat: 0, lon: 0, title: 'Home base' };
-  const projected = useMemo(() => data.map(point => projectPoint(point, home)).sort((a, b) => a.depth - b.depth), [data, home]);
-  const homeProjected = projected.find(point => point.kind === 'home') || projectPoint(home, home);
-  const visiblePoints = projected.filter(point => point.visible).slice(-42);
-  const links = visiblePoints.filter(point => point.id !== homeProjected.id && point.visible && homeProjected.visible);
+  const chartRef = useRef(null);
+  const rootRef = useRef(null);
+  const [status, setStatus] = useState('loading globe');
+  const normalizedPoints = useMemo(() => (points || []).map(safePoint).filter(Boolean), [points]);
 
-  return <div className="adventure-globe-shell" aria-label="Animated globe travel atlas">
-    <svg className="adventure-globe-svg" viewBox="0 0 500 500" role="img" aria-labelledby="adventure-globe-title adventure-globe-desc">
-      <title id="adventure-globe-title">MapPI3 globe travel atlas</title>
-      <desc id="adventure-globe-desc">Animated CodePen-style globe with home base as the largest point and hike or travel locations as glowing markers.</desc>
-      <defs>
-        <radialGradient id="globeOcean" cx="38%" cy="28%" r="70%"><stop offset="0%" stopColor="#284f79"/><stop offset="48%" stopColor="#101d34"/><stop offset="100%" stopColor="#03060c"/></radialGradient>
-        <radialGradient id="globeGlow" cx="50%" cy="50%" r="50%"><stop offset="70%" stopColor="#5ee7ff" stopOpacity="0"/><stop offset="100%" stopColor="#5ee7ff" stopOpacity="0.36"/></radialGradient>
-        <filter id="softGlow" x="-80%" y="-80%" width="260%" height="260%"><feGaussianBlur stdDeviation="4" result="blur"/><feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
-        <clipPath id="globeClip"><circle cx="250" cy="250" r="190"/></clipPath>
-      </defs>
-      <circle cx="250" cy="250" r="202" fill="rgba(94,231,255,.08)"/>
-      <circle cx="250" cy="250" r="190" fill="url(#globeOcean)" stroke="#7cf4ff" strokeOpacity=".42" strokeWidth="2"/>
-      <g clipPath="url(#globeClip)" className="globe-spin-layer">
-        <g className="globe-land" opacity=".72">
-          <path d="M115 162c30-32 69-42 101-24 17 10 24 27 47 30 25 3 43-13 66-3 20 9 34 33 29 55-7 30-43 25-65 53-21 27-8 54-30 68-20 13-50-4-67-18-30-24-36-58-62-70-22-10-47 1-59-15-14-19 10-55 40-76z" fill="#172d45" stroke="#5ee7ff" strokeOpacity=".18"/>
-          <path d="M302 120c33 3 79 24 91 62 8 27-6 47-28 50-26 4-35-18-61-13-22 4-35 24-52 15-17-9-20-42-8-69 11-25 31-48 58-45z" fill="#182c40" stroke="#5ee7ff" strokeOpacity=".16"/>
-          <path d="M188 330c23-18 61-21 84-3 22 18 22 53 2 68-23 18-72 10-92-16-14-18-12-35 6-49z" fill="#152a3d" stroke="#5ee7ff" strokeOpacity=".16"/>
-        </g>
-        <g className="globe-grid" fill="none" stroke="#78efff" strokeOpacity=".18">
-          {[0.36,0.58,0.78,0.94].map((scale, i) => <ellipse key={`lat-${i}`} cx="250" cy="250" rx="190" ry={190 * scale} strokeWidth="1"/>)}
-          {[0.22,0.45,0.66,0.84].map((scale, i) => <ellipse key={`lon-${i}`} cx="250" cy="250" rx={190 * scale} ry="190" strokeWidth="1"/>)}
-          <line x1="60" x2="440" y1="250" y2="250"/><line x1="250" x2="250" y1="60" y2="440"/>
-        </g>
-        <g className="globe-links" fill="none" strokeLinecap="round">
-          {links.map(point => <path key={`link-${point.id}`} d={arcPath(homeProjected, point)} stroke="#8ffcff" strokeOpacity=".48" strokeWidth="1.7" filter="url(#softGlow)"/>)}
-        </g>
-        <g className="globe-points">
-          {visiblePoints.map(point => {
-            const isHome = point.kind === 'home';
-            const color = KIND_COLORS[point.kind] || KIND_COLORS.default;
-            const radius = isHome ? 15 : point.size;
-            return <g key={point.id} transform={`translate(${point.x.toFixed(1)} ${point.y.toFixed(1)})`} className={isHome ? 'globe-point home' : 'globe-point'}>
-              <title>{`${point.title} — ${point.type}`}</title>
-              <circle r={radius + 9} fill={color} opacity={isHome ? '.20' : '.13'} className="globe-point-halo"/>
-              <circle r={radius} fill={color} opacity={isHome ? '.96' : '.84'} stroke="#fff" strokeOpacity={isHome ? '.92' : '.44'} strokeWidth={isHome ? '2.2' : '1'} filter="url(#softGlow)"/>
-              {isHome ? <text textAnchor="middle" dy="5" fontSize="16" fontWeight="900" fill="#151008">⌂</text> : null}
-            </g>;
-          })}
-        </g>
-      </g>
-      <circle cx="250" cy="250" r="190" fill="url(#globeGlow)" pointerEvents="none"/>
-      <text x="250" y="475" textAnchor="middle" className="globe-caption">HOME BASE • {home.title}</text>
-    </svg>
-    <div className="globe-scanline" aria-hidden="true" />
-  </div>;
+  useEffect(() => {
+    let cancelled = false;
+    if (!chartRef.current) return undefined;
+    setStatus('loading amCharts globe');
+    if (!supportsAmChartsCanvas()) {
+      setStatus('amCharts globe waits for a real browser canvas');
+      return undefined;
+    }
+    try {
+      if (rootRef.current) rootRef.current.dispose();
+      rootRef.current = createCodePenGlobe(chartRef.current, normalizedPoints);
+      setStatus('ready');
+    } catch (error) {
+      if (!cancelled) setStatus(error?.message || 'amCharts globe failed to load');
+    }
+    return () => {
+      cancelled = true;
+      if (rootRef.current) {
+        rootRef.current.dispose();
+        rootRef.current = null;
+      }
+    };
+  }, [normalizedPoints]);
+
+  return <div className="adventure-globe-codepen-card"><div ref={chartRef} id="chartdiv" className="adventure-globe-codepen-chart" />{status !== 'ready' ? <div className="adventure-globe-codepen-status">{status}</div> : null}</div>;
 }
