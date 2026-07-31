@@ -29,7 +29,7 @@ function segmentSlice(routePoints, routeMiles, segment) {
   return routePoints.slice(Math.max(0, startIndex - 1), Math.max(startIndex + 1, endIndex + 1));
 }
 
-export default function LiveLeafletMap({ trace = [], center = defaultCenter, active = false, route = null, waypoints = [], onMapClick = null, onWaypointMove = null, onViewChange = null, showCenterMarker = true }) {
+export default function LiveLeafletMap({ trace = [], center = defaultCenter, active = false, route = null, waypoints = [], onMapClick = null, onWaypointMove = null, onViewChange = null, showCenterMarker = true, tilePath = '/tiles/{z}/{x}/{y}.png', tileMaxZoom = 18, tileLabel = 'offline Pi map tiles' }) {
   const [tileStatus, setTileStatus] = useState('loading map tiles');
   const formatCoord = (point) => Array.isArray(point) ? `${Number(point[0]).toFixed(5)}, ${Number(point[1]).toFixed(5)}` : 'GPS pending';
   const mapRef = useRef(null);
@@ -55,7 +55,7 @@ export default function LiveLeafletMap({ trace = [], center = defaultCenter, act
     const map = mapRef.current;
     const host = typeof window !== 'undefined' ? window.location.hostname : '';
     const isPiLocal = /^(mappi3\.local|10\.42\.0\.1|localhost|127\.0\.0\.1)$/i.test(host);
-    const localTiles = L.tileLayer('/tiles/{z}/{x}/{y}.png', { maxZoom: 18, attribution: 'MapPI3 offline tiles', errorTileUrl: '' });
+    const localTiles = L.tileLayer(tilePath, { maxZoom: tileMaxZoom, attribution: tileLabel, errorTileUrl: '' });
     const osmTiles = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { maxZoom: 19, attribution: '&copy; OpenStreetMap contributors', crossOrigin: true, detectRetina: true });
     let activeLayer = null;
     let goodTiles = 0;
@@ -76,7 +76,7 @@ export default function LiveLeafletMap({ trace = [], center = defaultCenter, act
     osmTiles.on('tileerror', () => { if (!goodTiles) setTileStatus(isPiLocal ? 'GPS live · tile pack/internet unavailable · route/POIs still usable' : 'GPS live · offline topo fallback · route/POIs still usable'); });
     useLayer(isPiLocal ? localTiles : osmTiles, isPiLocal ? 'checking offline Pi tiles' : 'checking live OpenStreetMap tiles');
     setTimeout(() => { if (!goodTiles) setTileStatus(isPiLocal ? 'GPS live · tile pack/internet unavailable · route/POIs still usable' : 'GPS live · offline topo fallback · route/POIs still usable'); }, 4500);
-  }, [center]);
+  }, [center, tilePath, tileMaxZoom, tileLabel]);
 
   useEffect(() => {
     if (!mapRef.current) return undefined;

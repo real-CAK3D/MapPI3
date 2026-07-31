@@ -5,6 +5,7 @@ STATE = pathlib.Path('/var/lib/mappi3/state.json')
 TIMELINE_DB = pathlib.Path(os.environ.get('MAPPI3_TIMELINE_DB', '/var/lib/mappi3/timeline.sqlite3'))
 TIMELINE_SCHEMA_VERSION = 1
 OFFLINE_PACK_ROOT = pathlib.Path('/var/lib/mappi3/offline-packs')
+MAP_PACK_ROOT = pathlib.Path('/var/lib/mappi3/map-packs')
 PORT = int(os.environ.get('MAPPI3_PORT','5050'))
 HTTPS_PORT = int(os.environ.get('MAPPI3_HTTPS_PORT','5443'))
 CERT_DIR = pathlib.Path('/var/lib/mappi3/certs')
@@ -15,7 +16,7 @@ LIQUID_PARTICLES = []
 PACMAN_STATE = {}
 PACMAN_EVENT_SEQ = 0
 SENSE_FACE_STATE = {'last_accel': None, 'last_accel_at': 0.0, 'surprise_until': 0.0, 'still_since': 0.0}
-SENSE_MODES = ['compass','compass-arrow','compass-cardinal','rotation-test','liquid','pacman','weather','fire','flashlight','sos','message','boot','sun','gps','clock','progress','beacon','stars','temp','humidity','pressure','avatar','level','custom','border','magic8','water','snake']
+SENSE_MODES = ['compass','compass-arrow','compass-cardinal','rotation-test','liquid','pacman','battery','weather','fire','flashlight','sos','message','boot','sun','gps','clock','progress','beacon','stars','temp','humidity','pressure','avatar','level','custom','border','magic8','water','snake']
 ALLOWED = {'status','restart-web','reboot','shutdown','update-app','gps-sample','toggle-hotspot','hotspot-on','connect-home-wifi','wifi-scan','wifi-save-network','wifi-connect-saved','network-status','tailscale-status','tailscale-login','remote-access-repair','sense-mode','calibrate','harden-hotspot','plugin-update','vnc-setup','vnc-disable','weather-refresh','noaa-refresh','hourly-online-refresh','online-maintenance','gps-diagnose','sense-diagnose','field-ai-verify','captive-setup','captive-disable','captive-status','gps-pps-setup','whisplay-test-popup','whisplay-input','whisplay-input-status','snake-trail-event','plugin-status','plugin-install','plugin-install-all','plugin-uninstall','audio-tts-test','audio-ambient-test'}
 SENSE_CACHE = {'ok': False, 'mode': 'compass', 'message': 'Sense HAT display loop starting', 'updated': 0, 'joystick': {'seq': 0, 'direction': '', 'pressed': False, 'updated': 0}}
 SENSE_LOCK = threading.Lock()
@@ -50,7 +51,7 @@ def write_state(data):
 
 def normalize_mode(mode):
     raw = str(mode or 'compass').strip().lower().replace(' ', '-').replace('_','-')
-    aliases = {'custom-message':'message','scroll-message':'message','sunrise':'sun','sunset':'sun','sunrise-sunset':'sun','gps-fix':'gps','weather-now':'weather','flash-light':'flashlight','compass arrow':'compass-arrow','compass-arrow':'compass-arrow','compass nsew':'compass-cardinal','compass-nsew':'compass-cardinal','compass cardinal':'compass-cardinal','compass-cardinal':'compass-cardinal','cardinal':'compass-cardinal','rotation':'rotation-test','rotation-test':'rotation-test','pac-man':'pacman','pac man':'pacman','pac':'pacman','game-pacman':'pacman','animated-face':'avatar','sense-face':'avatar','face':'avatar','level-readout':'level','bubble-level':'level'}
+    aliases = {'custom-message':'message','scroll-message':'message','sunrise':'sun','sunset':'sun','sunrise-sunset':'sun','gps-fix':'gps','weather-now':'weather','flash-light':'flashlight','compass arrow':'compass-arrow','compass-arrow':'compass-arrow','compass nsew':'compass-cardinal','compass-nsew':'compass-cardinal','compass cardinal':'compass-cardinal','compass-cardinal':'compass-cardinal','cardinal':'compass-cardinal','rotation':'rotation-test','rotation-test':'rotation-test','pac-man':'pacman','pac man':'pacman','pac':'pacman','game-pacman':'pacman','battery':'battery','battery-drain':'battery','battery-charge':'battery','battery-indicator':'battery','power':'battery','power-level':'battery','pisugar':'battery','pisugar-battery':'battery','animated-face':'avatar','sense-face':'avatar','face':'avatar','level-readout':'level','bubble-level':'level'}
     raw = aliases.get(raw, raw)
     return raw if raw in SENSE_MODES else ('liquid' if raw.startswith('liq') else 'compass')
 
@@ -769,6 +770,58 @@ def draw_border(sense, color, st=None):
 def draw_water_icon(sense, color=(0,80,220), st=None):
     put_pixels(sense, [(3,0),(4,0),(2,1),(5,1),(2,2),(5,2),(1,3),(6,3),(1,4),(6,4),(2,5),(5,5),(3,6),(4,6),(3,7),(4,7)], color, st)
 
+def battery_led_path():
+    # Bottom-left to top-right serpentine gauge: each LED is one fuel cell.
+    path=[]
+    for y in range(7, -1, -1):
+        xs = range(8) if (7-y) % 2 == 0 else range(7, -1, -1)
+        for x in xs:
+            path.append((x,y))
+    return path
+
+def battery_status_color(percent, brightness):
+    try:
+        pct=float(percent)
+    except Exception:
+        return scale_color((255,180,0), brightness), 'unknown'
+    if pct <= 20: return scale_color((255,0,0), brightness), 'red'
+    if pct <= 50: return scale_color((255,190,0), brightness), 'yellow'
+    return scale_color((0,220,70), brightness), 'green'
+
+def draw_battery_indicator(sense, power=None, tick=0, st=None):
+    st = st or {}
+    brightness = sense_brightness(st)
+    power = power if isinstance(power, dict) else {}
+    percent = power.get('percent')
+    charging = bool(power.get('charging') or power.get('battery_input_power_connected'))
+    pixels=[[0,0,0] for _ in range(64)]
+    path=battery_led_path()
+    lit_count=0; blink=False; level='unknown'
+    if percent is None:
+        amber=scale_color((255,180,0), brightness)
+        for x,y in [(2,1),(3,0),(4,0),(5,1),(5,2),(4,3),(3,4),(3,6)]: pixels[y*8+x]=list(amber)
+    else:
+        pct=max(0.0, min(100.0, float(percent)))
+        lit_count=max(0, min(64, int(round(pct/100.0*64))))
+        color, level=battery_status_color(pct, brightness)
+        dim=scale_color((6,12,8), brightness)
+        for x,y in path: pixels[y*8+x]=list(dim)
+        for x,y in path[:lit_count]: pixels[y*8+x]=list(color)
+        blink_on = (tick % 4) < 2
+        low_alert = (not charging) and (pct <= 7 or lit_count <= 4)
+        full_alert = charging and (pct >= 94 or lit_count >= 60)
+        blink = low_alert or full_alert
+        if low_alert:
+            for x,y in path[:4]: pixels[y*8+x]=list(color if blink_on else (0,0,0))
+        elif full_alert:
+            for x,y in path[-4:]: pixels[y*8+x]=list(color if blink_on else (0,0,0))
+        if charging and not full_alert:
+            idx=min(63, lit_count + (tick % 4))
+            x,y=path[idx]; pixels[y*8+x]=list(scale_color((240,255,240), brightness))
+    sense_set_pixels(sense, pixels, st)
+    with SENSE_LOCK:
+        SENSE_CACHE['battery_display']={'model':'PiSugar 3 charge/drain 8x8 gauge: red <=20%, yellow <=50%, green >50%; low last-4 LEDs blink while draining; top last-4 LEDs blink when charging near full/remove-charger.','percent':percent,'charging':charging,'lit_leds':sum(1 for c in pixels if c != [0,0,0]),'filled_leds':lit_count,'blink_alert':blink,'level':level,'source':power.get('source') or 'unknown'}
+
 def draw_snake_frame(sense, tick, color=(0,220,70), st=None):
     pixels=[[0,0,0] for _ in range(64)]
     path=[(x,1) for x in range(1,7)] + [(6,y) for y in range(2,7)] + [(x,6) for x in range(5,0,-1)] + [(1,y) for y in range(5,1,-1)]
@@ -967,7 +1020,7 @@ def sense_alarm_due(st):
     return minutes > 0 and now-last >= minutes*60
 
 def sense_loop():
-    tick=0; last_text=0; last_gps={}; last_gps_at=0
+    tick=0; last_text=0; last_gps={}; last_gps_at=0; last_power={}; last_power_at=0
     try:
         from sense_hat import SenseHat
         sense=SenseHat(); sense.low_light=True; sense_clear(sense, 0, 40, 18, read_state())  # non-blocking startup flash; boot/message modes handle scrolling text
@@ -986,6 +1039,10 @@ def sense_loop():
                 gps = last_gps or {'ok': False, 'message': 'GPS not sampled for this display mode yet'}
                 if mode=='liquid': draw_liquid(sense, orient, tick, st)
                 elif mode=='pacman': draw_pacman_frame(sense, tick, st)
+                elif mode=='battery':
+                    if now - last_power_at > 10:
+                        last_power = power_status(); last_power_at = now
+                    draw_battery_indicator(sense, last_power, tick, st)
                 elif mode in ('compass','compass-arrow'): draw_compass(sense, yaw, st)
                 elif mode=='compass-cardinal': draw_compass_cardinal(sense, yaw, st)
                 elif mode=='rotation-test': draw_rotation_test(sense, st, tick)
@@ -1044,6 +1101,8 @@ def sense_loop():
                 time.sleep(0.06)
             elif mode == 'pacman':
                 time.sleep(PACMAN_FRAME_SLEEP)
+            elif mode == 'battery':
+                time.sleep(0.55)
             else:
                 time.sleep(0.35 if mode in ('fire','stars','beacon') else 0.75)
     except Exception as e:
@@ -1663,8 +1722,8 @@ def _parse_pisugar_replies(replies):
 
 def power_status():
     """Return honest Pi/PiSugar power data without faking unavailable readings."""
-    services=[_systemd_state(name) for name in ['pisugar-server.service','pisugar-power-manager.service','pisugar.service']]
-    bins={name: bool(sh('command -v '+shlex.quote(name), timeout=2).get('ok')) for name in ['pisugar-power-manager','pisugar-server','pisugar-programmer','vcgencmd','i2cdetect','i2cget']}
+    services=[_systemd_state(name) for name in ['pisugar-server.service','pisugar-poweroff.service','pisugar-power-manager.service','pisugar.service']]
+    bins={name: bool(sh('command -v '+shlex.quote(name), timeout=2).get('ok')) for name in ['pisugar-power-manager','pisugar-server','pisugar-programmer','pisugar-poweroff','vcgencmd','i2cdetect','i2cget']}
     sysfs_supply=[]
     try:
         for d in pathlib.Path('/sys/class/power_supply').iterdir():
@@ -2269,6 +2328,59 @@ def offline_pack_status(payload=None):
         packs.append({'id':manifest.get('id') or d.name,'name':manifest.get('name') or d.name.replace('-',' ').title(),'folder':str(d),'manifest':str(manifest_path),'manifest_ok':bool(manifest),'offline_safe':bool(manifest.get('offline_safe', True)),'network_required':bool(manifest.get('network_required', False)),'network_only_registry':network_registry,'file_count':len(files),'size_bytes':total,'size_mb':round(total/1024/1024,3),'files':files,'policy':manifest.get('policy') or 'Offline pack files are local Pi hotspot resources. Live APIs remain network-only unless cached/precomputed into the pack.','errors':errors})
     return {'ok': True, 'root':str(OFFLINE_PACK_ROOT), 'count':len(packs), 'packs':packs, 'network_only_policy':'Trail/map/weather/astronomy public APIs must be shown as network-only unless a dated cache or precomputed export exists in an installed offline pack.', 'safety':'MapPI3 assists with field planning and recall but does not replace official/current maps, forecasts, medical care, emergency comms, or navigation tools.', 'time':time.time()}
 
+def _map_pack_files(pack_dir, public_prefix):
+    files=[]; total=0; errors=[]
+    for p in sorted([x for x in pack_dir.iterdir() if x.is_file()]):
+        try:
+            size=p.stat().st_size; total += size
+            suffix=p.suffix.lower()
+            kind='manifest' if p.name == 'MANIFEST.json' else ('rgb565pack' if suffix == '.rgb565pack' else (suffix.lstrip('.') or 'file'))
+            files.append({'name':p.name,'kind':kind,'size_bytes':size,'url':public_prefix+'/'+urllib.parse.quote(p.name)})
+        except Exception as e:
+            errors.append(f'{p.name}: {e}')
+    return files,total,errors
+
+def _map_pack_manifest(pack_dir):
+    manifest_path=pack_dir/'MANIFEST.json'
+    if not manifest_path.exists():
+        return {}, ['MANIFEST.json missing']
+    try:
+        return json.loads(manifest_path.read_text(errors='ignore')), []
+    except Exception as e:
+        return {}, [f'MANIFEST.json parse failed: {e}']
+
+def map_pack_status(payload=None):
+    MAP_PACK_ROOT.mkdir(parents=True, exist_ok=True)
+    st=read_state(); active_id=str(st.get('active_map_pack_id') or '')
+    packs=[]
+    for d in sorted([x for x in MAP_PACK_ROOT.iterdir() if x.is_dir()]):
+        manifest, errors = _map_pack_manifest(d)
+        files,total,file_errors = _map_pack_files(d, '/map-packs/'+urllib.parse.quote(d.name))
+        errors.extend(file_errors)
+        levels=manifest.get('levels') if isinstance(manifest.get('levels'),list) else []
+        theme=str(manifest.get('theme') or manifest.get('style') or d.name)
+        pid=str(manifest.get('id') or d.name)
+        packs.append({'id':pid,'name':manifest.get('name') or d.name.replace('-',' ').title(),'theme':theme,'folder':str(d),'manifest':str(d/'MANIFEST.json'),'manifest_ok':bool(manifest),'active':pid==active_id or (not active_id and len(packs)==0),'offline_safe':bool(manifest.get('offline_safe', True)),'network_required':bool(manifest.get('network_required', False)),'zoom_min':manifest.get('zoom_min'),'zoom_max':manifest.get('zoom_max'),'tile_count':manifest.get('tile_count') or sum(int(x.get('tiles') or 0) for x in levels),'size_bytes':manifest.get('size_bytes') or total,'size_mib':manifest.get('size_mib') or round(total/1024/1024,3),'center':manifest.get('center'),'bbox':manifest.get('bbox'),'levels':levels,'files':files,'errors':errors})
+    if not active_id and packs:
+        active_id=packs[0]['id']
+    return {'ok': True, 'root':str(MAP_PACK_ROOT), 'count':len(packs), 'active_map_pack_id':active_id, 'packs':packs, 'themes':sorted({p.get('theme') for p in packs if p.get('theme')}), 'pixel_format':'RGB565 little-endian fixed-grid packs for Pi/Whisplay; browser maps still use PNG/WebP or a conversion layer.', 'offset_formula':'offset = ((y - y_min) * width_tiles + (x - x_min)) * 131072', 'safety':'MapPI3 assists navigation; carry real map/compass/emergency tools.', 'time':time.time()}
+
+def map_pack_themes(payload=None):
+    status=map_pack_status(payload)
+    themes=[]
+    for theme in status.get('themes',[]):
+        theme_packs=[p for p in status.get('packs',[]) if p.get('theme') == theme]
+        themes.append({'theme':theme,'pack_count':len(theme_packs),'installed_tiles':sum(int(p.get('tile_count') or 0) for p in theme_packs),'size_mib':round(sum(float(p.get('size_mib') or 0) for p in theme_packs),3),'active':any(p.get('active') for p in theme_packs)})
+    return {'ok': True, 'themes':themes, 'count':len(themes), 'time':time.time()}
+
+def map_pack_select(payload=None):
+    payload=payload or {}; wanted=str(payload.get('id') or payload.get('pack_id') or '').strip()
+    if not wanted: return {'ok': False, 'error':'id required'}
+    status=map_pack_status(); ids={p.get('id') for p in status.get('packs',[])}
+    if wanted not in ids: return {'ok': False, 'error':'map pack not installed', 'requested':wanted, 'available':sorted(ids)}
+    st=read_state(); st['active_map_pack_id']=wanted; st['active_map_pack_selected_at']=time.time(); write_state(st)
+    return {'ok': True, 'active_map_pack_id':wanted, 'status':map_pack_status()}
+
 def _safe_plugin_id(value):
     raw=str(value or '').strip().lower()
     return ''.join(c for c in raw if c.isalnum() or c in ('-','_'))[:80]
@@ -2790,8 +2902,16 @@ def _safe_bt_mac(mac):
 
 def _bt_boot_config_findings():
     text = sh("grep -nEi 'disable-bt|dtoverlay=.*bt|bluetooth|uart|serial|miniuart|pi3' /boot/firmware/config.txt /boot/config.txt 2>/dev/null || true", timeout=4).get('output','')
-    lower = text.lower()
-    return {'raw': text[-1600:], 'disable_bt_overlay': 'disable-bt' in lower, 'uart_enabled': 'enable_uart=1' in lower, 'hint': ('Internal Bluetooth is disabled by boot overlay, usually to keep the PL011 UART for GPS on /dev/serial0. Use a USB Bluetooth dongle or change the GPS/UART design before expecting phone PAN over the built-in radio.' if 'disable-bt' in lower else '')}
+    active=[]
+    for line in text.splitlines():
+        content = line.split(':', 2)[-1] if ':' in line else line
+        stripped = content.strip()
+        if not stripped or stripped.startswith('#'):
+            continue
+        active.append(stripped.lower())
+    disable = any('disable-bt' in line and 'dtoverlay' in line for line in active)
+    uart = any('enable_uart=1' in line for line in active)
+    return {'raw': text[-1600:], 'active_lines': active[-20:], 'disable_bt_overlay': disable, 'uart_enabled': uart, 'hint': ('Internal Bluetooth is disabled by an active boot overlay, usually to keep the PL011 UART for GPS on /dev/serial0. Use a USB Bluetooth dongle or change the GPS/UART design before expecting phone PAN over the built-in radio.' if disable else '')}
 
 def bluetooth_pan_status(payload=None, include_scan=True):
     service = _systemd_state('bluetooth.service')
@@ -2926,6 +3046,102 @@ def bluetooth_action(action, payload=None):
     res=bluetoothctl(cmd, timeout=25 if action in ['pair','connect'] else 12)
     status=bluetooth_status()
     return {'ok': res.get('ok'), 'action': action, 'mac': safe, 'output': res.get('output','')[-2400:], 'status': status}
+
+PISUGAR_CONFIG_FILE = pathlib.Path('/etc/pisugar-server/config.json')
+
+def _redact_pisugar_config(data):
+    safe={}
+    if not isinstance(data, dict):
+        return safe
+    for k,v in data.items():
+        kl=str(k).lower()
+        if any(s in kl for s in ['auth','password','token','secret','user']):
+            safe[k] = '[REDACTED]' if v else v
+        else:
+            safe[k] = v
+    return safe
+
+def _pisugar_config():
+    try:
+        return json.loads(PISUGAR_CONFIG_FILE.read_text())
+    except Exception as exc:
+        return {'_error': str(exc)}
+
+def pisugar_control_status():
+    power = power_status()
+    config = _pisugar_config()
+    buttons = {}
+    for tap in ['single','double','long']:
+        buttons[tap] = {
+            'enabled': bool(config.get(f'{tap}_tap_enable')) if isinstance(config, dict) and f'{tap}_tap_enable' in config else False,
+            'shell': config.get(f'{tap}_tap_shell', '') if isinstance(config, dict) else '',
+        }
+    return {
+        'ok': True,
+        'power': power,
+        'web_ui': {'url': 'http://10.42.0.1:8421/', 'port': 8421, 'note': 'Reachable from the MapPI3 hotspot/local network.'},
+        'services': {s['service']: s for s in power.get('pisugar', {}).get('services', [])},
+        'tools': power.get('pisugar', {}).get('tools', {}),
+        'config_path': str(PISUGAR_CONFIG_FILE),
+        'config': _redact_pisugar_config(config),
+        'buttons': buttons,
+        'recommended': {
+            'pisugar_server': bool(power.get('pisugar', {}).get('tools', {}).get('pisugar-server')),
+            'pisugar_programmer': bool(power.get('pisugar', {}).get('tools', {}).get('pisugar-programmer')),
+            'pisugar_poweroff': bool(power.get('pisugar', {}).get('tools', {}).get('pisugar-poweroff')),
+        },
+        'shutdown': {'supported': True, 'endpoint': '/api/pisugar/shutdown', 'requires_confirm': 'poweroff'},
+        'time': time.time(),
+    }
+
+def bluetooth_discoverable(payload=None):
+    payload = payload or {}
+    enable = bool(payload.get('enable', True))
+    seconds = max(30, min(300, int(payload.get('seconds') or 180)))
+    if not sh('command -v bluetoothctl', timeout=3).get('ok'):
+        return {'ok': False, 'error':'bluetoothctl not installed'}
+    sh('rfkill unblock bluetooth || true', timeout=5)
+    outs=[bluetoothctl('power on', timeout=6), bluetoothctl('pairable on', timeout=6)]
+    if enable:
+        outs.append(bluetoothctl('discoverable-timeout '+str(seconds), timeout=6))
+        outs.append(bluetoothctl('discoverable on', timeout=6))
+    else:
+        outs.append(bluetoothctl('discoverable off', timeout=6))
+    return {'ok': all(o.get('ok') for o in outs[-1:]), 'enable': enable, 'seconds': seconds if enable else 0, 'outputs': [o.get('output','')[-1000:] for o in outs], 'status': bluetooth_status(), 'pan_status': bluetooth_pan_status(include_scan=False)}
+
+def pisugar_button_mapping(payload=None):
+    payload = payload or {}
+    tap = str(payload.get('tap') or '').lower().replace('_tap','')
+    action = str(payload.get('action') or '').lower().strip()
+    allowed = {
+        'single': {'whisplay_home': 'sh -c date +%s%N > /tmp/whisplay-daemon-home.flag', 'disabled': ''},
+        'double': {'whisplay_home': 'sh -c date +%s%N > /tmp/whisplay-daemon-home.flag', 'disabled': ''},
+        'long': {'safe_shutdown': 'systemctl poweroff', 'disabled': ''},
+    }
+    if tap not in allowed or action not in allowed[tap]:
+        return {'ok': False, 'error': 'unsupported_mapping', 'allowed': {k: sorted(v) for k,v in allowed.items()}}
+    if action == 'safe_shutdown' and payload.get('confirm') != 'safe_shutdown':
+        return {'ok': False, 'error': 'confirm_required', 'confirm': 'safe_shutdown'}
+    config = _pisugar_config()
+    if not isinstance(config, dict) or config.get('_error'):
+        return {'ok': False, 'error': 'config_unavailable', 'config_path': str(PISUGAR_CONFIG_FILE), 'detail': config.get('_error') if isinstance(config, dict) else ''}
+    ts=time.strftime('%Y%m%dT%H%M%SZ', time.gmtime())
+    backup=f'/opt/mappi3/backups/pisugar-buttons-{ts}.json'
+    sh('sudo -n cp -a '+shlex.quote(str(PISUGAR_CONFIG_FILE))+' '+shlex.quote(backup), timeout=8)
+    config[f'{tap}_tap_enable'] = action != 'disabled'
+    config[f'{tap}_tap_shell'] = allowed[tap][action]
+    tmp=pathlib.Path('/tmp/mappi3-pisugar-config.json')
+    tmp.write_text(json.dumps(config, indent=2, sort_keys=True)+'\n')
+    wr=sh('sudo -n install -m 0644 '+shlex.quote(str(tmp))+' '+shlex.quote(str(PISUGAR_CONFIG_FILE))+' && sudo -n systemctl restart pisugar-server.service', timeout=25)
+    try: tmp.unlink()
+    except Exception: pass
+    return {'ok': bool(wr.get('ok')), 'backup': backup, 'tap': tap, 'action': action, 'output': wr.get('output','')[-1200:], 'status': pisugar_control_status()}
+
+def pisugar_safe_shutdown(payload=None):
+    payload = payload or {}
+    if payload.get('confirm') != 'poweroff':
+        return {'ok': False, 'error': 'confirm_required', 'confirm': 'poweroff', 'message': 'Refusing to power off without confirm=poweroff.'}
+    return sh('sudo -n systemctl poweroff', timeout=3)
 
 def https_status():
     return {'enabled': True, 'port': HTTPS_PORT, 'cert': str(CERT_FILE), 'key': str(KEY_FILE), 'cert_exists': CERT_FILE.exists(), 'key_exists': KEY_FILE.exists(), 'url': f'https://10.42.0.1:{HTTPS_PORT}/', 'trust_note': 'Self-signed local cert: phone may need manual trust/CA install before sensors/camera/notifications count this as fully trusted HTTPS.'}
@@ -3225,6 +3441,16 @@ class Handler(http.server.SimpleHTTPRequestHandler):
                 if str(target).startswith(str(OFFLINE_PACK_ROOT.resolve())) and target.is_file(): return str(target)
             except Exception: pass
             return str(APP_DIR/'index.html')
+        if path.startswith('/map-packs/'):
+            rel=urllib.parse.unquote(path[len('/map-packs/'):]).lstrip('/'); target=(MAP_PACK_ROOT/rel).resolve()
+            try:
+                if str(target).startswith(str(MAP_PACK_ROOT.resolve())) and target.is_file(): return str(target)
+            except Exception: pass
+            app_target=(APP_DIR/path.lstrip('/')).resolve()
+            try:
+                if str(app_target).startswith(str(APP_DIR.resolve())) and app_target.is_file(): return str(app_target)
+            except Exception: pass
+            return str(APP_DIR/'index.html')
         p=APP_DIR/path.lstrip('/')
         if p.is_dir(): p=p/'index.html'
         if not p.exists(): p=APP_DIR/'index.html'
@@ -3259,8 +3485,11 @@ class Handler(http.server.SimpleHTTPRequestHandler):
         if self.path.startswith('/api/media/library'): self.json_response(media_manifest()); return
         if self.path.startswith('/api/audio/status'): self.json_response(audio_status()); return
         if self.path.startswith('/api/power/status'): self.json_response(power_status()); return
+        if self.path.startswith('/api/pisugar/status'): self.json_response(pisugar_control_status()); return
         if self.path.startswith('/api/games/library'): self.json_response(game_library_status()); return
         if self.path.startswith('/api/offline-packs/status'): self.json_response(offline_pack_status()); return
+        if self.path.startswith('/api/map-packs/themes'): self.json_response(map_pack_themes()); return
+        if self.path.startswith('/api/map-packs/status'): self.json_response(map_pack_status()); return
         if self.path.startswith('/api/plugins'): self.json_response(plugin_status()); return
         if self.path.startswith('/api/bluetooth/pan/status'): self.json_response(bluetooth_pan_status()); return
         if self.path.startswith('/api/bluetooth/status'): self.json_response(bluetooth_status()); return
@@ -3294,7 +3523,11 @@ class Handler(http.server.SimpleHTTPRequestHandler):
         if self.path.startswith('/api/bluetooth/pan/prepare'): self.json_response(bluetooth_pan_prepare(payload)); return
         if self.path.startswith('/api/bluetooth/pan/disconnect'): self.json_response(bluetooth_pan_disconnect(payload)); return
         if self.path.startswith('/api/bluetooth/scan'): self.json_response(bluetooth_scan(payload)); return
+        if self.path.startswith('/api/bluetooth/discoverable'): self.json_response(bluetooth_discoverable(payload)); return
         if self.path.startswith('/api/bluetooth/action/'): self.json_response(bluetooth_action(self.path.rsplit('/',1)[-1], payload)); return
+        if self.path.startswith('/api/pisugar/buttons'): self.json_response(pisugar_button_mapping(payload)); return
+        if self.path.startswith('/api/pisugar/shutdown'): self.json_response(pisugar_safe_shutdown(payload)); return
+        if self.path.startswith('/api/map-packs/select'): self.json_response(map_pack_select(payload)); return
         if self.path.startswith('/api/audio/record-test'): self.json_response(audio_record_test(payload)); return
         if self.path.startswith('/api/audio/play-test'): self.json_response(audio_play_test(payload)); return
         if self.path.startswith('/api/audio/tts-test'): self.json_response(audio_tts_test(payload)); return

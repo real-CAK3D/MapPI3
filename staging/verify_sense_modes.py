@@ -82,6 +82,10 @@ def draw_mode(mode, sense, st, tick=3):
         cache = mod.sense_snapshot().get('pacman_display', {})
         assert cache.get('ghosts') == 4 and cache.get('frame_sleep') == mod.PACMAN_FRAME_SLEEP
         assert cache.get('fruit_count', 0) >= 0 and cache.get('lit_leds', 0) >= 8
+    elif mode == 'battery':
+        mod.draw_battery_indicator(sense, {'ok': True, 'percent': 47, 'charging': False, 'source': 'verify'}, tick, st)
+        cache = mod.sense_snapshot().get('battery_display', {})
+        assert cache.get('level') == 'yellow' and cache.get('filled_leds') == 30, cache
     elif mode == 'weather':
         mod.draw_weather(sense, 72, 55, 1012, st)
     elif mode == 'fire':
@@ -193,7 +197,19 @@ mod.draw_sense_animated_face(steep_sense, 1, base_state, {'roll': 42.0, 'pitch':
 steep_cache = mod.sense_snapshot().get('animated_face', {})
 assert steep_cache.get('steep_tilt') is True and steep_cache.get('expression') == 'surprised', steep_cache
 
-for label, expected in [('Pac-Man','pacman'),('Animated Face','avatar'),('Compass NSEW','compass-cardinal'),('Bubble Level','level')]:
+# Battery mode uses PiSugar power data as a true 64-cell gauge:
+# red/yellow/green thresholds, last-4 drain blink, and last-4 charge-full blink.
+batt_sense = FakeSense()
+mod.draw_battery_indicator(batt_sense, {'percent': 5, 'charging': False, 'source': 'verify'}, 3, base_state)
+batt_cache = mod.sense_snapshot().get('battery_display', {})
+assert batt_cache.get('level') == 'red' and batt_cache.get('blink_alert') is True and batt_cache.get('filled_leds') <= 4, batt_cache
+assert all(batt_sense.frames[-1][i] == [0, 0, 0] for i in (56,57,58,59)), 'low drain blink should turn bottom last 4 off on tick 3'
+charge_sense = FakeSense()
+mod.draw_battery_indicator(charge_sense, {'percent': 96, 'charging': True, 'source': 'verify'}, 0, base_state)
+charge_cache = mod.sense_snapshot().get('battery_display', {})
+assert charge_cache.get('level') == 'green' and charge_cache.get('blink_alert') is True and charge_cache.get('filled_leds') >= 60, charge_cache
+
+for label, expected in [('Pac-Man','pacman'),('Battery','battery'),('Power Level','battery'),('Animated Face','avatar'),('Compass NSEW','compass-cardinal'),('Bubble Level','level')]:
     data = mod.set_sense_mode(label, {'brightnessLevel': 4, 'routeProgress': 0.5, 'senseAvatarExpression': 'happy'})
     assert data['ok'] and data['sense_mode'] == expected, data
     assert mod.read_state().get('sense_avatar_expression') == 'happy'

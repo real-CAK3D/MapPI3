@@ -608,17 +608,17 @@ def herbie_motion_reaction(sense, now=None):
     delta = math.sqrt(dx*dx + dy*dy + dz*dz)
     jerk = max(delta / max(0.05, now - last_at), face_jerk or 0.0)
     hits = [t for t in HERBIE_MOTION_STATE.get('hits', []) if now - t <= 1.2]
-    if delta >= 0.22 or jerk >= 2.2:
+    if delta >= 0.18 or jerk >= 1.8:
         hits.append(now)
     HERBIE_MOTION_STATE['hits'] = hits
     event = None
-    if len(hits) >= 3:
+    if len(hits) >= 2:
         event = ('motions/shaking', 'shake streak', 'shake', max(jerk, delta))
         HERBIE_MOTION_STATE['hits'] = []
-        hold = 1.35
-    elif delta >= 0.48 or (face_jerk is not None and face_jerk >= 3.6):
+        hold = 0.75
+    elif delta >= 0.42 or (face_jerk is not None and face_jerk >= 3.0):
         event = ('expressions/surprised', 'sudden jolt', 'jolt', max(jerk, delta))
-        hold = 0.85
+        hold = 0.55
     if event:
         HERBIE_MOTION_STATE['event'] = event
         HERBIE_MOTION_STATE['event_until'] = now + hold
@@ -738,7 +738,7 @@ def render():
 
 def main():
     global running, page, popup_until
-    hw = create_hw('whisplay-mappi3-dashboard', 'MapPI3 Dash', 'M3', 90)
+    hw = create_hw('whisplay-mappi3-dashboard', 'MapPI3 Dash', 'M3', 60)
     def next_page():
         global page, popup_until
         if page % len(PAGES) == 0:
@@ -751,9 +751,9 @@ def main():
     try:
         last = 0
         while running:
-            time.sleep(0.18); active = page % len(PAGES)
+            time.sleep(0.12); active = page % len(PAGES)
             if poll_popup() or (popup_event and time.time() < popup_until) or active in (0,1,2,3,4,5):
-                if active == 0 and time.time() - last < 5.0: continue
+                if active == 0 and time.time() - last < 0.32: continue
                 last = time.time(); show(hw, render())
     finally:
         hw.cleanup()

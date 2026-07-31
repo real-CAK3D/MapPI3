@@ -8,6 +8,8 @@
     "build": "vite build",
     "preview": "vite preview --host 0.0.0.0",
     "smoke": "node scripts/smoke.mjs",
+    "map-pack:plan": "node scripts/plan-map-pack.mjs",
+    "map-pack:build-rgb565": "python3 scripts/build-rgb565-pack.py",
     "audit:pages": "node scripts/audit-pages.mjs",
     "tunnel": "npx --yes localtunnel --port 8080 --local-host 127.0.0.1 --subdomain mappi3-cak3d"
   },
