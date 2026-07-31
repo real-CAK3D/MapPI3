@@ -482,6 +482,49 @@ def draw_liquid(sense, orientation, tick, st=None):
             'raw_error': raw_error,
             'model': 'centered bottle-fill liquid + tilt drift + slosh shimmer + raw accel telemetry'
         }
+
+def sense_live_accel(sense, orientation=None, st=None):
+    """Return mounted-display accelerometer telemetry for every Sense mode.
+
+    Herbie/Whisplay tilt must keep working while the 8x8 matrix is in practical
+    field modes like battery, compass, or GPS. Older telemetry only exposed accel
+    inside liquid/avatar mode-specific payloads, so Herbie could look frozen when
+    the selected Sense HAT display did not populate those subtrees.
+    """
+    raw_error = None
+    try:
+        raw = sense.get_accelerometer_raw()
+        ax = float(raw.get('x', 0.0)); ay = float(raw.get('y', 0.0)); az = float(raw.get('z', 1.0))
+    except Exception as e:
+        raw_error = str(e)
+        ax = max(-1, min(1, float((orientation or {}).get('roll', 0)) / 38.0))
+        ay = max(-1, min(1, float((orientation or {}).get('pitch', 0)) / 45.0))
+        az = 1.0
+    raw_ax, raw_ay, raw_az = ax, ay, az
+    mag = max(0.25, math.sqrt(ax*ax + ay*ay + az*az))
+    ax, ay, az = ax/mag, ay/mag, az/mag
+    axis_map = str((st or {}).get('liquid_axis_map') or 'rotate-ccw')
+    if axis_map == 'rotate-ccw':
+        display_ax, display_ay = -ay, ax
+    elif axis_map == 'rotate-cw':
+        display_ax, display_ay = ay, -ax
+    else:
+        axis_map = 'raw'
+        display_ax, display_ay = ax, ay
+    plane = math.sqrt(display_ax*display_ax + display_ay*display_ay)
+    raw_plane = math.sqrt(raw_ax*raw_ax + raw_ay*raw_ay)
+    return {
+        'raw_accel': {'x': round(raw_ax,3), 'y': round(raw_ay,3), 'z': round(raw_az,3)},
+        'display_accel': {'x': round(display_ax,3), 'y': round(display_ay,3), 'z': round(raw_az,3)},
+        'normalized_accel': {'x': round(ax,3), 'y': round(ay,3), 'z': round(az,3)},
+        'axis_map': axis_map,
+        'plane_magnitude': round(plane,3),
+        'raw_plane_magnitude': round(raw_plane,3),
+        'tilt_degrees': round(math.degrees(math.atan2(plane, max(0.001, abs(az)))),1),
+        'raw_tilt_degrees': round(math.degrees(math.atan2(raw_plane, max(0.001, abs(raw_az)))),1),
+        'raw_error': raw_error,
+        'source': 'sense.get_accelerometer_raw every display mode'
+    }
 def draw_fire(sense, tick, st=None):
     pixels=[]
     for y in range(8):
@@ -1110,7 +1153,8 @@ def sense_loop():
                     level_x = level_y = 0.0
                 level_status = 'level' if max(abs(level_x), abs(level_y)) <= 4 else ('tilted' if max(abs(level_x), abs(level_y)) <= 15 else 'steep')
                 orient.update({'magnetic_heading': round(float(magnetic_yaw or 0),1), 'north_heading': round(float(yaw or 0),1), 'cardinal': compass_name(yaw), 'level_x': level_x, 'level_y': level_y, 'level_status': level_status})
-                with SENSE_LOCK: SENSE_CACHE.update({'ok': True, 'mode': mode, 'available_modes': SENSE_MODES, 'orientation': orient, 'compass': yaw, 'magnetic_compass': magnetic_yaw, 'compass_cardinal': compass_name(yaw), 'temp': temp_f, 'humidity': hum, 'pressure': pressure, 'gps': gps, 'message': f'{mode} display active', 'updated': time.time()})
+                accel = sense_live_accel(sense, orient, st)
+                with SENSE_LOCK: SENSE_CACHE.update({'ok': True, 'mode': mode, 'available_modes': SENSE_MODES, 'orientation': orient, 'raw_accel': accel.get('raw_accel'), 'display_accel': accel.get('display_accel'), 'normalized_accel': accel.get('normalized_accel'), 'accel_axis_map': accel.get('axis_map'), 'accel_plane_magnitude': accel.get('plane_magnitude'), 'accel_tilt_degrees': accel.get('tilt_degrees'), 'accel_raw_error': accel.get('raw_error'), 'compass': yaw, 'magnetic_compass': magnetic_yaw, 'compass_cardinal': compass_name(yaw), 'temp': temp_f, 'humidity': hum, 'pressure': pressure, 'gps': gps, 'message': f'{mode} display active', 'updated': time.time()})
             except Exception as e:
                 with SENSE_LOCK: SENSE_CACHE.update({'ok': False, 'mode': mode, 'message': f'Sense HAT read/display error: {e}', 'updated': time.time()})
             tick+=1
