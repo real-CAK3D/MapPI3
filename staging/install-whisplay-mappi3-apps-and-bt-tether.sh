@@ -546,6 +546,7 @@ def sense_tilt_axes(sense):
     sense = sense if isinstance(sense, dict) else {}
     orient = sense.get('orientation') if isinstance(sense.get('orientation'), dict) else {}
     liquid = sense.get('liquid_display') if isinstance(sense.get('liquid_display'), dict) else {}
+    face = sense.get('animated_face') if isinstance(sense.get('animated_face'), dict) else {}
     accel = liquid.get('display_accel') if isinstance(liquid.get('display_accel'), dict) else {}
     if not accel:
         accel = liquid.get('raw_accel') if isinstance(liquid.get('raw_accel'), dict) else {}
@@ -553,6 +554,8 @@ def sense_tilt_axes(sense):
         accel = sense.get('display_accel') if isinstance(sense.get('display_accel'), dict) else {}
     if not accel:
         accel = sense.get('raw_accel') if isinstance(sense.get('raw_accel'), dict) else {}
+    if not accel:
+        accel = face.get('accel') if isinstance(face.get('accel'), dict) else {}
     accel_roll = accel_angle(accel.get('x'), accel.get('z', liquid.get('gz', 1.0))) if accel else None
     accel_pitch = accel_angle(accel.get('y'), accel.get('z', liquid.get('gz', 1.0))) if accel else None
     orient_roll = signed_angle(orient.get('level_x', orient.get('roll', sense.get('roll'))))
