@@ -18,7 +18,7 @@ PACMAN_EVENT_SEQ = 0
 BATTERY_LED_STATE = {'full_since': None}
 SENSE_FACE_STATE = {'last_accel': None, 'last_accel_at': 0.0, 'surprise_until': 0.0, 'still_since': 0.0}
 SENSE_MODES = ['compass','compass-arrow','compass-cardinal','rotation-test','liquid','pacman','battery','weather','fire','flashlight','sos','message','boot','sun','gps','clock','progress','beacon','stars','temp','humidity','pressure','avatar','level','custom','border','magic8','water','snake']
-ALLOWED = {'status','restart-web','reboot','shutdown','update-app','gps-sample','toggle-hotspot','hotspot-on','connect-home-wifi','wifi-scan','wifi-save-network','wifi-connect-saved','network-status','tailscale-status','tailscale-login','remote-access-repair','sense-mode','calibrate','harden-hotspot','plugin-update','vnc-setup','vnc-disable','weather-refresh','noaa-refresh','hourly-online-refresh','online-maintenance','gps-diagnose','sense-diagnose','field-ai-verify','captive-setup','captive-disable','captive-status','gps-pps-setup','whisplay-test-popup','whisplay-input','whisplay-input-status','snake-trail-event','plugin-status','plugin-install','plugin-install-all','plugin-uninstall','audio-tts-test','audio-ambient-test'}
+ALLOWED = {'status','restart-web','reboot','shutdown','update-app','gps-sample','toggle-hotspot','hotspot-on','connect-home-wifi','wifi-scan','wifi-save-network','wifi-connect-saved','network-status','tailscale-status','tailscale-login','remote-access-repair','sense-mode','calibrate','harden-hotspot','plugin-update','vnc-setup','vnc-disable','weather-refresh','noaa-refresh','hourly-online-refresh','online-maintenance','gps-diagnose','sense-diagnose','field-ai-verify','captive-setup','captive-disable','captive-status','gps-pps-setup','whisplay-test-popup','whisplay-input','whisplay-input-status','snake-trail-event','plugin-status','plugin-install','plugin-install-all','plugin-uninstall','notification-status','notification-test','notification-publish','notification-clear','notification-preferences','audio-tts-test','audio-ambient-test'}
 SENSE_CACHE = {'ok': False, 'mode': 'compass', 'message': 'Sense HAT display loop starting', 'updated': 0, 'joystick': {'seq': 0, 'direction': '', 'pressed': False, 'updated': 0}}
 SENSE_LOCK = threading.Lock()
 TIMELINE_LOCK = threading.RLock()
@@ -2458,6 +2458,116 @@ def plugin_install_all(payload=None):
     ok=all(r.get('ok') for r in results)
     return {'ok': ok, 'requested':ids, 'installed':sum(1 for r in results if r.get('ok')), 'failed':[r for r in results if not r.get('ok')], 'results':results, 'status':plugin_status()}
 
+NOTIFICATIONS_FILE = pathlib.Path(os.environ.get('MAPPI3_NOTIFICATIONS_FILE', '/var/lib/mappi3/notifications.json'))
+NOTIFICATION_LIMIT = int(os.environ.get('MAPPI3_NOTIFICATION_LIMIT', '80'))
+
+def _notification_defaults():
+    return {
+        'enabled': True,
+        'browser_first': True,
+        'in_app_log': True,
+        'categories': {
+            'battery': True,
+            'gps': True,
+            'route': True,
+            'field_safety': True,
+            'weather': True,
+            'system': True,
+        },
+        'alerts': [],
+        'updated_at': 0,
+    }
+
+def _read_notifications():
+    try:
+        data = json.loads(NOTIFICATIONS_FILE.read_text())
+        base = _notification_defaults()
+        if isinstance(data, dict): base.update(data)
+        cats = _notification_defaults()['categories']; cats.update(base.get('categories') or {})
+        base['categories'] = cats
+        base['alerts'] = list(base.get('alerts') or [])[-NOTIFICATION_LIMIT:]
+        return base
+    except Exception:
+        return _notification_defaults()
+
+def _write_notifications(data):
+    data = data or _notification_defaults()
+    data['alerts'] = list(data.get('alerts') or [])[-NOTIFICATION_LIMIT:]
+    data['updated_at'] = time.time()
+    NOTIFICATIONS_FILE.parent.mkdir(parents=True, exist_ok=True)
+    tmp = NOTIFICATIONS_FILE.with_suffix('.tmp')
+    tmp.write_text(json.dumps(data, indent=2, sort_keys=True))
+    os.replace(tmp, NOTIFICATIONS_FILE)
+    try: os.chmod(NOTIFICATIONS_FILE, 0o600)
+    except Exception: pass
+    return data
+
+def notification_status(payload=None):
+    data = _read_notifications()
+    return {
+        'ok': True,
+        'mode': 'native-map-pi3',
+        'enabled': bool(data.get('enabled', True)),
+        'browser_first': bool(data.get('browser_first', True)),
+        'in_app_log': bool(data.get('in_app_log', True)),
+        'categories': data.get('categories') or {},
+        'alerts': list(data.get('alerts') or [])[-25:][::-1],
+        'count': len(data.get('alerts') or []),
+        'storage': str(NOTIFICATIONS_FILE),
+        'updated_at': data.get('updated_at') or 0,
+        'secure_context_note': 'Browser notifications require HTTPS, localhost, or a trusted local certificate. In-app alerts/log still work over the Pi HTTP hotspot.',
+        'time': time.time(),
+    }
+
+def notification_preferences(payload=None):
+    payload = payload or {}
+    data = _read_notifications()
+    for key in ('enabled', 'browser_first', 'in_app_log'):
+        if key in payload: data[key] = bool(payload.get(key))
+    if isinstance(payload.get('categories'), dict):
+        cats = data.get('categories') or {}
+        for key, val in payload.get('categories').items(): cats[str(key)[:40]] = bool(val)
+        data['categories'] = cats
+    _write_notifications(data)
+    return {'ok': True, 'status': notification_status()}
+
+def notification_publish(payload=None):
+    payload = payload or {}
+    data = _read_notifications()
+    category = str(payload.get('category') or 'system').strip().lower().replace('-', '_')[:40] or 'system'
+    if not data.get('enabled', True):
+        return {'ok': False, 'error': 'notifications_disabled', 'status': notification_status()}
+    if data.get('categories', {}).get(category, True) is False:
+        return {'ok': False, 'error': 'category_disabled', 'category': category, 'status': notification_status()}
+    alert = {
+        'id': str(payload.get('id') or ('alert-' + uuid.uuid4().hex[:12])),
+        'title': str(payload.get('title') or 'MapPI3 Field Alert')[:140],
+        'message': str(payload.get('message') or payload.get('body') or 'MapPI3 field alert.')[:2000],
+        'category': category,
+        'severity': str(payload.get('severity') or payload.get('priority') or 'info')[:32],
+        'route_id': payload.get('route_id') or payload.get('routeId'),
+        'source': str(payload.get('source') or 'mappi3-agent')[:80],
+        'created_at': time.time(),
+        'read': False,
+    }
+    data.setdefault('alerts', []).append(alert)
+    _write_notifications(data)
+    return {'ok': True, 'delivery': {'browser_notification': 'client-dispatched-if-permitted', 'in_app_log': True, 'external_push': 'not_configured'}, 'alert': alert, 'status': notification_status()}
+
+def notification_test(payload=None):
+    payload = payload or {}
+    return notification_publish({
+        'title': payload.get('title') or 'MapPI3 Test Alert',
+        'message': payload.get('message') or 'Trail Buddy check-in: native MapPI3 browser/in-app notifications are wired.',
+        'category': payload.get('category') or 'system',
+        'severity': payload.get('severity') or 'test',
+        'source': 'settings-test',
+    })
+
+def notification_clear(payload=None):
+    data = _read_notifications(); data['alerts'] = []; _write_notifications(data)
+    return {'ok': True, 'status': notification_status()}
+
 def captive_status():
     active=sh('systemctl is-active mappi3-captive.service 2>/dev/null || true', timeout=5)['output'].strip()
     enabled=sh('systemctl is-enabled mappi3-captive.service 2>/dev/null || true', timeout=5)['output'].strip()
@@ -2650,6 +2760,11 @@ def command(name, payload=None):
     if name=='plugin-install': return plugin_install(payload)
     if name=='plugin-uninstall': return plugin_uninstall(payload)
     if name=='plugin-install-all': return plugin_install_all(payload)
+    if name=='notification-status': return notification_status(payload)
+    if name=='notification-test': return notification_test(payload)
+    if name=='notification-publish': return notification_publish(payload)
+    if name=='notification-clear': return notification_clear(payload)
+    if name=='notification-preferences': return notification_preferences(payload)
     if name=='vnc-setup': return setup_vnc(payload)
     if name=='vnc-disable': return disable_vnc()
     if name=='weather-refresh': return pi_weather(payload)
@@ -3508,6 +3623,7 @@ class Handler(http.server.SimpleHTTPRequestHandler):
         if self.path.startswith('/api/map-packs/themes'): self.json_response(map_pack_themes()); return
         if self.path.startswith('/api/map-packs/status'): self.json_response(map_pack_status()); return
         if self.path.startswith('/api/plugins'): self.json_response(plugin_status()); return
+        if self.path.startswith('/api/notifications/status'): self.json_response(notification_status()); return
         if self.path.startswith('/api/bluetooth/pan/status'): self.json_response(bluetooth_pan_status()); return
         if self.path.startswith('/api/bluetooth/status'): self.json_response(bluetooth_status()); return
         if self.path.startswith('/api/time/status'): self.json_response(time_sync_status()); return
@@ -3549,6 +3665,10 @@ class Handler(http.server.SimpleHTTPRequestHandler):
         if self.path.startswith('/api/audio/play-test'): self.json_response(audio_play_test(payload)); return
         if self.path.startswith('/api/audio/tts-test'): self.json_response(audio_tts_test(payload)); return
         if self.path.startswith('/api/audio/ambient-test'): self.json_response(audio_ambient_test(payload)); return
+        if self.path.startswith('/api/notifications/test'): self.json_response(notification_test(payload)); return
+        if self.path.startswith('/api/notifications/publish'): self.json_response(notification_publish(payload)); return
+        if self.path.startswith('/api/notifications/clear'): self.json_response(notification_clear(payload)); return
+        if self.path.startswith('/api/notifications/preferences'): self.json_response(notification_preferences(payload)); return
         if self.path.startswith('/api/command/'): self.json_response(command(self.path.rsplit('/',1)[-1], payload)); return
         self.send_error(404)
 
