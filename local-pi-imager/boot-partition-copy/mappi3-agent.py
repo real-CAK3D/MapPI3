@@ -15,6 +15,7 @@ LIQUID_STATE = {'gx': 0.0, 'gy': 0.0, 'gz': 1.0}
 LIQUID_PARTICLES = []
 PACMAN_STATE = {}
 PACMAN_EVENT_SEQ = 0
+BATTERY_LED_STATE = {'full_since': None}
 SENSE_FACE_STATE = {'last_accel': None, 'last_accel_at': 0.0, 'surprise_until': 0.0, 'still_since': 0.0}
 SENSE_MODES = ['compass','compass-arrow','compass-cardinal','rotation-test','liquid','pacman','battery','weather','fire','flashlight','sos','message','boot','sun','gps','clock','progress','beacon','stars','temp','humidity','pressure','avatar','level','custom','border','magic8','water','snake']
 ALLOWED = {'status','restart-web','reboot','shutdown','update-app','gps-sample','toggle-hotspot','hotspot-on','connect-home-wifi','wifi-scan','wifi-save-network','wifi-connect-saved','network-status','tailscale-status','tailscale-login','remote-access-repair','sense-mode','calibrate','harden-hotspot','plugin-update','vnc-setup','vnc-disable','weather-refresh','noaa-refresh','hourly-online-refresh','online-maintenance','gps-diagnose','sense-diagnose','field-ai-verify','captive-setup','captive-disable','captive-status','gps-pps-setup','whisplay-test-popup','whisplay-input','whisplay-input-status','snake-trail-event','plugin-status','plugin-install','plugin-install-all','plugin-uninstall','audio-tts-test','audio-ambient-test'}
@@ -796,8 +797,9 @@ def draw_battery_indicator(sense, power=None, tick=0, st=None):
     charging = bool(power.get('charging') or power.get('battery_input_power_connected'))
     pixels=[[0,0,0] for _ in range(64)]
     path=battery_led_path()
-    lit_count=0; blink=False; level='unknown'
+    lit_count=0; blink=False; level='unknown'; alert_leds=0; full_hold_done=False
     if percent is None:
+        BATTERY_LED_STATE['full_since'] = None
         amber=scale_color((255,180,0), brightness)
         for x,y in [(2,1),(3,0),(4,0),(5,1),(5,2),(4,3),(3,4),(3,6)]: pixels[y*8+x]=list(amber)
     else:
@@ -807,20 +809,35 @@ def draw_battery_indicator(sense, power=None, tick=0, st=None):
         dim=scale_color((6,12,8), brightness)
         for x,y in path: pixels[y*8+x]=list(dim)
         for x,y in path[:lit_count]: pixels[y*8+x]=list(color)
+        now=time.time()
+        if charging and pct >= 100:
+            if BATTERY_LED_STATE.get('full_since') is None:
+                BATTERY_LED_STATE['full_since'] = now
+            full_hold_done = (now - float(BATTERY_LED_STATE.get('full_since') or now)) >= 60.0
+        else:
+            BATTERY_LED_STATE['full_since'] = None
         blink_on = (tick % 4) < 2
-        low_alert = (not charging) and (pct <= 7 or lit_count <= 4)
-        full_alert = charging and (pct >= 94 or lit_count >= 60)
+        low_alert = (not charging) and (pct <= 7 or lit_count <= 4) and lit_count > 0
+        full_alert = charging and (pct >= 94 or lit_count >= 60) and not full_hold_done
         blink = low_alert or full_alert
         if low_alert:
-            for x,y in path[:4]: pixels[y*8+x]=list(color if blink_on else (0,0,0))
+            # Blink only the remaining lit LEDs. As drain progresses this naturally
+            # becomes last 4 -> last 3 -> last 2 -> last 1, then all off.
+            alert_leds=min(4, lit_count)
+            for i,(x,y) in enumerate(path[:4]):
+                pixels[y*8+x]=list(color if (i < alert_leds and blink_on) else (0,0,0))
         elif full_alert:
+            alert_leds=4
             for x,y in path[-4:]: pixels[y*8+x]=list(color if blink_on else (0,0,0))
         if charging and not full_alert:
-            idx=min(63, lit_count + (tick % 4))
-            x,y=path[idx]; pixels[y*8+x]=list(scale_color((240,255,240), brightness))
+            if lit_count < 64:
+                idx=min(63, lit_count + (tick % 4))
+                x,y=path[idx]; pixels[y*8+x]=list(scale_color((240,255,240), brightness))
+            elif full_hold_done:
+                for x,y in path: pixels[y*8+x]=list(color)
     sense_set_pixels(sense, pixels, st)
     with SENSE_LOCK:
-        SENSE_CACHE['battery_display']={'model':'PiSugar 3 charge/drain 8x8 gauge: red <=20%, yellow <=50%, green >50%; low last-4 LEDs blink while draining; top last-4 LEDs blink when charging near full/remove-charger.','percent':percent,'charging':charging,'lit_leds':sum(1 for c in pixels if c != [0,0,0]),'filled_leds':lit_count,'blink_alert':blink,'level':level,'source':power.get('source') or 'unknown'}
+        SENSE_CACHE['battery_display']={'model':'PiSugar 3 charge/drain 8x8 gauge: red <=20%, yellow <=50%, green >50%; low alert blinks only the remaining final LEDs (4→3→2→1) while draining; top 4 LEDs blink when charging near full, then settle solid after 60s at 100%.','percent':percent,'charging':charging,'lit_leds':sum(1 for c in pixels if c != [0,0,0]),'filled_leds':lit_count,'blink_alert':blink,'alert_leds':alert_leds,'full_hold_done':full_hold_done,'level':level,'source':power.get('source') or 'unknown'}
 
 def draw_snake_frame(sense, tick, color=(0,220,70), st=None):
     pixels=[[0,0,0] for _ in range(64)]

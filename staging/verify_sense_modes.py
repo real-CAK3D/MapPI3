@@ -198,16 +198,29 @@ steep_cache = mod.sense_snapshot().get('animated_face', {})
 assert steep_cache.get('steep_tilt') is True and steep_cache.get('expression') == 'surprised', steep_cache
 
 # Battery mode uses PiSugar power data as a true 64-cell gauge:
-# red/yellow/green thresholds, last-4 drain blink, and last-4 charge-full blink.
+# red/yellow/green thresholds, progressive final drain blink (4→3→2→1),
+# and top-4 charge-full blink that settles solid after one minute at 100%.
 batt_sense = FakeSense()
 mod.draw_battery_indicator(batt_sense, {'percent': 5, 'charging': False, 'source': 'verify'}, 3, base_state)
 batt_cache = mod.sense_snapshot().get('battery_display', {})
-assert batt_cache.get('level') == 'red' and batt_cache.get('blink_alert') is True and batt_cache.get('filled_leds') <= 4, batt_cache
-assert all(batt_sense.frames[-1][i] == [0, 0, 0] for i in (56,57,58,59)), 'low drain blink should turn bottom last 4 off on tick 3'
+assert batt_cache.get('level') == 'red' and batt_cache.get('blink_alert') is True and batt_cache.get('filled_leds') == 3 and batt_cache.get('alert_leds') == 3, batt_cache
+assert all(batt_sense.frames[-1][i] == [0, 0, 0] for i in (56,57,58)), 'low drain blink should turn remaining 3 LEDs off on tick 3'
+assert batt_sense.frames[-1][59] == [0, 0, 0], 'fourth LED should stay off, not blink, once drain progresses to 3 LEDs'
+one_led_sense = FakeSense()
+mod.draw_battery_indicator(one_led_sense, {'percent': 1, 'charging': False, 'source': 'verify'}, 0, base_state)
+one_led_cache = mod.sense_snapshot().get('battery_display', {})
+assert one_led_cache.get('filled_leds') == 1 and one_led_cache.get('alert_leds') == 1 and one_led_cache.get('blink_alert') is True, one_led_cache
+assert one_led_sense.frames[-1][56] != [0, 0, 0] and all(one_led_sense.frames[-1][i] == [0, 0, 0] for i in (57,58,59)), 'one-led drain alert should blink only the last 1 LED'
 charge_sense = FakeSense()
+mod.BATTERY_LED_STATE = {'full_since': None}
 mod.draw_battery_indicator(charge_sense, {'percent': 96, 'charging': True, 'source': 'verify'}, 0, base_state)
 charge_cache = mod.sense_snapshot().get('battery_display', {})
-assert charge_cache.get('level') == 'green' and charge_cache.get('blink_alert') is True and charge_cache.get('filled_leds') >= 60, charge_cache
+assert charge_cache.get('level') == 'green' and charge_cache.get('blink_alert') is True and charge_cache.get('filled_leds') >= 60 and charge_cache.get('alert_leds') == 4, charge_cache
+settled_sense = FakeSense()
+mod.BATTERY_LED_STATE = {'full_since': mod.time.time() - 61}
+mod.draw_battery_indicator(settled_sense, {'percent': 100, 'charging': True, 'source': 'verify'}, 0, base_state)
+settled_cache = mod.sense_snapshot().get('battery_display', {})
+assert settled_cache.get('full_hold_done') is True and settled_cache.get('blink_alert') is False and settled_cache.get('lit_leds') == 64, settled_cache
 
 for label, expected in [('Pac-Man','pacman'),('Battery','battery'),('Power Level','battery'),('Animated Face','avatar'),('Compass NSEW','compass-cardinal'),('Bubble Level','level')]:
     data = mod.set_sense_mode(label, {'brightnessLevel': 4, 'routeProgress': 0.5, 'senseAvatarExpression': 'happy'})

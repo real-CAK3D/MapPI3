@@ -722,9 +722,12 @@ function senseSimulatorPixels(mode, settings = {}, progress = 0.34, tick = 0) {
     path.forEach(([x,y]) => set(y*8+x, dim));
     path.slice(0, fill).forEach(([x,y]) => set(y*8+x, color));
     const blinkOn = tick % 4 < 2;
-    if (!charging && (pct <= 7 || fill <= 4)) path.slice(0,4).forEach(([x,y]) => set(y*8+x, blinkOn ? color : [0,0,0]));
-    else if (charging && (pct >= 94 || fill >= 60)) path.slice(-4).forEach(([x,y]) => set(y*8+x, blinkOn ? color : [0,0,0]));
-    else if (charging) { const [x,y] = path[Math.min(63, fill + (tick % 4))] || path[63]; set(y*8+x, scaleLed([240,255,240], level)); }
+    const lowAlert = !charging && (pct <= 7 || fill <= 4) && fill > 0;
+    const fullHoldDone = charging && pct >= 100 && tick >= 109; // ~60s at the simulator's 550ms cadence
+    const fullAlert = charging && (pct >= 94 || fill >= 60) && !fullHoldDone;
+    if (lowAlert) path.slice(0,4).forEach(([x,y], i) => set(y*8+x, (i < Math.min(4, fill) && blinkOn) ? color : [0,0,0]));
+    else if (fullAlert) path.slice(-4).forEach(([x,y]) => set(y*8+x, blinkOn ? color : [0,0,0]));
+    else if (charging && fill < 64) { const [x,y] = path[Math.min(63, fill + (tick % 4))] || path[63]; set(y*8+x, scaleLed([240,255,240], level)); }
   } else if (key.includes('water')) {
     coords([[3,0],[4,0],[2,1],[5,1],[2,2],[5,2],[1,3],[6,3],[1,4],[6,4],[2,5],[5,5],[3,6],[4,6],[3,7],[4,7]], scaleLed([0,100,255], level));
   } else if (key.includes('snake')) {
