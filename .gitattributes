@@ -1,0 +1,1 @@
+public/map-packs/**/*.rgb565pack filter=lfs diff=lfs merge=lfs -text

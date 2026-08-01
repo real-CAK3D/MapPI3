@@ -1,0 +1,303 @@
+{
+  "schema": "mappi3.map-pack-plan.v1",
+  "id": "mappi3-current-150mi-topo-night",
+  "name": "MapPI3 current-location 150mi Topo Night",
+  "created_at": "2026-07-30T07:12:56.901Z",
+  "planner": "scripts/plan-map-pack.mjs",
+  "mode": "dry-run-size-plan-no-tile-download",
+  "source": "live MapPI3 GPS /api/status 2026-07-30",
+  "theme": "topo-night",
+  "center": {
+    "lat": 44.097351415,
+    "lon": -70.162873781
+  },
+  "radius_miles": 150,
+  "bbox": {
+    "lat_min": 41.928813866,
+    "lat_max": 46.265888964,
+    "lon_min": -73.182454626,
+    "lon_max": -67.143292936
+  },
+  "tile_format": {
+    "tile_size": 256,
+    "output_pixel_format": "RGB565 little-endian planned",
+    "bytes_per_tile": 131072,
+    "fixed_grid_offset_formula": "offset = ((y - y_min) * width_tiles + (x - x_min)) * 131072 within the zoom pack",
+    "note": "This plan does not download or convert map tiles. It is the storage guardrail before building a microSD RGB565 pack."
+  },
+  "zoom_policy": {
+    "min_zoom": 0,
+    "max_zoom_estimated": 14,
+    "blanket_max_zoom": 12,
+    "budget_gib": 4,
+    "recommendation": "Keep blanket coverage at z0-z12; z0-z14 exceeds the 4 GiB raw RGB565 budget for this radius.",
+    "high_zoom_policy": "Use higher zooms only for selected trail corridors, parks, towns, or custom route buffers; do not blanket-cache high zooms for the whole radius."
+  },
+  "levels": [
+    {
+      "z": 0,
+      "x_min": 0,
+      "x_max": 0,
+      "y_min": 0,
+      "y_max": 0,
+      "tiles": 1,
+      "raw_rgb565_bytes": 131072,
+      "raw_rgb565_gib": 0
+    },
+    {
+      "z": 1,
+      "x_min": 0,
+      "x_max": 0,
+      "y_min": 0,
+      "y_max": 0,
+      "tiles": 1,
+      "raw_rgb565_bytes": 131072,
+      "raw_rgb565_gib": 0
+    },
+    {
+      "z": 2,
+      "x_min": 1,
+      "x_max": 1,
+      "y_min": 1,
+      "y_max": 1,
+      "tiles": 1,
+      "raw_rgb565_bytes": 131072,
+      "raw_rgb565_gib": 0
+    },
+    {
+      "z": 3,
+      "x_min": 2,
+      "x_max": 2,
+      "y_min": 2,
+      "y_max": 2,
+      "tiles": 1,
+      "raw_rgb565_bytes": 131072,
+      "raw_rgb565_gib": 0
+    },
+    {
+      "z": 4,
+      "x_min": 4,
+      "x_max": 5,
+      "y_min": 5,
+      "y_max": 5,
+      "tiles": 2,
+      "raw_rgb565_bytes": 262144,
+      "raw_rgb565_gib": 0
+    },
+    {
+      "z": 5,
+      "x_min": 9,
+      "x_max": 10,
+      "y_min": 11,
+      "y_max": 11,
+      "tiles": 2,
+      "raw_rgb565_bytes": 262144,
+      "raw_rgb565_gib": 0
+    },
+    {
+      "z": 6,
+      "x_min": 18,
+      "x_max": 20,
+      "y_min": 22,
+      "y_max": 23,
+      "tiles": 6,
+      "raw_rgb565_bytes": 786432,
+      "raw_rgb565_gib": 0.001
+    },
+    {
+      "z": 7,
+      "x_min": 37,
+      "x_max": 40,
+      "y_min": 45,
+      "y_max": 47,
+      "tiles": 12,
+      "raw_rgb565_bytes": 1572864,
+      "raw_rgb565_gib": 0.001
+    },
+    {
+      "z": 8,
+      "x_min": 75,
+      "x_max": 80,
+      "y_min": 90,
+      "y_max": 95,
+      "tiles": 36,
+      "raw_rgb565_bytes": 4718592,
+      "raw_rgb565_gib": 0.004
+    },
+    {
+      "z": 9,
+      "x_min": 151,
+      "x_max": 160,
+      "y_min": 181,
+      "y_max": 190,
+      "tiles": 100,
+      "raw_rgb565_bytes": 13107200,
+      "raw_rgb565_gib": 0.012
+    },
+    {
+      "z": 10,
+      "x_min": 303,
+      "x_max": 321,
+      "y_min": 363,
+      "y_max": 380,
+      "tiles": 342,
+      "raw_rgb565_bytes": 44826624,
+      "raw_rgb565_gib": 0.042
+    },
+    {
+      "z": 11,
+      "x_min": 607,
+      "x_max": 642,
+      "y_min": 726,
+      "y_max": 760,
+      "tiles": 1260,
+      "raw_rgb565_bytes": 165150720,
+      "raw_rgb565_gib": 0.154
+    },
+    {
+      "z": 12,
+      "x_min": 1215,
+      "x_max": 1284,
+      "y_min": 1452,
+      "y_max": 1521,
+      "tiles": 4900,
+      "raw_rgb565_bytes": 642252800,
+      "raw_rgb565_gib": 0.598
+    },
+    {
+      "z": 13,
+      "x_min": 2430,
+      "x_max": 2568,
+      "y_min": 2905,
+      "y_max": 3043,
+      "tiles": 19321,
+      "raw_rgb565_bytes": 2532442112,
+      "raw_rgb565_gib": 2.359
+    },
+    {
+      "z": 14,
+      "x_min": 4861,
+      "x_max": 5136,
+      "y_min": 5811,
+      "y_max": 6086,
+      "tiles": 76176,
+      "raw_rgb565_bytes": 9984540672,
+      "raw_rgb565_gib": 9.299
+    }
+  ],
+  "cumulative_by_max_zoom": [
+    {
+      "max_zoom": 0,
+      "tiles": 1,
+      "raw_rgb565_bytes": 131072,
+      "raw_rgb565_gib": 0
+    },
+    {
+      "max_zoom": 1,
+      "tiles": 2,
+      "raw_rgb565_bytes": 262144,
+      "raw_rgb565_gib": 0
+    },
+    {
+      "max_zoom": 2,
+      "tiles": 3,
+      "raw_rgb565_bytes": 393216,
+      "raw_rgb565_gib": 0
+    },
+    {
+      "max_zoom": 3,
+      "tiles": 4,
+      "raw_rgb565_bytes": 524288,
+      "raw_rgb565_gib": 0
+    },
+    {
+      "max_zoom": 4,
+      "tiles": 6,
+      "raw_rgb565_bytes": 786432,
+      "raw_rgb565_gib": 0.001
+    },
+    {
+      "max_zoom": 5,
+      "tiles": 8,
+      "raw_rgb565_bytes": 1048576,
+      "raw_rgb565_gib": 0.001
+    },
+    {
+      "max_zoom": 6,
+      "tiles": 14,
+      "raw_rgb565_bytes": 1835008,
+      "raw_rgb565_gib": 0.002
+    },
+    {
+      "max_zoom": 7,
+      "tiles": 26,
+      "raw_rgb565_bytes": 3407872,
+      "raw_rgb565_gib": 0.003
+    },
+    {
+      "max_zoom": 8,
+      "tiles": 62,
+      "raw_rgb565_bytes": 8126464,
+      "raw_rgb565_gib": 0.008
+    },
+    {
+      "max_zoom": 9,
+      "tiles": 162,
+      "raw_rgb565_bytes": 21233664,
+      "raw_rgb565_gib": 0.02
+    },
+    {
+      "max_zoom": 10,
+      "tiles": 504,
+      "raw_rgb565_bytes": 66060288,
+      "raw_rgb565_gib": 0.062
+    },
+    {
+      "max_zoom": 11,
+      "tiles": 1764,
+      "raw_rgb565_bytes": 231211008,
+      "raw_rgb565_gib": 0.215
+    },
+    {
+      "max_zoom": 12,
+      "tiles": 6664,
+      "raw_rgb565_bytes": 873463808,
+      "raw_rgb565_gib": 0.813
+    },
+    {
+      "max_zoom": 13,
+      "tiles": 25985,
+      "raw_rgb565_bytes": 3405905920,
+      "raw_rgb565_gib": 3.172
+    },
+    {
+      "max_zoom": 14,
+      "tiles": 102161,
+      "raw_rgb565_bytes": 13390446592,
+      "raw_rgb565_gib": 12.471
+    }
+  ],
+  "selected_blanket": {
+    "max_zoom": 12,
+    "tiles": 6664,
+    "raw_rgb565_bytes": 873463808,
+    "raw_rgb565_gib": 0.813
+  },
+  "next_zoom_level": {
+    "z": 13,
+    "x_min": 2430,
+    "x_max": 2568,
+    "y_min": 2905,
+    "y_max": 3043,
+    "tiles": 19321,
+    "raw_rgb565_bytes": 2532442112,
+    "raw_rgb565_gib": 2.359
+  },
+  "generated_files": [],
+  "safety": {
+    "no_internet_required_after_pack_build": true,
+    "no_phone_required_for_pi_native_renderer": true,
+    "browser_leaflet_requires_png_webp_or_runtime_rgb565_canvas_conversion": true,
+    "navigation_warning": "MapPI3 assists navigation; carry real map/compass/emergency tools."
+  }
+}

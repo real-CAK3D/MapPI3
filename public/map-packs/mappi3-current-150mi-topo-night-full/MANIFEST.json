@@ -1,0 +1,560 @@
+{
+  "schema": "mappi3.rgb565-map-pack.v1",
+  "id": "mappi3-current-150mi-topo-night-full",
+  "name": "MapPI3 current-location 150mi Topo Night full z0-z12",
+  "theme": "topo-night",
+  "created_at": "2026-07-30T11:12:24.076660Z",
+  "offline_safe": true,
+  "network_required": false,
+  "source": "existing MapPI3 approved PNG cache; z11-z12 synthesized from lower-zoom parent tiles; no network download",
+  "source_manifest": "mappi3-current-150mi-topo-night.plan.json",
+  "source_detail_note": "Exact source PNG tiles are used where available. Parent-tile fallback, when enabled, fills higher zoom grid cells by cropping/resampling the nearest approved lower-zoom tile; coverage is complete but detail is capped by the source zoom.",
+  "attribution": "\u00a9 OpenStreetMap contributors",
+  "center": {
+    "lat": 44.097351415,
+    "lon": -70.162873781
+  },
+  "radius_miles": 150,
+  "bbox": {
+    "lat_min": 41.928813866,
+    "lat_max": 46.265888964,
+    "lon_min": -73.182454626,
+    "lon_max": -67.143292936
+  },
+  "tile_format": {
+    "tile_size": 256,
+    "pixel_format": "RGB565 little-endian",
+    "bytes_per_tile": 131072,
+    "fixed_grid": true
+  },
+  "zoom_min": 0,
+  "zoom_max": 12,
+  "levels": [
+    {
+      "z": 0,
+      "x_min": 0,
+      "x_max": 0,
+      "y_min": 0,
+      "y_max": 0,
+      "width_tiles": 1,
+      "height_tiles": 1,
+      "tiles": 1,
+      "file": "z0.rgb565pack",
+      "url": "/map-packs/mappi3-current-150mi-topo-night-full/z0.rgb565pack",
+      "size_bytes": 131072,
+      "sha256": "c40486004398bd6546102f6dcb3017fd53da573015523f5b9ebbffca29a3b37b",
+      "offset_formula": "offset = ((y - y_min) * width_tiles + (x - x_min)) * 131072"
+    },
+    {
+      "z": 1,
+      "x_min": 0,
+      "x_max": 0,
+      "y_min": 0,
+      "y_max": 0,
+      "width_tiles": 1,
+      "height_tiles": 1,
+      "tiles": 1,
+      "file": "z1.rgb565pack",
+      "url": "/map-packs/mappi3-current-150mi-topo-night-full/z1.rgb565pack",
+      "size_bytes": 131072,
+      "sha256": "c40486004398bd6546102f6dcb3017fd53da573015523f5b9ebbffca29a3b37b",
+      "offset_formula": "offset = ((y - y_min) * width_tiles + (x - x_min)) * 131072"
+    },
+    {
+      "z": 2,
+      "x_min": 1,
+      "x_max": 1,
+      "y_min": 1,
+      "y_max": 1,
+      "width_tiles": 1,
+      "height_tiles": 1,
+      "tiles": 1,
+      "file": "z2.rgb565pack",
+      "url": "/map-packs/mappi3-current-150mi-topo-night-full/z2.rgb565pack",
+      "size_bytes": 131072,
+      "sha256": "c40486004398bd6546102f6dcb3017fd53da573015523f5b9ebbffca29a3b37b",
+      "offset_formula": "offset = ((y - y_min) * width_tiles + (x - x_min)) * 131072"
+    },
+    {
+      "z": 3,
+      "x_min": 2,
+      "x_max": 2,
+      "y_min": 2,
+      "y_max": 2,
+      "width_tiles": 1,
+      "height_tiles": 1,
+      "tiles": 1,
+      "file": "z3.rgb565pack",
+      "url": "/map-packs/mappi3-current-150mi-topo-night-full/z3.rgb565pack",
+      "size_bytes": 131072,
+      "sha256": "c40486004398bd6546102f6dcb3017fd53da573015523f5b9ebbffca29a3b37b",
+      "offset_formula": "offset = ((y - y_min) * width_tiles + (x - x_min)) * 131072"
+    },
+    {
+      "z": 4,
+      "x_min": 4,
+      "x_max": 5,
+      "y_min": 5,
+      "y_max": 5,
+      "width_tiles": 2,
+      "height_tiles": 1,
+      "tiles": 2,
+      "file": "z4.rgb565pack",
+      "url": "/map-packs/mappi3-current-150mi-topo-night-full/z4.rgb565pack",
+      "size_bytes": 262144,
+      "sha256": "777268c150d9e34a2fe6ec2c16d08872fcc17c0cf91723f02040faab3ca436a8",
+      "offset_formula": "offset = ((y - y_min) * width_tiles + (x - x_min)) * 131072"
+    },
+    {
+      "z": 5,
+      "x_min": 9,
+      "x_max": 10,
+      "y_min": 11,
+      "y_max": 11,
+      "width_tiles": 2,
+      "height_tiles": 1,
+      "tiles": 2,
+      "file": "z5.rgb565pack",
+      "url": "/map-packs/mappi3-current-150mi-topo-night-full/z5.rgb565pack",
+      "size_bytes": 262144,
+      "sha256": "777268c150d9e34a2fe6ec2c16d08872fcc17c0cf91723f02040faab3ca436a8",
+      "offset_formula": "offset = ((y - y_min) * width_tiles + (x - x_min)) * 131072"
+    },
+    {
+      "z": 6,
+      "x_min": 18,
+      "x_max": 20,
+      "y_min": 22,
+      "y_max": 23,
+      "width_tiles": 3,
+      "height_tiles": 2,
+      "tiles": 6,
+      "file": "z6.rgb565pack",
+      "url": "/map-packs/mappi3-current-150mi-topo-night-full/z6.rgb565pack",
+      "size_bytes": 786432,
+      "sha256": "18c8250bc2f909e3eca4159779cc4a3f367fdb15e500f14dc55010950d91f02f",
+      "offset_formula": "offset = ((y - y_min) * width_tiles + (x - x_min)) * 131072"
+    },
+    {
+      "z": 7,
+      "x_min": 37,
+      "x_max": 40,
+      "y_min": 45,
+      "y_max": 47,
+      "width_tiles": 4,
+      "height_tiles": 3,
+      "tiles": 12,
+      "file": "z7.rgb565pack",
+      "url": "/map-packs/mappi3-current-150mi-topo-night-full/z7.rgb565pack",
+      "size_bytes": 1572864,
+      "sha256": "ca935b40c7a9aaec110ad18e49e58481fbcbf3ba84924dd78ca21c2352e85529",
+      "offset_formula": "offset = ((y - y_min) * width_tiles + (x - x_min)) * 131072"
+    },
+    {
+      "z": 8,
+      "x_min": 75,
+      "x_max": 80,
+      "y_min": 90,
+      "y_max": 95,
+      "width_tiles": 6,
+      "height_tiles": 6,
+      "tiles": 36,
+      "file": "z8.rgb565pack",
+      "url": "/map-packs/mappi3-current-150mi-topo-night-full/z8.rgb565pack",
+      "size_bytes": 4718592,
+      "sha256": "7868bc9b6d4cfedbd519486791e15bf4938f07584989c3a2d0641391fa554a19",
+      "offset_formula": "offset = ((y - y_min) * width_tiles + (x - x_min)) * 131072"
+    },
+    {
+      "z": 9,
+      "x_min": 151,
+      "x_max": 160,
+      "y_min": 181,
+      "y_max": 190,
+      "width_tiles": 10,
+      "height_tiles": 10,
+      "tiles": 100,
+      "file": "z9.rgb565pack",
+      "url": "/map-packs/mappi3-current-150mi-topo-night-full/z9.rgb565pack",
+      "size_bytes": 13107200,
+      "sha256": "7536cd99e4da42f4e82f634986f0e1d08a9cc08587a6a1ec98114696889fef69",
+      "offset_formula": "offset = ((y - y_min) * width_tiles + (x - x_min)) * 131072"
+    },
+    {
+      "z": 10,
+      "x_min": 303,
+      "x_max": 321,
+      "y_min": 363,
+      "y_max": 380,
+      "width_tiles": 19,
+      "height_tiles": 18,
+      "tiles": 342,
+      "file": "z10.rgb565pack",
+      "url": "/map-packs/mappi3-current-150mi-topo-night-full/z10.rgb565pack",
+      "size_bytes": 44826624,
+      "sha256": "7db2cd40bca025b0a3036d182e3e03613d8818fa53b0064c57a78b1b5b9466ac",
+      "offset_formula": "offset = ((y - y_min) * width_tiles + (x - x_min)) * 131072"
+    },
+    {
+      "z": 11,
+      "x_min": 607,
+      "x_max": 642,
+      "y_min": 726,
+      "y_max": 760,
+      "width_tiles": 36,
+      "height_tiles": 35,
+      "tiles": 1260,
+      "file": "z11.rgb565pack",
+      "url": "/map-packs/mappi3-current-150mi-topo-night-full/z11.rgb565pack",
+      "size_bytes": 165150720,
+      "sha256": "f0189394c2e2a5f7a704a810c97c04828d6b6ca44c6bcf8dec1dc2501759deb6",
+      "offset_formula": "offset = ((y - y_min) * width_tiles + (x - x_min)) * 131072"
+    },
+    {
+      "z": 12,
+      "x_min": 1215,
+      "x_max": 1284,
+      "y_min": 1452,
+      "y_max": 1521,
+      "width_tiles": 70,
+      "height_tiles": 70,
+      "tiles": 4900,
+      "file": "z12.rgb565pack",
+      "url": "/map-packs/mappi3-current-150mi-topo-night-full/z12.rgb565pack",
+      "size_bytes": 642252800,
+      "sha256": "ceb426d01894299d65b795a3e6f0afbc78dff8822a50d97779dba9c6fea614a9",
+      "offset_formula": "offset = ((y - y_min) * width_tiles + (x - x_min)) * 131072"
+    }
+  ],
+  "tile_count": 6664,
+  "converted_tile_count": 504,
+  "fallback_parent_tile_count": 6160,
+  "fallback_parent_tiles_sample": [
+    {
+      "z": 10,
+      "x": 303,
+      "y": 363,
+      "child_z": 11,
+      "child_x": 607,
+      "child_y": 726
+    },
+    {
+      "z": 10,
+      "x": 304,
+      "y": 363,
+      "child_z": 11,
+      "child_x": 608,
+      "child_y": 726
+    },
+    {
+      "z": 10,
+      "x": 304,
+      "y": 363,
+      "child_z": 11,
+      "child_x": 609,
+      "child_y": 726
+    },
+    {
+      "z": 10,
+      "x": 305,
+      "y": 363,
+      "child_z": 11,
+      "child_x": 610,
+      "child_y": 726
+    },
+    {
+      "z": 10,
+      "x": 305,
+      "y": 363,
+      "child_z": 11,
+      "child_x": 611,
+      "child_y": 726
+    },
+    {
+      "z": 10,
+      "x": 306,
+      "y": 363,
+      "child_z": 11,
+      "child_x": 612,
+      "child_y": 726
+    },
+    {
+      "z": 10,
+      "x": 306,
+      "y": 363,
+      "child_z": 11,
+      "child_x": 613,
+      "child_y": 726
+    },
+    {
+      "z": 10,
+      "x": 307,
+      "y": 363,
+      "child_z": 11,
+      "child_x": 614,
+      "child_y": 726
+    },
+    {
+      "z": 10,
+      "x": 307,
+      "y": 363,
+      "child_z": 11,
+      "child_x": 615,
+      "child_y": 726
+    },
+    {
+      "z": 10,
+      "x": 308,
+      "y": 363,
+      "child_z": 11,
+      "child_x": 616,
+      "child_y": 726
+    },
+    {
+      "z": 10,
+      "x": 308,
+      "y": 363,
+      "child_z": 11,
+      "child_x": 617,
+      "child_y": 726
+    },
+    {
+      "z": 10,
+      "x": 309,
+      "y": 363,
+      "child_z": 11,
+      "child_x": 618,
+      "child_y": 726
+    },
+    {
+      "z": 10,
+      "x": 309,
+      "y": 363,
+      "child_z": 11,
+      "child_x": 619,
+      "child_y": 726
+    },
+    {
+      "z": 10,
+      "x": 310,
+      "y": 363,
+      "child_z": 11,
+      "child_x": 620,
+      "child_y": 726
+    },
+    {
+      "z": 10,
+      "x": 310,
+      "y": 363,
+      "child_z": 11,
+      "child_x": 621,
+      "child_y": 726
+    },
+    {
+      "z": 10,
+      "x": 311,
+      "y": 363,
+      "child_z": 11,
+      "child_x": 622,
+      "child_y": 726
+    },
+    {
+      "z": 10,
+      "x": 311,
+      "y": 363,
+      "child_z": 11,
+      "child_x": 623,
+      "child_y": 726
+    },
+    {
+      "z": 10,
+      "x": 312,
+      "y": 363,
+      "child_z": 11,
+      "child_x": 624,
+      "child_y": 726
+    },
+    {
+      "z": 10,
+      "x": 312,
+      "y": 363,
+      "child_z": 11,
+      "child_x": 625,
+      "child_y": 726
+    },
+    {
+      "z": 10,
+      "x": 313,
+      "y": 363,
+      "child_z": 11,
+      "child_x": 626,
+      "child_y": 726
+    },
+    {
+      "z": 10,
+      "x": 313,
+      "y": 363,
+      "child_z": 11,
+      "child_x": 627,
+      "child_y": 726
+    },
+    {
+      "z": 10,
+      "x": 314,
+      "y": 363,
+      "child_z": 11,
+      "child_x": 628,
+      "child_y": 726
+    },
+    {
+      "z": 10,
+      "x": 314,
+      "y": 363,
+      "child_z": 11,
+      "child_x": 629,
+      "child_y": 726
+    },
+    {
+      "z": 10,
+      "x": 315,
+      "y": 363,
+      "child_z": 11,
+      "child_x": 630,
+      "child_y": 726
+    },
+    {
+      "z": 10,
+      "x": 315,
+      "y": 363,
+      "child_z": 11,
+      "child_x": 631,
+      "child_y": 726
+    },
+    {
+      "z": 10,
+      "x": 316,
+      "y": 363,
+      "child_z": 11,
+      "child_x": 632,
+      "child_y": 726
+    },
+    {
+      "z": 10,
+      "x": 316,
+      "y": 363,
+      "child_z": 11,
+      "child_x": 633,
+      "child_y": 726
+    },
+    {
+      "z": 10,
+      "x": 317,
+      "y": 363,
+      "child_z": 11,
+      "child_x": 634,
+      "child_y": 726
+    },
+    {
+      "z": 10,
+      "x": 317,
+      "y": 363,
+      "child_z": 11,
+      "child_x": 635,
+      "child_y": 726
+    },
+    {
+      "z": 10,
+      "x": 318,
+      "y": 363,
+      "child_z": 11,
+      "child_x": 636,
+      "child_y": 726
+    },
+    {
+      "z": 10,
+      "x": 318,
+      "y": 363,
+      "child_z": 11,
+      "child_x": 637,
+      "child_y": 726
+    },
+    {
+      "z": 10,
+      "x": 319,
+      "y": 363,
+      "child_z": 11,
+      "child_x": 638,
+      "child_y": 726
+    },
+    {
+      "z": 10,
+      "x": 319,
+      "y": 363,
+      "child_z": 11,
+      "child_x": 639,
+      "child_y": 726
+    },
+    {
+      "z": 10,
+      "x": 320,
+      "y": 363,
+      "child_z": 11,
+      "child_x": 640,
+      "child_y": 726
+    },
+    {
+      "z": 10,
+      "x": 320,
+      "y": 363,
+      "child_z": 11,
+      "child_x": 641,
+      "child_y": 726
+    },
+    {
+      "z": 10,
+      "x": 321,
+      "y": 363,
+      "child_z": 11,
+      "child_x": 642,
+      "child_y": 726
+    },
+    {
+      "z": 10,
+      "x": 303,
+      "y": 363,
+      "child_z": 11,
+      "child_x": 607,
+      "child_y": 727
+    },
+    {
+      "z": 10,
+      "x": 304,
+      "y": 363,
+      "child_z": 11,
+      "child_x": 608,
+      "child_y": 727
+    },
+    {
+      "z": 10,
+      "x": 304,
+      "y": 363,
+      "child_z": 11,
+      "child_x": 609,
+      "child_y": 727
+    },
+    {
+      "z": 10,
+      "x": 305,
+      "y": 363,
+      "child_z": 11,
+      "child_x": 610,
+      "child_y": 727
+    }
+  ],
+  "missing_tile_count": 0,
+  "missing_tiles_sample": [],
+  "size_bytes": 873463808,
+  "size_mib": 833.0,
+  "safety": "MapPI3 assists navigation; carry real map/compass/emergency tools.",
+  "manifest_sha256": "ed1ea81ac228c2b89928ff3d34472d4f24f50ee0475fbb2e516e27e4a0aa8806"
+}
