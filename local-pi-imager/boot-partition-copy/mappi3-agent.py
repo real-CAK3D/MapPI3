@@ -814,23 +814,67 @@ def draw_border(sense, color, st=None):
 def draw_water_icon(sense, color=(0,80,220), st=None):
     put_pixels(sense, [(3,0),(4,0),(2,1),(5,1),(2,2),(5,2),(1,3),(6,3),(1,4),(6,4),(2,5),(5,5),(3,6),(4,6),(3,7),(4,7)], color, st)
 
-def battery_led_path():
-    # Bottom-left to top-right serpentine gauge: each LED is one fuel cell.
-    path=[]
-    for y in range(7, -1, -1):
-        xs = range(8) if (7-y) % 2 == 0 else range(7, -1, -1)
-        for x in xs:
-            path.append((x,y))
-    return path
+def battery_led_groups():
+    # Four large logical LEDs, left-to-right, each rendered as a readable 2x4 block.
+    return [
+        [(0,2),(1,2),(0,3),(1,3),(0,4),(1,4),(0,5),(1,5)],
+        [(2,2),(3,2),(2,3),(3,3),(2,4),(3,4),(2,5),(3,5)],
+        [(4,2),(5,2),(4,3),(5,3),(4,4),(5,4),(4,5),(5,5)],
+        [(6,2),(7,2),(6,3),(7,3),(6,4),(7,4),(6,5),(7,5)],
+    ]
 
 def battery_status_color(percent, brightness):
     try:
         pct=float(percent)
     except Exception:
         return scale_color((255,180,0), brightness), 'unknown'
-    if pct <= 20: return scale_color((255,0,0), brightness), 'red'
-    if pct <= 50: return scale_color((255,190,0), brightness), 'yellow'
-    return scale_color((0,220,70), brightness), 'green'
+    # Interpolated trail-readable gradient: red -> yellow -> green.
+    if pct <= 50:
+        ratio=max(0.0, min(1.0, pct/50.0))
+        rgb=(255, int(round(190*ratio)), 0)
+        label='red' if pct <= 20 else 'yellow'
+    else:
+        ratio=max(0.0, min(1.0, (pct-50.0)/50.0))
+        rgb=(int(round(255*(1-ratio))), int(round(190 + (220-190)*ratio)), int(round(70*ratio)))
+        label='green'
+    return scale_color(rgb, brightness), label
+
+def battery_bucket(percent):
+    try:
+        pct=max(0.0, min(100.0, float(percent)))
+    except Exception:
+        return None
+    if pct <= 0: return 0
+    return max(1, min(4, int(math.ceil(pct/25.0))))
+
+def _battery_transition_state(bucket, charging, tick):
+    now=time.time()
+    state=BATTERY_LED_STATE
+    previous=state.get('bucket')
+    if previous is None:
+        previous=bucket
+        state['bucket']=bucket
+        state.pop('transition', None)
+        return previous, None, True, 0
+    trans=state.get('transition')
+    if bucket != previous and not trans:
+        # Blink only the LED being gained/lost five times before settling.
+        led_index=(bucket-1) if bucket > previous else (previous-1)
+        state['transition']={'from':previous,'to':bucket,'led':max(0,min(3,led_index)),'started':now,'phase':0,'last_tick':tick}
+        trans=state['transition']
+    if trans:
+        if trans.get('last_tick') != tick:
+            trans['phase']=int(trans.get('phase') or 0)+1
+            trans['last_tick']=tick
+        phase=int(trans.get('phase') or 0)
+        blink_on=(phase % 2) == 0
+        if phase >= 10:
+            state['bucket']=bucket
+            state.pop('transition', None)
+            return bucket, None, True, phase
+        return int(trans.get('from') or previous), trans, blink_on, phase
+    state['bucket']=bucket
+    return bucket, None, True, 0
 
 def draw_battery_indicator(sense, power=None, tick=0, st=None):
     st = st or {}
@@ -839,48 +883,48 @@ def draw_battery_indicator(sense, power=None, tick=0, st=None):
     percent = power.get('percent')
     charging = bool(power.get('charging') or power.get('battery_input_power_connected'))
     pixels=[[0,0,0] for _ in range(64)]
-    path=battery_led_path()
-    lit_count=0; blink=False; level='unknown'; alert_leds=0; full_hold_done=False
+    groups=battery_led_groups()
+    level='unknown'; blink=False; alert_led=None; transition=None; displayed_bucket=0; bucket=None; full_hold_done=False
+    rail=scale_color((4,10,8), brightness)
+    for group in groups:
+        for x,y in group: pixels[y*8+x]=list(rail)
     if percent is None:
-        BATTERY_LED_STATE['full_since'] = None
+        BATTERY_LED_STATE.clear()
         amber=scale_color((255,180,0), brightness)
         for x,y in [(2,1),(3,0),(4,0),(5,1),(5,2),(4,3),(3,4),(3,6)]: pixels[y*8+x]=list(amber)
     else:
         pct=max(0.0, min(100.0, float(percent)))
-        lit_count=max(0, min(64, int(round(pct/100.0*64))))
+        bucket=battery_bucket(pct)
         color, level=battery_status_color(pct, brightness)
-        dim=scale_color((6,12,8), brightness)
-        for x,y in path: pixels[y*8+x]=list(dim)
-        for x,y in path[:lit_count]: pixels[y*8+x]=list(color)
-        now=time.time()
-        if charging and pct >= 100:
-            if BATTERY_LED_STATE.get('full_since') is None:
-                BATTERY_LED_STATE['full_since'] = now
-            full_hold_done = (now - float(BATTERY_LED_STATE.get('full_since') or now)) >= 60.0
+        displayed_bucket, transition, transition_on, phase = _battery_transition_state(bucket, charging, tick)
+        displayed_bucket=max(0,min(4,int(displayed_bucket or 0)))
+        for i,group in enumerate(groups):
+            if i < displayed_bucket:
+                for x,y in group: pixels[y*8+x]=list(color)
+        if transition:
+            blink=True; alert_led=int(transition.get('led') or 0)
+            # charging/gaining: LED flashes on before staying on; draining: flashes off before staying off.
+            target=int(transition.get('to') or bucket)
+            from_bucket=int(transition.get('from') or displayed_bucket)
+            transition_led_on = transition_on if target > from_bucket else not transition_on
+            for x,y in groups[alert_led]: pixels[y*8+x]=list(color if transition_led_on else (0,0,0))
         else:
-            BATTERY_LED_STATE['full_since'] = None
-        blink_on = (tick % 4) < 2
-        low_alert = (not charging) and (pct <= 7 or lit_count <= 4) and lit_count > 0
-        full_alert = charging and (pct >= 94 or lit_count >= 60) and not full_hold_done
-        blink = low_alert or full_alert
-        if low_alert:
-            # Blink only the remaining lit LEDs. As drain progresses this naturally
-            # becomes last 4 -> last 3 -> last 2 -> last 1, then all off.
-            alert_leds=min(4, lit_count)
-            for i,(x,y) in enumerate(path[:4]):
-                pixels[y*8+x]=list(color if (i < alert_leds and blink_on) else (0,0,0))
-        elif full_alert:
-            alert_leds=4
-            for x,y in path[-4:]: pixels[y*8+x]=list(color if blink_on else (0,0,0))
-        if charging and not full_alert:
-            if lit_count < 64:
-                idx=min(63, lit_count + (tick % 4))
-                x,y=path[idx]; pixels[y*8+x]=list(scale_color((240,255,240), brightness))
-            elif full_hold_done:
-                for x,y in path: pixels[y*8+x]=list(color)
+            blink_on=(tick % 10) < 5
+            near_dead=(not charging) and pct <= 7 and bucket == 1
+            full_alert=charging and pct >= 100 and bucket == 4
+            blink=near_dead or full_alert
+            if near_dead:
+                alert_led=0
+                for i,group in enumerate(groups):
+                    for x,y in group: pixels[y*8+x]=list(color if (i == 0 and blink_on) else (0,0,0))
+            elif full_alert:
+                alert_led=3
+                full_hold_done=False
+                for i,group in enumerate(groups):
+                    for x,y in group: pixels[y*8+x]=list(color if (i == 3 and blink_on) else (0,0,0))
     sense_set_pixels(sense, pixels, st)
     with SENSE_LOCK:
-        SENSE_CACHE['battery_display']={'model':'PiSugar 3 charge/drain 8x8 gauge: red <=20%, yellow <=50%, green >50%; low alert blinks only the remaining final LEDs (4→3→2→1) while draining; top 4 LEDs blink when charging near full, then settle solid after 60s at 100%.','percent':percent,'charging':charging,'lit_leds':sum(1 for c in pixels if c != [0,0,0]),'filled_leds':lit_count,'blink_alert':blink,'alert_leds':alert_leds,'full_hold_done':full_hold_done,'level':level,'source':power.get('source') or 'unknown'}
+        SENSE_CACHE['battery_display']={'model':'PiSugar 3 four-logical-LED state machine: 0-25/26-50/51-75/76-100%; one LED changes at a time and flashes five times before settling; colors blend red→yellow→green; near-dead flashes LED 1 only; full/charging flashes LED 4 only.','percent':percent,'charging':charging,'logical_leds':4,'bucket':bucket,'displayed_bucket':displayed_bucket,'lit_leds':sum(1 for c in pixels if c != [0,0,0] and c != list(rail)),'blink_alert':blink,'alert_led':alert_led,'transition':transition,'full_hold_done':full_hold_done,'level':level,'source':power.get('source') or 'unknown'}
 
 def draw_snake_frame(sense, tick, color=(0,220,70), st=None):
     pixels=[[0,0,0] for _ in range(64)]
@@ -1088,10 +1132,24 @@ def sense_loop():
         while True:
             st=read_state(); mode=normalize_mode(st.get('sense_mode') or 'compass')
             try:
-                orient=sense.get_orientation(); raw_yaw=orient.get('yaw',0)
-                try: magnetic_yaw=sense.get_compass()
-                except Exception: magnetic_yaw=raw_yaw
-                yaw=corrected_compass_heading(magnetic_yaw, st); temp_c=sense.get_temperature(); temp_f=temp_c*9/5+32; hum=sense.get_humidity(); pressure=sense.get_pressure()
+                sensor_fallback = False
+                sensor_error = None
+                orient = {}
+                raw_yaw = 0
+                magnetic_yaw = 0
+                yaw = corrected_compass_heading(0, st)
+                temp_c = 0.0
+                temp_f = temp_c*9/5+32
+                hum = 0.0
+                pressure = 0.0
+                try:
+                    orient=sense.get_orientation(); raw_yaw=orient.get('yaw',0)
+                    try: magnetic_yaw=sense.get_compass()
+                    except Exception: magnetic_yaw=raw_yaw
+                    yaw=corrected_compass_heading(magnetic_yaw, st); temp_c=sense.get_temperature(); temp_f=temp_c*9/5+32; hum=sense.get_humidity(); pressure=sense.get_pressure()
+                except Exception as sensor_exc:
+                    sensor_fallback = True
+                    sensor_error = str(sensor_exc)
                 now=time.time()
                 # GPS sampling can block for several seconds indoors; keep LED/joystick modes responsive.
                 if mode == 'gps' or now - last_gps_at > 30:
@@ -1154,7 +1212,7 @@ def sense_loop():
                 level_status = 'level' if max(abs(level_x), abs(level_y)) <= 4 else ('tilted' if max(abs(level_x), abs(level_y)) <= 15 else 'steep')
                 orient.update({'magnetic_heading': round(float(magnetic_yaw or 0),1), 'north_heading': round(float(yaw or 0),1), 'cardinal': compass_name(yaw), 'level_x': level_x, 'level_y': level_y, 'level_status': level_status})
                 accel = sense_live_accel(sense, orient, st)
-                with SENSE_LOCK: SENSE_CACHE.update({'ok': True, 'mode': mode, 'available_modes': SENSE_MODES, 'orientation': orient, 'raw_accel': accel.get('raw_accel'), 'display_accel': accel.get('display_accel'), 'normalized_accel': accel.get('normalized_accel'), 'accel_axis_map': accel.get('axis_map'), 'accel_plane_magnitude': accel.get('plane_magnitude'), 'accel_tilt_degrees': accel.get('tilt_degrees'), 'accel_raw_error': accel.get('raw_error'), 'compass': yaw, 'magnetic_compass': magnetic_yaw, 'compass_cardinal': compass_name(yaw), 'temp': temp_f, 'humidity': hum, 'pressure': pressure, 'gps': gps, 'message': f'{mode} display active', 'updated': time.time()})
+                with SENSE_LOCK: SENSE_CACHE.update({'ok': True, 'mode': mode, 'available_modes': SENSE_MODES, 'orientation': orient, 'raw_accel': accel.get('raw_accel'), 'display_accel': accel.get('display_accel'), 'normalized_accel': accel.get('normalized_accel'), 'accel_axis_map': accel.get('axis_map'), 'accel_plane_magnitude': accel.get('plane_magnitude'), 'accel_tilt_degrees': accel.get('tilt_degrees'), 'accel_raw_error': accel.get('raw_error'), 'sensor_fallback': sensor_fallback, 'sensor_error': sensor_error, 'compass': yaw, 'magnetic_compass': magnetic_yaw, 'compass_cardinal': compass_name(yaw), 'temp': temp_f, 'humidity': hum, 'pressure': pressure, 'gps': gps, 'message': (f'{mode} display active (sensor fallback: {sensor_error})' if sensor_fallback else f'{mode} display active'), 'updated': time.time()})
             except Exception as e:
                 with SENSE_LOCK: SENSE_CACHE.update({'ok': False, 'mode': mode, 'message': f'Sense HAT read/display error: {e}', 'updated': time.time()})
             tick+=1
@@ -2090,6 +2148,16 @@ def sense_diagnose(payload=None):
     count = max(3, min(20, int(payload.get('count') or 8)))
     delay = max(0.02, min(0.5, float(payload.get('delay') or 0.12)))
     samples = []
+    if not payload.get('direct'):
+        cache = sense_snapshot()
+        return {
+            'ok': True,
+            'source': 'service-cache',
+            'sense_cache': cache,
+            'sensor_fallback': bool(cache.get('sensor_fallback')),
+            'sensor_error': cache.get('sensor_error') or cache.get('accel_raw_error'),
+            'hint': 'Default diagnose reports the live MapPI3 Sense service cache. Send {"direct": true} to open a fresh SenseHat() hardware probe.',
+        }
     try:
         from sense_hat import SenseHat
         sense = SenseHat()
@@ -2126,9 +2194,9 @@ def sense_diagnose(payload=None):
             'tilt_degrees': span('raw_tilt_degrees'),
         }
         moving = any((spans.get(k) or 0) > (0.08 if k.startswith('raw_') else 3.0) for k in spans)
-        return {'ok': True, 'count': count, 'delay': delay, 'samples': samples, 'spans': spans, 'moving': moving, 'sense_cache': sense_snapshot(), 'hint': 'Tilt the Pi during this command; raw_x/raw_y/roll/pitch/tilt_degrees spans should jump if the IMU is moving.'}
+        return {'ok': True, 'source': 'direct-hardware', 'count': count, 'delay': delay, 'samples': samples, 'spans': spans, 'moving': moving, 'sense_cache': sense_snapshot(), 'hint': 'Tilt the Pi during this command; raw_x/raw_y/roll/pitch/tilt_degrees spans should jump if the IMU is moving.'}
     except Exception as e:
-        return {'ok': False, 'error': str(e), 'sense_cache': sense_snapshot()}
+        return {'ok': False, 'source': 'direct-hardware', 'error': str(e), 'sense_cache': sense_snapshot()}
 
 
 def field_ai_verify(payload=None):

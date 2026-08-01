@@ -13,6 +13,11 @@ import { createMapPiRecord, fetchMapPiRecords, signInMapPiUser, signUpMapPiUser,
 import './styles.css';
 
 const VERSION = 'V1.2.43';
+if (typeof window !== 'undefined' && 'serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('/mappi3-sw.js').catch(error => console.warn('MapPI3 service worker registration failed', error));
+  });
+}
 const tabs = ['Overview', 'Explore', 'Navigate', 'Camp', 'Adventure', 'Exercise', 'Survival', 'Settings'];
 const tabAliases = { Drive:'Navigate', Plan:'Explore', Pack:'Explore', Brief:'Explore', Timeline:'Adventure', 'Adventure Timeline':'Adventure', 'Daily Exercise':'Exercise', Saved:'Exercise', Health:'Exercise', 'Field Kit':'Navigate', 'Sense HAT':'Navigate', Games:'Navigate', Weather:'Overview', Library:'Camp', Ambiance:'Camp', 'Camp Ambiance':'Camp', 'Nature AI':'Camp', Sky:'Navigate', Forage:'Survival', Account:'Settings' };
 const normalizeTopTab = (tab) => tabAliases[tab] || (tabs.includes(tab) ? tab : 'Overview');
@@ -115,10 +120,15 @@ function herbieCompanionState({ settings = {}, progress = 0.34, tick = 0, mode =
   const liveTiltAxes = liveSenseTiltAxes(liveSense);
   const roll = Number.isFinite(liveTiltAxes.roll) ? liveTiltAxes.roll : Number(settings.levelX || settings.demoRoll || 0);
   const pitch = Number.isFinite(liveTiltAxes.pitch) ? liveTiltAxes.pitch : Number(settings.levelY || settings.demoPitch || 0);
-  const displayFace = whisplayDisplay?.animated_face || whisplayDisplay?.display?.animated_face || whisplayDisplay?.display?.face || whisplayDisplay?.face || null;
-  const liveFace = displayFace || liveSense.animated_face || liveSense.avatar_buddy || {};
+  const hasFacePayload = (face) => Boolean(face && typeof face === 'object' && Object.keys(face).length);
+  const displayFaceRaw = whisplayDisplay?.animated_face || whisplayDisplay?.display?.animated_face || whisplayDisplay?.display?.face || whisplayDisplay?.face || null;
+  const liveSenseFaceRaw = liveSense.animated_face || liveSense.avatar_buddy || null;
+  const whisplayOk = Boolean(whisplayDisplay?.ok || hasFacePayload(displayFaceRaw));
+  const liveFace = hasFacePayload(displayFaceRaw) ? displayFaceRaw
+    : hasFacePayload(liveSenseFaceRaw) ? liveSenseFaceRaw
+    : whisplayOk ? { expression:'happy', mood:'happy', source:'cheerful-empty-whisplay-fallback' }
+    : {};
   const liveFaceExpression = herbieExpressions.includes(liveFace.expression || liveFace.mood) ? (liveFace.expression || liveFace.mood) : '';
-  const whisplayOk = Boolean(whisplayDisplay?.ok || displayFace);
   const whisplayPayload = whisplayDisplay?.display || {};
   const rawWhisplayForeground = whisplayPayload.foreground_app_id || whisplayPayload.foreground || whisplayPayload.active_app || whisplayPayload.current_app || '';
   const whisplayForeground = safeHerbieDisplayValue(rawWhisplayForeground, whisplayDisplay?.ok === false ? safeHerbieDisplayValue(whisplayDisplay, 'display status unavailable') : '');
@@ -714,21 +724,23 @@ function senseSimulatorPixels(mode, settings = {}, progress = 0.34, tick = 0) {
   } else if (key.includes('battery') || key.includes('power') || key.includes('pisugar')) {
     const pct = Math.max(0, Math.min(100, Number(settings.demoBatteryPercent ?? settings.piBatteryPercent ?? settings.batteryPercent ?? 63)));
     const charging = Boolean(settings.demoBatteryCharging ?? settings.piBatteryCharging ?? settings.batteryCharging);
-    const fill = Math.max(0, Math.min(64, Math.round((pct / 100) * 64)));
-    const color = scaleLed(pct <= 20 ? [255,0,0] : pct <= 50 ? [255,190,0] : [0,220,70], level);
-    const dim = scaleLed([6,12,8], level);
+    const groups = [
+      [[0,2],[1,2],[0,3],[1,3],[0,4],[1,4],[0,5],[1,5]],
+      [[2,2],[3,2],[2,3],[3,3],[2,4],[3,4],[2,5],[3,5]],
+      [[4,2],[5,2],[4,3],[5,3],[4,4],[5,4],[4,5],[5,5]],
+      [[6,2],[7,2],[6,3],[7,3],[6,4],[7,4],[6,5],[7,5]],
+    ];
+    const mix = (a,b,t) => a.map((c,i) => Math.round(c + (b[i] - c) * t));
+    const rawColor = pct <= 50 ? mix([255,0,0],[255,190,0], pct / 50) : mix([255,190,0],[0,220,70], (pct - 50) / 50);
+    const color = scaleLed(rawColor, level), rail = scaleLed([4,10,8], level);
+    const bucket = pct <= 0 ? 0 : Math.max(1, Math.min(4, Math.ceil(pct / 25)));
+    const blinkOn = tick % 10 < 5;
     pixels.fill([0,0,0]);
-    const path=[];
-    for (let y=7;y>=0;y--) { const xs = ((7-y)%2===0) ? [0,1,2,3,4,5,6,7] : [7,6,5,4,3,2,1,0]; xs.forEach(x => path.push([x,y])); }
-    path.forEach(([x,y]) => set(y*8+x, dim));
-    path.slice(0, fill).forEach(([x,y]) => set(y*8+x, color));
-    const blinkOn = tick % 4 < 2;
-    const lowAlert = !charging && (pct <= 7 || fill <= 4) && fill > 0;
-    const fullHoldDone = charging && pct >= 100 && tick >= 109; // ~60s at the simulator's 550ms cadence
-    const fullAlert = charging && (pct >= 94 || fill >= 60) && !fullHoldDone;
-    if (lowAlert) path.slice(0,4).forEach(([x,y], i) => set(y*8+x, (i < Math.min(4, fill) && blinkOn) ? color : [0,0,0]));
-    else if (fullAlert) path.slice(-4).forEach(([x,y]) => set(y*8+x, blinkOn ? color : [0,0,0]));
-    else if (charging && fill < 64) { const [x,y] = path[Math.min(63, fill + (tick % 4))] || path[63]; set(y*8+x, scaleLed([240,255,240], level)); }
+    groups.forEach(group => group.forEach(([x,y]) => set(y*8+x, rail)));
+    groups.slice(0, bucket).forEach(group => group.forEach(([x,y]) => set(y*8+x, color)));
+    if (!charging && pct <= 7 && bucket === 1) groups.forEach((group, i) => group.forEach(([x,y]) => set(y*8+x, (i === 0 && blinkOn) ? color : [0,0,0])));
+    else if (charging && pct >= 100 && bucket === 4) groups.forEach((group, i) => group.forEach(([x,y]) => set(y*8+x, (i === 3 && blinkOn) ? color : [0,0,0])));
+    else if (charging && bucket < 4) groups[bucket].forEach(([x,y]) => set(y*8+x, blinkOn ? scaleLed([240,255,240], level) : rail));
   } else if (key.includes('water')) {
     coords([[3,0],[4,0],[2,1],[5,1],[2,2],[5,2],[1,3],[6,3],[1,4],[6,4],[2,5],[5,5],[3,6],[4,6],[3,7],[4,7]], scaleLed([0,100,255], level));
   } else if (key.includes('snake')) {
@@ -1740,7 +1752,19 @@ function NativeNotificationSettings({ settings = {}, setSettings }) {
     let perm = typeof Notification !== 'undefined' ? Notification.permission : 'unsupported';
     if (perm === 'default') perm = await requestPermission();
     if (perm === 'granted') {
-      try { new Notification(title, { body, tag:'mappi3-native-test', icon:'/favicon.svg', badge:'/favicon.svg' }); return true; }
+      try {
+        if (navigator.serviceWorker?.controller) {
+          navigator.serviceWorker.controller.postMessage({ type:'MAPPI3_NOTIFY', title, body, tag:'mappi3-native-test', data:{ url:'/' } });
+          return true;
+        }
+        const registration = await navigator.serviceWorker?.ready?.catch(() => null);
+        if (registration?.showNotification) {
+          await registration.showNotification(title, { body, tag:'mappi3-native-test', icon:'/favicon.svg', badge:'/favicon.svg', data:{ url:'/' } });
+          return true;
+        }
+        new Notification(title, { body, tag:'mappi3-native-test', icon:'/favicon.svg', badge:'/favicon.svg' });
+        return true;
+      }
       catch (err) { setMessage(`Browser notification failed: ${err.message}`); }
     }
     return false;

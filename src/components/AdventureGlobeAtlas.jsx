@@ -48,7 +48,7 @@ function atlasTrailFlows(points) {
     }));
 }
 
-function createCodePenGlobe(container, points) {
+function createCodePenGlobe(container, points, onModeChange) {
   const root = am5.Root.new(container);
 
   const trailTheme = am5.Theme.new(root);
@@ -285,8 +285,8 @@ function createCodePenGlobe(container, points) {
     }, duration - fadeDuration);
     setTimeout(function () {
       if (root.isDisposed()) return;
-      if (switchButton.get('active')) zoomToMap();
-      else zoomToGlobe();
+      if (switchButton.get('active')) { zoomToMap(); if (onModeChange) onModeChange('detail'); }
+      else { zoomToGlobe(); if (onModeChange) onModeChange('globe'); }
       chart.seriesContainer.animate({ key: 'opacity', to: 1, duration: fadeDuration });
     }, duration);
   });
@@ -325,7 +325,13 @@ export default function AdventureGlobeAtlas({ points = [] }) {
   const chartRef = useRef(null);
   const rootRef = useRef(null);
   const [status, setStatus] = useState('loading globe');
+  const [atlasMode, setAtlasMode] = useState('globe');
+  const [selectedPointId, setSelectedPointId] = useState('');
   const normalizedPoints = useMemo(() => (points || []).map(safePoint).filter(Boolean), [points]);
+
+  useEffect(() => {
+    if (!selectedPointId && normalizedPoints.length) setSelectedPointId((normalizedPoints.find(point => point.kind !== 'home') || normalizedPoints[0]).id);
+  }, [normalizedPoints, selectedPointId]);
 
   useEffect(() => {
     let cancelled = false;
@@ -337,7 +343,7 @@ export default function AdventureGlobeAtlas({ points = [] }) {
     }
     try {
       if (rootRef.current) rootRef.current.dispose();
-      rootRef.current = createCodePenGlobe(chartRef.current, normalizedPoints);
+      rootRef.current = createCodePenGlobe(chartRef.current, normalizedPoints, setAtlasMode);
       setStatus('ready');
     } catch (error) {
       if (!cancelled) setStatus(error?.message || 'amCharts globe failed to load');
@@ -351,5 +357,36 @@ export default function AdventureGlobeAtlas({ points = [] }) {
     };
   }, [normalizedPoints]);
 
-  return <div className="adventure-globe-codepen-card"><div ref={chartRef} id="chartdiv" className="adventure-globe-codepen-chart" />{status !== 'ready' ? <div className="adventure-globe-codepen-status">{status}</div> : null}</div>;
+  const homePoint = normalizedPoints.find(point => point.kind === 'home') || normalizedPoints[0];
+  const trailPoints = normalizedPoints.filter(point => point.kind !== 'home');
+  const selectedPoint = normalizedPoints.find(point => point.id === selectedPointId) || trailPoints[0] || homePoint;
+  const detailPoints = [homePoint, selectedPoint].filter(Boolean);
+  const routeSvgPoints = detailPoints.length >= 2 ? detailPoints.map((point, index) => {
+    const lonRange = Math.max(0.01, Math.abs(detailPoints[1].lon - detailPoints[0].lon));
+    const latRange = Math.max(0.01, Math.abs(detailPoints[1].lat - detailPoints[0].lat));
+    const minLon = Math.min(...detailPoints.map(p => p.lon));
+    const maxLat = Math.max(...detailPoints.map(p => p.lat));
+    const x = 18 + ((point.lon - minLon) / lonRange) * 64;
+    const y = 18 + ((maxLat - point.lat) / latRange) * 44 + (index ? 8 : -8);
+    return [Math.max(10, Math.min(90, x)), Math.max(10, Math.min(82, y))];
+  }) : [];
+  const routePath = routeSvgPoints.length >= 2 ? `M ${routeSvgPoints[0][0]} ${routeSvgPoints[0][1]} C 42 15, 58 82, ${routeSvgPoints[1][0]} ${routeSvgPoints[1][1]}` : '';
+
+  return <div className={`adventure-globe-codepen-card atlas-${atlasMode}`}>
+    <div className="atlas-mode-toolbar" aria-label="Adventure atlas mode">
+      <button className={atlasMode === 'globe' ? 'active' : ''} onClick={() => setAtlasMode('globe')}>Globe flow</button>
+      <button className={atlasMode === 'detail' ? 'active' : ''} onClick={() => setAtlasMode('detail')}>Trail detail</button>
+    </div>
+    <div ref={chartRef} id="chartdiv" className="adventure-globe-codepen-chart" />
+    {atlasMode === 'detail' && selectedPoint ? <div className="atlas-trail-detail-panel">
+      <div className="section-head compact"><div><h3>Trail detail preview</h3><p className="muted">Offline/Pi-safe pseudo-3D route focus using MapPI3 points, not online ArcGIS runtime.</p></div><span className="pill">detail mode</span></div>
+      <label className="field-line"><span>Focus hike</span><select value={selectedPoint.id} onChange={event => setSelectedPointId(event.target.value)}>{trailPoints.map(point => <option key={point.id} value={point.id}>{point.name}</option>)}</select></label>
+      <div className="atlas-terrain-card">
+        <svg viewBox="0 0 100 100" role="img" aria-label="3D style route corridor preview"><defs><linearGradient id="mappi3Ridge" x1="0" x2="1" y1="0" y2="1"><stop offset="0" stopColor="#214f2a"/><stop offset="0.55" stopColor="#6f8f3a"/><stop offset="1" stopColor="#d5b65c"/></linearGradient></defs><path d="M0 76 C20 58 32 66 45 48 C60 28 76 45 100 22 L100 100 L0 100 Z" fill="url(#mappi3Ridge)" opacity="0.92"/><path d="M0 88 C18 76 34 82 52 66 C70 49 84 57 100 42" fill="none" stroke="rgba(255,255,255,.2)" strokeWidth="1"/><path d={routePath} fill="none" stroke="#f2d25c" strokeWidth="4" strokeLinecap="round" strokeDasharray="5 4"/><circle cx={routeSvgPoints[0]?.[0] || 18} cy={routeSvgPoints[0]?.[1] || 24} r="4" fill="#fff8bd"/><circle cx={routeSvgPoints[1]?.[0] || 82} cy={routeSvgPoints[1]?.[1] || 72} r="4" fill="#9ce36c"/></svg>
+        <div><strong>{selectedPoint.name}</strong><span>{selectedPoint.notes || selectedPoint.kind}</span><small>{selectedPoint.lat.toFixed(5)}, {selectedPoint.lon.toFixed(5)} · map-pack/detail-ready corridor</small></div>
+      </div>
+      <div className="atlas-detail-chips"><span>shaded corridor</span><span>offline geometry</span><span>field-readable markers</span><span>future elevation pack</span></div>
+    </div> : null}
+    {status !== 'ready' ? <div className="adventure-globe-codepen-status">{status}</div> : null}
+  </div>;
 }
