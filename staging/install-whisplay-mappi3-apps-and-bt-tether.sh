@@ -231,6 +231,11 @@ page = 0
 seen_popup_events = set()
 popup_event = None
 popup_until = 0.0
+phone_input_until = 0.0
+phone_input_buffer = ''
+phone_input_sensitive = False
+phone_input_last_seq = 0
+phone_input_status = 'phone keyboard ready'
 snake = {'body': [(4,4),(3,4),(2,4)], 'dir': (1,0), 'food': (6,4), 'score': 0, 'over': False, 'last_emit': 0.0}
 PAGES = ['Buddy Home','Herbie','Field Kit','Compass+Level','Weather+Sky','Network','Safety']
 HERBIE_MOTION_STATE = {'last_accel': None, 'last_at': 0.0, 'hits': [], 'event': None, 'event_until': 0.0, 'peak': 0.0}
@@ -372,6 +377,73 @@ def poll_popup():
         popup_until = time.time() + float(event.get('display_seconds') or 2.8)
         return True
     return False
+
+def poll_phone_input():
+    """Bridge phone/PWA keyboard queue into the Whisplay dashboard loop.
+
+    The phone sends text/password/buttons to /api/command/whisplay-input. The
+    local Whisplay app is allowed to request sensitive payloads over loopback,
+    while remote GETs keep those values redacted.
+    """
+    global phone_input_until, phone_input_buffer, phone_input_sensitive, phone_input_last_seq, phone_input_status, page, popup_until
+    data = api(f'/api/whisplay/input?since={phone_input_last_seq}&include_sensitive=1', timeout=0.45)
+    if data.get('_error') or not data.get('queue'):
+        return False
+    changed = False
+    for item in data.get('queue') or []:
+        try:
+            seq = int(item.get('seq') or 0)
+        except Exception:
+            seq = 0
+        if seq <= phone_input_last_seq:
+            continue
+        phone_input_last_seq = seq
+        kind = str(item.get('kind') or 'text').lower()
+        value = str(item.get('text') if item.get('text') is not None else item.get('value') if item.get('value') is not None else '')
+        if kind == 'clear':
+            phone_input_buffer = ''
+            phone_input_sensitive = False
+            phone_input_status = 'phone input cleared'
+        elif kind in ('text', 'password'):
+            phone_input_buffer += value
+            phone_input_sensitive = phone_input_sensitive or kind == 'password' or bool(item.get('sensitive'))
+            phone_input_status = 'password text received' if phone_input_sensitive else 'text received'
+        elif kind == 'backspace':
+            phone_input_buffer = phone_input_buffer[:-1]
+            phone_input_status = 'backspace'
+        elif kind == 'enter':
+            phone_input_status = 'enter pressed from phone'
+        elif kind == 'escape':
+            phone_input_buffer = ''
+            phone_input_sensitive = False
+            phone_input_status = 'escaped / reset'
+        elif kind in ('left','right','up','down'):
+            if kind in ('right','down'):
+                page += 1
+            else:
+                page -= 1
+            popup_until = 0.0
+            phone_input_status = f'phone nav: {kind}'
+        else:
+            phone_input_status = f'phone key: {kind}'
+        phone_input_until = time.time() + 5.0
+        changed = True
+    return changed
+
+def render_phone_input():
+    shown = ('•' * min(len(phone_input_buffer), 18)) if phone_input_sensitive else phone_input_buffer[-22:]
+    if not shown:
+        shown = 'waiting for phone text'
+    lines = [
+        '+phone keyboard bridge',
+        phone_input_status,
+        f'chars: {len(phone_input_buffer)}',
+        shown,
+        'Enter/backspace supported',
+        'Use direct Wi-Fi save for NM',
+        '~password hidden on display',
+    ]
+    return draw_card('Phone Input', lines, BLUE, 'phone text -> Whisplay prompt')
 
 def render_popup(event):
     etype = event.get('type') or 'game_event'; label = event.get('label') or etype.replace('_',' ')
@@ -727,6 +799,7 @@ def draw_herbie_mood():
     return img
 
 def render():
+    if phone_input_until and time.time() < phone_input_until: return render_phone_input()
     if popup_event and time.time() < popup_until: return render_popup(popup_event)
     title = PAGES[page % len(PAGES)]
     if title == 'Buddy Home':
@@ -755,7 +828,8 @@ def main():
         last = 0
         while running:
             time.sleep(0.12); active = page % len(PAGES)
-            if poll_popup() or (popup_event and time.time() < popup_until) or active in (0,1,2,3,4,5):
+            phone_changed = poll_phone_input()
+            if phone_changed or poll_popup() or (phone_input_until and time.time() < phone_input_until) or (popup_event and time.time() < popup_until) or active in (0,1,2,3,4,5):
                 if active == 0 and time.time() - last < 0.32: continue
                 last = time.time(); show(hw, render())
     finally:

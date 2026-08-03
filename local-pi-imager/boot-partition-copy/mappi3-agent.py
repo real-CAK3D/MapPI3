@@ -1913,12 +1913,24 @@ def _safe_connection_name(ssid, label=None):
         base = 'MapPI3-' + base
     return base[:64]
 
+
+def _wifi_station_ifname(payload=None):
+    """Prefer the AP-STA station interface so phone Wi-Fi saves do not steal the hotspot radio."""
+    requested = str((payload or {}).get('ifname') or (payload or {}).get('device') or '').strip()
+    if requested:
+        return requested
+    for name in ('sta0', 'wlan1', 'wlan0'):
+        if pathlib.Path('/sys/class/net', name).exists():
+            return name
+    return 'wlan0'
+
 def wifi_scan(payload=None):
     payload = payload or {}
     if not pathlib.Path('/usr/bin/nmcli').exists():
         return {'ok': False, 'error': 'nmcli/NetworkManager not installed', 'networks': [], 'saved_wifi': []}
     if payload.get('rescan', True):
-        sh('nmcli radio wifi on; rfkill unblock wifi || true; nmcli device wifi rescan ifname wlan0 2>/dev/null || nmcli device wifi rescan || true', timeout=15)
+        scan_ifname = _wifi_station_ifname(payload)
+        sh('nmcli radio wifi on; rfkill unblock wifi || true; nmcli device wifi rescan ifname ' + shlex.quote(scan_ifname) + ' 2>/dev/null || nmcli device wifi rescan || true', timeout=15)
     raw = _nmcli_lines('-f IN-USE,SSID,SECURITY,SIGNAL,FREQ,BARS device wifi list --rescan no', timeout=8)
     networks = []
     seen = set()
@@ -1951,10 +1963,11 @@ def wifi_save_network(payload=None):
         return {'ok': False, 'error': 'nmcli/NetworkManager not installed; cannot save Wi-Fi credentials on this image yet'}
     name = _safe_connection_name(ssid, label)
     priority = int(payload.get('priority') or 650)
+    ifname = _wifi_station_ifname(payload)
     cmd = 'set -u; nmcli radio wifi on; rfkill unblock wifi || true; '
     cmd += 'nmcli connection delete ' + shlex.quote(name) + ' >/dev/null 2>&1 || true; '
-    cmd += 'nmcli connection add type wifi ifname wlan0 con-name ' + shlex.quote(name) + ' ssid ' + shlex.quote(ssid) + '; '
-    cmd += 'nmcli connection modify ' + shlex.quote(name) + ' connection.autoconnect ' + ('yes' if autoconnect else 'no') + ' connection.autoconnect-priority ' + shlex.quote(str(priority)) + ' ipv4.method auto; '
+    cmd += 'nmcli connection add type wifi ifname ' + shlex.quote(ifname) + ' con-name ' + shlex.quote(name) + ' ssid ' + shlex.quote(ssid) + '; '
+    cmd += 'nmcli connection modify ' + shlex.quote(name) + ' connection.interface-name ' + shlex.quote(ifname) + ' connection.autoconnect ' + ('yes' if autoconnect else 'no') + ' connection.autoconnect-priority ' + shlex.quote(str(priority)) + ' ipv4.method auto; '
     if password:
         cmd += 'nmcli connection modify ' + shlex.quote(name) + ' wifi-sec.key-mgmt wpa-psk wifi-sec.psk ' + shlex.quote(password) + '; '
     else:
@@ -1962,7 +1975,7 @@ def wifi_save_network(payload=None):
     out = sh(cmd, timeout=30)
     st = read_state(); st.setdefault('saved_wifi_profiles', {})[name] = {'ssid': ssid, 'label': label or ssid, 'saved_at': time.time(), 'has_password': bool(password), 'autoconnect': autoconnect}; write_state(st)
     saved = _wifi_saved_connections()
-    return {'ok': out.get('ok'), 'message': f'Saved Wi-Fi profile {name} for SSID {ssid}. Password is stored only in NetworkManager on the Pi and is never returned by the API.', 'name': name, 'ssid': ssid, 'has_password': bool(password), 'output': '[REDACTED]', 'saved_wifi': saved}
+    return {'ok': out.get('ok'), 'message': f'Saved Wi-Fi profile {name} for SSID {ssid} on {ifname}. Password is stored only in NetworkManager on the Pi and is never returned by the API.', 'name': name, 'ssid': ssid, 'ifname': ifname, 'has_password': bool(password), 'output': '[REDACTED]', 'saved_wifi': saved}
 
 def _wifi_saved_connections():
     saved_raw = _nmcli_lines('-f NAME,TYPE,AUTOCONNECT,AUTOCONNECT-PRIORITY connection show')
@@ -2036,9 +2049,11 @@ def wifi_connect_saved(payload=None):
     if name not in known: return {'ok': False, 'error': f'Saved Wi-Fi connection not found: {name}', 'known': known}
     pre = network_status()
     cmd = 'nmcli radio wifi on; rfkill unblock wifi || true; iw dev wlan0 set power_save off 2>/dev/null || true; '
-    if not keep_hotspot:
+    if keep_hotspot:
+        cmd += 'nmcli connection up ' + shlex.quote(name) + '; '
+    else:
         cmd += 'nmcli connection down MapPI3-hotspot || true; sleep 2; '
-    cmd += 'nmcli connection up ' + shlex.quote(name) + '; '
+        cmd += 'nmcli connection up ' + shlex.quote(name) + '; '
     cmd += 'systemctl enable --now ssh.service 2>/dev/null || systemctl enable --now sshd.service 2>/dev/null || true; '
     cmd += 'systemctl enable --now tailscaled 2>/dev/null || true'
     out = sh(cmd, timeout=60)
@@ -2748,22 +2763,24 @@ def disable_captive():
 
 
 def whisplay_input_status(payload=None):
+    payload = payload or {}
     st = read_state()
     queue = st.get('whisplay_input_queue') or []
     try:
-        since = int((payload or {}).get('since') or 0)
+        since = int(payload.get('since') or 0)
     except Exception:
         since = 0
     if since:
         queue = [item for item in queue if int(item.get('seq') or 0) > since]
+    include_sensitive = bool(payload.get('include_sensitive') or payload.get('raw')) and bool(payload.get('_local_loopback'))
     safe_queue = []
     for item in queue[-24:]:
         safe_item = dict(item)
-        if safe_item.get('sensitive'):
+        if safe_item.get('sensitive') and not include_sensitive:
             safe_item['text'] = '[REDACTED]'
             safe_item['value'] = '[REDACTED]'
         safe_queue.append(safe_item)
-    return {'ok': True, 'command': 'whisplay-input-status', 'pending': len(queue), 'last_seq': int(st.get('whisplay_input_seq') or 0), 'queue': safe_queue, 'hint': 'Whisplay/AI helpers can poll /api/whisplay/input?since=N on the Pi hotspot.'}
+    return {'ok': True, 'command': 'whisplay-input-status', 'pending': len(queue), 'last_seq': int(st.get('whisplay_input_seq') or 0), 'queue': safe_queue, 'sensitive_payloads': 'included-loopback-only' if include_sensitive else 'redacted', 'hint': 'Whisplay/AI helpers can poll /api/whisplay/input?since=N on the Pi hotspot.'}
 
 def whisplay_input(payload=None):
     payload = payload or {}
@@ -3742,7 +3759,10 @@ class Handler(http.server.SimpleHTTPRequestHandler):
         if self.path.startswith('/api/whisplay/display/status'): self.json_response(whisplay_display_status()); return
         if self.path.startswith('/api/whisplay/ai/status'): self.json_response(whisplay_ai_status()); return
         if self.path.startswith('/api/whisplay/input'):
-            qs=urllib.parse.parse_qs(urllib.parse.urlparse(self.path).query); self.json_response(whisplay_input_status({k:v[-1] for k,v in qs.items()})); return
+            qs=urllib.parse.parse_qs(urllib.parse.urlparse(self.path).query)
+            payload={k:v[-1] for k,v in qs.items()}
+            payload['_local_loopback'] = self.client_address[0] in ('127.0.0.1', '::1', 'localhost')
+            self.json_response(whisplay_input_status(payload)); return
         if self.path.startswith('/api/sense'): self.json_response({'ok': True, 'sense': sense_snapshot(), 'state': read_state(), 'available_modes': SENSE_MODES, 'time': time.time()}); return
         return super().do_GET()
     def do_DELETE(self):
