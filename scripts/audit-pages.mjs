@@ -69,6 +69,23 @@ async function clickText(text) {
   await new Promise(r => window.setTimeout(r, 120));
   return btn;
 }
+async function openTopTab(top) {
+  const directBottom = [...window.document.querySelectorAll('.bottom-nav .nav-link')].find(btn => norm(btn.textContent) === ({ Overview:'Home', Explore:'Search', Exercise:'Saved', Settings:'Profile' }[top] || top));
+  if (directBottom) {
+    directBottom.dispatchEvent(new window.MouseEvent('click', { bubbles: true, cancelable: true }));
+    await new Promise(r => window.setTimeout(r, 160));
+    return directBottom;
+  }
+  const menu = window.document.querySelector('.hamburger-button');
+  if (!menu) throw new Error('Missing hamburger navigation button');
+  menu.dispatchEvent(new window.MouseEvent('click', { bubbles: true, cancelable: true }));
+  await new Promise(r => window.setTimeout(r, 120));
+  const tabButton = [...window.document.querySelectorAll('.drawer-grid button')].find(btn => norm(btn.querySelector('strong')?.textContent || btn.textContent) === top);
+  if (!tabButton) throw new Error(`Missing hamburger top tab: ${top}`);
+  tabButton.dispatchEvent(new window.MouseEvent('click', { bubbles: true, cancelable: true }));
+  await new Promise(r => window.setTimeout(r, 160));
+  return tabButton;
+}
 async function assertLoads(label, expectedText) {
   await new Promise(r => window.setTimeout(r, 120));
   const body = norm(window.document.body.textContent);
@@ -83,15 +100,13 @@ async function assertLoads(label, expectedText) {
 
 const results = [];
 results.push(await assertLoads('Overview initial', 'Overview'));
+results.push(await assertLoads('Navigation shell', ['MapPI3 Trail OS','Home','Search','Saved','Profile']));
 for (const top of ['Explore','Navigate','Camp','Adventure','Exercise','Survival','Settings']) {
   failures.length = 0;
-  const tabButton = [...window.document.querySelectorAll('.tabs-grid button')].find(btn => norm(btn.textContent) === top);
-  if (!tabButton) throw new Error(`Missing top tab: ${top}`);
-  tabButton.dispatchEvent(new window.MouseEvent('click', { bubbles: true, cancelable: true }));
-  await new Promise(r => window.setTimeout(r, 160));
-  results.push(await assertLoads(`Top tab: ${top}`, top === 'Navigate' ? ['Active hike navigation','Drive GPS'] : top === 'Camp' ? ['Camp','camp mode','Camp Plan'] : top === 'Adventure' ? ['Adventure Timeline','Add event','mobile calm view','Replay + search'] : top === 'Survival' ? ['Survival + MapPI3new','Emergency Mode','Survival Trainer'] : top));
+  await openTopTab(top);
+  results.push(await assertLoads(`Top tab: ${top}`, top === 'Navigate' ? ['Active hike navigation','Drive GPS','Return-to-Car + TrailNav'] : top === 'Camp' ? ['Camp','camp mode','Camp Plan'] : top === 'Adventure' ? ['Adventure Timeline','Add event','mobile calm view','Replay + search'] : top === 'Survival' ? ['Survival + MapPI3new','Emergency Mode','Survival Trainer'] : top === 'Settings' ? ['Pi connection summary','Network','Hardware'] : top));
 }
-await clickText('Adventure');
+await openTopTab('Adventure');
 await clickText('Play replay');
 results.push(await assertLoads('Adventure replay controls', ['Replay + search','Play replay','Speed']));
 const searchInput = [...window.document.querySelectorAll('input')].find(el => String(el.placeholder || '').includes('Search notes'));
@@ -101,28 +116,28 @@ valueSetter.call(searchInput, 'water');
 searchInput.dispatchEvent(new window.Event('input', { bubbles: true }));
 await new Promise(r => window.setTimeout(r, 160));
 results.push(await assertLoads('Adventure search results', ['Water','water','Search']));
-await clickText('Survival');
+await openTopTab('Survival');
 for (const sub of ['Emergency Mode','Survival Trainer']) {
   failures.length = 0;
   await clickText(sub);
   const expect = sub === 'Emergency Mode' ? ['Decimal degrees','DMS','UTM','Save timeline emergency event','MapPI3 does not contact 911/SAR'] : ['Survival trainer','Lost trail scenario','First aid decision','Never eat wild foods'];
   results.push(await assertLoads(`Survival subtab: ${sub}`, expect));
 }
-await clickText('Explore');
+await openTopTab('Explore');
 for (const sub of ['Routes','Weather','Plan','Pack','Brief']) {
   failures.length = 0;
   await clickText(sub);
   const expect = sub === 'Routes' ? 'Route results' : sub === 'Weather' ? 'Weather center' : sub === 'Plan' ? ['Trail Draw Zone','No trail is selected yet'] : sub === 'Pack' ? 'Pack bags' : 'Hike brief + launch';
   results.push(await assertLoads(`Explore subtab: ${sub}`, expect));
 }
-await clickText('Navigate');
+await openTopTab('Navigate');
 for (const sub of ['Current Hike','Drive GPS','Field Kit','Bluetooth','Sense HAT','Sky','Games']) {
   failures.length = 0;
   await clickText(sub);
   const expect = sub === 'Current Hike' ? 'Active hike navigation' : sub;
   results.push(await assertLoads(`Navigate subtab: ${sub}`, expect));
 }
-await clickText('Camp');
+await openTopTab('Camp');
 for (const sub of ['Camp Plan','Ambiance','Weather Watch','Area Risks','Guide AI','Nature AI']) {
   failures.length = 0;
   await clickText(sub);
