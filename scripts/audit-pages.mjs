@@ -70,7 +70,7 @@ async function clickText(text) {
   return btn;
 }
 async function openTopTab(top) {
-  const directBottom = [...window.document.querySelectorAll('.bottom-nav .nav-link')].find(btn => norm(btn.textContent) === ({ Overview:'Home', Explore:'Search', Exercise:'Saved', Settings:'Profile' }[top] || top));
+  const directBottom = [...window.document.querySelectorAll('.bottom-nav .nav-link')].find(btn => norm(btn.textContent) === ({ Overview:'Home', Explore:'Search', Exercise:'Saved', Settings:'Settings' }[top] || top));
   if (directBottom) {
     directBottom.dispatchEvent(new window.MouseEvent('click', { bubbles: true, cancelable: true }));
     await new Promise(r => window.setTimeout(r, 160));
@@ -100,11 +100,13 @@ async function assertLoads(label, expectedText) {
 
 const results = [];
 results.push(await assertLoads('Overview initial', 'Overview'));
-results.push(await assertLoads('Navigation shell', ['MapPI3 Trail OS','Home','Search','Saved','Profile']));
+results.push(await assertLoads('Navigation shell', ['MapPI3 Trail OS','Home','Search','Saved','Settings']));
+const bottomLabels = [...window.document.querySelectorAll('.bottom-nav .nav-link')].map(btn => norm(btn.textContent));
+results.push({ label:'Bottom nav IA', ok: JSON.stringify(bottomLabels) === JSON.stringify(['Home','Search','Saved','Settings']), bottomLabels, snippet: bottomLabels.join(' | ') });
 for (const top of ['Explore','Navigate','Camp','Adventure','Exercise','Survival','Settings']) {
   failures.length = 0;
   await openTopTab(top);
-  results.push(await assertLoads(`Top tab: ${top}`, top === 'Navigate' ? ['Active hike navigation','Drive GPS','Return-to-Car + TrailNav'] : top === 'Camp' ? ['Camp','camp mode','Camp Plan'] : top === 'Adventure' ? ['Adventure Timeline','Add event','mobile calm view','Replay + search'] : top === 'Survival' ? ['Survival + MapPI3new','Emergency Mode','Survival Trainer'] : top === 'Settings' ? ['Pi connection summary','Network','Hardware'] : top));
+  results.push(await assertLoads(`Top tab: ${top}`, top === 'Navigate' ? ['Active hike navigation','Drive GPS','Return-to-Car + TrailNav','Detailed map intelligence','Guide AI'] : top === 'Camp' ? ['Camp','camp mode','Camp Plan','Games'] : top === 'Adventure' ? ['Adventure Timeline','Add event','mobile calm view','Replay + search'] : top === 'Survival' ? ['Survival + MapPI3new','Emergency Mode','Survival Trainer'] : top === 'Settings' ? ['Pi connection summary','Network','Hardware','Bluetooth','Sense HAT'] : top));
 }
 await openTopTab('Adventure');
 await clickText('Play replay');
@@ -131,18 +133,25 @@ for (const sub of ['Routes','Weather','Plan','Pack','Brief']) {
   results.push(await assertLoads(`Explore subtab: ${sub}`, expect));
 }
 await openTopTab('Navigate');
-for (const sub of ['Current Hike','Drive GPS','Field Kit','Bluetooth','Sense HAT','Sky','Games']) {
+for (const sub of ['Current Hike','Drive GPS','Field Kit','Sky','Guide AI']) {
   failures.length = 0;
   await clickText(sub);
-  const expect = sub === 'Current Hike' ? 'Active hike navigation' : sub;
+  const expect = sub === 'Current Hike' ? ['Active hike navigation','Detailed map intelligence','Legend','3D view'] : sub === 'Guide AI' ? ['Navigate Guide AI','Offline packs'] : sub;
   results.push(await assertLoads(`Navigate subtab: ${sub}`, expect));
 }
 await openTopTab('Camp');
-for (const sub of ['Camp Plan','Ambiance','Weather Watch','Area Risks','Guide AI','Nature AI']) {
+for (const sub of ['Camp Plan','Games','Ambiance','Weather Watch','Area Risks','Nature AI']) {
   failures.length = 0;
   await clickText(sub);
-  const expect = sub === 'Camp Plan' ? ['Camp','camp mode'] : sub === 'Ambiance' ? 'Camp Ambiance' : sub === 'Weather Watch' ? 'Weather center' : sub === 'Area Risks' ? 'Survival' : sub === 'Guide AI' ? 'Camp Guide AI' : 'Nature AI';
+  const expect = sub === 'Camp Plan' ? ['Camp','camp mode'] : sub === 'Games' ? ['Mini games','Sense HAT joystick'] : sub === 'Ambiance' ? 'Camp Ambiance' : sub === 'Weather Watch' ? 'Weather center' : sub === 'Area Risks' ? 'Survival' : 'Nature AI';
   results.push(await assertLoads(`Camp subtab: ${sub}`, expect));
+}
+await openTopTab('Settings');
+for (const sub of ['Bluetooth','Sense HAT']) {
+  failures.length = 0;
+  await clickText(sub);
+  const expect = sub === 'Bluetooth' ? ['Bluetooth manager','PAN'] : ['Sense HAT','LED matrix'];
+  results.push(await assertLoads(`Settings subtab: ${sub}`, expect));
 }
 
 const failed = results.filter(r => !r.ok);
