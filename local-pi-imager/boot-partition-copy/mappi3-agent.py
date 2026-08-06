@@ -513,6 +513,8 @@ def sense_live_accel(sense, orientation=None, st=None):
         display_ax, display_ay = ax, ay
     plane = math.sqrt(display_ax*display_ax + display_ay*display_ay)
     raw_plane = math.sqrt(raw_ax*raw_ax + raw_ay*raw_ay)
+    live_roll = math.degrees(math.atan2(display_ax, max(0.001, math.sqrt(display_ay*display_ay + az*az))))
+    live_pitch = math.degrees(math.atan2(-display_ay, max(0.001, math.sqrt(display_ax*display_ax + az*az))))
     return {
         'raw_accel': {'x': round(raw_ax,3), 'y': round(raw_ay,3), 'z': round(raw_az,3)},
         'display_accel': {'x': round(display_ax,3), 'y': round(display_ay,3), 'z': round(raw_az,3)},
@@ -523,6 +525,8 @@ def sense_live_accel(sense, orientation=None, st=None):
         'tilt_degrees': round(math.degrees(math.atan2(plane, max(0.001, abs(az)))),1),
         'raw_tilt_degrees': round(math.degrees(math.atan2(raw_plane, max(0.001, abs(raw_az)))),1),
         'raw_error': raw_error,
+        'live_roll': round(live_roll,1),
+        'live_pitch': round(live_pitch,1),
         'source': 'sense.get_accelerometer_raw every display mode'
     }
 def draw_fire(sense, tick, st=None):
@@ -1209,10 +1213,14 @@ def sense_loop():
                     level_y = round(((raw_level_y + 180.0) % 360.0) - 180.0, 1)
                 except Exception:
                     level_x = level_y = 0.0
-                level_status = 'level' if max(abs(level_x), abs(level_y)) <= 4 else ('tilted' if max(abs(level_x), abs(level_y)) <= 15 else 'steep')
-                orient.update({'magnetic_heading': round(float(magnetic_yaw or 0),1), 'north_heading': round(float(yaw or 0),1), 'cardinal': compass_name(yaw), 'level_x': level_x, 'level_y': level_y, 'level_status': level_status})
                 accel = sense_live_accel(sense, orient, st)
-                with SENSE_LOCK: SENSE_CACHE.update({'ok': True, 'mode': mode, 'available_modes': SENSE_MODES, 'orientation': orient, 'raw_accel': accel.get('raw_accel'), 'display_accel': accel.get('display_accel'), 'normalized_accel': accel.get('normalized_accel'), 'accel_axis_map': accel.get('axis_map'), 'accel_plane_magnitude': accel.get('plane_magnitude'), 'accel_tilt_degrees': accel.get('tilt_degrees'), 'accel_raw_error': accel.get('raw_error'), 'sensor_fallback': sensor_fallback, 'sensor_error': sensor_error, 'compass': yaw, 'magnetic_compass': magnetic_yaw, 'compass_cardinal': compass_name(yaw), 'temp': temp_f, 'humidity': hum, 'pressure': pressure, 'gps': gps, 'message': (f'{mode} display active (sensor fallback: {sensor_error})' if sensor_fallback else f'{mode} display active'), 'updated': time.time()})
+                live_roll = float(accel.get('live_roll') if accel.get('live_roll') is not None else level_x)
+                live_pitch = float(accel.get('live_pitch') if accel.get('live_pitch') is not None else level_y)
+                level_x = round(live_roll, 1)
+                level_y = round(live_pitch, 1)
+                level_status = 'level' if max(abs(level_x), abs(level_y)) <= 4 else ('tilted' if max(abs(level_x), abs(level_y)) <= 15 else 'steep')
+                orient.update({'roll': live_roll, 'pitch': live_pitch, 'live_roll': live_roll, 'live_pitch': live_pitch, 'live_yaw': round(float(yaw or 0),1), 'magnetic_heading': round(float(magnetic_yaw or 0),1), 'north_heading': round(float(yaw or 0),1), 'cardinal': compass_name(yaw), 'level_x': level_x, 'level_y': level_y, 'level_status': level_status, 'source': 'accelerometer+compass live'})
+                with SENSE_LOCK: SENSE_CACHE.update({'ok': True, 'mode': mode, 'available_modes': SENSE_MODES, 'orientation': orient, 'raw_accel': accel.get('raw_accel'), 'display_accel': accel.get('display_accel'), 'normalized_accel': accel.get('normalized_accel'), 'accel_axis_map': accel.get('axis_map'), 'accel_plane_magnitude': accel.get('plane_magnitude'), 'accel_tilt_degrees': accel.get('tilt_degrees'), 'accel_raw_error': accel.get('raw_error'), 'accel_roll': accel.get('live_roll'), 'accel_pitch': accel.get('live_pitch'), 'sensor_fallback': sensor_fallback, 'sensor_error': sensor_error, 'compass': yaw, 'magnetic_compass': magnetic_yaw, 'compass_cardinal': compass_name(yaw), 'temp': temp_f, 'humidity': hum, 'pressure': pressure, 'gps': gps, 'message': (f'{mode} display active (sensor fallback: {sensor_error})' if sensor_fallback else f'{mode} display active'), 'updated': time.time()})
             except Exception as e:
                 with SENSE_LOCK: SENSE_CACHE.update({'ok': False, 'mode': mode, 'message': f'Sense HAT read/display error: {e}', 'updated': time.time()})
             tick+=1
