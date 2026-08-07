@@ -129,7 +129,7 @@ await openTopTab('Explore');
 for (const sub of ['Routes','Weather','Plan','Pack','Brief']) {
   failures.length = 0;
   await clickText(sub);
-  const expect = sub === 'Routes' ? 'Route results' : sub === 'Weather' ? 'Weather center' : sub === 'Plan' ? ['Trail Draw Zone','No trail is selected yet'] : sub === 'Pack' ? 'Pack bags' : 'Hike brief + launch';
+  const expect = sub === 'Routes' ? ['Route results','Route + place results'] : sub === 'Weather' ? 'Weather center' : sub === 'Plan' ? ['Trail Draw Zone','No trail is selected yet'] : sub === 'Pack' ? 'Pack bags' : 'Hike brief + launch';
   results.push(await assertLoads(`Explore subtab: ${sub}`, expect));
 }
 await openTopTab('Navigate');
