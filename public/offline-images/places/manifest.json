@@ -1,0 +1,131 @@
+{
+  "schema": "mappi3.placeImages.v1",
+  "generatedAt": "2026-08-08",
+  "policy": "Use only user-owned, generated placeholders, public-domain, or Creative Commons/free-use images with source/license metadata. Do not bundle random copyrighted Google image results.",
+  "images": [
+    {
+      "id": "screw-auger-falls",
+      "local_path": "/offline-images/places/screw-auger-falls.jpg",
+      "title": "File:Screw Auger Falls - Maine - 8184844787.jpg",
+      "source": "https://commons.wikimedia.org/wiki/File:Screw_Auger_Falls_-_Maine_-_8184844787.jpg",
+      "license": "CC BY-SA 2.0",
+      "artist": "Dougtone",
+      "credit": "https://www.flickr.com/photos/7327243@N05/8184844787/",
+      "bytes": 493523
+    },
+    {
+      "id": "grafton-notch-state-park",
+      "local_path": "/offline-images/places/grafton-notch-state-park.jpg",
+      "title": "File:Grafton Notch from Old Speck.jpg",
+      "source": "https://commons.wikimedia.org/wiki/File:Grafton_Notch_from_Old_Speck.jpg",
+      "license": "CC BY-SA 4.0",
+      "artist": "Jessica Casey",
+      "credit": "Own work",
+      "bytes": 282637
+    },
+    {
+      "id": "popham-beach-state-park",
+      "local_path": "/offline-images/places/popham-beach-state-park.jpg",
+      "title": "File:Popham beach state park 09.07.2012 23-22-01.jpg",
+      "source": "https://commons.wikimedia.org/wiki/File:Popham_beach_state_park_09.07.2012_23-22-01.jpg",
+      "license": "CC BY 3.0",
+      "artist": "Dirk Ingo Franke",
+      "credit": "Own work",
+      "bytes": 137279
+    },
+    {
+      "id": "camden-hills-state-park",
+      "local_path": "/offline-images/places/camden-hills-state-park.jpg",
+      "title": "File:View of Cadillac Mountain from Camden Hills State Park, Maine (44851081095).jpg",
+      "source": "https://commons.wikimedia.org/wiki/File:View_of_Cadillac_Mountain_from_Camden_Hills_State_Park,_Maine_(44851081095).jpg",
+      "license": "CC BY 2.0",
+      "artist": "Susan Bell",
+      "credit": "View of Cadillac Mountain from Camden Hills State Park, Maine",
+      "bytes": 99092
+    },
+    {
+      "id": "sebago-lake-state-park",
+      "local_path": "/offline-images/places/sebago-lake-state-park.jpg",
+      "title": "File:Sebago-state-park1.jpg",
+      "source": "https://commons.wikimedia.org/wiki/File:Sebago-state-park1.jpg",
+      "license": "CC BY-SA 3.0",
+      "artist": "HarryOTwo at English Wikipedia",
+      "credit": "Transferred from en.wikipedia to Commons by Pauk using CommonsHelper.",
+      "bytes": 134883
+    }
+  ],
+  "categoryPlaceholders": [
+    {
+      "id": "category-waterfall",
+      "local_path": "/offline-images/places/category-waterfall.svg",
+      "title": "Waterfall",
+      "source": "MapPI3 generated placeholder",
+      "license": "MapPI3 project asset",
+      "type": "category-placeholder"
+    },
+    {
+      "id": "category-swimming-hole",
+      "local_path": "/offline-images/places/category-swimming-hole.svg",
+      "title": "Swimming hole",
+      "source": "MapPI3 generated placeholder",
+      "license": "MapPI3 project asset",
+      "type": "category-placeholder"
+    },
+    {
+      "id": "category-cave",
+      "local_path": "/offline-images/places/category-cave.svg",
+      "title": "Cave / gorge",
+      "source": "MapPI3 generated placeholder",
+      "license": "MapPI3 project asset",
+      "type": "category-placeholder"
+    },
+    {
+      "id": "category-state-park",
+      "local_path": "/offline-images/places/category-state-park.svg",
+      "title": "State park",
+      "source": "MapPI3 generated placeholder",
+      "license": "MapPI3 project asset",
+      "type": "category-placeholder"
+    },
+    {
+      "id": "category-beach",
+      "local_path": "/offline-images/places/category-beach.svg",
+      "title": "Beach",
+      "source": "MapPI3 generated placeholder",
+      "license": "MapPI3 project asset",
+      "type": "category-placeholder"
+    },
+    {
+      "id": "category-covered-bridge",
+      "local_path": "/offline-images/places/category-covered-bridge.svg",
+      "title": "Covered bridge",
+      "source": "MapPI3 generated placeholder",
+      "license": "MapPI3 project asset",
+      "type": "category-placeholder"
+    },
+    {
+      "id": "category-trail-system",
+      "local_path": "/offline-images/places/category-trail-system.svg",
+      "title": "Trail system",
+      "source": "MapPI3 generated placeholder",
+      "license": "MapPI3 project asset",
+      "type": "category-placeholder"
+    },
+    {
+      "id": "category-overnight-shelter",
+      "local_path": "/offline-images/places/category-overnight-shelter.svg",
+      "title": "Overnight shelter",
+      "source": "MapPI3 generated placeholder",
+      "license": "MapPI3 project asset",
+      "type": "category-placeholder"
+    },
+    {
+      "id": "category-campground",
+      "local_path": "/offline-images/places/category-campground.svg",
+      "title": "Campground",
+      "source": "MapPI3 generated placeholder",
+      "license": "MapPI3 project asset",
+      "type": "category-placeholder"
+    }
+  ]
+}

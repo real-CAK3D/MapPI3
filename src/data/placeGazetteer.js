@@ -10,7 +10,52 @@ export const placeDataCoverage = {
   ]
 };
 
-export const outdoorPlaceGazetteer = [
+
+export const PLACE_CATEGORY_MEDIA = {
+  waterfall: { hero:'/offline-images/places/category-waterfall.svg', alt:'MapPI3 waterfall category fallback image', source:'MapPI3 generated placeholder', license:'MapPI3 project asset', kind:'category-fallback' },
+  'swimming-hole': { hero:'/offline-images/places/category-swimming-hole.svg', alt:'MapPI3 swimming hole category fallback image', source:'MapPI3 generated placeholder', license:'MapPI3 project asset', kind:'category-fallback' },
+  cave: { hero:'/offline-images/places/category-cave.svg', alt:'MapPI3 cave and gorge category fallback image', source:'MapPI3 generated placeholder', license:'MapPI3 project asset', kind:'category-fallback' },
+  'state-park': { hero:'/offline-images/places/category-state-park.svg', alt:'MapPI3 state park category fallback image', source:'MapPI3 generated placeholder', license:'MapPI3 project asset', kind:'category-fallback' },
+  beach: { hero:'/offline-images/places/category-beach.svg', alt:'MapPI3 beach category fallback image', source:'MapPI3 generated placeholder', license:'MapPI3 project asset', kind:'category-fallback' },
+  'covered-bridge': { hero:'/offline-images/places/category-covered-bridge.svg', alt:'MapPI3 covered bridge category fallback image', source:'MapPI3 generated placeholder', license:'MapPI3 project asset', kind:'category-fallback' },
+  'trail-system': { hero:'/offline-images/places/category-trail-system.svg', alt:'MapPI3 trail system category fallback image', source:'MapPI3 generated placeholder', license:'MapPI3 project asset', kind:'category-fallback' },
+  'overnight-shelter': { hero:'/offline-images/places/category-overnight-shelter.svg', alt:'MapPI3 overnight shelter category fallback image', source:'MapPI3 generated placeholder', license:'MapPI3 project asset', kind:'category-fallback' },
+  campground: { hero:'/offline-images/places/category-campground.svg', alt:'MapPI3 campground category fallback image', source:'MapPI3 generated placeholder', license:'MapPI3 project asset', kind:'category-fallback' }
+};
+
+export const PLACE_PHOTO_MEDIA = {
+  'poi-screw-auger-falls-me': { hero:'/offline-images/places/screw-auger-falls.jpg', alt:'Screw Auger Falls in Grafton Notch', source:'https://commons.wikimedia.org/wiki/File:Screw_Auger_Falls_-_Maine_-_8184844787.jpg', license:'CC BY-SA 2.0 · Dougtone', kind:'real-photo' },
+  'poi-grafton-notch-state-park-me': { hero:'/offline-images/places/grafton-notch-state-park.jpg', alt:'Grafton Notch State Park trail landscape', source:'https://commons.wikimedia.org/wiki/File:Grafton_Notch_from_Old_Speck.jpg', license:'CC BY-SA 4.0 · Jessica Casey', kind:'real-photo' },
+  'poi-popham-beach-state-park-me': { hero:'/offline-images/places/popham-beach-state-park.jpg', alt:'Popham Beach State Park coast', source:'https://commons.wikimedia.org/wiki/File:Popham_beach_state_park_09.07.2012_23-22-01.jpg', license:'CC BY 3.0 · Dirk Ingo Franke', kind:'real-photo' },
+  'poi-camden-hills-state-park-me': { hero:'/offline-images/places/camden-hills-state-park.jpg', alt:'Camden Hills State Park overlook', source:'https://commons.wikimedia.org/wiki/File:View_of_Cadillac_Mountain_from_Camden_Hills_State_Park,_Maine_(44851081095).jpg', license:'CC BY 2.0 · Susan Bell', kind:'real-photo' },
+  'poi-sebago-lake-state-park-me': { hero:'/offline-images/places/sebago-lake-state-park.jpg', alt:'Sebago Lake State Park water and shore', source:'https://commons.wikimedia.org/wiki/File:Sebago-state-park1.jpg', license:'CC BY-SA 3.0 · HarryOTwo', kind:'real-photo' }
+};
+
+export function placeCategoryKey(place = {}) {
+  const text = [place.category, ...(place.tags || [])].filter(Boolean).join(' ').toLowerCase();
+  if (/waterfall|falls/.test(text)) return 'waterfall';
+  if (/swimming|pool/.test(text)) return 'swimming-hole';
+  if (/cave|gorge|notch/.test(text)) return 'cave';
+  if (/beach|coast|seawall/.test(text)) return 'beach';
+  if (/covered|wooden|bridge|footbridge/.test(text)) return 'covered-bridge';
+  if (/shelter|lean-to|hut/.test(text)) return 'overnight-shelter';
+  if (/campground|campsite|camp/.test(text)) return 'campground';
+  if (/state park|national park|preserve|public land/.test(text)) return 'state-park';
+  if (/trail|appalachian|walking|hiking/.test(text)) return 'trail-system';
+  return 'trail-system';
+}
+
+export function mediaForPlace(place = {}) {
+  const direct = place.media || PLACE_PHOTO_MEDIA[place.id];
+  if (direct) return { ...direct, needsPhoto:false, categoryKey:placeCategoryKey(place) };
+  const categoryKey = placeCategoryKey(place);
+  const fallback = PLACE_CATEGORY_MEDIA[categoryKey] || PLACE_CATEGORY_MEDIA['trail-system'];
+  return { ...fallback, needsPhoto:true, categoryKey };
+}
+
+export function hydratePlaceMedia(place = {}) { return { ...place, media:mediaForPlace(place) }; }
+
+const outdoorPlaceGazetteerSeed = [
   { id:'poi-rattlesnake-pool-me', name:'Rattlesnake Pool', category:'swimming hole', region:'Western Maine / Evans Notch', place:'Stone House Road / Blueberry Mountain area, Maine', lat:44.2488, lon:-70.9693, overnight:false, access:'verify seasonal access and land rules', source:'MapPI3 requested seed', tags:['pool','swimming hole','water','evans notch','blueberry mountain','western maine'] },
   { id:'poi-emerald-pool-nh', name:'Emerald Pool', category:'swimming hole', region:'White Mountains / Pinkham Notch', place:'Peabody River / Appalachian Trail area, New Hampshire', lat:44.2574, lon:-71.2458, overnight:false, access:'verify current trail and water safety', source:'MapPI3 requested seed', tags:['pool','swimming hole','water','appalachian trail','pinkham notch','white mountains'] },
   { id:'poi-moose-cave-me', name:'Moose Cave', category:'cave / gorge', region:'Grafton Notch / Mahoosucs', place:'Grafton Notch State Park, Maine', lat:44.5902, lon:-70.9477, overnight:false, access:'state park rules; rock/gorge caution', source:'MapPI3 requested seed', tags:['moose caves','moose cave','cave','gorge','grafton notch','state park'] },
@@ -55,3 +100,5 @@ export const outdoorPlaceGazetteer = [
   { id:'poi-ethan-pond-shelter-nh', name:'Ethan Pond Shelter / Campsite', category:'overnight shelter', region:'White Mountains', place:'Appalachian Trail, New Hampshire', lat:44.164, lon:-71.461, overnight:true, access:'WMNF/AT campsite rules; verify current status', source:'MapPI3 starter gazetteer', tags:['overnight','shelter','campsite','appalachian trail','white mountains'] },
   { id:'poi-hermit-lake-shelters-nh', name:'Hermit Lake Shelters', category:'overnight shelter', region:'Mount Washington / Tuckerman Ravine', place:'White Mountain National Forest, New Hampshire', lat:44.258, lon:-71.285, overnight:true, access:'reservation/fee/season rules; alpine caution', source:'MapPI3 starter gazetteer', tags:['overnight','shelter','tuckerman ravine','mount washington','hiking trails'] }
 ];
+
+export const outdoorPlaceGazetteer = outdoorPlaceGazetteerSeed.map(hydratePlaceMedia);

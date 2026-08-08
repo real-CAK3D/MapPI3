@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="900" height="540" viewBox="0 0 900 540" role="img" aria-label="MapPI3 Campground placeholder">
+  <defs>
+    <linearGradient id="g" x1="0" x2="1" y1="0" y2="1"><stop offset="0" stop-color="#2b1a0d"/><stop offset="1" stop-color="#ffca68" stop-opacity=".72"/></linearGradient>
+    <radialGradient id="r" cx=".25" cy=".2" r=".9"><stop offset="0" stop-color="#ffffff" stop-opacity=".28"/><stop offset="1" stop-color="#000000" stop-opacity="0"/></radialGradient>
+  </defs>
+  <rect width="900" height="540" fill="url(#g)"/>
+  <rect width="900" height="540" fill="url(#r)"/>
+  <path d="M0 394 C135 326 243 432 379 360 C523 284 655 346 900 252 L900 540 L0 540 Z" fill="#06140e" opacity=".46"/>
+  <path d="M0 456 C155 402 287 500 443 430 C601 358 716 424 900 356 L900 540 L0 540 Z" fill="#f7ffe9" opacity=".12"/>
+  <circle cx="735" cy="118" r="72" fill="#fff7cf" opacity=".22"/>
+  <text x="64" y="176" font-family="Inter, Arial, sans-serif" font-size="86">🔥</text>
+  <text x="64" y="270" font-family="Inter, Arial, sans-serif" font-size="54" font-weight="900" fill="#f5ffe9">Campground</text>
+  <text x="66" y="326" font-family="Inter, Arial, sans-serif" font-size="24" font-weight="700" fill="#e1f6d6" opacity=".92">MapPI3 offline category image</text>
+  <text x="66" y="364" font-family="Inter, Arial, sans-serif" font-size="20" fill="#e1f6d6" opacity=".72">Drop a verified free-use photo here later.</text>
+</svg>

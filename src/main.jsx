@@ -1,7 +1,7 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { createRoot } from 'react-dom/client';
 import { primaryRoutePack, primaryWaypoints, seedRoutes } from './data/routePacks.js';
-import { outdoorPlaceGazetteer, placeDataCoverage } from './data/placeGazetteer.js';
+import { mediaForPlace, outdoorPlaceGazetteer, placeDataCoverage } from './data/placeGazetteer.js';
 import { survivalManualPages } from './data/survivalManual.js';
 import { buildAdventureTimeline, defaultTimelineLayerState, TIMELINE_LAYERS, timelineCategoryMeta } from './data/timelineSamples.js';
 import { addTimelineGpsSample, loadTimelineArchive, saveTimelineArchive, seedTimelineRangesIfEmpty, upsertTimelineEvent } from './data/timelineStorage.js';
@@ -908,7 +908,20 @@ function RouteCard({ route, selectedRoute, setSelectedRoute, onStartRoute, onDri
 function PlaceResultCard({ item, onDriveTo, setSelectedRoute }) {
   const { place, distance } = item;
   const linkedRoute = place.linkedRoute;
-  return <article className="place-card"><div className="route-card-head"><div><h3>{place.name}</h3><p>{place.category} · {place.region || place.place}</p></div><Pill tone={placeTone(place)}>{place.overnight ? 'overnight' : 'place'}</Pill></div><p className="muted">{place.summary || place.access || 'Outdoor place result from the offline MapPI3 gazetteer. Verify access and conditions before field use.'}</p><div className="route-meta"><span>{Number.isFinite(distance) ? `${distance.toFixed(1)} mi away` : 'distance unknown'}</span><span>{place.source || 'starter gazetteer'}</span><span>{place.place || place.region}</span></div><div className="tag-row"><Pill>{place.category}</Pill>{place.overnight && <Pill tone="warn">overnight/camp check</Pill>}{(place.tags || []).slice(0, 6).map(t => <Pill key={t}>{t}</Pill>)}</div><div className="button-row"><button className="ghost small" onClick={() => onDriveTo && onDriveTo(placeDriveTarget(place))}>Drive / pin</button>{linkedRoute && <button className="primary small" onClick={() => setSelectedRoute(linkedRoute)}>Open route card</button>}</div></article>;
+  const media = place.media || mediaForPlace(place);
+  const licenseLabel = media.needsPhoto ? 'photo needed · safe fallback' : media.license;
+  return <article className={`place-card photo-ready ${media.needsPhoto ? 'needs-photo' : 'has-photo'}`}>
+    <div className="place-photo-wrap">
+      <img className="place-photo" src={media.hero} alt={media.alt || `${place.name} outdoor place preview`} loading="lazy" />
+      <div className="place-photo-badges"><Pill tone={media.needsPhoto ? 'warn' : 'online'}>{media.needsPhoto ? 'fallback art' : 'free-use photo'}</Pill><Pill>{licenseLabel}</Pill></div>
+    </div>
+    <div className="route-card-head"><div><h3>{place.name}</h3><p>{place.category} · {place.region || place.place}</p></div><Pill tone={placeTone(place)}>{place.overnight ? 'overnight' : 'place'}</Pill></div>
+    <p className="muted">{place.summary || place.access || 'Outdoor place result from the offline MapPI3 gazetteer. Verify access and conditions before field use.'}</p>
+    <div className="route-meta"><span>{Number.isFinite(distance) ? `${distance.toFixed(1)} mi away` : 'distance unknown'}</span><span>{place.source || 'starter gazetteer'}</span><span>{place.place || place.region}</span></div>
+    <div className="place-attribution"><strong>{media.needsPhoto ? 'Ready for verified photo' : 'Image attribution'}</strong><span>{media.needsPhoto ? 'Generated MapPI3 category art until we add a free-use/source-verified local photo.' : `${media.source || 'open image source'} · ${media.license || 'open license'}`}</span></div>
+    <div className="tag-row"><Pill>{place.category}</Pill>{place.overnight && <Pill tone="warn">overnight/camp check</Pill>}{(place.tags || []).slice(0, 6).map(t => <Pill key={t}>{t}</Pill>)}</div>
+    <div className="button-row"><button className="ghost small" onClick={() => onDriveTo && onDriveTo(placeDriveTarget(place))}>Drive / pin</button>{linkedRoute && <button className="primary small" onClick={() => setSelectedRoute(linkedRoute)}>Open route card</button>}</div>
+  </article>;
 }
 function Explore({ routes, allRoutes = routes, places = [], originPoint = localHome, searchRadiusMiles = 120, onDownload, searchQuery, selectedRoute, setSelectedRoute, onStartRoute, onDriveTo, onExportRouteGpx, onDeleteOfflinePack, secure, conditions }) {
   const [focusedArea, setFocusedArea] = useState('');
