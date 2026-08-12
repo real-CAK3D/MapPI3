@@ -62,6 +62,8 @@ await new Promise(r => window.setTimeout(r, 500));
 
 function norm(s) { return String(s || '').replace(/\s+/g, ' ').trim(); }
 function buttonsByText(text) { return [...window.document.querySelectorAll('button,a')].filter(el => norm(el.textContent).includes(text)); }
+const primaryBottomByTop = { Overview:'Home', Explore:'Search', Exercise:'Saved', Navigate:'Map', Survival:'Guide', Settings:'Settings' };
+const expectedBottomLabels = ['Home','Search','Saved','Map','Health','Guide','Settings'];
 async function clickText(text) {
   const btn = buttonsByText(text)[0];
   if (!btn) throw new Error(`Missing clickable text: ${text}`);
@@ -70,7 +72,7 @@ async function clickText(text) {
   return btn;
 }
 async function openTopTab(top) {
-  const directBottom = [...window.document.querySelectorAll('.bottom-nav .nav-link')].find(btn => norm(btn.textContent) === ({ Overview:'Home', Explore:'Search', Exercise:'Saved', Settings:'Settings' }[top] || top));
+  const directBottom = [...window.document.querySelectorAll('.bottom-nav .nav-link')].find(btn => norm(btn.textContent) === (primaryBottomByTop[top] || top));
   if (directBottom) {
     directBottom.dispatchEvent(new window.MouseEvent('click', { bubbles: true, cancelable: true }));
     await new Promise(r => window.setTimeout(r, 160));
@@ -100,9 +102,9 @@ async function assertLoads(label, expectedText) {
 
 const results = [];
 results.push(await assertLoads('Overview initial', 'Overview'));
-results.push(await assertLoads('Navigation shell', ['MapPI3 Trail OS','Home','Search','Saved','Settings']));
+results.push(await assertLoads('Navigation shell', ['MapPI3 Trail OS','Home','Search','Saved','Map','Health','Guide','Settings']));
 const bottomLabels = [...window.document.querySelectorAll('.bottom-nav .nav-link')].map(btn => norm(btn.textContent));
-results.push({ label:'Bottom nav IA', ok: JSON.stringify(bottomLabels) === JSON.stringify(['Home','Search','Saved','Settings']), bottomLabels, snippet: bottomLabels.join(' | ') });
+results.push({ label:'Bottom nav IA', ok: JSON.stringify(bottomLabels) === JSON.stringify(expectedBottomLabels), bottomLabels, snippet: bottomLabels.join(' | ') });
 for (const top of ['Explore','Navigate','Camp','Adventure','Exercise','Survival','Settings']) {
   failures.length = 0;
   await openTopTab(top);
@@ -133,10 +135,10 @@ for (const sub of ['Routes','Weather','Plan','Pack','Brief']) {
   results.push(await assertLoads(`Explore subtab: ${sub}`, expect));
 }
 await openTopTab('Navigate');
-for (const sub of ['Current Hike','Drive GPS','Field Kit','Sky','Guide AI']) {
+for (const sub of ['Current Hike','Drive GPS','Field Kit','Field Radio','Sky','Guide AI']) {
   failures.length = 0;
   await clickText(sub);
-  const expect = sub === 'Current Hike' ? ['Active hike navigation','Detailed map intelligence','Legend','3D view'] : sub === 'Guide AI' ? ['Navigate Guide AI','Offline packs'] : sub;
+  const expect = sub === 'Current Hike' ? ['Active hike navigation','Detailed map intelligence','Legend','3D view'] : sub === 'Guide AI' ? ['Navigate Guide AI','Offline packs'] : sub === 'Field Radio' ? ['Field Radio','RF/legal guardrail','certified low-power FM transmitter'] : sub;
   results.push(await assertLoads(`Navigate subtab: ${sub}`, expect));
 }
 await openTopTab('Camp');

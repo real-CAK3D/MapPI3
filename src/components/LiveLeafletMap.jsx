@@ -29,12 +29,42 @@ function segmentSlice(routePoints, routeMiles, segment) {
   return routePoints.slice(Math.max(0, startIndex - 1), Math.max(startIndex + 1, endIndex + 1));
 }
 
+const onlineTileModes = {
+  street: {
+    label: 'Street',
+    status: 'live OpenStreetMap street tiles',
+    url: 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
+    options: { maxZoom: 19, attribution: '&copy; OpenStreetMap contributors', crossOrigin: true, detectRetina: true }
+  },
+  terrain: {
+    label: 'Terrain',
+    status: 'live OpenTopoMap terrain tiles',
+    url: 'https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png',
+    options: { maxZoom: 17, attribution: 'Map data &copy; OpenStreetMap contributors, SRTM | OpenTopoMap', crossOrigin: true, detectRetina: true }
+  },
+  satellite: {
+    label: 'Satellite',
+    status: 'live Esri satellite imagery',
+    url: 'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',
+    options: { maxZoom: 19, attribution: 'Tiles &copy; Esri', crossOrigin: true }
+  },
+  hybrid: {
+    label: 'Hybrid',
+    status: 'live satellite + trail overlay',
+    url: 'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',
+    options: { maxZoom: 19, attribution: 'Tiles &copy; Esri | OpenStreetMap overlay', crossOrigin: true }
+  }
+};
+
 export default function LiveLeafletMap({ trace = [], center = defaultCenter, active = false, route = null, waypoints = [], onMapClick = null, onWaypointMove = null, onViewChange = null, showCenterMarker = true, tilePath = '/tiles/{z}/{x}/{y}.png', tileMaxZoom = 18, tileLabel = 'offline Pi map tiles' }) {
   const [tileStatus, setTileStatus] = useState('loading map tiles');
+  const [mapMode, setMapMode] = useState(() => localStorage.getItem('mappi3.mapMode') || 'street');
+  const [pitch3d, setPitch3d] = useState(() => localStorage.getItem('mappi3.mapPitch3d') === 'true');
   const formatCoord = (point) => Array.isArray(point) ? `${Number(point[0]).toFixed(5)}, ${Number(point[1]).toFixed(5)}` : 'GPS pending';
   const mapRef = useRef(null);
   const containerRef = useRef(null);
-  const layerRef = useRef({ marker: null, line: null, route: null, segments: [], waypoints: [] });
+  const tileRef = useRef({ activeLayer: null, overlayLayer: null, goodTiles: 0, switched: false, localTiles: null, modes: {} });
+  const layerRef = useRef({ marker: null, line: null, route: null, shadow: null, grade: null, segments: [], waypoints: [] });
   const routePoints = useMemo(() => routeToPoints(route), [route]);
   const routeMiles = useMemo(() => {
     const total = Number(route?.distanceMiles || route?.miles || 0);
@@ -56,27 +86,43 @@ export default function LiveLeafletMap({ trace = [], center = defaultCenter, act
     const host = typeof window !== 'undefined' ? window.location.hostname : '';
     const isPiLocal = /^(mappi3\.local|10\.42\.0\.1|localhost|127\.0\.0\.1)$/i.test(host);
     const localTiles = L.tileLayer(tilePath, { maxZoom: tileMaxZoom, attribution: tileLabel, errorTileUrl: '' });
-    const osmTiles = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { maxZoom: 19, attribution: '&copy; OpenStreetMap contributors', crossOrigin: true, detectRetina: true });
-    let activeLayer = null;
-    let goodTiles = 0;
-    let switched = false;
+    const modes = Object.fromEntries(Object.entries(onlineTileModes).map(([key, mode]) => [key, L.tileLayer(mode.url, mode.options)]));
+    tileRef.current = { activeLayer: null, overlayLayer: null, goodTiles: 0, switched: false, localTiles, modes, isPiLocal };
     const useLayer = (layer, label) => {
-      if (activeLayer && activeLayer !== layer) map.removeLayer(activeLayer);
-      activeLayer = layer;
+      if (tileRef.current.activeLayer && tileRef.current.activeLayer !== layer) map.removeLayer(tileRef.current.activeLayer);
+      tileRef.current.activeLayer = layer;
       if (!map.hasLayer(layer)) layer.addTo(map);
       setTileStatus(label);
     };
-    const markGood = (label) => { goodTiles += 1; if (goodTiles >= 1) setTileStatus(label); };
+    const markGood = (label) => { tileRef.current.goodTiles += 1; if (tileRef.current.goodTiles >= 1) setTileStatus(label); };
     localTiles.on('tileload', () => markGood('offline Pi map tiles'));
-    osmTiles.on('tileload', () => markGood('live OpenStreetMap tiles'));
+    Object.entries(modes).forEach(([key, layer]) => layer.on('tileload', () => markGood(onlineTileModes[key]?.status || 'live map tiles')));
     localTiles.on('tileerror', () => {
-      if (!switched && isPiLocal) { switched = true; useLayer(osmTiles, 'checking live OpenStreetMap tiles'); }
-      else if (!goodTiles) setTileStatus('offline topo fallback · route/POIs still usable');
+      if (!tileRef.current.switched && isPiLocal) { tileRef.current.switched = true; useLayer(modes[mapMode] || modes.street, onlineTileModes[mapMode]?.status || 'checking live map tiles'); }
+      else if (!tileRef.current.goodTiles) setTileStatus('offline topo fallback · route/POIs still usable');
     });
-    osmTiles.on('tileerror', () => { if (!goodTiles) setTileStatus(isPiLocal ? 'GPS live · tile pack/internet unavailable · route/POIs still usable' : 'GPS live · offline topo fallback · route/POIs still usable'); });
-    useLayer(isPiLocal ? localTiles : osmTiles, isPiLocal ? 'checking offline Pi tiles' : 'checking live OpenStreetMap tiles');
-    setTimeout(() => { if (!goodTiles) setTileStatus(isPiLocal ? 'GPS live · tile pack/internet unavailable · route/POIs still usable' : 'GPS live · offline topo fallback · route/POIs still usable'); }, 4500);
+    Object.entries(modes).forEach(([key, layer]) => layer.on('tileerror', () => { if (!tileRef.current.goodTiles) setTileStatus(isPiLocal ? 'GPS live · tile pack/internet unavailable · route/POIs still usable' : `${onlineTileModes[key]?.label || 'Map'} unavailable · offline topo fallback · route/POIs still usable`); }));
+    useLayer(isPiLocal ? localTiles : (modes[mapMode] || modes.street), isPiLocal ? 'checking offline Pi tiles' : (onlineTileModes[mapMode]?.status || 'checking live map tiles'));
+    setTimeout(() => { if (!tileRef.current.goodTiles) setTileStatus(isPiLocal ? 'GPS live · tile pack/internet unavailable · route/POIs still usable' : 'GPS live · offline topo fallback · route/POIs still usable'); }, 4500);
   }, [center, tilePath, tileMaxZoom, tileLabel]);
+
+  useEffect(() => {
+    if (!mapRef.current || !tileRef.current.modes) return;
+    localStorage.setItem('mappi3.mapMode', mapMode);
+    localStorage.setItem('mappi3.mapPitch3d', String(pitch3d));
+    const map = mapRef.current;
+    const { modes, isPiLocal, localTiles } = tileRef.current;
+    const nextLayer = isPiLocal && mapMode === 'street' ? localTiles : (modes[mapMode] || modes.street);
+    if (tileRef.current.activeLayer && tileRef.current.activeLayer !== nextLayer) map.removeLayer(tileRef.current.activeLayer);
+    tileRef.current.activeLayer = nextLayer;
+    if (nextLayer && !map.hasLayer(nextLayer)) nextLayer.addTo(map);
+    if (tileRef.current.overlayLayer) { map.removeLayer(tileRef.current.overlayLayer); tileRef.current.overlayLayer = null; }
+    if (mapMode === 'hybrid') {
+      tileRef.current.overlayLayer = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { maxZoom: 19, opacity: 0.42, attribution: '&copy; OpenStreetMap contributors overlay', crossOrigin: true });
+      tileRef.current.overlayLayer.addTo(map);
+    }
+    setTileStatus(isPiLocal && mapMode === 'street' ? 'offline Pi map tiles' : (onlineTileModes[mapMode]?.status || 'live map tiles'));
+  }, [mapMode, pitch3d]);
 
   useEffect(() => {
     if (!mapRef.current) return undefined;
@@ -103,23 +149,31 @@ export default function LiveLeafletMap({ trace = [], center = defaultCenter, act
     if (layerRef.current.line) layerRef.current.line.remove();
     if (layerRef.current.marker) layerRef.current.marker.remove();
     if (layerRef.current.route) layerRef.current.route.remove();
+    if (layerRef.current.shadow) layerRef.current.shadow.remove();
+    if (layerRef.current.grade) layerRef.current.grade.remove();
     layerRef.current.segments.forEach(layer => layer.remove());
     layerRef.current.waypoints.forEach(layer => layer.remove());
     layerRef.current.segments = [];
     layerRef.current.waypoints = [];
 
     if (routePoints.length > 1) {
+      layerRef.current.shadow = L.polyline(routePoints, { color: pitch3d ? '#07120b' : '#0d160e', weight: pitch3d ? 14 : 10, opacity: pitch3d ? 0.48 : 0.22, lineCap: 'round', lineJoin: 'round' }).addTo(map);
       const segments = route?.segments || [];
       if (segments.length) {
         segments.forEach(segment => {
           const segmentPoints = segmentSlice(routePoints, routeMiles, segment);
           if (segmentPoints.length > 1) {
-            const layer = L.polyline(segmentPoints, { color: segment.color || route?.color || '#9ce36c', weight: 6, opacity: 0.86 }).bindTooltip(`${segment.name || 'Route segment'} · ${segment.startMile ?? 0}-${segment.endMile ?? ''} mi`).addTo(map);
+            const layer = L.polyline(segmentPoints, { color: segment.color || route?.color || '#9ce36c', weight: pitch3d ? 8 : 6, opacity: 0.9, lineCap: 'round', lineJoin: 'round' }).bindTooltip(`${segment.name || 'Route segment'} · ${segment.startMile ?? 0}-${segment.endMile ?? ''} mi`).addTo(map);
             layerRef.current.segments.push(layer);
           }
         });
       } else {
-        layerRef.current.route = L.polyline(routePoints, { color: route?.color || '#9ce36c', weight: 6, opacity: 0.78 }).addTo(map);
+        layerRef.current.route = L.polyline(routePoints, { color: route?.color || '#9ce36c', weight: pitch3d ? 8 : 6, opacity: 0.86, lineCap: 'round', lineJoin: 'round' }).addTo(map);
+      }
+      const gain = Number(route?.elevationGainFt || route?.gainFt || 0);
+      if (gain || pitch3d) {
+        const mid = routePoints[Math.floor(routePoints.length / 2)];
+        layerRef.current.grade = L.marker(mid, { icon: L.divIcon({ className: 'mappi3-elevation-badge', html: `<strong>${gain ? gain.toLocaleString() : '3D'}</strong><span>${gain ? 'ft gain' : 'terrain'}</span>`, iconSize: [86, 42], iconAnchor: [43, 21] }), keyboard: false }).addTo(map);
       }
     }
 
@@ -158,8 +212,18 @@ export default function LiveLeafletMap({ trace = [], center = defaultCenter, act
     const boundsPoints = [...routePoints, ...tracePoints, ...waypointPoints];
     if (boundsPoints.length > 1) map.fitBounds(L.latLngBounds(boundsPoints), { padding: [24, 24], maxZoom: 17 });
     else map.setView(latest, 15);
-  }, [points, tracePoints, routePoints, routeMiles, waypoints, center, active, onWaypointMove, route, showCenterMarker]);
+  }, [points, tracePoints, routePoints, routeMiles, waypoints, center, active, onWaypointMove, route, showCenterMarker, pitch3d]);
 
   const latestPoint = points[points.length - 1] || center;
-  return <div className={`leaflet-shell ${onMapClick ? 'draw-active' : ''}`} data-tile-status={tileStatus}><div className="map-fallback-label">{tileStatus} · GPS {formatCoord(latestPoint)}</div>{onMapClick && <><div className="map-center-crosshair" aria-hidden="true">⌖</div><div className="draw-map-hint">pan/zoom map, tap + or use Add map center</div></>}<div ref={containerRef} className="leaflet-map" /></div>;
+  const gainLabel = Number(route?.elevationGainFt || route?.gainFt || 0) ? `${Number(route?.elevationGainFt || route?.gainFt || 0).toLocaleString()} ft gain` : 'elevation pending';
+  return <div className={`leaflet-shell ${onMapClick ? 'draw-active' : ''} ${pitch3d ? 'pitch-3d' : ''}`} data-tile-status={tileStatus} data-map-mode={mapMode}>
+    <div className="map-fallback-label">{tileStatus} · GPS {formatCoord(latestPoint)}</div>
+    <div className="map-mode-dock" aria-label="Map view modes">
+      {Object.entries(onlineTileModes).map(([id, mode]) => <button key={id} type="button" className={mapMode === id ? 'active' : ''} onClick={() => setMapMode(id)}>{mode.label}</button>)}
+      <button type="button" className={pitch3d ? 'active' : ''} onClick={() => setPitch3d(value => !value)}>3D</button>
+    </div>
+    <div className="elevation-chip"><strong>{gainLabel}</strong><span>{pitch3d ? 'raised route view' : 'tap 3D for relief'}</span></div>
+    {onMapClick && <><div className="map-center-crosshair" aria-hidden="true">⌖</div><div className="draw-map-hint">pan/zoom map, tap + or use Add map center</div></>}
+    <div ref={containerRef} className="leaflet-map" />
+  </div>;
 }
