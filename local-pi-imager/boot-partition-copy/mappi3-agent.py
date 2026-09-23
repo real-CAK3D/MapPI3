@@ -108,12 +108,50 @@ def gps_sample():
     raw['device'] = dev
     return raw
 
+# Background gpsd stream. gps_status() used to run a blocking 7s gpspipe sample on every /api/status
+# poll; now one long-lived gpspipe feeds GPS_CACHE and readers return instantly.
+GPS_TPV_STALE_SECONDS = 10   # older TPV is not reported as a current fix
+GPS_SKY_STALE_SECONDS = 30
+GPS_CACHE = {'tpv': {}, 'sky': {}, 'device': {}, 'tpv_at': 0, 'sky_at': 0, 'line_at': 0, 'raw': [], 'error': 'GPS stream starting'}
+GPS_LOCK = threading.Lock()
+
+def gps_poll_loop():
+    while True:
+        if not gps_device() or not shutil.which('gpspipe'):
+            with GPS_LOCK: GPS_CACHE['error'] = 'GPS device or gpspipe missing'
+            time.sleep(15); continue
+        try:
+            p = subprocess.Popen(['gpspipe', '-w'], stdout=subprocess.PIPE, stderr=subprocess.DEVNULL, text=True, bufsize=1)
+            for line in p.stdout:
+                try: msg = json.loads(line)
+                except Exception: continue
+                cls = msg.get('class'); now = time.time()
+                with GPS_LOCK:
+                    GPS_CACHE['line_at'] = now; GPS_CACHE['error'] = ''
+                    raw = GPS_CACHE['raw']; raw.append(line.rstrip()); del raw[:-12]
+                    if cls == 'TPV': GPS_CACHE['tpv'] = msg; GPS_CACHE['tpv_at'] = now
+                    elif cls == 'SKY': GPS_CACHE['sky'] = msg; GPS_CACHE['sky_at'] = now
+                    elif cls == 'DEVICE': GPS_CACHE['device'] = msg
+                    elif cls == 'DEVICES' and msg.get('devices'): GPS_CACHE['device'] = msg['devices'][0]
+            p.wait()
+            with GPS_LOCK: GPS_CACHE['error'] = f'gpspipe exited ({p.returncode})'
+        except Exception as e:
+            with GPS_LOCK: GPS_CACHE['error'] = f'gpspipe failed: {e}'
+        time.sleep(5)
+
 def gps_status():
     dev = gps_device()
     if not dev: return {'ok': False, 'device': None, 'mode': 0, 'message': 'GPS serial device missing'}
-    sample = gps_json_sample(); tpv = sample.get('tpv') or {}; sky = sample.get('sky') or {}; device = sample.get('device') or {}
+    with GPS_LOCK:
+        tpv = dict(GPS_CACHE['tpv']); sky = dict(GPS_CACHE['sky']); device = dict(GPS_CACHE['device'])
+        tpv_at = GPS_CACHE['tpv_at']; sky_at = GPS_CACHE['sky_at']; line_at = GPS_CACHE['line_at']
+        raw = '\n'.join(GPS_CACHE['raw']); err = GPS_CACHE['error']
+    now = time.time()
+    if now - tpv_at > GPS_TPV_STALE_SECONDS: tpv = {}
+    if now - sky_at > GPS_SKY_STALE_SECONDS: sky = {}
     mode = int(tpv.get('mode') or 0)
-    return {'ok': bool(dev), 'device': dev, 'mode': mode, 'fix': mode >= 2, 'lat': tpv.get('lat'), 'lon': tpv.get('lon'), 'alt': tpv.get('altHAE') or tpv.get('altMSL'), 'speed': tpv.get('speed'), 'track': tpv.get('track'), 'satellites': sky.get('uSat') or sky.get('nSat'), 'driver': device.get('driver'), 'bps': device.get('bps'), 'raw': sample.get('raw','')[-600:]}
+    return {'ok': bool(dev), 'device': dev, 'mode': mode, 'fix': mode >= 2, 'lat': tpv.get('lat'), 'lon': tpv.get('lon'), 'alt': tpv.get('altHAE') or tpv.get('altMSL'), 'speed': tpv.get('speed'), 'track': tpv.get('track'), 'satellites': sky.get('uSat') or sky.get('nSat'), 'driver': device.get('driver'), 'bps': device.get('bps'), 'raw': raw[-600:],
+            'source': 'gpsd-stream', 'tpv_age_seconds': round(now - tpv_at, 1) if tpv_at else None, 'stream_age_seconds': round(now - line_at, 1) if line_at else None, 'stream_error': err or None}
 
 def wifi_info():
     active = sh_cached("nmcli -t -f NAME,TYPE,DEVICE connection show --active 2>/dev/null || true", timeout=5)['output']
@@ -3840,6 +3878,7 @@ class Handler(http.server.SimpleHTTPRequestHandler):
         self.send_error(404)
 
 if __name__ == '__main__':
+    threading.Thread(target=gps_poll_loop, daemon=True).start()
     threading.Thread(target=sense_loop, daemon=True).start(); threading.Thread(target=joystick_loop, daemon=True).start()
     os.chdir(str(APP_DIR))
     threading.Thread(target=lambda: serve_http(HTTPS_PORT, True), daemon=True).start()
