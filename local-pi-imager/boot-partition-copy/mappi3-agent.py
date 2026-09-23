@@ -1893,26 +1893,51 @@ def _pisugar_server_query():
             pass
     return candidates
 
+PISUGAR_UNAVAILABLE_MARKERS = ('not connected', 'error', 'invalid', 'unknown')
+
+def _pisugar_reply_value(rep):
+    # Replies look like "battery_charging: true". Parse only the value so the echoed key
+    # ("charging", "plugged") never reads as a real state.
+    return rep.split(':', 1)[1].strip() if ':' in rep else rep.strip()
+
+def _pisugar_board_unreachable(replies):
+    vals=[_pisugar_reply_value(str(item.get('reply') or '')).lower() for item in replies or []]
+    return bool(vals) and all(any(m in v for m in PISUGAR_UNAVAILABLE_MARKERS) for v in vals)
+
 def _parse_pisugar_replies(replies):
     parsed={}
     for item in replies or []:
-        cmd=str(item.get('command') or '').lower(); rep=str(item.get('reply') or '').strip()
+        cmd=str(item.get('command') or '').lower(); rep=_pisugar_reply_value(str(item.get('reply') or ''))
+        low=rep.lower()
+        if not rep or any(m in low for m in PISUGAR_UNAVAILABLE_MARKERS): continue
         nums=[]
-        for part in rep.replace(':',' ').replace('=',' ').replace('%',' ').split():
+        for part in rep.replace('=',' ').replace('%',' ').split():
             v=_float_or_none(part)
             if v is not None: nums.append(v)
-        low=rep.lower()
         if 'battery' in cmd and 'power_plugged' not in cmd and 'charging' not in cmd and nums:
             parsed['percent']=max(0,min(100,nums[-1]))
         if 'power_plugged' in cmd:
-            parsed['battery_input_power_connected']=any(x in low for x in ['true','yes','1','plugged','connected']) or (nums and nums[-1] > 0)
+            negative=any(x in low for x in ['false','unplugged','disconnected'])
+            parsed['battery_input_power_connected']=bool(not negative and (any(x in low for x in ['true','yes','1','plugged','connected']) or (nums and nums[-1] > 0)))
         if 'charging' in cmd:
-            parsed['charging']=any(x in low for x in ['true','yes','1','charging']) or (nums and nums[-1] > 0)
+            negative=any(x in low for x in ['false','discharging','not charging'])
+            parsed['charging']=bool(not negative and (any(x in low for x in ['true','yes','1','charging']) or (nums and nums[-1] > 0)))
         if 'model' in cmd and rep:
             parsed['model']=rep
     return parsed
 
+# power_status() takes ~4s (PiSugar socket probes + CLI calls) and /api/status is polled every ~1.5s.
+POWER_CACHE_TTL = 10
+_POWER_CACHE = {'at': 0, 'value': None}
+_POWER_LOCK = threading.Lock()
+
 def power_status():
+    with _POWER_LOCK:
+        if _POWER_CACHE['value'] is None or time.monotonic() - _POWER_CACHE['at'] >= POWER_CACHE_TTL:
+            _POWER_CACHE['value'] = _power_status_uncached(); _POWER_CACHE['at'] = time.monotonic()
+        return dict(_POWER_CACHE['value'])
+
+def _power_status_uncached():
     """Return honest Pi/PiSugar power data without faking unavailable readings."""
     services=[_systemd_state(name) for name in ['pisugar-server.service','pisugar-poweroff.service','pisugar-power-manager.service','pisugar.service']]
     bins={name: bool(sh('command -v '+shlex.quote(name), timeout=2).get('ok')) for name in ['pisugar-power-manager','pisugar-server','pisugar-programmer','pisugar-poweroff','vcgencmd','i2cdetect','i2cget']}
@@ -1950,11 +1975,13 @@ def power_status():
         status_label='ready' if percent >= 35 else ('caution' if percent >= 15 else 'problem')
     elif any(s.get('active')=='active' for s in services) or replies or sysfs_supply:
         status_label='caution'
+    board_unreachable=_pisugar_board_unreachable(replies)
     note=[]
-    if percent is None: note.append('PiSugar percentage not exposed by installed daemon/sysfs yet.')
+    if board_unreachable: note.append('PiSugar board not answering on I2C (battery off or disconnected); battery readings unavailable.')
+    elif percent is None: note.append('PiSugar percentage not exposed by installed daemon/sysfs yet.')
     if battery_input is None: note.append('Battery input/USB-C plugged state not exposed yet.')
     note.append('Pi input power is inferred because the Pi is running; separate Pi-vs-battery input sensing depends on PiSugar daemon/I2C support.')
-    return {'ok': True, 'status': status_label, 'source': source, 'percent': percent, 'charging': charging, 'battery_input_power_connected': battery_input, 'pi_power_connected': True, 'pisugar': {'services': services, 'tools': bins, 'daemon_replies': replies[-12:], 'parsed': parsed, 'cli': cli}, 'sysfs_power_supply': sysfs_supply, 'pi': {'vcgencmd_available': bins.get('vcgencmd'), 'throttled': throttle_raw, 'undervoltage_warning': ('under-voltage detected' if throttle_raw and throttle_raw not in ('throttled=0x0','0x0') else '')}, 'notes': note, 'time': time.time()}
+    return {'ok': True, 'status': status_label, 'source': source, 'percent': percent, 'charging': charging, 'battery_input_power_connected': battery_input, 'pi_power_connected': True, 'pisugar_board_reachable': not board_unreachable if replies else None, 'pisugar': {'services': services, 'tools': bins, 'daemon_replies': replies[-12:], 'parsed': parsed, 'cli': cli}, 'sysfs_power_supply': sysfs_supply, 'pi': {'vcgencmd_available': bins.get('vcgencmd'), 'throttled': throttle_raw, 'undervoltage_warning': ('under-voltage detected' if throttle_raw and throttle_raw not in ('throttled=0x0','0x0') else '')}, 'notes': note, 'time': time.time()}
 
 def status():
     gps=gps_status(); sense=sense_snapshot(); ip=sh('hostname -I || true',timeout=5)['output'].strip(); w=wifi_info(); mode='hotspot' if w['hotspot_active'] else ('home-wifi' if w['home_wifi_ssid'] else 'local-pi')
