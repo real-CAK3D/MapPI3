@@ -35,12 +35,39 @@ COMPASS_PATTERNS = {
 }
 SOS_MORSE_UNITS = [1,0,1,0,1,0,0,0,3,0,3,0,3,0,0,0,1,0,1,0,1,0,0,0,0,0,0]  # SOS = ... --- ...; 1=dot, 3=dash, 0=off gap
 
-def sh(cmd, timeout=20):
+def _sh_raw(cmd, timeout=20):
     try:
         p=subprocess.run(cmd, shell=True, text=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, timeout=timeout)
         return {'ok': p.returncode == 0, 'code': p.returncode, 'output': p.stdout[-4000:]}
     except Exception as e:
         return {'ok': False, 'code': -1, 'output': str(e)}
+
+# Short-lived cache for read-only nmcli/bluetoothctl queries. /api/status and /api/network/status are
+# polled every ~1.5s; without this each poll spawned ~10 nmcli processes and pegged NetworkManager/dbus.
+# Any uncached nmcli/bluetoothctl command (connect, save, hotspot, rescan...) clears the cache so
+# network state is never stale after a change.
+READ_CACHE_TTL = 10
+_READ_CACHE = {}
+_READ_CACHE_GEN = [0]
+_READ_CACHE_LOCK = threading.Lock()
+
+def _clear_read_cache():
+    with _READ_CACHE_LOCK:
+        _READ_CACHE.clear(); _READ_CACHE_GEN[0] += 1
+
+def sh(cmd, timeout=20):
+    if 'nmcli' in cmd or 'bluetoothctl' in cmd: _clear_read_cache()
+    return _sh_raw(cmd, timeout)
+
+def sh_cached(cmd, timeout=20, ttl=READ_CACHE_TTL):
+    now = time.monotonic()
+    with _READ_CACHE_LOCK:
+        hit = _READ_CACHE.get(cmd); gen = _READ_CACHE_GEN[0]
+    if hit and now - hit[0] < ttl: return dict(hit[1])
+    res = _sh_raw(cmd, timeout)
+    with _READ_CACHE_LOCK:
+        if _READ_CACHE_GEN[0] == gen: _READ_CACHE[cmd] = (time.monotonic(), res)
+    return dict(res)
 
 def read_state():
     try: return json.loads(STATE.read_text())
@@ -89,8 +116,8 @@ def gps_status():
     return {'ok': bool(dev), 'device': dev, 'mode': mode, 'fix': mode >= 2, 'lat': tpv.get('lat'), 'lon': tpv.get('lon'), 'alt': tpv.get('altHAE') or tpv.get('altMSL'), 'speed': tpv.get('speed'), 'track': tpv.get('track'), 'satellites': sky.get('uSat') or sky.get('nSat'), 'driver': device.get('driver'), 'bps': device.get('bps'), 'raw': sample.get('raw','')[-600:]}
 
 def wifi_info():
-    active = sh("nmcli -t -f NAME,TYPE,DEVICE connection show --active 2>/dev/null || true", timeout=5)['output']
-    dev = sh("nmcli -t -f DEVICE,TYPE,STATE device 2>/dev/null || true", timeout=5)['output']
+    active = sh_cached("nmcli -t -f NAME,TYPE,DEVICE connection show --active 2>/dev/null || true", timeout=5)['output']
+    dev = sh_cached("nmcli -t -f DEVICE,TYPE,STATE device 2>/dev/null || true", timeout=5)['output']
     hotspot_active = 'MapPI3-hotspot' in active
     ssid = ''
     for line in active.splitlines():
@@ -1899,7 +1926,7 @@ def status():
     return {'ok': True, 'host': socket.gethostname(), 'port': PORT, 'https': https_status(), 'ip': ip, 'connection_mode': mode, **w, 'gps_device': gps.get('device'), 'gps': gps, 'sense_hat': sense_text, 'sense': sense, 'audio': audio_status(), 'power': power_status(), 'system': system_stats(), 'state': read_state(), 'time': time.time()}
 
 def _nmcli_lines(args, timeout=5):
-    out = sh('nmcli -t ' + args + ' 2>/dev/null || true', timeout=timeout).get('output','')
+    out = sh_cached('nmcli -t ' + args + ' 2>/dev/null || true', timeout=timeout).get('output','')
     return [line for line in out.splitlines() if line.strip()]
 
 def _systemd_state(service):
@@ -1994,7 +2021,7 @@ def _wifi_saved_connections():
         if len(parts) >= 4 and parts[1] in ('802-11-wireless','wifi'):
             name = parts[0]
             meta = state_profiles.get(name, {}) if isinstance(state_profiles, dict) else {}
-            ssid = meta.get('ssid') or sh('nmcli -g 802-11-wireless.ssid connection show ' + shlex.quote(name) + ' 2>/dev/null || true', timeout=4).get('output','').strip()
+            ssid = meta.get('ssid') or sh_cached('nmcli -g 802-11-wireless.ssid connection show ' + shlex.quote(name) + ' 2>/dev/null || true', timeout=4).get('output','').strip()
             saved.append({'name': name, 'ssid': ssid or name.replace('MapPI3-','',1), 'label': meta.get('label') or ssid or name, 'type': parts[1], 'autoconnect': parts[2], 'priority': parts[3], 'has_password': bool(meta.get('has_password', True)), 'secret': '[REDACTED]'})
     return saved
 
@@ -3184,11 +3211,11 @@ def _bt_boot_config_findings():
 
 def bluetooth_pan_status(payload=None, include_scan=True):
     service = _systemd_state('bluetooth.service')
-    has_ctl = sh('command -v bluetoothctl', timeout=2).get('ok')
-    has_nm = sh('command -v nmcli', timeout=2).get('ok')
+    has_ctl = sh_cached('command -v bluetoothctl', timeout=2, ttl=300).get('ok')
+    has_nm = sh_cached('command -v nmcli', timeout=2, ttl=300).get('ok')
     if not has_ctl:
         return {'ok': False, 'ready': False, 'available': False, 'summary': 'bluetoothctl/BlueZ is not installed.', 'service': service}
-    ctl = bluetoothctl('show', timeout=4)
+    ctl = sh_cached('bluetoothctl show', timeout=4)
     adapter_text = ctl.get('output','')[-1600:]
     has_controller = bool(ctl.get('ok') and adapter_text.strip() and 'No default controller available' not in adapter_text)
     links = sh("ip -br addr 2>/dev/null | grep -E '^bnep[0-9]+' || true", timeout=3).get('output','').strip()
