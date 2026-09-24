@@ -1,10 +1,16 @@
 import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
 
+// Dev/preview on a PC forwards /api to a live Pi (e.g. over its hotspot) so sensors, GPS and
+// Whisplay state are real while iterating on the UI. Override with MAPPI3_PI_URL.
+const piApi = process.env.MAPPI3_PI_URL || 'http://10.42.0.1:5050';
+const proxy = { '/api': { target: piApi, changeOrigin: true } };
+
 export default defineConfig({
   plugins: [react()],
   server: {
     host: '0.0.0.0',
+    proxy,
     allowedHosts: [
       'mappi3-cak3d.loca.lt',
       'localhost',
@@ -16,6 +22,7 @@ export default defineConfig({
   },
   preview: {
     host: '0.0.0.0',
+    proxy,
     allowedHosts: [
       'mappi3-cak3d.loca.lt',
       'localhost',
