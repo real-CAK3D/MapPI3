@@ -2176,14 +2176,19 @@ def hotspot_on(payload=None):
 def tailscale_status(payload=None):
     if not shutil.which('tailscale'):
         return {'ok': False, 'installed': False, 'backend_state': 'not-installed'}
-    text = sh('timeout 8 tailscale status --json 2>/dev/null', timeout=10).get('output','')
+    # --peers=false keeps the JSON small; sh() only keeps the last 4000 chars, so the full peer
+    # list was truncated, never parsed, and fell back to dumping every peer/IP to the UI.
+    text = sh('timeout 8 tailscale status --json --peers=false 2>/dev/null', timeout=10).get('output','')
     try:
-        data=json.loads(text)
+        data=json.loads(text[text.find('{'):] if '{' in text else text)
         self_node=data.get('Self') or {}
         return {'ok': True, 'installed': True, 'backend_state': data.get('BackendState'), 'current_tailnet': data.get('CurrentTailnet'), 'hostname': self_node.get('HostName'), 'online': self_node.get('Online'), 'tailscale_ips': self_node.get('TailscaleIPs'), 'dns_name': self_node.get('DNSName')}
     except Exception:
-        short = sh('timeout 6 tailscale status 2>&1 || true', timeout=8).get('output','')[-1000:]
-        return {'ok': False, 'installed': True, 'backend_state': short.strip() or 'unknown'}
+        # Plain `tailscale status` lists every peer and its tailnet IP; only surface a one-line state.
+        lines = sh('timeout 6 tailscale status 2>&1 || true', timeout=8).get('output','').strip().splitlines()
+        first = lines[0].strip() if lines else ''
+        peer_row = bool(first) and first.split()[0].count('.') == 3 and first[0].isdigit()
+        return {'ok': False, 'installed': True, 'backend_state': 'offline' if peer_row or not first else first[:120]}
 
 def tailscale_login(payload=None):
     if not shutil.which('tailscale'):
