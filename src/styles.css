@@ -702,3 +702,7 @@ body[data-theme] .telemetry-gauge span,body[data-theme] .telemetry-chart-grid sm
 /* .map-fallback-label already shows the tile source; the old corner badge duplicated it */
 .leaflet-shell:after{display:none}
 @media(max-width:760px){.leaflet-shell .leaflet-top.leaflet-left{top:46px}}
+.hub-tabs-more{display:inline-flex;flex:0 0 auto}
+.hub-tabs-more select{min-height:42px;border-radius:999px;padding:0 34px 0 16px;border:1px solid rgba(255,255,255,.16);background:rgba(0,0,0,.28);color:#efffe8;font-weight:900}
+.hub-tabs-more.active select{background:linear-gradient(135deg,#f0d98f,#9ce36c);color:#071108}
+.sr-only{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
