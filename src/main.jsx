@@ -130,14 +130,16 @@ const herbieExpressions = [
   'surprised','worried','sad','angry','annoyed','tired','yawning','determined',
   'sleepy','blushing','laughing','cheeky','focused','wow','love','grateful',
   'party-mode','high-af','chillin','meditating','bored','melting','sweating','overwhelmed',
-  'greetings','wink','thumbs-up','thumbs-down','facepalm','oh-no','face-with-tears','party-hard'
+  'greetings','wink','thumbs-up','thumbs-down','facepalm','oh-no','face-with-tears','party-hard',
+  'gps-searching','gps-locked','off-route','thirsty','cold','storm-alert','summit','charging'
 ];
 const herbieExpressionLabels = {
   auto:'Auto trail mood', neutral:'Neutral', happy:'Happy', excited:'Excited', curious:'Curious', thinking:'Thinking', 'side-eye':'Side eye', suspicious:'Suspicious', confused:'Confused',
   surprised:'Surprised', worried:'Worried', sad:'Sad', angry:'Angry', annoyed:'Annoyed', tired:'Tired', yawning:'Yawning', determined:'Determined',
   sleepy:'Sleepy', blushing:'Blushing', laughing:'Laughing', cheeky:'Cheeky', focused:'Focused', wow:'Wow', love:'Love', grateful:'Grateful',
   'party-mode':'Party mode', 'high-af':'High AF', chillin:"Chillin'", meditating:'Meditating', bored:'Bored', melting:'Melting', sweating:'Sweating', overwhelmed:'Overwhelmed',
-  greetings:'Greetings', wink:'Wink', 'thumbs-up':'Thumbs up', 'thumbs-down':'Thumbs down', facepalm:'Facepalm', 'oh-no':'Oh no!', 'face-with-tears':'Face with tears', 'party-hard':'Party hard'
+  greetings:'Greetings', wink:'Wink', 'thumbs-up':'Thumbs up', 'thumbs-down':'Thumbs down', facepalm:'Facepalm', 'oh-no':'Oh no!', 'face-with-tears':'Face with tears', 'party-hard':'Party hard',
+  'gps-searching':'GPS searching', 'gps-locked':'GPS locked', 'off-route':'Off route', thirsty:'Thirsty', cold:'Cold', 'storm-alert':'Storm alert', summit:'Summit', charging:'Charging'
 };
 const herbieMotionAssets = ['tilted-left','tilted-right','shaking','bouncing','spinning','happy-hover','scanning','low-battery'];
 const herbieTurnaroundAssets = ['top','bottom'];
@@ -146,7 +148,7 @@ const senseAvatarLabels = { auto:'Auto cheerful trail face', happy:'Happy', neut
 const herbieTriggerOptions = [
   ['default','Default / idle'], ['morning','Morning'], ['day','Daytime / awake'], ['evening','Evening'], ['night','Night / after dark'], ['motion','Pi moved / tilted'], ['pacman','Pac-Man / games'], ['gps','GPS / compass / scan'], ['wifi','Passive Wi‑Fi awareness'], ['lowBattery','Low battery'], ['hot','Hot / sweating'], ['cold','Cold / tired'], ['routeFinish','Near route finish']
 ];
-const defaultHerbieExpressionRules = { default:'happy', morning:'greetings', day:'happy', evening:'chillin', night:'happy', motion:'surprised', pacman:'party-mode', gps:'focused', wifi:'curious', lowBattery:'worried', hot:'sweating', cold:'tired', routeFinish:'grateful' };
+const defaultHerbieExpressionRules = { default:'happy', morning:'greetings', day:'happy', evening:'chillin', night:'happy', motion:'surprised', pacman:'party-mode', gps:'focused', wifi:'curious', lowBattery:'worried', hot:'sweating', cold:'cold', routeFinish:'summit' };
 const herbieMotionExpressionMap = { bouncing:'party-mode', 'happy-hover':'happy', shaking:'surprised', spinning:'wow', scanning:'focused', 'low-battery':'worried', 'tilted-left':'side-eye', 'tilted-right':'suspicious', 'turnaround-top':'wow', 'turnaround-bottom':'oh-no', blink:'happy', idle:'' };
 function getHerbieRule(settings = {}, key, fallback) { const rules = { ...defaultHerbieExpressionRules, ...(settings.herbieExpressionRules || {}) }; return herbieExpressions.includes(rules[key]) ? rules[key] : fallback; }
 function passiveWifiAwareness(networkLive = null, wifiScan = null) {

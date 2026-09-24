@@ -85,7 +85,8 @@ HERBIE_EXPRESSION_ORDER = (
     'worried','sad','angry','annoyed','tired','yawning','determined','focused','bored','sleepy',
     'chillin','meditating','laughing','cheeky','wow','love','grateful','blushing','sweating','melting',
     'overwhelmed','high-af','party-mode','greetings','wink','thumbs-up','thumbs-down','facepalm',
-    'oh-no','face-with-tears','party-hard'
+    'oh-no','face-with-tears','party-hard',
+    'gps-searching','gps-locked','off-route','thirsty','cold','storm-alert','summit','charging'
 )
 HERBIE_EXPRESSIONS = set(HERBIE_EXPRESSION_ORDER)
 HERBIE_IDLE_PRIORITY = ('happy','curious','thinking','focused','wink','grateful','excited','greetings','cheeky','love')
