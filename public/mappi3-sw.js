@@ -1,4 +1,4 @@
-const CACHE_NAME = 'mappi3-field-shell-v1';
+const CACHE_NAME = 'mappi3-field-shell-v2';
 const SHELL_URLS = ['/', '/manifest.webmanifest'];
 self.addEventListener('install', event => {
   event.waitUntil(caches.open(CACHE_NAME).then(cache => cache.addAll(SHELL_URLS).catch(() => undefined)));
@@ -11,6 +11,9 @@ self.addEventListener('activate', event => {
 self.addEventListener('fetch', event => {
   const req = event.request;
   if (req.method !== 'GET') return;
+  // Live Pi data must never be answered from cache: a stale /api/status or /api/gps would show
+  // old sensor readings as current when the Pi is unreachable.
+  if (new URL(req.url).pathname.startsWith('/api/')) return;
   event.respondWith(fetch(req).then(res => {
     const copy = res.clone();
     if (new URL(req.url).origin === self.location.origin) caches.open(CACHE_NAME).then(cache => cache.put(req, copy)).catch(() => undefined);
