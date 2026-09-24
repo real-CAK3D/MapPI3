@@ -673,3 +673,32 @@ body[data-theme] .telemetry-gauge span,body[data-theme] .telemetry-chart-grid sm
 .field-radio-ack{margin:10px 0;padding:10px 12px;border:1px solid rgba(255,211,106,.28);border-radius:16px;background:rgba(255,211,106,.08)}
 .radio-flow-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin-top:14px}.radio-flow-grid article{display:grid;gap:5px;padding:12px;border-radius:18px;border:1px solid rgba(255,255,255,.1);background:rgba(255,255,255,.055)}.radio-flow-grid b{display:grid;place-items:center;width:28px;height:28px;border-radius:999px;background:linear-gradient(135deg,#d9ffc6,#9ce36c);color:#071109}.radio-flow-grid strong{color:#eaffd9}.radio-flow-grid small{color:#bdcfb7}.field-radio-details{margin-top:12px;padding:10px 12px;border:1px solid rgba(255,255,255,.1);border-radius:16px;background:rgba(0,0,0,.18)}
 @media(max-width:760px){.field-radio-hero{grid-template-columns:1fr}.radio-dial{width:min(220px,72vw);justify-self:center}.radio-flow-grid{grid-template-columns:1fr}}
+
+/* Home field kit strip: live Pi sensors at a glance */
+.fieldkit-strip{margin:4px 0 14px;padding:14px;border-radius:22px}
+.fieldkit-strip.is-offline{display:flex;gap:12px;align-items:center;border-style:dashed;opacity:.9}
+.fieldkit-strip.is-offline p{margin:4px 0 0}
+.fieldkit-grid{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:8px;margin-top:8px}
+.fieldkit-item{display:grid;gap:2px;padding:10px 12px;border-radius:16px;background:rgba(0,0,0,.22);border:1px solid rgba(255,255,255,.1);border-left:4px solid rgba(255,255,255,.18);min-width:0}
+.fieldkit-item span{font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:#bdd5c2}
+.fieldkit-item strong{font-size:18px;line-height:1.15;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.fieldkit-item small{font-size:12px;color:#bdd5c2;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.fieldkit-item.tone-good{border-left-color:#74e786}
+.fieldkit-item.tone-warn{border-left-color:#f0c14b}
+.fieldkit-item.tone-bad{border-left-color:#ff5a64}
+@media(max-width:760px){.fieldkit-grid{grid-template-columns:repeat(3,minmax(0,1fr))}.fieldkit-item{padding:9px 10px}.fieldkit-item strong{font-size:16px}}
+@media(max-width:380px){.fieldkit-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+
+/* Phone maps: give the map the room and keep overlays to the edges */
+@media(max-width:760px){
+  .leaflet-shell{height:min(62vh,460px)}
+  .route-detail-map .leaflet-shell{height:min(52vh,340px)}
+  .map-mode-dock{top:8px}
+  .map-fallback-label{top:auto;right:auto;left:8px;bottom:8px;max-width:58%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:10px;padding:3px 8px}
+  .elevation-chip{right:8px;bottom:8px;padding:4px 8px}
+  .elevation-chip span{display:none}
+  .weather-line span{white-space:normal}
+}
+/* .map-fallback-label already shows the tile source; the old corner badge duplicated it */
+.leaflet-shell:after{display:none}
+@media(max-width:760px){.leaflet-shell .leaflet-top.leaflet-left{top:46px}}
