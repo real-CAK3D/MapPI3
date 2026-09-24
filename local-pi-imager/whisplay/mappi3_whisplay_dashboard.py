@@ -331,6 +331,27 @@ def herbie_directional_tilt_face(roll, pitch, threshold=8.0):
     label = {'left':'tilted left','right':'tilted right','top':'top view tilt','bottom':'bottom view tilt'}[direction]
     return asset, label, direction
 
+# Low battery: at or below 40% Herbie keeps rotating his normal faces and shows the battery face for
+# a few seconds every few minutes. Battery comes from /api/status power (PiSugar); unknown = no reminder.
+LOW_BATTERY_PCT = 40
+LOW_BATTERY_EVERY_S = 180
+LOW_BATTERY_SHOW_S = 6
+
+def battery_percent(status):
+    power = status.get('power') if isinstance(status, dict) and isinstance(status.get('power'), dict) else {}
+    try:
+        return float(power['percent']) if power.get('percent') is not None else None
+    except (TypeError, ValueError):
+        return None
+
+def low_battery_reminder(status, now_ts=None):
+    pct = battery_percent(status)
+    if pct is None or pct > LOW_BATTERY_PCT:
+        return None
+    if (now_ts or time.time()) % LOW_BATTERY_EVERY_S < LOW_BATTERY_SHOW_S:
+        return 'motions/low-battery', f'battery {round(pct)}% - charge soon'
+    return None
+
 def whisplay_herbie_state(now=None, status=None, sense=None, net=None):
     now = now or datetime.datetime.now()
     # Tilt is the live interaction path, so read the fast Sense endpoint first and
@@ -349,16 +370,15 @@ def whisplay_herbie_state(now=None, status=None, sense=None, net=None):
     status = status if status is not None else api('/api/status', timeout=0.35)
     net = net if net is not None else api('/api/network/status', timeout=0.6)
     temp = sense.get('temperature') if sense.get('temperature') is not None else sense.get('temp_c')
-    battery = status.get('battery') if isinstance(status.get('battery'), dict) else {}
-    low_battery = any(str(v).lower() in ('low','critical') for v in [battery.get('state'), battery.get('status')])
+    battery_reminder = low_battery_reminder(status)
     try: tilted = roll is not None and pitch is not None and max(abs(roll), abs(pitch)) >= 12
     except Exception: tilted = False
     try: hot = temp is not None and float(temp) >= 30
     except Exception: hot = False
     if status.get('_error'):
         return herbie_idle_face(5.0), 'offline face loop'
-    if low_battery:
-        return ['worried','determined','thumbs-up','focused'][int(time.time() // 4) % 4], 'battery caution'
+    if battery_reminder:
+        return battery_reminder
     if hot:
         return ['sweating','melting','wow','chillin'][int(time.time() // 4) % 4], f'temp {temp_f_text(temp)}'
     if tilted:
@@ -503,8 +523,7 @@ def herbie_pawn_state():
     humidity = num(sense.get('humidity'))
     pressure = num(sense.get('pressure'))
     compass = num(sense.get('compass') or sense.get('heading'))
-    battery = status.get('battery') if isinstance(status.get('battery'), dict) else {}
-    low_battery = any(str(v).lower() in ('low','critical') for v in [battery.get('state'), battery.get('status')])
+    battery_reminder = low_battery_reminder(status)
     api_available = not (status.get('_error') and sense.get('_error') and net.get('_error') and weather.get('_error'))
     mood = idle
     reason = 'all-face wandering loop'
@@ -513,8 +532,8 @@ def herbie_pawn_state():
         mood, reason, accent = 'high-af', '4:20 trail minute', GREEN
     elif api_available and tilt_reaction:
         mood, reason, accent = tilt_reaction[0], tilt_reaction[1], AMBER
-    elif api_available and low_battery:
-        mood, reason, accent = ['worried','determined','thumbs-up','focused'][int(time.time() // 4) % 4], 'battery caution', AMBER
+    elif api_available and battery_reminder:
+        mood, reason, accent = battery_reminder[0], battery_reminder[1], RED
     elif api_available and temp_c is not None and temp_c >= 34:
         mood, reason, accent = ['melting','sweating','wow','chillin'][int(time.time() // 4) % 4], f'hot field kit {temp_f_text(temp_c)}', RED
     elif api_available and temp_c is not None and temp_c >= 29:

@@ -31,14 +31,22 @@ CW, CH = TPL_W * DRAW, TPL_H * DRAW
 OUT_W, OUT_H = 300, 261    # final asset size (same for every face, motion and turnaround)
 
 # Palette sampled from the original art.
-INK = (16, 39, 11)          # eye / mouth dark green
-INK_2 = (34, 70, 20)        # lighter body of the eye
-SPROUT = (184, 206, 58)     # sprout leaves inside the eye
+INK = (8, 22, 6)            # mouth / brows / arcs
+EYE_FILL = (14, 34, 10)     # eyes are dark green
+EYE_EDGE = (4, 12, 3)
+PUPIL = (54, 104, 30)       # the sprout "pupil" takes the eyes' previous green
+PUPIL_EDGE = (88, 140, 48)
+INK_2 = EYE_FILL
+SPROUT = (184, 206, 58)     # bright leaf (charge spark only)
 SPROUT_DARK = (104, 140, 34)
-HAND = (104, 150, 52)
-HAND_DARK = (36, 62, 18)
-HAND_LIGHT = (150, 196, 84)
-SLEEVE = (86, 110, 58)
+HAND = (78, 118, 38)
+HAND_DARK = (22, 40, 10)
+HAND_LIGHT = (116, 156, 60)
+SLEEVE = (66, 88, 42)
+HIGH_EYE = (164, 38, 34)    # high AF: red eyes, green pupils
+HIGH_EYE_EDGE = (70, 12, 10)
+HIGH_PUPIL = (86, 164, 50)
+HIGH_PUPIL_EDGE = (34, 84, 18)
 BLUSH = (226, 108, 110)
 TEAR = (96, 182, 222)
 TEAR_DARK = (36, 102, 150)
@@ -185,7 +193,7 @@ def sprout_mask(cx, cy, size):
 
 
 # ---------------------------------------------------------------- eyes
-def eye_open(c, center, scale=1.0, look=(0, 0), lid=None, lid_side=None):
+def eye_open(c, center, scale=1.0, look=(0, 0), lid=None, lid_side=None, red=False):
     cx, cy = center
     w, h = 10 * scale, 16 * scale
     m = egg_mask(cx, cy, w, h)
@@ -200,10 +208,11 @@ def eye_open(c, center, scale=1.0, look=(0, 0), lid=None, lid_side=None):
             yl, yr = (y_in, y_out) if left_is_inner else (y_out, y_in)
             cut = poly_mask([(cx - 9, cy - 12), (cx + 9, cy - 12), (cx + 9, yr), (cx - 9, yl)])
         m = subtract(m, cut)
-    paint(c, m, INK_2, outline=INK, outline_px=9, shade=INK)
+    fill, edge, pupil, pupil_edge = (HIGH_EYE, HIGH_EYE_EDGE, HIGH_PUPIL, HIGH_PUPIL_EDGE) if red else (EYE_FILL, EYE_EDGE, PUPIL, PUPIL_EDGE)
+    paint(c, m, fill, outline=edge, outline_px=9, shade=edge)
     spr = sprout_mask(cx + look[0], cy - h * 0.12 + look[1], 4.2 * scale)
     spr = ImageChops.multiply(spr, m.filter(ImageFilter.MinFilter(9)))
-    paint(c, spr, SPROUT, outline=SPROUT_DARK, outline_px=3)
+    paint(c, spr, pupil, outline=pupil_edge, outline_px=3)
 
 
 def eye_arc(c, center, up=True, width=10, thick=2.2):
@@ -235,8 +244,8 @@ def eye_star(c, center):
         a = math.radians(i * 45 - 90)
         pts.append((cx + r * math.cos(a), cy + r * math.sin(a)))
     m = poly_mask(pts)
-    paint(c, m, INK_2, outline=INK, outline_px=7)
-    paint(c, ellipse_mask(cx, cy, 1.6, 1.6), SPROUT)
+    paint(c, m, EYE_FILL, outline=EYE_EDGE, outline_px=7)
+    paint(c, ellipse_mask(cx, cy, 1.6, 1.6), PUPIL_EDGE)
 
 
 def eye_target(c, center):
@@ -244,7 +253,7 @@ def eye_target(c, center):
     ring = subtract(ellipse_mask(cx, cy, 6, 6), ellipse_mask(cx, cy, 4.2, 4.2))
     cross = union(stroke_mask([(cx - 8, cy), (cx + 8, cy)], 1.4), stroke_mask([(cx, cy - 8), (cx, cy + 8)], 1.4))
     paint(c, union(ring, cross), INK)
-    paint(c, ellipse_mask(cx, cy, 1.5, 1.5), SPROUT, outline=INK, outline_px=3)
+    paint(c, ellipse_mask(cx, cy, 1.5, 1.5), PUPIL_EDGE, outline=INK, outline_px=3)
 
 
 def eye_x(c, center):
@@ -360,7 +369,7 @@ def sweat(c, x=108, y=44):
 
 def zzz(c):
     for (x, y, sz) in [(102, 44, 3.2), (108, 38, 2.6), (113, 33, 2.0)]:
-        paint(c, stroke_mask([(x - sz, y - sz), (x + sz, y - sz), (x - sz, y + sz), (x + sz, y + sz)], 1.3), INK)
+        paint(c, stroke_mask([(x - sz, y - sz), (x + sz, y - sz), (x - sz, y + sz), (x + sz, y + sz)], 1.3), (10, 10, 10))
 
 
 def question(c, x=107, y=38):
@@ -369,15 +378,38 @@ def question(c, x=107, y=38):
     paint(c, ellipse_mask(x, y + 7, 1.1, 1.1), INK)
 
 
+def rounded(mask, radius_px=14):
+    return mask.filter(ImageFilter.GaussianBlur(radius_px)).point(lambda v: 255 if v > 128 else 0)
+
+
 def sunglasses(c):
-    lens_l = ellipse_mask(EYE_L[0], 56, 8.5, 6)
-    lens_r = ellipse_mask(EYE_R[0], 56, 8.5, 6)
-    bar = stroke_mask([(EYE_L[0] + 6, 53), (EYE_R[0] - 6, 53)], 2)
-    m = union(lens_l, lens_r, bar)
-    paint(c, m, (14, 18, 16), outline=(4, 6, 5), outline_px=5)
-    for cx in (EYE_L[0], EYE_R[0]):
-        glint = stroke_mask([(cx - 5, 53), (cx - 2, 51.5)], 1.2)
-        paint(c, glint, (140, 170, 150))
+    """Wayfarer shades: rounded trapezoid lenses, thick black frame, bridge, arms, glass reflections."""
+    y_top, y_bot = 49.5, 61.5
+    lenses = []
+    for ex, side in ((EYE_L[0], -1), (EYE_R[0], 1)):
+        outer, inner = ex + side * 10.5, ex - side * 7.5
+        pts = [(inner, y_top + 0.5), (outer, y_top), (outer - side * 1.8, y_bot - 1.5), (ex + side * 2, y_bot + 0.5), (inner + side * 0.5, y_bot - 2.5)]
+        lenses.append((ex, side, rounded(poly_mask(pts), 16)))
+    frame = new_mask()
+    for _, _, lm in lenses:
+        frame = union(frame, lm.filter(ImageFilter.MaxFilter(23)))
+    bridge = stroke_mask(arc_points(MOUTH[0], 53.5, 7.2, 2.2, 200, 340), 2.0)
+    temples = union(stroke_mask([(EYE_L[0] - 10, 50.5), (EYE_L[0] - 15.5, 51.5)], 1.8),
+                    stroke_mask([(EYE_R[0] + 10, 50.5), (EYE_R[0] + 15.5, 51.5)], 1.8))
+    brow_bar = union(*[stroke_mask([(ex - side * 7.5, y_top - 0.3), (ex + side * 10.5, y_top - 0.8)], 2.4) for ex, side, _ in lenses])
+    paint(c, union(frame, bridge, temples, brow_bar), (12, 12, 13), outline=(2, 2, 2), outline_px=5, light=(70, 72, 76), light_offset=(0, -5))
+    # lenses: dark smoked glass, lighter at the top
+    grad = Image.linear_gradient('L').resize(c.size)
+    top, bottom = np.array((58, 72, 78), float), np.array((6, 9, 11), float)
+    ramp = np.array(grad, float)[..., None] / 255.0
+    glass_rgb = (top * (1 - ramp) + bottom * ramp).astype(np.uint8)
+    for ex, side, lm in lenses:
+        glass = Image.fromarray(np.dstack([glass_rgb, np.full(glass_rgb.shape[:2], 255, np.uint8)]), 'RGBA')
+        c.paste(glass, (0, 0), lm)
+        inner = lm.filter(ImageFilter.MinFilter(15))
+        for (a, b, w, alpha) in (((ex - 6.5, 59.5), (ex - 1.5, 51.5), 1.3, 170), ((ex - 2.8, 60.5), (ex + 1.2, 54.0), 0.6, 120)):
+            streak = ImageChops.multiply(stroke_mask([a, b], w), inner).point(lambda v, al=alpha: v * al // 255)
+            c.paste(Image.new('RGBA', c.size, (235, 245, 250, 255)), (0, 0), streak)
 
 
 def charge_spark(c, x=108, y=44):
@@ -437,6 +469,73 @@ def leaf_hand(c, cx, cy, angle=0, scale=1.0, pose='open', flip=False):
     paint(c, hm, HAND, outline=HAND_DARK, outline_px=11, light=HAND_LIGHT, light_offset=(-6, -8), shade=(76, 116, 38))
 
 
+def ground_mist(c, strength=0.55, seed=7):
+    """Soft uneven mist over the leafy ground under the map."""
+    rng = np.random.default_rng(seed)
+    w, h = c.size
+    noise = Image.fromarray((rng.random((24, 36)) * 255).astype(np.uint8)).resize((w, h), Image.BICUBIC).filter(ImageFilter.GaussianBlur(28))
+    y = np.linspace(0, 1, h)[:, None]
+    start = 88 * K / h                         # mist fades in from just above the map's bottom edge
+    ramp = np.clip((y - start) / (1 - start), 0, 1) ** 0.8
+    alpha = (ramp * (0.45 + 0.55 * np.array(noise, float) / 255) * strength * 255).astype(np.uint8)
+    c.paste(Image.new('RGBA', c.size, (226, 234, 224, 255)), (0, 0), Image.fromarray(alpha))
+
+
+def old_facepalm_arm(c, dx=3, dy=3, darken=0.85):
+    """The original facepalm arm + leaf hand, lifted from the first-pass art and placed on the new template."""
+    arm = Image.open(TOOLS / 'sources' / 'facepalm_arm_old.png').convert('RGBA')
+    ox, oy = json.loads((TOOLS / 'sources' / 'facepalm_arm_old.json').read_text())['origin_on_145x105_grid']
+    arm = arm.resize((round(arm.width * K), round(arm.height * K)), Image.LANCZOS)
+    arm = arm.filter(ImageFilter.UnsharpMask(radius=6, percent=140, threshold=2))  # source is 145x105-era art
+    rgb = np.array(arm).astype(float)
+    rgb[..., :3] *= darken
+    arm = Image.fromarray(rgb.clip(0, 255).astype(np.uint8), 'RGBA')
+    arm.putalpha(arm.getchannel('A').filter(ImageFilter.GaussianBlur(3)).point(lambda v: 0 if v < 40 else min(255, int(v * 1.25))))
+    c.alpha_composite(arm, (round(s(ox + dx)), round(s(oy + dy))))
+
+
+def battery_panel(c):
+    """Low battery: dark panel with a red battery outline and one low red bar (face hidden)."""
+    panel = rounded(poly_mask([(47, 44), (101, 44), (101, 80), (47, 80)]), 30)
+    paint(c, panel, (24, 28, 26), outline=(6, 8, 7), outline_px=9, light=(60, 66, 62), light_offset=(0, -6))
+    body = subtract(rounded(poly_mask([(55, 52), (90, 52), (90, 72), (55, 72)]), 10), rounded(poly_mask([(56.8, 53.8), (88.2, 53.8), (88.2, 70.2), (56.8, 70.2)]), 8))
+    red = (222, 64, 52)
+    paint(c, body, red)
+    paint(c, rounded(poly_mask([(90, 58), (93, 58), (93, 66), (90, 66)]), 6), red)
+    paint(c, rounded(poly_mask([(58.5, 55.5), (64.5, 55.5), (64.5, 68.5), (58.5, 68.5)]), 6), red, light=(255, 150, 130), light_offset=(0, -5))
+
+
+def radar_scan(img):
+    """Scanning: the whole face in radar green with range rings, crosshair, grid and a sweep."""
+    arr = np.array(img.convert('RGB')).astype(float)
+    lum = (arr @ np.array([0.3, 0.55, 0.15])) / 255.0
+    lum = lum ** 0.9
+    dark, bright = np.array((4, 30, 10), float), np.array((168, 255, 120), float)
+    out = Image.fromarray((dark + lum[..., None] * (bright - dark)).clip(0, 255).astype(np.uint8)).convert('RGBA')
+    w, h = out.size
+    cx, cy = w * 0.5, h * 0.47
+    over = Image.new('RGBA', out.size, (0, 0, 0, 0))
+    d = ImageDraw.Draw(over)
+    for gx in range(0, w, 20):
+        d.line([(gx, 0), (gx, h)], fill=(120, 255, 120, 26))
+    for gy in range(0, h, 20):
+        d.line([(0, gy), (w, gy)], fill=(120, 255, 120, 26))
+    for r in (26, 56, 86, 116):
+        d.ellipse((cx - r, cy - r, cx + r, cy + r), outline=(150, 255, 140, 120), width=2)
+    d.line([(cx - 128, cy), (cx + 128, cy)], fill=(170, 255, 150, 150), width=2)
+    d.line([(cx, cy - 118), (cx, cy + 118)], fill=(170, 255, 150, 150), width=2)
+    sweep = Image.new('L', out.size, 0)
+    sd = ImageDraw.Draw(sweep)
+    for k in range(40):
+        a0 = -70 + k
+        sd.pieslice((cx - 130, cy - 130, cx + 130, cy + 130), a0, a0 + 1.2, fill=int(4 + k * 3.2))
+    over.paste(Image.new('RGBA', out.size, (170, 255, 140, 255)), (0, 0), sweep.filter(ImageFilter.GaussianBlur(2)))
+    d.line([(cx, cy), (cx + 130 * math.cos(math.radians(-30)), cy + 130 * math.sin(math.radians(-30)))], fill=(220, 255, 200, 220), width=2)
+    d.ellipse((cx - 4, cy - 4, cx + 4, cy + 4), fill=(220, 255, 200, 230))
+    out.alpha_composite(over)
+    return out
+
+
 # ---------------------------------------------------------------- the face set
 def eyes(c, kind='open', **kw):
     if kind == 'open':
@@ -473,8 +572,8 @@ FACES = {
     'love':         lambda c: (eye_heart(c, EYE_L), eye_heart(c, EYE_R), mouth_smile(c, 20, 5)),
     'grateful':     lambda c: (eyes(c, 'happy'), blush(c, 110), mouth_smile(c, 16, 3.5)),
     'party-mode':   lambda c: (sunglasses(c), mouth_grin(c, 22, 8)),
-    'high-af':      lambda c: (eyes(c, lid='half', look=(0, 2)), mouth_smile(c, 18, 3)),
-    'chillin':      lambda c: (sunglasses(c), mouth_smirk(c)),
+    'high-af':      lambda c: (ground_mist(c), eye_open(c, EYE_L, lid='half', look=(0, 4.5), red=True), eye_open(c, EYE_R, lid='half', look=(0, 4.5), red=True), mouth_smile(c, 18, 3)),
+    'chillin':      lambda c: (sunglasses(c), mouth_smile(c, 14, 2.6)),
     'meditating':   lambda c: (eyes(c, 'closed'), mouth_smile(c, 10, 2)),
     'bored':        lambda c: (eyes(c, lid='half', look=(-2, 1)), mouth_flat(c, 10, dy=1)),
     'melting':      lambda c: (eyes(c, lid='sad', lid_side='L', look=(0, 2)), mouth_tongue(c), sweat(c, 108, 48), sweat(c, 38, 50)),
@@ -484,7 +583,7 @@ FACES = {
     'wink':         lambda c: (eye_open(c, EYE_L), eye_arc(c, EYE_R, up=True), mouth_smile(c, 20, 5)),
     'thumbs-up':    lambda c: (eyes(c), mouth_smile(c, 20, 5), leaf_hand(c, 115, 70, angle=-8, scale=0.6, pose='thumb_up')),
     'thumbs-down':  lambda c: (eye_open(c, EYE_L, lid='sad', lid_side='L'), eye_open(c, EYE_R, lid='sad', lid_side='R'), mouth_frown(c), leaf_hand(c, 115, 68, angle=8, scale=0.6, pose='thumb_down')),
-    'facepalm':     lambda c: (eye_open(c, EYE_R, lid='half'), mouth_flat(c, 10, dy=1), leaf_hand(c, 55, 64, angle=24, scale=0.85, flip=True)),
+    'facepalm':     lambda c: (eye_open(c, EYE_R, lid='half'), mouth_flat(c, 10, dy=1), old_facepalm_arm(c)),
     'oh-no':        lambda c: (eyes(c, scale=1.2, look=(0, 1)), brow(c, EYE_L, 3, lift=2), brow(c, EYE_R, 3, lift=2, side='R'), mouth_o(c, 4.2, 5.2)),
     'face-with-tears': lambda c: (eye_arc(c, EYE_L, up=False), eye_arc(c, EYE_R, up=False), brow(c, EYE_L, 3), brow(c, EYE_R, 3, side='R'), tear_streams(c), mouth_wobble(c)),
     'party-hard':   lambda c: (eye_squeeze(c, EYE_L, 'L'), eye_squeeze(c, EYE_R, 'R'), mouth_grin(c, 26, 11), leaf_hand(c, 116, 54, angle=-12, scale=0.62)),
@@ -515,9 +614,9 @@ MOTIONS = {
 }
 
 
-def render_face(template, name):
+def render_face(template, name, draw=None):
     big = template.resize((CW, CH), Image.LANCZOS)
-    FACES[name](big)
+    (draw or FACES[name])(big)
     return big.resize((OUT_W, OUT_H), Image.LANCZOS)
 
 
@@ -534,11 +633,13 @@ def on_background(img, angle=None, ghost=False):
     return canvas
 
 
-TURNAROUND_BOXES = {'top': (905, 875, 1060, 988), 'bottom': (1060, 875, 1205, 988)}  # on the expanded sheet
+# On the expanded sheet. left / back / right are for menu-opening animations.
+TURNAROUND_BOXES = {'top': (905, 875, 1060, 988), 'bottom': (1060, 875, 1205, 988),
+                    'left': (490, 889, 612, 986), 'back': (612, 889, 762, 986), 'right': (770, 889, 905, 986)}
 
 
 def center_turnaround(name):
-    """Top / bottom views cut from the character sheet, background faded out, centered on the canvas."""
+    """Turnaround views cut from the character sheet, background faded out, centered on the canvas."""
     sheet = Image.open(SRC / 'herbie-character-sheet-expanded.png').convert('RGB')
     src = sheet.crop(TURNAROUND_BOXES[name])
     arr = np.array(src).astype(np.int16)
@@ -569,8 +670,13 @@ def main(preview=False):
     faces = {name: render_face(template, name) for name in FACES}
     motions = {}
     for name, (base, angle) in MOTIONS.items():
-        motions[name] = on_background(faces[base], angle=angle, ghost=(name == 'shaking'))
-    turns = {n: center_turnaround(n) for n in ('top', 'bottom')}
+        if name == 'scanning':
+            motions[name] = radar_scan(faces['neutral'])
+        elif name == 'low-battery':
+            motions[name] = render_face(template, name, draw=battery_panel)
+        else:
+            motions[name] = on_background(faces[base], angle=angle, ghost=(name == 'shaking'))
+    turns = {n: center_turnaround(n) for n in TURNAROUND_BOXES}
 
     if '--dry' not in sys.argv:
         for name, img in faces.items():
@@ -584,7 +690,7 @@ def main(preview=False):
         manifest['expressions'] = {n: f'/assets/herbie/expressions/{n}.png' for n in FACES}
         manifest['labels'] = {n: LABELS.get(n, n.replace('-', ' ')) for n in FACES}
         manifest['motions'] = {n: f'/assets/herbie/motions/{n}.png' for n in MOTIONS}
-        manifest['turnarounds'] = {n: f'/assets/herbie/turnarounds/{n}.png' for n in ('top', 'bottom')}
+        manifest['turnarounds'] = {n: f'/assets/herbie/turnarounds/{n}.png' for n in TURNAROUND_BOXES}
         (SRC / 'manifest.json').write_text(json.dumps(manifest, indent=2) + '\n')
 
     if preview:
