@@ -445,7 +445,8 @@ function bearingBetween(a = {}, b = {}) { const lat1 = toRadians(Number(a.lat ||
 function traceDistanceMiles(trace = []) { return trace.reduce((sum, point, index) => sum + (index ? distanceBetweenMiles(trace[index - 1], point) : 0), 0); }
 function routeLatLon(route) { return route?.geometry?.coordinates?.map(([lon, lat]) => ({ lat, lon })) || []; }
 function routePointAt(route, ratio) { const points = routeLatLon(route); if (!points.length) return localHome; const index = Math.min(points.length - 1, Math.max(0, Math.round(ratio * (points.length - 1)))); return points[index]; }
-function routeStatusForPoint(route, point, navWaypoints = null) { const points = routeLatLon(route); const waypointSeed = navWaypoints || route?.waypoints || []; if (!points.length || !point) return { progress: 0, offRouteFeet: 0, milesIn: 0, milesRemaining: Number(route?.distanceMiles || 0), nextWaypoint: waypointSeed[0], snappedPoint: point }; if (points.length === 1) { const miles = distanceBetweenMiles(point, points[0]); return { progress: 0, offRouteFeet: Math.round(miles * 5280), milesIn: 0, milesRemaining: Number(route.distanceMiles || 0), nextWaypoint: waypointSeed[0], snappedPoint: points[0] }; } const lat0 = toRadians(point.lat); const milesPerLat = 69; const milesPerLon = Math.cos(lat0) * 69.172; let best = { segment: 0, t: 0, miles: Infinity, snappedPoint: points[0] }; points.slice(0, -1).forEach((a, index) => { const b = points[index + 1]; const ax = (a.lon - point.lon) * milesPerLon, ay = (a.lat - point.lat) * milesPerLat; const bx = (b.lon - point.lon) * milesPerLon, by = (b.lat - point.lat) * milesPerLat; const vx = bx - ax, vy = by - ay; const len2 = vx * vx + vy * vy || 1; const t = Math.max(0, Math.min(1, -(ax * vx + ay * vy) / len2)); const sx = ax + vx * t, sy = ay + vy * t; const miles = Math.sqrt(sx * sx + sy * sy); if (miles < best.miles) best = { segment: index, t, miles, snappedPoint: { lat: a.lat + (b.lat - a.lat) * t, lon: a.lon + (b.lon - a.lon) * t } }; }); const progress = (best.segment + best.t) / (points.length - 1); const milesIn = progress * Number(route.distanceMiles || 0); const waypointList = [...waypointSeed].sort((a, b) => Number(a.mile || 0) - Number(b.mile || 0)); const nextWaypoint = waypointList.find(w => Number(w.mile) > milesIn) || waypointList.at(-1); return { progress, offRouteFeet: Math.round(best.miles * 5280), milesIn, milesRemaining: Math.max(0, Number(route.distanceMiles || 0) - milesIn), nextWaypoint, snappedPoint: best.snappedPoint }; }
+function routeMilesOf(route) { return Number(route?.distanceMiles ?? route?.miles ?? 0) || 0; }
+function routeStatusForPoint(route, point, navWaypoints = null, hintProgress = 0) { const points = routeLatLon(route); const waypointSeed = navWaypoints || route?.waypoints || []; if (!points.length || !point) return { progress: 0, offRouteFeet: 0, milesIn: 0, milesRemaining: routeMilesOf(route), nextWaypoint: waypointSeed[0], snappedPoint: point }; if (points.length === 1) { const miles = distanceBetweenMiles(point, points[0]); return { progress: 0, offRouteFeet: Math.round(miles * 5280), milesIn: 0, milesRemaining: routeMilesOf(route), nextWaypoint: waypointSeed[0], snappedPoint: points[0] }; } const lat0 = toRadians(point.lat); const milesPerLat = 69; const milesPerLon = Math.cos(lat0) * 69.172; let best = { segment: 0, t: 0, miles: Infinity, snappedPoint: points[0] }; const legs = points.length - 1; const hint = Math.max(0, Math.min(1, Number(hintProgress) || 0)); const TIE_MILES = 0.01; points.slice(0, -1).forEach((a, index) => { const b = points[index + 1]; const ax = (a.lon - point.lon) * milesPerLon, ay = (a.lat - point.lat) * milesPerLat; const bx = (b.lon - point.lon) * milesPerLon, by = (b.lat - point.lat) * milesPerLat; const vx = bx - ax, vy = by - ay; const len2 = vx * vx + vy * vy || 1; const t = Math.max(0, Math.min(1, -(ax * vx + ay * vy) / len2)); const sx = ax + vx * t, sy = ay + vy * t; const miles = Math.sqrt(sx * sx + sy * sy); const candidate = { segment: index, t, miles, snappedPoint: { lat: a.lat + (b.lat - a.lat) * t, lon: a.lon + (b.lon - a.lon) * t } }; const closer = miles < best.miles - TIE_MILES; const tieNearerHint = Math.abs(miles - best.miles) <= TIE_MILES && Math.abs((index + t) / legs - hint) < Math.abs((best.segment + best.t) / legs - hint); if (closer || tieNearerHint) best = candidate; }); const progress = (best.segment + best.t) / legs; const milesIn = progress * routeMilesOf(route); const waypointList = [...waypointSeed].sort((a, b) => Number(a.mile || 0) - Number(b.mile || 0)); const nextWaypoint = waypointList.find(w => Number(w.mile) > milesIn) || waypointList.at(-1); return { progress, offRouteFeet: Math.round(best.miles * 5280), milesIn, milesRemaining: Math.max(0, routeMilesOf(route) - milesIn), nextWaypoint, snappedPoint: best.snappedPoint }; }
 function makeRouteGpx(route) { const waypointList = [...(route?.waypoints || []), ...(route?.customWaypoints || [])].sort((a, b) => Number(a.mile || 0) - Number(b.mile || 0)); const waypoints = waypointList.map(p => `    <wpt lat="${p.lat}" lon="${p.lon}"><name>${p.name}</name><type>${p.type}</type>${p.notes ? `<desc>${p.notes}</desc>` : ''}</wpt>`).join('\n'); const rtepts = routeLatLon(route).map(p => `      <rtept lat="${p.lat}" lon="${p.lon}" />`).join('\n'); return `<?xml version="1.0" encoding="UTF-8"?>\n<gpx version="1.1" creator="MapPi3 ${VERSION}" xmlns="http://www.topografix.com/GPX/1/1">\n  <metadata><name>${route?.name || 'MapPi3 route'}</name></metadata>\n${waypoints}\n  <rte><name>${route?.name || 'MapPi3 route'}</name>\n${rtepts}\n  </rte>\n</gpx>\n`; }
 function walkDurationSeconds(walk) { const start = Number(walk?.startedAt || 0); const end = Number(walk?.endedAt || Date.now()); return start ? Math.max(0, Math.round((end - start) / 1000)) : Number(walk?.ticks || 0); }
 function formatDateTime(value) { if (!value) return 'not saved'; return new Date(value).toLocaleString([], { month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' }); }
@@ -1275,6 +1276,7 @@ function HikeRatingModal({ open, routeName, onSave, onClose }) {
   return <div className="rating-backdrop" role="dialog" aria-modal="true" aria-label="Rate your hike"><div className="rating-modal"><h2>Rate your hike</h2><p className="muted">{routeName || 'Completed hike'} is ending. Save a 1–5 star trail review with the completed hike record.</p><div className="star-row">{[1,2,3,4,5].map(n=><button key={n} className={n<=stars?'active':''} onClick={()=>setStars(n)} aria-label={`${n} star${n===1?'':'s'}`}>★</button>)}</div><textarea rows="3" value={note} onChange={e=>setNote(e.target.value)} placeholder="Quick note: views, footing, bugs, dog friendly, would hike again…"/><div className="button-row"><button className="primary" onClick={()=>onSave({ stars, note })}>Save hike review</button><button className="ghost" onClick={onClose}>Skip for now</button></div></div></div>;
 }
 
+const gpsSourceLabel = (source) => ({ phone: 'Phone GPS', pi: 'MapPI3 GPS', waiting: 'Waiting for GPS fix', idle: 'GPS idle' })[source] || 'GPS idle';
 function Navigate({ recording, setRecording, elapsed, progress, setProgress, resetTrack, selectedRoute = primaryRoutePack, launchPlan = {}, setLaunchPlan, completedTrails = [], onCompleteRoute, settings = {}, setSettings, originPoint = localHome, conditions = defaultConditions }) {
   const [navTrace, setNavTrace] = useState([]);
   const [navStatus, setNavStatus] = useState('Ready. Start recording to use phone GPS on the selected trail.');
@@ -1284,7 +1286,8 @@ function Navigate({ recording, setRecording, elapsed, progress, setProgress, res
   const [activeMapPackId, setActiveMapPackId] = useState('');
   const navWaypoints = [...(selectedRoute.waypoints || []), ...(selectedRoute.customWaypoints || [])].sort((a, b) => Number(a.mile || 0) - Number(b.mile || 0));
   const latest = navTrace.at(-1) || routePointAt(selectedRoute, progress);
-  const routeStatus = routeStatusForPoint(selectedRoute, latest, navWaypoints);
+  const routeStatus = routeStatusForPoint(selectedRoute, latest, navWaypoints, progress);
+  const [gpsSource, setGpsSource] = useState('idle');
   useEffect(() => {
     setNavTrace([]);
     setProgress(0);
@@ -1304,29 +1307,44 @@ function Navigate({ recording, setRecording, elapsed, progress, setProgress, res
     return () => { cancelled = true; };
   }, []);
   useEffect(() => {
-    if (!recording) return undefined;
-    let watchId;
+    if (!recording) { setGpsSource('idle'); return undefined; }
+    // Position only moves on a real fix: phone GPS (HTTPS) first, then MapPI3's own GPS over the hotspot.
+    // With no fix the hike stays put and says so; nothing is simulated.
+    let cancelled = false, watchId = null, lastPhoneFix = 0;
+    const hint = { progress };
+    const accept = (point, source, detail) => {
+      if (cancelled) return;
+      const status = routeStatusForPoint(selectedRoute, point, navWaypoints, hint.progress);
+      hint.progress = status.progress;
+      setNavTrace(trace => [...trace, point].slice(-1500));
+      setProgress(status.progress);
+      setGpsSource(source);
+      setNavStatus(`${detail} · ${status.offRouteFeet} ft from route`);
+    };
     if (navigator.geolocation && secure) {
-      setNavStatus('Live phone GPS active for selected trail. Completion only advances from live route progress while recording.');
       watchId = navigator.geolocation.watchPosition(pos => {
-        const point = { lat: pos.coords.latitude, lon: pos.coords.longitude, accuracy: pos.coords.accuracy, t: Date.now() };
-        const status = routeStatusForPoint(selectedRoute, point, navWaypoints);
-        setNavTrace(trace => [...trace, point].slice(-1500));
-        setProgress(status.progress);
-        setNavStatus(`Live GPS · accuracy ${Math.round(pos.coords.accuracy || 0)} m · ${status.offRouteFeet} ft from route`);
-      }, err => setNavStatus(`GPS unavailable: ${err.message}. Simulator will keep route preview moving.`), { enableHighAccuracy: true, maximumAge: 1500, timeout: 15000 });
-    } else {
-      setNavStatus('Simulator route preview running. Use Tailscale HTTPS on phone for real GPS.');
-      const id = setInterval(() => {
-        setProgress(p => {
-          const next = p >= 0.99 ? 0 : Math.min(0.99, p + 0.01);
-          setNavTrace(trace => [...trace, { ...routePointAt(selectedRoute, next), accuracy: 20, t: Date.now() }].slice(-1500));
-          return next;
-        });
-      }, 1000);
-      return () => clearInterval(id);
+        lastPhoneFix = Date.now();
+        accept({ lat: pos.coords.latitude, lon: pos.coords.longitude, accuracy: pos.coords.accuracy, t: Date.now(), source: 'phone' }, 'phone', `Phone GPS · ±${Math.round(pos.coords.accuracy || 0)} m`);
+      }, err => setNavStatus(`Phone GPS unavailable (${err.message}). Using MapPI3 GPS when it has a fix.`), { enableHighAccuracy: true, maximumAge: 1500, timeout: 15000 });
     }
-    return () => watchId && navigator.geolocation.clearWatch(watchId);
+    const pollPi = async () => {
+      if (cancelled || Date.now() - lastPhoneFix < 10000) return;
+      try {
+        const g = await fetch('/api/gps', { cache: 'no-store' }).then(r => r.ok ? r.json() : null);
+        if (cancelled) return;
+        if (g?.fix && Number.isFinite(Number(g.lat)) && Number.isFinite(Number(g.lon))) {
+          accept({ lat: Number(g.lat), lon: Number(g.lon), accuracy: null, t: Date.now(), source: 'pi' }, 'pi', `MapPI3 GPS · ${g.satellites ?? '?'} satellites`);
+        } else if (!lastPhoneFix) {
+          setGpsSource('waiting');
+          setNavStatus(g ? `Waiting for a GPS fix · MapPI3 GPS sees ${g.satellites || 0} satellite(s). Find open sky; your position will not move until there is a real fix.` : 'No GPS available. Open MapPI3 on the Pi hotspot, or use HTTPS so the phone can share its GPS.');
+        }
+      } catch {
+        if (!cancelled && !lastPhoneFix) { setGpsSource('waiting'); setNavStatus('No GPS available. Open MapPI3 on the Pi hotspot, or use HTTPS so the phone can share its GPS.'); }
+      }
+    };
+    pollPi();
+    const piTimer = setInterval(pollPi, 2000);
+    return () => { cancelled = true; clearInterval(piTimer); if (watchId != null) navigator.geolocation.clearWatch(watchId); };
   }, [recording, secure, selectedRoute?.id, setProgress]);
   const miles = routeStatus.milesIn;
   const pct = Math.round(routeStatus.progress * 100);
@@ -1334,9 +1352,9 @@ function Navigate({ recording, setRecording, elapsed, progress, setProgress, res
   const activeMapPack = installedMapPacks.find(pack => pack.id === activeMapPackId) || installedMapPacks.find(pack => pack.active) || null;
   const activeMapPackLabel = activeMapPack ? `${activeMapPack.name} · z${activeMapPack.zoom_min ?? '?'}–z${activeMapPack.zoom_max ?? '?'} · ${activeMapPack.size_mib ?? 0} MiB` : 'PNG overview fallback';
   const alreadyComplete = completedTrails.some(item => item.routeId === selectedRoute.id);
-  const saveCompletion = (review = null) => { onCompleteRoute && onCompleteRoute({ routeId: selectedRoute.id, routeName: selectedRoute.name, miles: Number(selectedRoute.distanceMiles || selectedRoute.miles || 0), completedAt: Date.now(), durationSeconds: elapsed, source: secure && navTrace.length ? 'phone GPS / local' : 'manual/simulated', progress: pct, review }); setRatingOpen(false); };
+  const saveCompletion = (review = null) => { onCompleteRoute && onCompleteRoute({ routeId: selectedRoute.id, routeName: selectedRoute.name, miles: Number(selectedRoute.distanceMiles || selectedRoute.miles || 0), completedAt: Date.now(), durationSeconds: elapsed, source: navTrace.length ? (navTrace.some(p => p.source === 'phone') ? 'phone GPS' : 'MapPI3 GPS') : 'manual (no GPS trace)', progress: pct, review }); setRatingOpen(false); };
   const completeRoute = () => setRatingOpen(true);
-  return <><section className="map-card"><div className="map-toolbar"><Pill>Selected trail</Pill><Pill tone={secure ? 'online' : 'warn'}>{secure ? 'GPS capable' : 'HTTP/no GPS'}</Pill><Pill tone={recording ? 'recording' : 'default'}>{recording ? 'REC' : 'ready'}</Pill><Pill>{selectedRoute.name}</Pill>{launchPlan.turnAroundTime && <Pill tone="warn">turn {launchPlan.turnAroundTime}</Pill>}{launchPlan.trailLeaveTime && <Pill tone="warn">leave {launchPlan.trailLeaveTime}</Pill>}{installedMapPacks.length > 0 && <label className="mini-select"><span>Map pack</span><select value={activeMapPackId} onChange={e => setActiveMapPackId(e.target.value)}>{installedMapPacks.map(pack => <option key={pack.id} value={pack.id}>{pack.name} · {pack.theme}</option>)}</select></label>}<Pill tone={activeMapPack ? 'online' : 'warn'}>{activeMapPackLabel}</Pill></div><LiveLeafletMap key={activeMapPackId || 'png-overview'} trace={navTrace} center={[latest.lat, latest.lon]} active={recording} route={selectedRoute} waypoints={navWaypoints} tileLabel={activeMapPack ? activeMapPack.name : 'MapPI3 offline PNG tiles'} /></section><RichMapIntelligence route={selectedRoute} waypoints={navWaypoints} routeStatus={routeStatus} activeMapPack={activeMapPack} activeMapPackLabel={activeMapPackLabel} /><section className="panel dashboard-panel"><div className="section-head"><div><h2>Active hike navigation</h2><p className="muted">{selectedRoute.name} · live view follows route geometry, built-in waypoints, custom waypoints, and phone GPS when available.</p></div><div className="button-row"><button className="primary small" onClick={() => setRecording(!recording)}>{recording ? 'Pause recording' : 'Start recording'}</button><button className="ghost small" onClick={() => { setNavTrace([]); resetTrack(); }}>Reset</button></div></div><LiveHikeCharts trace={navTrace} route={selectedRoute} conditions={conditions} elapsed={elapsed} progress={routeStatus.progress} recording={recording} /><HikeBookingCalendar launchPlan={launchPlan} setLaunchPlan={setLaunchPlan} selectedRoute={selectedRoute} /><HikeDisplayConsole settings={settings} setSettings={setSettings} launchPlan={launchPlan} selectedRoute={selectedRoute} conditions={conditions} /><div className="completion-card"><div className="completion-head"><strong>{pct}% complete</strong><span>{miles.toFixed(2)} / {Number(selectedRoute.distanceMiles || selectedRoute.miles || 0).toFixed(2)} mi</span></div><div className="completion-bar"><span style={{ width: `${Math.min(100, Math.max(0, pct))}%` }} /></div><div className="button-row"><button className="ghost small" onClick={completeRoute}>{alreadyComplete ? 'Save another completion' : 'Mark trail complete'}</button><Pill>{alreadyComplete ? 'completed before' : 'local completion log'}</Pill></div><p className="muted">Completion saves locally now. Supabase later can sync completed trails, repeat attempts, miles, and profile stats.</p></div><div className="nav-instrument-card"><FieldInstrument mode={settings.orientationMode || settings.fieldInstrument || 'Compass'} /></div><div className="nav-grid"><Stat value={miles.toFixed(2)} label="mi tracked" /><Stat value={formatClock(elapsed)} label="elapsed" /><Stat value={routeStatus.milesRemaining.toFixed(2)} label="mi remaining" /><Stat value={`${routeStatus.offRouteFeet} ft`} label="from route" /><Stat value={routeStatus.nextWaypoint?.name || 'Finish'} label="next waypoint" /><Stat value={routeStatus.nextWaypoint?.mile ?? selectedRoute.distanceMiles} label="next mi" /><Stat value={selectedRoute.difficulty} label="difficulty" /><Stat value={`${pct}%`} label="route progress" /></div><div className={`alert ${routeStatus.offRouteFeet > 250 ? 'warn' : 'info'}`}>{navStatus}{routeStatus.offRouteFeet > 250 ? ' · Check map/compass: you may be off the selected trail corridor.' : ''}</div><TrailNavFieldCards selectedRoute={selectedRoute} originPoint={originPoint} conditions={conditions} routeStatus={routeStatus} activeMapPackLabel={activeMapPackLabel} /><ReadyChecklist route={selectedRoute} secure={secure} conditions={{ ...conditions, source: conditions.source || 'route/local' }} /></section><HikeRatingModal open={ratingOpen} routeName={selectedRoute.name} onSave={saveCompletion} onClose={()=>setRatingOpen(false)} /></>;
+  return <><section className="map-card"><div className="map-toolbar"><Pill>Selected trail</Pill><Pill tone={gpsSource === 'phone' || gpsSource === 'pi' ? 'online' : gpsSource === 'waiting' ? 'warn' : 'default'}>{gpsSourceLabel(gpsSource)}</Pill><Pill tone={recording ? 'recording' : 'default'}>{recording ? 'REC' : 'ready'}</Pill><Pill>{selectedRoute.name}</Pill>{launchPlan.turnAroundTime && <Pill tone="warn">turn {launchPlan.turnAroundTime}</Pill>}{launchPlan.trailLeaveTime && <Pill tone="warn">leave {launchPlan.trailLeaveTime}</Pill>}{installedMapPacks.length > 0 && <label className="mini-select"><span>Map pack</span><select value={activeMapPackId} onChange={e => setActiveMapPackId(e.target.value)}>{installedMapPacks.map(pack => <option key={pack.id} value={pack.id}>{pack.name} · {pack.theme}</option>)}</select></label>}<Pill tone={activeMapPack ? 'online' : 'warn'}>{activeMapPackLabel}</Pill></div><LiveLeafletMap key={activeMapPackId || 'png-overview'} trace={navTrace} center={[latest.lat, latest.lon]} active={recording} route={selectedRoute} waypoints={navWaypoints} tileLabel={activeMapPack ? activeMapPack.name : 'MapPI3 offline PNG tiles'} /></section><RichMapIntelligence route={selectedRoute} waypoints={navWaypoints} routeStatus={routeStatus} activeMapPack={activeMapPack} activeMapPackLabel={activeMapPackLabel} /><section className="panel dashboard-panel"><div className="section-head"><div><h2>Active hike navigation</h2><p className="muted">{selectedRoute.name} · live view follows route geometry, built-in waypoints, custom waypoints, and phone GPS when available.</p></div><div className="button-row"><button className="primary small" onClick={() => setRecording(!recording)}>{recording ? 'Pause recording' : 'Start recording'}</button><button className="ghost small" onClick={() => { setNavTrace([]); resetTrack(); }}>Reset</button></div></div><LiveHikeCharts trace={navTrace} route={selectedRoute} conditions={conditions} elapsed={elapsed} progress={routeStatus.progress} recording={recording} /><HikeBookingCalendar launchPlan={launchPlan} setLaunchPlan={setLaunchPlan} selectedRoute={selectedRoute} /><HikeDisplayConsole settings={settings} setSettings={setSettings} launchPlan={launchPlan} selectedRoute={selectedRoute} conditions={conditions} /><div className="completion-card"><div className="completion-head"><strong>{pct}% complete</strong><span>{miles.toFixed(2)} / {Number(selectedRoute.distanceMiles || selectedRoute.miles || 0).toFixed(2)} mi</span></div><div className="completion-bar"><span style={{ width: `${Math.min(100, Math.max(0, pct))}%` }} /></div><div className="button-row"><button className="ghost small" onClick={completeRoute}>{alreadyComplete ? 'Save another completion' : 'Mark trail complete'}</button><Pill>{alreadyComplete ? 'completed before' : 'local completion log'}</Pill></div><p className="muted">Completion saves locally now. Supabase later can sync completed trails, repeat attempts, miles, and profile stats.</p></div><div className="nav-instrument-card"><FieldInstrument mode={settings.orientationMode || settings.fieldInstrument || 'Compass'} /></div><div className="nav-grid"><Stat value={miles.toFixed(2)} label="mi tracked" /><Stat value={formatClock(elapsed)} label="elapsed" /><Stat value={routeStatus.milesRemaining.toFixed(2)} label="mi remaining" /><Stat value={`${routeStatus.offRouteFeet} ft`} label="from route" /><Stat value={routeStatus.nextWaypoint?.name || 'Finish'} label="next waypoint" /><Stat value={routeStatus.nextWaypoint?.mile ?? selectedRoute.distanceMiles} label="next mi" /><Stat value={selectedRoute.difficulty} label="difficulty" /><Stat value={`${pct}%`} label="route progress" /></div><div className={`alert ${routeStatus.offRouteFeet > 250 ? 'warn' : 'info'}`}>{navStatus}{routeStatus.offRouteFeet > 250 ? ' · Check map/compass: you may be off the selected trail corridor.' : ''}</div><TrailNavFieldCards selectedRoute={selectedRoute} originPoint={originPoint} conditions={conditions} routeStatus={routeStatus} activeMapPackLabel={activeMapPackLabel} /><ReadyChecklist route={selectedRoute} secure={secure} conditions={{ ...conditions, source: conditions.source || 'route/local' }} /></section><HikeRatingModal open={ratingOpen} routeName={selectedRoute.name} onSave={saveCompletion} onClose={()=>setRatingOpen(false)} /></>;
 }
 function DailyExercise({ walk, setWalk, conditions, savedWalks, setSavedWalks, workoutLog = [], setWorkoutLog, onExportWalkGpx, onDeleteWalk, hiker, completedTrails = [], routes = [], selectedRoute = primaryRoutePack, setSelectedRoute, onCreateExerciseRoute, onOpenRouteForWalk }) {
   const [status, setStatus] = useState('Ready. Pick a saved route, map a custom loop, then Start walk to see the planned path in green and your live trail in blue.');
@@ -1419,13 +1437,28 @@ function DailyExercise({ walk, setWalk, conditions, savedWalks, setSavedWalks, w
         setStatus(`GPS unavailable: ${err.message}. Check phone location permission for this HTTPS site.`);
       }, { enableHighAccuracy: true, maximumAge: 1000, timeout: 15000 });
     } else {
-      setStatus('Simulator running because this page is not a secure GPS origin. It follows the selected route when one exists. Use Vercel HTTPS for real phone GPS.');
-      const id = setInterval(() => setWalk(w => {
-        const tick = (w.ticks || 0) + 1;
-        const simPoint = plannedRoute?.geometry?.coordinates?.length > 1 ? routePointAt(plannedRoute, Math.min(0.99, tick / 180)) : { lat: localHome.lat + tick * 0.00008, lon: localHome.lon - tick * 0.00006 };
-        return { ...w, source: 'simulator', trace: [...(w.trace || []), { ...simPoint, accuracy: 25, t: Date.now() }].slice(-3000), ticks: tick };
-      }), 1000);
-      return () => clearInterval(id);
+      // No phone GPS on plain HTTP: record from MapPI3's own GPS. Nothing is added to the trace without a real fix.
+      setStatus('Using MapPI3 GPS over the hotspot. Waiting for a fix…');
+      let cancelled = false;
+      const pollPi = async () => {
+        try {
+          const g = await fetch('/api/gps', { cache: 'no-store' }).then(r => r.ok ? r.json() : null);
+          if (cancelled) return;
+          if (g?.fix && Number.isFinite(Number(g.lat)) && Number.isFinite(Number(g.lon))) {
+            const point = { lat: Number(g.lat), lon: Number(g.lon), accuracy: null, speed: g.speed ?? null, t: Date.now() };
+            const routeStatus = plannedRoute ? routeStatusForPoint(plannedRoute, point, plannedWaypoints) : null;
+            setWalk(w => ({ ...w, source: 'MapPI3 GPS', trace: [...(w.trace || []), point].slice(-3000), ticks: (w.ticks || 0) + 1 }));
+            setStatus(routeStatus ? `MapPI3 GPS · ${g.satellites ?? '?'} satellites · ${routeStatus.offRouteFeet} ft from ${plannedRoute.name} · ${Math.round(routeStatus.progress * 100)}% route` : `MapPI3 GPS · ${g.satellites ?? '?'} satellites · ${new Date().toLocaleTimeString()}`);
+          } else {
+            setStatus(g ? `Waiting for a GPS fix · MapPI3 GPS sees ${g.satellites || 0} satellite(s). Nothing is recorded until there is a real fix.` : 'No GPS available here. Open MapPI3 on the Pi hotspot, or use HTTPS so the phone can share its GPS.');
+          }
+        } catch {
+          if (!cancelled) setStatus('No GPS available here. Open MapPI3 on the Pi hotspot, or use HTTPS so the phone can share its GPS.');
+        }
+      };
+      pollPi();
+      const id = setInterval(pollPi, 2000);
+      return () => { cancelled = true; clearInterval(id); };
     }
     return () => watchId && navigator.geolocation.clearWatch(watchId);
   }, [walk.active, secure, setWalk, plannedRoute?.id, plannedRoute?.name]);
@@ -2720,7 +2753,7 @@ function App() {
     return () => clearTimeout(t);
   }, [settings.orientationMode, settings.senseMessage, settings.senseBrightness, settings.senseBrightnessLevel, settings.senseScrollSpeed, settings.senseColor, settings.senseBorderOnly, settings.senseRotation, settings.senseAvatarExpression, settings.liquidAxisMap, JSON.stringify(settings.senseCustomPixels || defaultSenseCustomPixels), settings.hydrationAlarmEnabled, settings.hydrationWaterOz, settings.hydrationIntervalMinutes, settings.piFeatures, settings.herbieExpression, progress, selectedRoute?.id]);
   useEffect(() => localStorage.setItem('mappi3.launchMode', JSON.stringify(launchMode)), [launchMode]); useEffect(() => accountSession ? localStorage.setItem('mappi3.accountSession', JSON.stringify(accountSession)) : localStorage.removeItem('mappi3.accountSession'), [accountSession]); useEffect(() => localStorage.setItem('mappi3.driveDestination', JSON.stringify(driveDestination)), [driveDestination]); useEffect(() => localStorage.setItem('mappi3.deviceId', JSON.stringify(deviceId)), [deviceId]); useEffect(() => localStorage.setItem('mappi3.accountState', JSON.stringify(accountState)), [accountState]); useEffect(() => localStorage.setItem('mappi3.completedTrails', JSON.stringify(completedTrails)), [completedTrails]); useEffect(() => localStorage.setItem('mappi3.activeTab', JSON.stringify(activeTab)), [activeTab]); useEffect(() => localStorage.setItem('mappi3.originPoint', JSON.stringify(originPoint)), [originPoint]); useEffect(() => localStorage.setItem('mappi3.customWaypointsByRoute', JSON.stringify(customWaypointsByRoute)), [customWaypointsByRoute]); useEffect(() => localStorage.setItem('mappi3.healthHistory', JSON.stringify(healthHistory)), [healthHistory]); useEffect(() => localStorage.setItem('mappi3.selectedRouteId', JSON.stringify(selectedRouteId)), [selectedRouteId]); useEffect(() => localStorage.setItem('mappi3.routeSelectionConfirmed', JSON.stringify(routeSelectionConfirmed)), [routeSelectionConfirmed]); useEffect(() => localStorage.setItem('mappi3.searchQuery', JSON.stringify(searchQuery)), [searchQuery]); useEffect(() => localStorage.setItem('mappi3.settings', JSON.stringify(settings)), [settings]); useEffect(() => localStorage.setItem('mappi3.routes', JSON.stringify(routes)), [routes]); useEffect(() => localStorage.setItem('mappi3.elapsed', JSON.stringify(elapsed)), [elapsed]); useEffect(() => localStorage.setItem('mappi3.progress', JSON.stringify(progress)), [progress]); useEffect(() => localStorage.setItem('mappi3.hiker', JSON.stringify(hiker)), [hiker]); useEffect(() => localStorage.setItem('mappi3.conditions', JSON.stringify(conditions)), [conditions]); useEffect(() => localStorage.setItem('mappi3.walk', JSON.stringify({ ...walk, active: false })), [walk]); useEffect(() => localStorage.setItem('mappi3.walkHistory', JSON.stringify(savedWalks)), [savedWalks]); useEffect(() => localStorage.setItem('mappi3.workoutLog', JSON.stringify(workoutLog)), [workoutLog]); useEffect(() => localStorage.setItem('mappi3.launchChecklist', JSON.stringify(launchChecklist)), [launchChecklist]); useEffect(() => localStorage.setItem('mappi3.launchPlan', JSON.stringify(launchPlan)), [launchPlan]); useEffect(() => localStorage.setItem('mappi3.readinessLog', JSON.stringify(readinessLog)), [readinessLog]);
-  useEffect(() => { if (!recording) return undefined; const timer = setInterval(() => { setElapsed(e => e + 1); setProgress(p => (p >= 0.98 ? 0.02 : Math.min(0.99, p + 0.012))); }, 1000); return () => clearInterval(timer); }, [recording]);
+  useEffect(() => { if (!recording) return undefined; const timer = setInterval(() => setElapsed(e => e + 1), 1000); return () => clearInterval(timer); }, [recording]);
   useEffect(() => {
     let cancelled = false;
     async function loadWeather() {
@@ -2751,7 +2784,8 @@ function App() {
     const weatherTimer = setInterval(loadWeather, 10 * 60 * 1000);
     return () => { cancelled = true; clearInterval(weatherTimer); };
   }, [originPoint?.lat, originPoint?.lon, settings.timezone]);
-  useEffect(() => { if (accountState.active !== 'Guest') return undefined; const clear = () => clearGuestData(); window.addEventListener('beforeunload', clear); return () => window.removeEventListener('beforeunload', clear); }, [accountState.active]);
+  // Guest data stays on this device until the user clears it (Settings). It used to be wiped on every
+  // unload, so a refresh or dropped hotspot mid-hike lost the selected trail, trace and completed hikes.
   const activeOwner = accountSession?.user?.email || accountSession?.user?.id || accountState.active || 'Guest';
   const accessToken = accountSession?.access_token || '';
   const saveCloudRecord = async (kind, payload) => {

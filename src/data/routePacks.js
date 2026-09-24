@@ -6,6 +6,11 @@ export const mapRoutePackToCard = (pack) => ({
   name: pack.name,
   place: pack.place,
   region: pack.region,
+  // Keep the pack's numeric fields as well as the display strings; navigation, weather and
+  // stats code read distanceMiles/elevationGainFt and got 0 when only the card fields existed.
+  distanceMiles: pack.distanceMiles,
+  elevationGainFt: pack.elevationGainFt,
+  estimatedTime: pack.estimatedTime,
   miles: pack.distanceMiles,
   time: pack.estimatedTime,
   gain: `${pack.elevationGainFt.toLocaleString()} ft`,

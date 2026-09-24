@@ -217,7 +217,7 @@ export default function LiveLeafletMap({ trace = [], center = defaultCenter, act
   const latestPoint = points[points.length - 1] || center;
   const gainLabel = Number(route?.elevationGainFt || route?.gainFt || 0) ? `${Number(route?.elevationGainFt || route?.gainFt || 0).toLocaleString()} ft gain` : 'elevation pending';
   return <div className={`leaflet-shell ${onMapClick ? 'draw-active' : ''} ${pitch3d ? 'pitch-3d' : ''}`} data-tile-status={tileStatus} data-map-mode={mapMode}>
-    <div className="map-fallback-label">{tileStatus} · GPS {formatCoord(latestPoint)}</div>
+    <div className="map-fallback-label">{tileStatus} · {tracePoints.length ? 'GPS' : routePoints.length ? 'Trail' : 'Map center'} {formatCoord(latestPoint)}</div>
     <div className="map-mode-dock" aria-label="Map view modes">
       {Object.entries(onlineTileModes).map(([id, mode]) => <button key={id} type="button" className={mapMode === id ? 'active' : ''} onClick={() => setMapMode(id)}>{mode.label}</button>)}
       <button type="button" className={pitch3d ? 'active' : ''} onClick={() => setPitch3d(value => !value)}>3D</button>
