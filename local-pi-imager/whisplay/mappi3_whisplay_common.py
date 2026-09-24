@@ -118,8 +118,20 @@ def herbie_asset_label(ref):
     raw = str(ref or 'happy').strip()
     return raw.split('/', 1)[-1].replace('-', ' ')
 
+# Herbie's eyes sit in a different spot on every face, so the old drawn "eyelid" bar landed across
+# the face like a loading bar. Blink by briefly swapping calm faces to closed-eye artwork instead.
+BLINK_FACE = 'meditating'
+BLINKABLE_FACES = {'neutral', 'happy', 'curious', 'focused', 'chillin', 'determined', 'grateful', 'greetings', 'thinking'}
+
+def blink_face(ref):
+    raw = str(ref or '')
+    name = raw.split('/', 1)[1] if raw.startswith('expressions/') else raw
+    return BLINK_FACE if name in BLINKABLE_FACES else ref
+
 def draw_face(mood='happy', caption='ready to roam', blink=False):
     mood = str(mood or 'happy')
+    if blink:
+        mood = str(blink_face(mood))
     p = herbie_asset_path_from_ref(mood)
     if mood not in HERBIE_EXPRESSIONS and not p:
         mood = 'happy'
@@ -136,8 +148,6 @@ def draw_face(mood='happy', caption='ready to roam', blink=False):
             x = (W - face.width) // 2
             y = 54 + max(0, (150 - face.height) // 2)
             img.paste(face, (x, y), face)
-            if blink:
-                d.rounded_rectangle((72, y + int(face.height * .34), 168, y + int(face.height * .43)), 4, fill=(7, 18, 9), outline=(196, 215, 95), width=1)
         except Exception:
             p = None
     if not p:

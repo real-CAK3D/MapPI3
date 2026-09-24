@@ -557,7 +557,8 @@ def draw_herbie_mood():
     d = ImageDraw.Draw(img)
     d.rounded_rectangle((6, 6, W-7, H-7), 12, outline=accent, width=2, fill=(12, 24, 34))
     d.text((14, 12), 'Herbie', font=F_TITLE, fill=accent)
-    p = herbie_asset_path_from_ref(mood)
+    blinking = int(time.time() * 2) % 29 == 0
+    p = herbie_asset_path_from_ref(blink_face(mood) if blinking else mood)
     if p:
         try:
             face = Image.open(p).convert('RGBA')
@@ -565,8 +566,6 @@ def draw_herbie_mood():
             x = (W - face.width) // 2
             y = 44 + max(0, (132 - face.height) // 2)
             img.paste(face, (x, y), face)
-            if int(time.time() * 2) % 29 == 0:
-                d.rounded_rectangle((74, y + int(face.height * .34), 166, y + int(face.height * .43)), 4, fill=(7, 18, 9), outline=(196, 215, 95), width=1)
         except Exception:
             pass
     y = 184
