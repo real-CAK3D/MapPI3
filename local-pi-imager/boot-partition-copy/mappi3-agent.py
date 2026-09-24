@@ -3863,6 +3863,8 @@ class Handler(http.server.SimpleHTTPRequestHandler):
             payload={k:v[-1] for k,v in qs.items()}
             payload['_local_loopback'] = self.client_address[0] in ('127.0.0.1', '::1', 'localhost')
             self.json_response(whisplay_input_status(payload)); return
+        # Lightweight GPS read for live navigation polling (gps_status() is served from the gpsd stream cache).
+        if self.path.startswith('/api/gps'): g=gps_status(); g.pop('raw', None); self.json_response({**g, 'time': time.time()}); return
         if self.path.startswith('/api/sense'): self.json_response({'ok': True, 'sense': sense_snapshot(), 'state': read_state(), 'available_modes': SENSE_MODES, 'time': time.time()}); return
         return super().do_GET()
     def do_DELETE(self):
