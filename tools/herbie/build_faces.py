@@ -807,11 +807,12 @@ def _bounce(dy, look_y):
 
 def _split_scan(reticle_side):
     def draw(c):
+        # one normal eye, the other the crosshair target eye used in scanning-2 (the focused face)
         if reticle_side == 'R':
             eye_open(c, EYE_L)
-            eye_reticle(c, EYE_R)
+            eye_target(c, EYE_R)
         else:
-            eye_reticle(c, EYE_L)
+            eye_target(c, EYE_L)
             eye_open(c, EYE_R)
         mouth_flat(c, 12)
     return draw
