@@ -706,3 +706,9 @@ body[data-theme] .telemetry-gauge span,body[data-theme] .telemetry-chart-grid sm
 .hub-tabs-more select{min-height:42px;border-radius:999px;padding:0 34px 0 16px;border:1px solid rgba(255,255,255,.16);background:rgba(0,0,0,.28);color:#efffe8;font-weight:900}
 .hub-tabs-more.active select{background:linear-gradient(135deg,#f0d98f,#9ce36c);color:#071108}
 .sr-only{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+/* Herbie image + live compass needle share one box so the SVG lines up with the painted compass */
+.herbie-frame{position:relative;width:min(100%,220px);line-height:0;z-index:1}
+.herbie-frame img{width:100%!important;display:block}
+.herbie-compass{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}
+.herbie-compass g{transition:transform .35s ease-out}
+@media (prefers-reduced-motion:reduce){.herbie-compass g{transition:none}}

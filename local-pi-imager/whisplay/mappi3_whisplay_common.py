@@ -2,6 +2,7 @@ from __future__ import annotations
 import json, os, sys, textwrap, time
 from pathlib import Path
 from urllib import request, error
+import math
 from PIL import Image, ImageDraw, ImageFont
 
 CURRENT_DIR = os.path.dirname(os.path.abspath(__file__))
@@ -153,6 +154,64 @@ def load_herbie_groups():
 
 HERBIE_GROUPS = load_herbie_groups()
 
+def load_herbie_compass():
+    for root in HERBIE_ASSET_ROOTS:
+        try:
+            compass = json.loads((root / 'manifest.json').read_text()).get('compass')
+            if compass:
+                return compass
+        except Exception:
+            continue
+    return None
+
+# Live north needle over the compass painted on Herbie's map. The dashboard updates the heading
+# from the Sense HAT (degrees clockwise from north that the top of the Pi points to).
+HERBIE_COMPASS = load_herbie_compass()
+LIVE_HEADING = [None]
+
+def set_live_heading(sense):
+    try:
+        orient = sense.get('orientation') if isinstance(sense.get('orientation'), dict) else {}
+        h = orient.get('north_heading', sense.get('compass'))
+        LIVE_HEADING[0] = float(h) % 360 if h is not None else None
+    except (TypeError, ValueError, AttributeError):
+        LIVE_HEADING[0] = None
+
+def compass_eligible(ref):
+    raw = str(ref or '')
+    if '/' not in raw or raw.startswith('expressions/'):
+        return True
+    kind, name = raw.split('/', 1)
+    base = name.rstrip('0123456789').rstrip('-')
+    return kind == 'motions' and HERBIE_COMPASS is not None and base in HERBIE_COMPASS.get('kinds', [])
+
+def draw_compass_needle(img, x, y, scale, heading):
+    """Cover the painted needle with the dial colour and draw a live one pointing to real north."""
+    if not HERBIE_COMPASS or heading is None:
+        return
+    ss = 4
+    cx0, cy0 = HERBIE_COMPASS['center']
+    r_cover = HERBIE_COMPASS['cover_radius'] * scale
+    r_needle = HERBIE_COMPASS['needle_length'] * scale
+    size = int((r_cover + 2) * 2 * ss)
+    layer = Image.new('RGBA', (size, size), (0, 0, 0, 0))
+    d = ImageDraw.Draw(layer)
+    c = size / 2
+    d.ellipse((c - r_cover * ss, c - r_cover * ss, c + r_cover * ss, c + r_cover * ss), fill=tuple(HERBIE_COMPASS['face_color']) + (255,))
+    a = math.radians(-heading)                      # screen angle of north: the top of the Pi faces `heading`
+    ux, uy = math.sin(a), -math.cos(a)
+    px, py = -uy, ux
+    w = 2.6 * scale * ss
+    tip_n = (c + ux * r_needle * ss, c + uy * r_needle * ss)
+    tip_s = (c - ux * r_needle * ss, c - uy * r_needle * ss)
+    left, right = (c + px * w, c + py * w), (c - px * w, c - py * w)
+    d.polygon([tip_s, left, right], fill=(70, 62, 44, 255), outline=(30, 26, 18, 255))
+    d.polygon([tip_n, left, right], fill=(206, 44, 36, 255), outline=(90, 16, 12, 255))
+    pin = 2.2 * scale * ss
+    d.ellipse((c - pin, c - pin, c + pin, c + pin), fill=(176, 132, 58, 255), outline=(60, 42, 16, 255))
+    layer = layer.resize((size // ss, size // ss), Image.LANCZOS)
+    img.paste(layer, (int(round(x + cx0 * scale - layer.width / 2)), int(round(y + cy0 * scale - layer.height / 2))), layer)
+
 def herbie_group_face(group, fallback='happy', period=15.0, now_ts=None):
     """Pick from an event group, moving to the next face every `period` seconds."""
     faces = [f for f in HERBIE_GROUPS.get(group, []) if f not in HERBIE_MANUAL_ONLY or group == 'rude']
@@ -205,6 +264,8 @@ def draw_face(mood='happy', caption='ready to roam', blink=False):
             x = (W - face.width) // 2
             y = 54 + max(0, (150 - face.height) // 2)
             img.paste(face, (x, y), face)
+            if compass_eligible(mood):
+                draw_compass_needle(img, x, y, face.width / 300.0, LIVE_HEADING[0])
         except Exception:
             p = None
     if not p:

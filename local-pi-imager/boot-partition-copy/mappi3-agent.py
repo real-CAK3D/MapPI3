@@ -18,7 +18,7 @@ PACMAN_EVENT_SEQ = 0
 BATTERY_LED_STATE = {'full_since': None}
 SENSE_FACE_STATE = {'last_accel': None, 'last_accel_at': 0.0, 'surprise_until': 0.0, 'still_since': 0.0}
 SENSE_MODES = ['compass','compass-arrow','compass-cardinal','rotation-test','liquid','pacman','battery','weather','fire','flashlight','sos','message','boot','sun','gps','clock','progress','beacon','stars','temp','humidity','pressure','avatar','level','custom','border','magic8','water','snake']
-ALLOWED = {'herbie-event', 'status','restart-web','reboot','shutdown','update-app','gps-sample','toggle-hotspot','hotspot-on','connect-home-wifi','wifi-scan','wifi-save-network','wifi-connect-saved','network-status','tailscale-status','tailscale-login','remote-access-repair','sense-mode','calibrate','harden-hotspot','plugin-update','vnc-setup','vnc-disable','weather-refresh','noaa-refresh','hourly-online-refresh','online-maintenance','gps-diagnose','sense-diagnose','field-ai-verify','captive-setup','captive-disable','captive-status','gps-pps-setup','whisplay-test-popup','whisplay-input','whisplay-input-status','snake-trail-event','plugin-status','plugin-install','plugin-install-all','plugin-uninstall','notification-status','notification-test','notification-publish','notification-clear','notification-preferences','audio-tts-test','audio-ambient-test'}
+ALLOWED = {'herbie-event', 'herbie-plans', 'status','restart-web','reboot','shutdown','update-app','gps-sample','toggle-hotspot','hotspot-on','connect-home-wifi','wifi-scan','wifi-save-network','wifi-connect-saved','network-status','tailscale-status','tailscale-login','remote-access-repair','sense-mode','calibrate','harden-hotspot','plugin-update','vnc-setup','vnc-disable','weather-refresh','noaa-refresh','hourly-online-refresh','online-maintenance','gps-diagnose','sense-diagnose','field-ai-verify','captive-setup','captive-disable','captive-status','gps-pps-setup','whisplay-test-popup','whisplay-input','whisplay-input-status','snake-trail-event','plugin-status','plugin-install','plugin-install-all','plugin-uninstall','notification-status','notification-test','notification-publish','notification-clear','notification-preferences','audio-tts-test','audio-ambient-test'}
 SENSE_CACHE = {'ok': False, 'mode': 'compass', 'message': 'Sense HAT display loop starting', 'updated': 0, 'joystick': {'seq': 0, 'direction': '', 'pressed': False, 'updated': 0}}
 SENSE_LOCK = threading.Lock()
 TIMELINE_LOCK = threading.RLock()
@@ -1988,7 +1988,7 @@ def status():
     sense_text=sense.get('message') or ('sense-hat ok' if sense.get('ok') else 'sense-hat unavailable')
     if sense.get('ok') and sense.get('orientation'):
         o=sense.get('orientation') or {}; sense_text='sense-hat ok roll={:.1f} pitch={:.1f} yaw={:.1f} mode={}'.format(o.get('roll',0),o.get('pitch',0),o.get('yaw',0),sense.get('mode','compass'))
-    return {'ok': True, 'host': socket.gethostname(), 'port': PORT, 'https': https_status(), 'ip': ip, 'connection_mode': mode, **w, 'gps_device': gps.get('device'), 'gps': gps, 'sense_hat': sense_text, 'sense': sense, 'audio': audio_status(), 'power': power_status(), 'system': system_stats(), 'state': read_state(), 'time': time.time()}
+    return {'ok': True, 'host': socket.gethostname(), 'port': PORT, 'https': https_status(), 'ip': ip, 'connection_mode': mode, **w, 'gps_device': gps.get('device'), 'gps': gps, 'sense_hat': sense_text, 'sense': sense, 'audio': audio_status(), 'power': power_status(), 'system': system_stats(), 'state': read_state(), 'herbie_calendar': herbie_calendar_now(), 'time': time.time()}
 
 def _nmcli_lines(args, timeout=5):
     out = sh_cached('nmcli -t ' + args + ' 2>/dev/null || true', timeout=timeout).get('output','')
@@ -2473,6 +2473,137 @@ HERBIE_EVENT_GROUPS = {'gps-searching', 'gps-locked', 'navigating', 'off-route',
                        'summit', 'oops', 'charging', 'low-battery', 'dropped', 'crying', 'upset', 'furious', 'party', 'freezing',
                        'hot', 'cold', 'jolt'}
 
+def herbie_event_groups():
+    """Event names = the face groups in the Herbie manifest (falls back to the built-in list)."""
+    try:
+        groups = json.loads((APP_DIR / 'assets' / 'herbie' / 'manifest.json').read_text()).get('groups') or {}
+        if groups:
+            return set(groups)
+    except Exception:
+        pass
+    return set(HERBIE_EVENT_GROUPS)
+
+def herbie_plans(payload=None):
+    """The app shares planned hikes, goals, completed hikes and special days so Herbie knows the calendar."""
+    payload = payload or {}
+    def clean(items, keys, limit=40):
+        out = []
+        for it in (items if isinstance(items, list) else [])[:limit]:
+            if isinstance(it, dict):
+                out.append({k: (str(it.get(k))[:80] if isinstance(it.get(k), str) else it.get(k)) for k in keys if it.get(k) is not None})
+        return out
+    plans = {
+        'hikes': clean(payload.get('hikes'), ('name', 'date')),
+        'goals': clean(payload.get('goals'), ('name', 'due', 'done', 'done_at')),
+        'completed': clean(payload.get('completed'), ('name', 'at'), 20),
+        'special_days': clean(payload.get('special_days'), ('date', 'name', 'group'), 60),
+        'updated': time.time(),
+    }
+    st = read_state(); st['herbie_plans'] = plans; write_state(st)
+    return {'ok': True, 'plans': plans, 'calendar': herbie_calendar_now()}
+
+def _nth_weekday(year, month, weekday, n):
+    """n-th weekday (Mon=0) of a month; n=-1 for the last one."""
+    import datetime as _dt
+    if n > 0:
+        d = _dt.date(year, month, 1)
+        d += _dt.timedelta(days=(weekday - d.weekday()) % 7 + 7 * (n - 1))
+        return d
+    d = _dt.date(year + (month == 12), month % 12 + 1, 1) - _dt.timedelta(days=1)
+    return d - _dt.timedelta(days=(d.weekday() - weekday) % 7)
+
+def _easter(year):
+    import datetime as _dt
+    a, b, c = year % 19, year // 100, year % 100
+    d, e = b // 4, b % 4
+    f = (b + 8) // 25
+    g = (b - f + 1) // 3
+    h = (19 * a + b - d - g + 15) % 30
+    i, k = c // 4, c % 4
+    l = (32 + 2 * e + 2 * i - h - k) % 7
+    m = (a + 11 * h + 22 * l) // 451
+    month = (h + l - 7 * m + 114) // 31
+    return _dt.date(year, month, (h + l - 7 * m + 114) % 31 + 1)
+
+def herbie_holiday(day):
+    fixed = {(1, 1): ('new-year', 'Happy New Year!'), (2, 14): ('valentines', "Happy Valentine's Day"), (3, 17): ('st-patricks', "Happy St. Patrick's Day"),
+             (4, 22): ('earth-day', 'Happy Earth Day'), (7, 4): ('independence-day', 'Happy 4th of July'), (10, 31): ('halloween', 'Happy Halloween'),
+             (11, 11): ('remembrance', 'Veterans Day'), (12, 24): ('christmas', 'Christmas Eve'), (12, 25): ('christmas', 'Merry Christmas'),
+             (12, 31): ('new-year', "New Year's Eve")}
+    if (day.month, day.day) in fixed:
+        return fixed[(day.month, day.day)]
+    y = day.year
+    floating = [(_nth_weekday(y, 1, 0, 3), ('remembrance', 'MLK Day')), (_easter(y), ('easter', 'Happy Easter')),
+                (_nth_weekday(y, 5, 6, 2), ('family-day', "Happy Mother's Day")), (_nth_weekday(y, 5, 0, -1), ('remembrance', 'Memorial Day')),
+                (_nth_weekday(y, 6, 5, 1), ('trails-day', 'National Trails Day')), (_nth_weekday(y, 6, 6, 3), ('family-day', "Happy Father's Day")),
+                (_nth_weekday(y, 9, 0, 1), ('labor-day', 'Labor Day')), (_nth_weekday(y, 9, 5, 4), ('trails-day', 'Public Lands Day')),
+                (_nth_weekday(y, 11, 3, 4), ('thanksgiving', 'Happy Thanksgiving'))]
+    for d, hol in floating:
+        if d == day:
+            return hol
+    return None
+
+def herbie_calendar_now(now=None):
+    """What Herbie knows about today: special days, holidays, hikes, goals, weekday and season (strongest first)."""
+    import datetime as _dt
+    now = now or _dt.datetime.now()
+    today = now.date()
+    plans = read_state().get('herbie_plans') or {}
+    base = {'date': today.isoformat(), 'weekday': now.strftime('%A'), 'month': now.strftime('%B'), 'year': now.year,
+            'season': 'winter' if now.month in (12, 1, 2) else 'spring' if now.month in (3, 4, 5) else 'summer' if now.month in (6, 7, 8) else 'autumn'}
+    def pick(group, reason, kind, strength):
+        return {**base, 'group': group, 'reason': reason, 'kind': kind, 'strength': strength}
+    for sd in plans.get('special_days') or []:
+        date = str(sd.get('date') or '')
+        if date in (today.isoformat(), today.strftime('%m-%d')):
+            return pick(sd.get('group') or 'special-day', sd.get('name') or 'Special day', 'special', 'high')
+    hol = herbie_holiday(today)
+    if hol:
+        return pick(hol[0], hol[1], 'holiday', 'high')
+    for h in plans.get('hikes') or []:
+        try:
+            days = (_dt.date.fromisoformat(str(h.get('date'))[:10]) - today).days
+        except Exception:
+            continue
+        name = h.get('name') or 'your hike'
+        if days == 0:
+            return pick('hike-day', f'Hike day: {name}', 'hike', 'high')
+        if days == 1:
+            return pick('hike-soon', f'Tomorrow: {name}', 'hike', 'high')
+        if 1 < days <= 7:
+            return pick('hike-soon', f'{name} in {days} days', 'hike', 'low')
+    for c in plans.get('completed') or []:
+        try:
+            if time.time() - float(c.get('at') or 0) < 86400:
+                return pick('goal-done', f"Finished {c.get('name') or 'a hike'}!", 'goal', 'high')
+        except Exception:
+            continue
+    for g in plans.get('goals') or []:
+        if g.get('done'):
+            try:
+                if time.time() - float(g.get('done_at') or 0) < 86400:
+                    return pick('goal-done', f"Goal done: {g.get('name')}", 'goal', 'high')
+            except Exception:
+                pass
+            continue
+        try:
+            days = (_dt.date.fromisoformat(str(g.get('due'))[:10]) - today).days
+        except Exception:
+            continue
+        if 0 <= days <= 3:
+            return pick('goal-due', f"{g.get('name') or 'Goal'} due {'today' if days == 0 else f'in {days} days'}", 'goal', 'low')
+    wd = now.weekday()
+    if wd in (5, 6):
+        return pick('weekend', f'Happy {now.strftime("%A")}', 'weekday', 'low')
+    if wd == 4:
+        return pick('friday', 'Friday!', 'weekday', 'low')
+    if wd == 0 and now.hour < 11:
+        return pick('monday', 'Monday morning', 'weekday', 'low')
+    season_group = {'winter': 'winter', 'summer': 'summer', 'autumn': 'autumn'}.get(base['season'])
+    if season_group:
+        return pick(season_group, f"{base['month']} on the trail", 'season', 'low')
+    return {**base, 'group': None, 'reason': '', 'kind': None, 'strength': None}
+
 def herbie_event(payload=None):
     """Set (or clear) a short-lived Herbie event; the Whisplay and the app show that event's face group until it expires."""
     payload = payload or {}
@@ -2481,8 +2612,9 @@ def herbie_event(payload=None):
     if not name or name == 'clear':
         st.pop('herbie_event', None); write_state(st)
         return {'ok': True, 'cleared': True}
-    if name not in HERBIE_EVENT_GROUPS:
-        return {'ok': False, 'error': f'unknown Herbie event {name!r}', 'events': sorted(HERBIE_EVENT_GROUPS)}
+    allowed = herbie_event_groups()
+    if name not in allowed:
+        return {'ok': False, 'error': f'unknown Herbie event {name!r}', 'events': sorted(allowed)}
     try: ttl = int(payload.get('ttl') or 60)
     except Exception: ttl = 60
     now = time.time()
@@ -3008,6 +3140,7 @@ def command(name, payload=None):
     if name=='hotspot-on': return hotspot_on(payload)
     if name=='gps-sample': return gps_sample()
     if name=='herbie-event': return herbie_event(payload)
+    if name=='herbie-plans': return herbie_plans(payload)
     if name=='sense-mode': return set_sense_mode(payload.get('mode') or payload.get('sense_mode') or payload.get('orientationMode') or 'compass', payload)
     if name=='calibrate': return calibrate(payload.get('target') or 'all')
     if name=='harden-hotspot': return harden_hotspot()

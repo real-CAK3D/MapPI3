@@ -473,6 +473,30 @@ def sunglasses(c):
             c.paste(Image.new('RGBA', c.size, (235, 245, 250, 255)), (0, 0), streak)
 
 
+def binoculars(c):
+    """Herbie peering through binoculars (viewpoints, scenic spots, wildlife)."""
+    body = union(ellipse_mask(EYE_L[0], EYE_L[1] + 1, 9, 9), ellipse_mask(EYE_R[0], EYE_R[1] + 1, 9, 9),
+                 rounded(poly_mask([(EYE_L[0], EYE_L[1] - 3), (EYE_R[0], EYE_R[1] - 3), (EYE_R[0], EYE_R[1] + 4), (EYE_L[0], EYE_L[1] + 4)]), 8))
+    paint(c, body, (40, 46, 30), outline=(8, 10, 6), outline_px=7, light=(78, 86, 58), light_offset=(0, -6))
+    hinge = rounded(poly_mask([(MOUTH[0] - 3, EYE_L[1] - 7), (MOUTH[0] + 3, EYE_L[1] - 7), (MOUTH[0] + 3, EYE_L[1] + 6), (MOUTH[0] - 3, EYE_L[1] + 6)]), 6)
+    paint(c, hinge, (26, 30, 20), outline=(8, 10, 6), outline_px=5)
+    for ex, ey in (EYE_L, EYE_R):
+        paint(c, ellipse_mask(ex, ey + 1, 6.2, 6.2), (12, 14, 10))
+        glass = ellipse_mask(ex, ey + 1, 5.0, 5.0)
+        paint(c, glass, (34, 78, 88), light=(150, 214, 222), light_offset=(3, 3))
+        glint = ImageChops.multiply(stroke_mask([(ex - 2.6, ey - 1.5), (ex - 0.6, ey - 3.2)], 0.9), glass)
+        c.paste(Image.new('RGBA', c.size, (236, 248, 250, 255)), (0, 0), glint)
+
+
+def drool(c):
+    tear_drop(c, MOUTH[0] + 7.5, MOUTH[1] + 6.5, 0.8)
+
+
+def speed_lines(c):
+    for y, x0, x1 in ((50, 20, 30), (58, 16, 28), (66, 20, 30)):
+        paint(c, stroke_mask([(x0, y), (x1, y)], 1.2), (238, 240, 226), outline=INK, outline_px=4)
+
+
 def fall_lines(c):
     """Speed lines above Herbie: he is dropping."""
     for x, y0, y1 in ((40, 20, 30), (50, 16, 24), (97, 16, 25), (107, 20, 31), (74, 12, 20)):
@@ -720,6 +744,9 @@ FACES = {
     # New faces for features added since the original set.
     'gps-searching': lambda c: (eyes(c, look=(-2, -3)), brow(c, EYE_L, 2, lift=1), mouth_o(c, 2.2, 2.4)),
     'gps-locked':   lambda c: (eye_reticle(c, EYE_L), eye_reticle(c, EYE_R), mouth_smile(c, 22, 5)),
+    'hungry':       lambda c: (eyes(c, look=(1.5, 2.5), scale=1.05), mouth_tongue(c, 18), drool(c)),
+    'binoculars':   lambda c: (binoculars(c), mouth_o(c, 2.6, 3.0, dy=2)),
+    'hurry':        lambda c: (eye_open(c, EYE_L, lid='angry', lid_side='L', look=(2, 0)), eye_open(c, EYE_R, lid='angry', lid_side='R', look=(2, 0)), mouth_teeth(c, 16), sweat(c), sweat(c, 38, 46), speed_lines(c)),
     'falling':      lambda c: (eyes(c, scale=1.55, look=(0, -3.5)), brow(c, EYE_L, 5, lift=8), brow(c, EYE_R, 5, lift=8, side='R'), mouth_wail(c, 18, 13), sweat(c, 110, 40), sweat(c, 36, 42), fall_lines(c)),
     'middle-finger': lambda c: (eye_open(c, EYE_L, lid='half', look=(0, 1)), eye_open(c, EYE_R, lid='angry', lid_side='R', look=(0, 1)), mouth_smirk(c), leaf_hand(c, 116, 66, angle=-4, scale=0.78, pose='middle')),
     'off-route':    lambda c: (eyes(c, look=(3, 1), lid='sad', lid_side='R'), brow(c, EYE_R, 3, side='R'), mouth_wavy(c, 16)),
@@ -780,6 +807,47 @@ GROUPS = {
     'summit':        ['summit', 'party-hard', 'excited', 'love', 'laughing', 'laughing-2'],
     'jolt':          ['surprised', 'oh-no', 'wow'],
     'dropped':       ['falling', 'oh-no', 'surprised-3'],
+    # along the selected hike (from route waypoints / custom markers)
+    'near-water':    ['thirsty', 'happy', 'curious'],
+    'near-waterfall': ['wow', 'binoculars', 'excited'],
+    'viewpoint':     ['binoculars', 'wow', 'love'],
+    'near-camp':     ['sleepy', 'yawning', 'grateful', 'meditating'],
+    'hazard':        ['worried', 'focused', 'determined'],
+    'climb':         ['determined', 'sweating', 'focused'],
+    'junction':      ['thinking', 'curious', 'gps-searching'],
+    'bridge':        ['curious', 'happy', 'wow'],
+    'trailhead':     ['greetings', 'excited', 'determined'],
+    'finish-line':   ['summit', 'excited', 'party-hard'],
+    'hungry':        ['hungry', 'thirsty', 'happy'],
+    'halfway':       ['thumbs-up', 'determined', 'happy'],
+    'almost-there':  ['excited', 'determined', 'summit'],
+    'turn-around':   ['hurry', 'worried', 'oh-no'],
+    'sunset-soon':   ['hurry', 'worried', 'determined'],
+    # calendar: holidays, trail days, seasons, weekdays, planned hikes and goals
+    'new-year':      ['party-hard', 'party-mode', 'excited'],
+    'valentines':    ['love', 'blushing', 'grateful'],
+    'st-patricks':   ['cheeky', 'laughing', 'party-mode'],
+    'easter':        ['happy', 'excited', 'grateful'],
+    'earth-day':     ['grateful', 'love', 'meditating'],
+    'trails-day':    ['excited', 'summit', 'greetings'],
+    'independence-day': ['party-mode', 'wow', 'excited'],
+    'halloween':     ['surprised-2', 'oh-no', 'cheeky', 'worried'],
+    'thanksgiving':  ['grateful', 'hungry', 'love'],
+    'christmas':     ['love', 'grateful', 'happy'],
+    'family-day':    ['love', 'grateful', 'happy'],
+    'remembrance':   ['grateful', 'meditating'],
+    'labor-day':     ['chillin', 'meditating', 'happy'],
+    'special-day':   ['party-mode', 'love', 'excited'],
+    'hike-day':      ['excited', 'determined', 'greetings', 'thumbs-up'],
+    'hike-soon':     ['excited', 'curious', 'thinking'],
+    'goal-due':      ['determined', 'focused', 'thinking'],
+    'goal-done':     ['summit', 'party-mode', 'grateful'],
+    'weekend':       ['chillin', 'excited', 'party-mode'],
+    'monday':        ['tired', 'yawning', 'determined'],
+    'friday':        ['excited', 'party-mode', 'cheeky'],
+    'winter':        ['cold', 'cold-2', 'happy'],
+    'summer':        ['chillin', 'sweating', 'happy'],
+    'autumn':        ['wow', 'binoculars', 'happy'],
     'oops':          ['facepalm', 'thumbs-down', 'annoyed', 'face-with-tears'],
     'party':         ['party-mode', 'party-hard', 'laughing', 'laughing-3', 'cheeky'],
     'four-twenty':   ['high-af', 'chillin', 'laughing'],
@@ -992,6 +1060,9 @@ def main(preview=False):
         manifest['levels'] = LEVELS
         manifest['tilt_thresholds'] = list(TILT_THRESHOLDS)
         manifest['motion_sequences'] = MOTION_SEQUENCES
+        # Painted compass on every template-based image (300x261): the app/Whisplay cover its needle and draw a live one.
+        manifest['compass'] = {'center': [59.3, 50.5], 'cover_radius': 15.5, 'needle_length': 14.5, 'face_color': [229, 214, 146],
+                               'kinds': ['expressions', 'low-battery', 'shaking', 'bouncing', 'happy-hover', 'tilted-up', 'tilted-down']}
         manifest['motion_variants'] = {b: [m for m in MOTIONS if m == b or m.startswith(b + '-') and m[len(b) + 1:].isdigit()] for b in MOTIONS if not b[-1].isdigit()}
         (SRC / 'manifest.json').write_text(json.dumps(manifest, indent=2) + '\n')
 

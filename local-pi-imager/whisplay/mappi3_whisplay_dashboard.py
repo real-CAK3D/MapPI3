@@ -412,12 +412,24 @@ def herbie_event_face(status, now_ts=None):
         return herbie_group_face('charging', 'charging', period=4, now_ts=t), 'charging'
     return None
 
+def herbie_calendar_face(status, now_ts=None):
+    """Holidays, special days, hike days and goals show as a cameo: 25 s of every 90 s when big, 12 s of every 3 min when small."""
+    cal = status.get('herbie_calendar') if isinstance(status, dict) and isinstance(status.get('herbie_calendar'), dict) else {}
+    if not cal.get('group'):
+        return None
+    t = time.time() if now_ts is None else now_ts
+    period, show = (90, 25) if cal.get('strength') == 'high' else (180, 12)
+    if t % period < show:
+        return herbie_group_face(cal['group'], 'happy', period=6, now_ts=t), str(cal.get('reason') or cal['group'])[:28]
+    return None
+
 def whisplay_herbie_state(now=None, status=None, sense=None, net=None):
     now = now or datetime.datetime.now()
     # Tilt is the live interaction path, so read the fast Sense endpoint first and
     # short-circuit before slower status/network probes. On the Pi, /api/sense is
     # ~tens of ms while status/network can take 1-2s when services are busy/offline.
     sense = sense if sense is not None else sense_payload(api('/api/sense', timeout=0.25))
+    set_live_heading(sense)
     roll, pitch, tilt_source = sense_tilt_axes(sense)
     motion_reaction = herbie_motion_reaction(sense)
     tilt_reaction = herbie_directional_tilt_face(roll, pitch, threshold=8.0)
@@ -442,6 +454,9 @@ def whisplay_herbie_state(now=None, status=None, sense=None, net=None):
         return event_face
     if battery_reminder:
         return battery_reminder
+    calendar_face = herbie_calendar_face(status)
+    if calendar_face:
+        return calendar_face
     if hot:
         return herbie_group_face('hot', 'sweating', period=8), f'temp {temp_f_text(temp)}'
     if tilted:
@@ -565,6 +580,7 @@ def herbie_motion_reaction(sense, now=None):
 
 def herbie_pawn_state():
     sense = sense_payload(api('/api/sense', timeout=0.25))
+    set_live_heading(sense)
     roll, pitch, tilt_source = sense_tilt_axes(sense)
     now = datetime.datetime.now()
     hour = now.hour
@@ -588,6 +604,7 @@ def herbie_pawn_state():
     compass = num(sense.get('compass') or sense.get('heading'))
     battery_reminder = low_battery_reminder(status)
     event_face = herbie_event_face(status)
+    calendar_face = herbie_calendar_face(status)
     api_available = not (status.get('_error') and sense.get('_error') and net.get('_error') and weather.get('_error'))
     mood = idle
     reason = 'all-face wandering loop'
@@ -600,6 +617,8 @@ def herbie_pawn_state():
         mood, reason, accent = event_face[0], event_face[1], AMBER
     elif api_available and battery_reminder:
         mood, reason, accent = battery_reminder[0], battery_reminder[1], RED
+    elif api_available and calendar_face:
+        mood, reason, accent = calendar_face[0], calendar_face[1], GREEN
     elif api_available and temp_c is not None and temp_c >= 34:
         mood, reason, accent = herbie_group_face('hot', 'melting', period=8), f'hot field kit {temp_f_text(temp_c)}', RED
     elif api_available and temp_c is not None and temp_c >= 29:
@@ -651,6 +670,8 @@ def draw_herbie_mood():
             x = (W - face.width) // 2
             y = 44 + max(0, (132 - face.height) // 2)
             img.paste(face, (x, y), face)
+            if compass_eligible(mood):
+                draw_compass_needle(img, x, y, face.width / 300.0, LIVE_HEADING[0])
         except Exception:
             pass
     y = 184

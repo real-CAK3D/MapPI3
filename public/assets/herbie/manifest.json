@@ -44,6 +44,9 @@
     "party-hard": "/assets/herbie/expressions/party-hard.png",
     "gps-searching": "/assets/herbie/expressions/gps-searching.png",
     "gps-locked": "/assets/herbie/expressions/gps-locked.png",
+    "hungry": "/assets/herbie/expressions/hungry.png",
+    "binoculars": "/assets/herbie/expressions/binoculars.png",
+    "hurry": "/assets/herbie/expressions/hurry.png",
     "falling": "/assets/herbie/expressions/falling.png",
     "middle-finger": "/assets/herbie/expressions/middle-finger.png",
     "off-route": "/assets/herbie/expressions/off-route.png",
@@ -157,6 +160,9 @@
     "party-hard": "party hard",
     "gps-searching": "GPS searching",
     "gps-locked": "GPS locked",
+    "hungry": "hungry",
+    "binoculars": "binoculars",
+    "hurry": "hurry",
     "falling": "I'm falling",
     "middle-finger": "middle finger",
     "off-route": "off route",
@@ -333,6 +339,203 @@
       "oh-no",
       "surprised-3"
     ],
+    "near-water": [
+      "thirsty",
+      "happy",
+      "curious"
+    ],
+    "near-waterfall": [
+      "wow",
+      "binoculars",
+      "excited"
+    ],
+    "viewpoint": [
+      "binoculars",
+      "wow",
+      "love"
+    ],
+    "near-camp": [
+      "sleepy",
+      "yawning",
+      "grateful",
+      "meditating"
+    ],
+    "hazard": [
+      "worried",
+      "focused",
+      "determined"
+    ],
+    "climb": [
+      "determined",
+      "sweating",
+      "focused"
+    ],
+    "junction": [
+      "thinking",
+      "curious",
+      "gps-searching"
+    ],
+    "bridge": [
+      "curious",
+      "happy",
+      "wow"
+    ],
+    "trailhead": [
+      "greetings",
+      "excited",
+      "determined"
+    ],
+    "finish-line": [
+      "summit",
+      "excited",
+      "party-hard"
+    ],
+    "hungry": [
+      "hungry",
+      "thirsty",
+      "happy"
+    ],
+    "halfway": [
+      "thumbs-up",
+      "determined",
+      "happy"
+    ],
+    "almost-there": [
+      "excited",
+      "determined",
+      "summit"
+    ],
+    "turn-around": [
+      "hurry",
+      "worried",
+      "oh-no"
+    ],
+    "sunset-soon": [
+      "hurry",
+      "worried",
+      "determined"
+    ],
+    "new-year": [
+      "party-hard",
+      "party-mode",
+      "excited"
+    ],
+    "valentines": [
+      "love",
+      "blushing",
+      "grateful"
+    ],
+    "st-patricks": [
+      "cheeky",
+      "laughing",
+      "party-mode"
+    ],
+    "easter": [
+      "happy",
+      "excited",
+      "grateful"
+    ],
+    "earth-day": [
+      "grateful",
+      "love",
+      "meditating"
+    ],
+    "trails-day": [
+      "excited",
+      "summit",
+      "greetings"
+    ],
+    "independence-day": [
+      "party-mode",
+      "wow",
+      "excited"
+    ],
+    "halloween": [
+      "surprised-2",
+      "oh-no",
+      "cheeky",
+      "worried"
+    ],
+    "thanksgiving": [
+      "grateful",
+      "hungry",
+      "love"
+    ],
+    "christmas": [
+      "love",
+      "grateful",
+      "happy"
+    ],
+    "family-day": [
+      "love",
+      "grateful",
+      "happy"
+    ],
+    "remembrance": [
+      "grateful",
+      "meditating"
+    ],
+    "labor-day": [
+      "chillin",
+      "meditating",
+      "happy"
+    ],
+    "special-day": [
+      "party-mode",
+      "love",
+      "excited"
+    ],
+    "hike-day": [
+      "excited",
+      "determined",
+      "greetings",
+      "thumbs-up"
+    ],
+    "hike-soon": [
+      "excited",
+      "curious",
+      "thinking"
+    ],
+    "goal-due": [
+      "determined",
+      "focused",
+      "thinking"
+    ],
+    "goal-done": [
+      "summit",
+      "party-mode",
+      "grateful"
+    ],
+    "weekend": [
+      "chillin",
+      "excited",
+      "party-mode"
+    ],
+    "monday": [
+      "tired",
+      "yawning",
+      "determined"
+    ],
+    "friday": [
+      "excited",
+      "party-mode",
+      "cheeky"
+    ],
+    "winter": [
+      "cold",
+      "cold-2",
+      "happy"
+    ],
+    "summer": [
+      "chillin",
+      "sweating",
+      "happy"
+    ],
+    "autumn": [
+      "wow",
+      "binoculars",
+      "happy"
+    ],
     "oops": [
       "facepalm",
       "thumbs-down",
@@ -489,6 +692,28 @@
       "",
       "-2",
       "-3"
+    ]
+  },
+  "compass": {
+    "center": [
+      59.3,
+      50.5
+    ],
+    "cover_radius": 15.5,
+    "needle_length": 14.5,
+    "face_color": [
+      229,
+      214,
+      146
+    ],
+    "kinds": [
+      "expressions",
+      "low-battery",
+      "shaking",
+      "bouncing",
+      "happy-hover",
+      "tilted-up",
+      "tilted-down"
     ]
   }
 }
