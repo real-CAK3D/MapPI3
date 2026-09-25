@@ -111,6 +111,10 @@ def herbie_asset_path(kind, name):
 # fixed beat while he stays in a state: straight, straight, left, straight, right.
 HERBIE_GAZE_CYCLE = ('center', 'center', 'left', 'center', 'right')
 HERBIE_GAZE_BEAT_S = 3.0
+# Motions with 3 frames (<name>, <name>-2, <name>-3) play as a short loop at this many seconds per frame.
+HERBIE_MOTION_CYCLE_S = {'spinning': 0.4, 'shaking': 0.5, 'scanning': 0.6, 'bouncing': 0.8, 'happy-hover': 1.2}
+# Tilt levels: tilted-<dir>, tilted-<dir>-2, tilted-<dir>-3 at these Sense HAT angles.
+HERBIE_TILT_LEVELS = (8.0, 18.0, 30.0)
 
 def herbie_gaze_now(now_ts=None):
     t = time.time() if now_ts is None else now_ts
@@ -119,6 +123,14 @@ def herbie_gaze_now(now_ts=None):
 def herbie_gaze_ref(ref, now_ts=None):
     """'happy' / 'expressions/happy' -> 'expressions/happy-left' on a glance beat (motions/turnarounds unchanged)."""
     raw = str(ref or '')
+    t = time.time() if now_ts is None else now_ts
+    if raw.startswith('motions/'):
+        base = raw.split('/', 1)[1]
+        beat = HERBIE_MOTION_CYCLE_S.get(base)
+        if not beat:
+            return raw
+        variants = [base] + [f'{base}-{n}' for n in (2, 3) if herbie_asset_path('motions', f'{base}-{n}')]
+        return 'motions/' + variants[int(t // beat) % len(variants)]
     if '/' in raw and not raw.startswith('expressions/'):
         return raw
     name = raw.split('/', 1)[-1]

@@ -39,14 +39,14 @@ PUPIL_EDGE = (88, 140, 48)
 INK_2 = EYE_FILL
 SPROUT = (184, 206, 58)     # bright leaf (charge spark only)
 SPROUT_DARK = (104, 140, 34)
-HAND = (66, 84, 18)         # sampled from the original facepalm hand
-HAND_DARK = (22, 34, 4)
-HAND_LIGHT = (96, 118, 28)
-HAND_SHADE = (46, 62, 10)
-HAND_VEIN = (36, 50, 8)
-SLEEVE = (104, 91, 21)
-HIGH_EYE = (238, 208, 208)  # high AF: whitish-pink eyes, green pupils
-HIGH_EYE_EDGE = (160, 112, 112)
+HAND = (53, 65, 13)         # facepalm hand as drawn (original sampled colour x0.85)
+HAND_DARK = (16, 24, 2)
+HAND_LIGHT = (72, 90, 17)
+HAND_SHADE = (34, 46, 6)
+HAND_VEIN = (26, 36, 4)
+SLEEVE = (88, 77, 18)
+HIGH_EYE = (242, 150, 178)  # high AF: pink eyes, green pupils
+HIGH_EYE_EDGE = (150, 64, 96)
 LOCK_EYE = (16, 66, 22)     # GPS locked: radar-green reticle eyes
 LOCK_EYE_EDGE = (4, 20, 6)
 LOCK_PUPIL = (150, 250, 116)
@@ -378,11 +378,38 @@ def mouth_wobble(c, width=16):
 
 
 # ---------------------------------------------------------------- extras
-def blush(c, strength=210):
+def blush(c, strength=210, color=None):
     for cx in (EYE_L[0] - 6, EYE_R[0] + 6):
         m = ellipse_mask(cx, 66, 6.5, 3.2).filter(ImageFilter.GaussianBlur(12))
         m = m.point(lambda v: v * strength // 255)
-        c.paste(Image.new('RGBA', c.size, BLUSH + (255,)), (0, 0), m)
+        c.paste(Image.new('RGBA', c.size, (color or BLUSH) + (255,)), (0, 0), m)
+
+
+def mouth_wail(c, width=14, depth=9):
+    """Open crying / shouting mouth (wide at the bottom)."""
+    cx, cy = MOUTH
+    m = poly_mask(arc_points(cx, cy + 4, width / 2, depth * 0.55, 180, 360) + arc_points(cx, cy + 4, width / 2, depth * 0.45, 0, 180))
+    paint(c, m, INK, outline=INK, outline_px=5)
+    paint(c, ImageChops.multiply(ellipse_mask(cx, cy + 6.5, width * 0.26, depth * 0.22), m.filter(ImageFilter.MinFilter(7))), TONGUE)
+
+
+def mouth_teeth(c, width=18):
+    """Grimace: clenched teeth."""
+    cx, cy = MOUTH
+    m = rounded(poly_mask([(cx - width / 2, cy - 2.6), (cx + width / 2, cy - 2.6), (cx + width / 2, cy + 2.6), (cx - width / 2, cy + 2.6)]), 10)
+    paint(c, m, (236, 232, 214), outline=INK, outline_px=7)
+    lines = union(stroke_mask([(cx - width / 2 + 1, cy), (cx + width / 2 - 1, cy)], 0.5),
+                  *[stroke_mask([(cx - width / 2 + k * width / 5, cy - 2.2), (cx - width / 2 + k * width / 5, cy + 2.2)], 0.5) for k in range(1, 5)])
+    paint(c, lines, INK)
+
+
+def big_tears(c):
+    """Sobbing: wide streams and drops flying off the cheeks."""
+    for cx, side in ((EYE_L[0], -1), (EYE_R[0], 1)):
+        pts = [(cx + side * 0.8 * i / 14 * 3, 60 + i * 1.3) for i in range(0, 15)]
+        paint(c, stroke_mask(pts, 4.2), TEAR, outline=TEAR_DARK, outline_px=5, light=(200, 236, 255), light_offset=(4, 0))
+        tear_drop(c, cx + side * 9, 60, 1.1)
+        tear_drop(c, cx + side * 12, 66, 0.9)
 
 
 def tear_drop(c, x, y, size=1.0):
@@ -541,9 +568,9 @@ def leaf_hand(c, cx, cy, angle=0, scale=1.0, pose='open', flip=False):
     sm.paste(sleeve, (ox, oy), sleeve)
     wm.paste(wraps, (ox, oy), wraps)
     sm = subtract(sm, hm)
-    paint(c, sm, (92, 80, 20), outline=HAND_DARK, outline_px=9, light=(140, 128, 48), light_offset=(-5, 0), shade=(60, 52, 12))
+    paint(c, sm, SLEEVE, outline=HAND_DARK, outline_px=9, light=(118, 106, 36), light_offset=(-5, 0), shade=(52, 45, 10))
     wm = ImageChops.multiply(wm, sm.filter(ImageFilter.MinFilter(5)))
-    c.paste(Image.new('RGBA', c.size, (54, 60, 14, 255)), (0, 0), wm.filter(ImageFilter.GaussianBlur(1)))
+    c.paste(Image.new('RGBA', c.size, (44, 48, 10, 255)), (0, 0), wm.filter(ImageFilter.GaussianBlur(1)))
     rng = np.random.default_rng(int(cx * 10 + cy))                 # moss flecks, like the woven original
     fleck = np.zeros((CH, CW), np.uint8)
     ys, xs = np.nonzero(np.array(sm.filter(ImageFilter.MinFilter(7))) > 128)
@@ -551,7 +578,7 @@ def leaf_hand(c, cx, cy, angle=0, scale=1.0, pose='open', flip=False):
         pick = rng.choice(len(xs), size=min(len(xs), 140), replace=False)
         for x_, y_ in zip(xs[pick], ys[pick]):
             fleck[max(0, y_ - 3):y_ + 3, max(0, x_ - 3):x_ + 3] = 200
-    c.paste(Image.new('RGBA', c.size, (126, 132, 40, 255)), (0, 0), Image.fromarray(fleck).filter(ImageFilter.GaussianBlur(1.5)))
+    c.paste(Image.new('RGBA', c.size, (98, 104, 28, 255)), (0, 0), Image.fromarray(fleck).filter(ImageFilter.GaussianBlur(1.5)))
     paint(c, hm, HAND, outline=HAND_DARK, outline_px=11, light=HAND_LIGHT, light_offset=(-6, -8), shade=HAND_SHADE)
     vm = ImageChops.multiply(vm, hm.filter(ImageFilter.MinFilter(11)))
     c.paste(Image.new('RGBA', c.size, HAND_VEIN + (255,)), (0, 0), vm.filter(ImageFilter.GaussianBlur(1.2)))
@@ -602,7 +629,7 @@ def battery_panel(c):
     paint(c, rounded(poly_mask([(58.5, 55.5), (64.5, 55.5), (64.5, 68.5), (58.5, 68.5)]), 6), red, light=(255, 150, 130), light_offset=(0, -5))
 
 
-def radar_scan(img):
+def radar_scan(img, sweep_deg=-30):
     """Scanning: the whole face in radar green with range rings, crosshair, grid and a sweep."""
     arr = np.array(img.convert('RGB')).astype(float)
     lum = (arr @ np.array([0.3, 0.55, 0.15])) / 255.0
@@ -624,10 +651,10 @@ def radar_scan(img):
     sweep = Image.new('L', out.size, 0)
     sd = ImageDraw.Draw(sweep)
     for k in range(40):
-        a0 = -70 + k
+        a0 = sweep_deg - 40 + k
         sd.pieslice((cx - 130, cy - 130, cx + 130, cy + 130), a0, a0 + 1.2, fill=int(4 + k * 3.2))
     over.paste(Image.new('RGBA', out.size, (170, 255, 140, 255)), (0, 0), sweep.filter(ImageFilter.GaussianBlur(2)))
-    d.line([(cx, cy), (cx + 130 * math.cos(math.radians(-30)), cy + 130 * math.sin(math.radians(-30)))], fill=(220, 255, 200, 220), width=2)
+    d.line([(cx, cy), (cx + 130 * math.cos(math.radians(sweep_deg)), cy + 130 * math.sin(math.radians(sweep_deg)))], fill=(220, 255, 200, 220), width=2)
     d.ellipse((cx - 4, cy - 4, cx + 4, cy + 4), fill=(220, 255, 200, 230))
     out.alpha_composite(over)
     return out
@@ -692,6 +719,22 @@ FACES = {
     'thirsty':      lambda c: (eyes(c, lid='half', look=(0, 2)), mouth_tongue(c, 14), sweat(c, 108, 48)),
     'cold':         lambda c: (eye_squeeze(c, EYE_L, 'L'), eye_squeeze(c, EYE_R, 'R'), mouth_zigzag(c), shiver_marks(c)),
     'storm-alert':  lambda c: (eyes(c, scale=1.25), brow(c, EYE_L, 3, lift=3), brow(c, EYE_R, 3, lift=3, side='R'), mouth_flat(c, 10, dy=1)),
+    'storm-alert-2': lambda c: (eyes(c, scale=1.35, look=(0, -1)), brow(c, EYE_L, 4, lift=5), brow(c, EYE_R, 4, lift=5, side='R'), mouth_wavy(c, 14, 1.8), sweat(c)),
+    'storm-alert-3': lambda c: (eyes(c, scale=1.5, look=(0, -1.5)), brow(c, EYE_L, 5, lift=7), brow(c, EYE_R, 5, lift=7, side='R'), mouth_wail(c, 12, 10), sweat(c), sweat(c, 38, 46), shiver_marks(c)),
+    'face-with-tears-2': lambda c: (eye_arc(c, EYE_L, up=False), eye_arc(c, EYE_R, up=False), brow(c, EYE_L, 4, lift=1), brow(c, EYE_R, 4, lift=1, side='R'), tear_streams(c), mouth_wail(c, 12, 8)),
+    'face-with-tears-3': lambda c: (eye_squeeze(c, EYE_L, 'L'), eye_squeeze(c, EYE_R, 'R'), brow(c, EYE_L, 5, lift=2), brow(c, EYE_R, 5, lift=2, side='R'), big_tears(c), mouth_wail(c, 16, 11)),
+    'worried-2':    lambda c: (eye_open(c, EYE_L, lid='sad', lid_side='L', scale=1.1), eye_open(c, EYE_R, lid='sad', lid_side='R', scale=1.1), brow(c, EYE_L, 4, lift=2), brow(c, EYE_R, 4, lift=2, side='R'), mouth_wavy(c, 18, 2), sweat(c)),
+    'worried-3':    lambda c: (eyes(c, scale=1.25, look=(0, 1)), brow(c, EYE_L, 5, lift=4), brow(c, EYE_R, 5, lift=4, side='R'), mouth_zigzag(c, 16, 2), sweat(c), sweat(c, 38, 46)),
+    'angry-2':      lambda c: (eye_open(c, EYE_L, lid='angry', lid_side='L', scale=0.95), eye_open(c, EYE_R, lid='angry', lid_side='R', scale=0.95), brow(c, EYE_L, -4.5), brow(c, EYE_R, -4.5, side='R'), mouth_teeth(c)),
+    'angry-3':      lambda c: (blush(c, 230, (214, 52, 40)), eye_open(c, EYE_L, lid='angry', lid_side='L', scale=0.9), eye_open(c, EYE_R, lid='angry', lid_side='R', scale=0.9), brow(c, EYE_L, -5.5), brow(c, EYE_R, -5.5, side='R'), mouth_wail(c, 16, 10)),
+    'sad-2':        lambda c: (eye_open(c, EYE_L, lid='sad', lid_side='L', look=(0, 2.5)), eye_open(c, EYE_R, lid='sad', lid_side='R', look=(0, 2.5)), brow(c, EYE_L, 3), brow(c, EYE_R, 3, side='R'), mouth_frown(c, 16, 4), tear_drop(c, EYE_R[0] + 1, 66, 1.0)),
+    'sad-3':        lambda c: (eye_open(c, EYE_L, lid='sad', lid_side='L', look=(0, 3)), eye_open(c, EYE_R, lid='sad', lid_side='R', look=(0, 3)), brow(c, EYE_L, 4), brow(c, EYE_R, 4, side='R'), mouth_wobble(c, 16), tear_drop(c, EYE_L[0] - 1, 66, 1.0), tear_drop(c, EYE_R[0] + 1, 68, 1.2)),
+    'laughing-2':   lambda c: (eye_squeeze(c, EYE_L, 'L'), eye_squeeze(c, EYE_R, 'R'), mouth_grin(c, 26, 11)),
+    'laughing-3':   lambda c: (eye_squeeze(c, EYE_L, 'L'), eye_squeeze(c, EYE_R, 'R'), mouth_grin(c, 28, 12), tear_drop(c, EYE_L[0] - 8, 58, 1.0), tear_drop(c, EYE_R[0] + 8, 58, 1.0)),
+    'surprised-2':  lambda c: (eyes(c, scale=1.35), brow(c, EYE_L, 0, lift=5), brow(c, EYE_R, 0, lift=5, side='R'), mouth_o(c, 4.2, 5.6)),
+    'surprised-3':  lambda c: (eyes(c, scale=1.5), brow(c, EYE_L, 1, lift=7), brow(c, EYE_R, 1, lift=7, side='R'), mouth_o(c, 5.2, 7.2, dy=1), sweat(c)),
+    'cold-2':       lambda c: (blush(c, 200, (110, 160, 226)), eye_squeeze(c, EYE_L, 'L'), eye_squeeze(c, EYE_R, 'R'), mouth_zigzag(c, 20, 2.2), shiver_marks(c)),
+    'cold-3':       lambda c: (blush(c, 255, (96, 150, 230)), eye_open(c, EYE_L, lid='sad', lid_side='L'), eye_open(c, EYE_R, lid='sad', lid_side='R'), mouth_teeth(c, 20), shiver_marks(c), zzz(c) if False else None),
     'summit':       lambda c: (eyes(c, 'happy'), mouth_grin(c, 24, 9), leaf_hand(c, 116, 50, angle=-8, scale=0.6, pose='thumb_up')),
     'charging':     lambda c: (eye_arc(c, EYE_L, up=False), eye_open(c, EYE_R, lid='half'), mouth_smile(c, 18, 4), charge_spark(c)),
 }
@@ -700,6 +743,9 @@ LABELS = {'high-af': 'high AF', 'oh-no': 'oh no!', 'face-with-tears': 'face with
           'gps-locked': 'GPS locked', 'off-route': 'off route', 'storm-alert': 'storm alert', 'party-mode': 'party mode',
           'party-hard': 'party hard', 'side-eye': 'side eye', 'thumbs-up': 'thumbs up', 'thumbs-down': 'thumbs down',
           'middle-finger': 'middle finger'}
+# Stronger versions: <name>-2 / <name>-3 escalate the same expression.
+LEVELS = {base: [base, f'{base}-2', f'{base}-3'] for base in ('storm-alert', 'face-with-tears', 'worried', 'angry', 'sad', 'laughing', 'surprised', 'cold')}
+LABELS.update({f'{b}-{n}': f"{LABELS.get(b, b.replace('-', ' '))} {'(strong)' if n == 2 else '(extreme)'}" for b in LEVELS for n in (2, 3)})
 
 # Event groups: when something happens Herbie picks from the whole group (and a gaze) instead of one face.
 GROUPS = {
@@ -715,26 +761,49 @@ GROUPS = {
     'low-battery':   ['tired', 'worried', 'sweating'],
     'charging':      ['charging', 'meditating', 'grateful', 'happy'],
     'hot':           ['sweating', 'melting', 'thirsty', 'chillin'],
-    'cold':          ['cold', 'tired', 'sad'],
+    'cold':          ['cold', 'cold-2', 'tired', 'sad'],
+    'freezing':      ['cold-2', 'cold-3', 'worried-2'],
     'storm':         ['storm-alert', 'worried', 'oh-no', 'surprised'],
-    'summit':        ['summit', 'party-hard', 'excited', 'love', 'laughing'],
+    'storm-watch':   ['storm-alert', 'worried', 'surprised'],
+    'storm-warning': ['storm-alert-2', 'worried-2', 'oh-no', 'surprised-2'],
+    'storm-danger':  ['storm-alert-3', 'worried-3', 'surprised-3'],
+    'crying':        ['face-with-tears', 'face-with-tears-2', 'face-with-tears-3', 'sad-3'],
+    'upset':         ['sad', 'sad-2', 'worried-2', 'face-with-tears'],
+    'furious':       ['angry', 'angry-2', 'angry-3'],
+    'summit':        ['summit', 'party-hard', 'excited', 'love', 'laughing', 'laughing-2'],
     'jolt':          ['surprised', 'oh-no', 'wow'],
     'oops':          ['facepalm', 'thumbs-down', 'annoyed', 'face-with-tears'],
-    'party':         ['party-mode', 'party-hard', 'laughing', 'cheeky'],
+    'party':         ['party-mode', 'party-hard', 'laughing', 'laughing-3', 'cheeky'],
     'four-twenty':   ['high-af', 'chillin', 'laughing'],
     'rude':          ['middle-finger', 'annoyed', 'side-eye'],
 }
 
+# (base face, rotation). Tilt levels show at Sense HAT tilt >= 8 / 18 / 30 degrees.
 MOTIONS = {
-    'tilted-left':  ('curious', 9),
-    'tilted-right': ('curious', -9),
-    'shaking':      ('surprised', None),
-    'bouncing':     ('excited', None),
-    'happy-hover':  ('happy', None),
-    'spinning':     ('overwhelmed', None),
-    'scanning':     ('focused', None),
-    'low-battery':  ('tired', None),
+    'tilted-left':    ('curious', 6),
+    'tilted-left-2':  ('surprised', 14),
+    'tilted-left-3':  ('oh-no', 24),
+    'tilted-right':   ('curious', -6),
+    'tilted-right-2': ('surprised', -14),
+    'tilted-right-3': ('oh-no', -24),
+    'shaking':        ('surprised', None),
+    'shaking-2':      ('oh-no', None),
+    'shaking-3':      ('overwhelmed', None),
+    'bouncing':       ('excited', None),
+    'bouncing-2':     ('laughing', None),
+    'bouncing-3':     ('party-mode', None),
+    'happy-hover':    ('happy', None),
+    'happy-hover-2':  ('grateful', None),
+    'happy-hover-3':  ('love', None),
+    'spinning':       ('overwhelmed', None),
+    'spinning-2':     ('overwhelmed', 15),
+    'spinning-3':     ('overwhelmed', 30),
+    'scanning':       ('neutral', -30),
+    'scanning-2':     ('focused', 90),
+    'scanning-3':     ('gps-searching', 210),
+    'low-battery':    ('tired', None),
 }
+TILT_THRESHOLDS = (8, 18, 30)
 
 
 def render_face(template, name, draw=None):
@@ -803,12 +872,12 @@ def main(preview=False):
     faces = gazes['center']
     motions = {}
     for name, (base, angle) in MOTIONS.items():
-        if name == 'scanning':
-            motions[name] = radar_scan(faces['neutral'])
+        if name.startswith('scanning'):
+            motions[name] = radar_scan(faces[base], sweep_deg=angle)
         elif name == 'low-battery':
             motions[name] = render_face(template, name, draw=battery_panel)
         else:
-            motions[name] = on_background(faces[base], angle=angle, ghost=(name == 'shaking'))
+            motions[name] = on_background(faces[base], angle=angle, ghost=name.startswith('shaking'))
     turns = {n: center_turnaround(n) for n in TURNAROUND_BOXES}
 
     if '--dry' not in sys.argv:
@@ -828,6 +897,9 @@ def main(preview=False):
         manifest['gazes'] = list(GAZES)
         manifest['gaze_pattern'] = '/assets/herbie/expressions/{name}-{gaze}.png'
         manifest['groups'] = GROUPS
+        manifest['levels'] = LEVELS
+        manifest['tilt_thresholds'] = list(TILT_THRESHOLDS)
+        manifest['motion_variants'] = {b: [m for m in MOTIONS if m == b or m.startswith(b + '-') and m[len(b) + 1:].isdigit()] for b in MOTIONS if not b[-1].isdigit()}
         (SRC / 'manifest.json').write_text(json.dumps(manifest, indent=2) + '\n')
 
     if preview:

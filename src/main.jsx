@@ -141,7 +141,11 @@ const herbieExpressionLabels = {
   greetings:'Greetings', wink:'Wink', 'thumbs-up':'Thumbs up', 'thumbs-down':'Thumbs down', facepalm:'Facepalm', 'oh-no':'Oh no!', 'face-with-tears':'Face with tears', 'party-hard':'Party hard',
   'gps-searching':'GPS searching', 'gps-locked':'GPS locked', 'off-route':'Off route', thirsty:'Thirsty', cold:'Cold', 'storm-alert':'Storm alert', summit:'Summit', charging:'Charging', 'middle-finger':'Middle finger'
 };
-const herbieMotionAssets = ['tilted-left','tilted-right','shaking','bouncing','spinning','happy-hover','scanning','low-battery'];
+const herbieMotionAssets = ['tilted-left','tilted-left-2','tilted-left-3','tilted-right','tilted-right-2','tilted-right-3','shaking','shaking-2','shaking-3','bouncing','bouncing-2','bouncing-3','spinning','spinning-2','spinning-3','happy-hover','happy-hover-2','happy-hover-3','scanning','scanning-2','scanning-3','low-battery'];
+// Motions with 3 frames loop at this many ms per frame; tilt picks a level from the Sense HAT angle (same as the Whisplay).
+const herbieMotionCycleMs = { spinning:400, shaking:500, scanning:600, bouncing:800, 'happy-hover':1200 };
+const HERBIE_TILT_LEVELS = [8, 18, 30];
+const herbieTiltSuffix = (deg) => deg >= HERBIE_TILT_LEVELS[2] ? '-3' : deg >= HERBIE_TILT_LEVELS[1] ? '-2' : '';
 const herbieTurnaroundAssets = ['top','bottom','left','back','right'];
 const senseAvatarExpressions = ['auto','happy','neutral','curious','blink','sleepy','bored','surprised','sweating','tired','wink'];
 const senseAvatarLabels = { auto:'Auto cheerful trail face', happy:'Happy', neutral:'Neutral', curious:'Curious', blink:'Blink', sleepy:'Sleepy', bored:'Bored', surprised:'Surprised', sweating:'Hot / sweating', tired:'Cold / tired', wink:'Wink' };
@@ -240,8 +244,8 @@ function herbieCompanionState({ batteryPercent = null, settings = {}, progress =
   const tiltMagnitude = Math.max(Math.abs(roll), Math.abs(pitch));
   const tilt = tiltMagnitude >= 8;
   const tiltDirection = !tilt ? null : (Math.abs(roll) >= Math.abs(pitch) ? (roll < 0 ? 'right' : 'left') : (pitch < 0 ? 'top' : 'bottom'));
-  const tiltAsset = tiltDirection === 'left' ? { kind:'motions', name:'tilted-left', motion:'tilted-left', label:'tilted left' }
-    : tiltDirection === 'right' ? { kind:'motions', name:'tilted-right', motion:'tilted-right', label:'tilted right' }
+  const tiltAsset = tiltDirection === 'left' ? { kind:'motions', name:`tilted-left${herbieTiltSuffix(tiltMagnitude)}`, motion:'tilted-left', label:'tilted left' }
+    : tiltDirection === 'right' ? { kind:'motions', name:`tilted-right${herbieTiltSuffix(tiltMagnitude)}`, motion:'tilted-right', label:'tilted right' }
     : tiltDirection === 'top' ? { kind:'turnarounds', name:'top', motion:'turnaround-top', label:'top view tilt' }
     : tiltDirection === 'bottom' ? { kind:'turnarounds', name:'bottom', motion:'turnaround-bottom', label:'bottom view tilt' }
     : null;
@@ -308,7 +312,9 @@ function HerbieCompanionPanel({ settings = {}, setSettings, progress = 0.34, tic
   const baseName = herbie.imageAsset?.name || herbie.expression;
   const blinkNow = herbie.blinking && imageKind === 'expressions' && herbieBlinkableFaces.includes(baseName);
   const gaze = herbieGazeNow();
-  const imageName = blinkNow ? 'meditating' : (imageKind === 'expressions' && gaze !== 'center' ? `${baseName}-${gaze}` : baseName);
+  const cycleMs = imageKind === 'motions' ? herbieMotionCycleMs[baseName] : 0;
+  const motionName = cycleMs ? [baseName, `${baseName}-2`, `${baseName}-3`][Math.floor(Date.now() / cycleMs) % 3] : baseName;
+  const imageName = blinkNow ? 'meditating' : (imageKind === 'expressions' && gaze !== 'center' ? `${baseName}-${gaze}` : motionName);
   return <div className={`herbie-companion motion-${herbie.motion} ${herbie.blinking ? 'is-blinking' : ''} ${herbie.tilted ? 'is-tilted' : ''}`}><div className="herbie-stage"><img src={herbieAsset(imageKind, imageName)} alt={`Herbie Map ${imageName} ${imageKind === 'motions' ? 'motion' : imageKind === 'turnarounds' ? 'turnaround' : 'expression'}`} loading="lazy" /></div><div className="herbie-copy"><div className="section-head compact"><div><h3>Herbie Map companion</h3><p className="muted">Your trail buddy. Herbie's face follows the Whisplay screen and reacts to Sense HAT tilt and bumps.</p></div><Pill>{herbieExpressionLabels[herbie.expression] || herbie.expression}</Pill><Pill tone={herbie.buddyMood === 'excited' ? 'online' : herbie.buddyMood === 'sleepy' ? 'warn' : 'default'}>Buddy Mood: {herbie.buddyMood}</Pill></div><label className="field-line"><span>Herbie mood</span><select value={manual} onChange={e=>setHerbie(e.target.value)}>{herbieExpressions.map(x=><option key={x} value={x}>{herbieExpressionLabels[x] || x}</option>)}</select></label><div className="tag-row"><Pill>{herbie.reason}</Pill></div>{herbie.whisplayOk && <div className="herbie-whisplay-mirror"><strong>Whisplay HAT live display</strong><span>{herbie.whisplayForeground || 'foreground unknown'} · {herbie.whisplayScreen?.width || 240}×{herbie.whisplayScreen?.height || 280} {herbie.whisplayScreen?.pixel_format || 'RGB565'}</span></div>}</div></div>;
 }
 function rgbToCss(c = [0,0,0]) { return `rgb(${c[0]||0},${c[1]||0},${c[2]||0})`; }

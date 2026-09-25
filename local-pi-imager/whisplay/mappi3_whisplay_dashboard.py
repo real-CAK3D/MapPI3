@@ -329,6 +329,12 @@ def herbie_directional_tilt_face(roll, pitch, threshold=8.0):
         return None
     asset = herbie_best_asset(TILT_DIRECTION_ASSETS[direction])
     label = {'left':'tilted left','right':'tilted right','top':'top view tilt','bottom':'bottom view tilt'}[direction]
+    if direction in ('left', 'right'):
+        mag = max(abs(roll), abs(pitch))
+        level = 3 if mag >= HERBIE_TILT_LEVELS[2] else 2 if mag >= HERBIE_TILT_LEVELS[1] else 1
+        if level > 1 and herbie_asset_ref('motions', f'tilted-{direction}-{level}'):
+            asset = f'motions/tilted-{direction}-{level}'
+        label = f'{label} {round(mag)} deg'
     return asset, label, direction
 
 # Low battery: at or below 40% Herbie keeps rotating his normal faces and shows the battery face for

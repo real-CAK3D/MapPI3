@@ -49,17 +49,47 @@
     "thirsty": "/assets/herbie/expressions/thirsty.png",
     "cold": "/assets/herbie/expressions/cold.png",
     "storm-alert": "/assets/herbie/expressions/storm-alert.png",
+    "storm-alert-2": "/assets/herbie/expressions/storm-alert-2.png",
+    "storm-alert-3": "/assets/herbie/expressions/storm-alert-3.png",
+    "face-with-tears-2": "/assets/herbie/expressions/face-with-tears-2.png",
+    "face-with-tears-3": "/assets/herbie/expressions/face-with-tears-3.png",
+    "worried-2": "/assets/herbie/expressions/worried-2.png",
+    "worried-3": "/assets/herbie/expressions/worried-3.png",
+    "angry-2": "/assets/herbie/expressions/angry-2.png",
+    "angry-3": "/assets/herbie/expressions/angry-3.png",
+    "sad-2": "/assets/herbie/expressions/sad-2.png",
+    "sad-3": "/assets/herbie/expressions/sad-3.png",
+    "laughing-2": "/assets/herbie/expressions/laughing-2.png",
+    "laughing-3": "/assets/herbie/expressions/laughing-3.png",
+    "surprised-2": "/assets/herbie/expressions/surprised-2.png",
+    "surprised-3": "/assets/herbie/expressions/surprised-3.png",
+    "cold-2": "/assets/herbie/expressions/cold-2.png",
+    "cold-3": "/assets/herbie/expressions/cold-3.png",
     "summit": "/assets/herbie/expressions/summit.png",
     "charging": "/assets/herbie/expressions/charging.png"
   },
   "motions": {
     "tilted-left": "/assets/herbie/motions/tilted-left.png",
+    "tilted-left-2": "/assets/herbie/motions/tilted-left-2.png",
+    "tilted-left-3": "/assets/herbie/motions/tilted-left-3.png",
     "tilted-right": "/assets/herbie/motions/tilted-right.png",
+    "tilted-right-2": "/assets/herbie/motions/tilted-right-2.png",
+    "tilted-right-3": "/assets/herbie/motions/tilted-right-3.png",
     "shaking": "/assets/herbie/motions/shaking.png",
+    "shaking-2": "/assets/herbie/motions/shaking-2.png",
+    "shaking-3": "/assets/herbie/motions/shaking-3.png",
     "bouncing": "/assets/herbie/motions/bouncing.png",
+    "bouncing-2": "/assets/herbie/motions/bouncing-2.png",
+    "bouncing-3": "/assets/herbie/motions/bouncing-3.png",
     "happy-hover": "/assets/herbie/motions/happy-hover.png",
+    "happy-hover-2": "/assets/herbie/motions/happy-hover-2.png",
+    "happy-hover-3": "/assets/herbie/motions/happy-hover-3.png",
     "spinning": "/assets/herbie/motions/spinning.png",
+    "spinning-2": "/assets/herbie/motions/spinning-2.png",
+    "spinning-3": "/assets/herbie/motions/spinning-3.png",
     "scanning": "/assets/herbie/motions/scanning.png",
+    "scanning-2": "/assets/herbie/motions/scanning-2.png",
+    "scanning-3": "/assets/herbie/motions/scanning-3.png",
     "low-battery": "/assets/herbie/motions/low-battery.png"
   },
   "turnarounds": {
@@ -123,6 +153,22 @@
     "thirsty": "thirsty",
     "cold": "cold",
     "storm-alert": "storm alert",
+    "storm-alert-2": "storm alert (strong)",
+    "storm-alert-3": "storm alert (extreme)",
+    "face-with-tears-2": "face with tears (strong)",
+    "face-with-tears-3": "face with tears (extreme)",
+    "worried-2": "worried (strong)",
+    "worried-3": "worried (extreme)",
+    "angry-2": "angry (strong)",
+    "angry-3": "angry (extreme)",
+    "sad-2": "sad (strong)",
+    "sad-3": "sad (extreme)",
+    "laughing-2": "laughing (strong)",
+    "laughing-3": "laughing (extreme)",
+    "surprised-2": "surprised (strong)",
+    "surprised-3": "surprised (extreme)",
+    "cold-2": "cold (strong)",
+    "cold-3": "cold (extreme)",
     "summit": "summit",
     "charging": "charging"
   },
@@ -211,8 +257,14 @@
     ],
     "cold": [
       "cold",
+      "cold-2",
       "tired",
       "sad"
+    ],
+    "freezing": [
+      "cold-2",
+      "cold-3",
+      "worried-2"
     ],
     "storm": [
       "storm-alert",
@@ -220,12 +272,46 @@
       "oh-no",
       "surprised"
     ],
+    "storm-watch": [
+      "storm-alert",
+      "worried",
+      "surprised"
+    ],
+    "storm-warning": [
+      "storm-alert-2",
+      "worried-2",
+      "oh-no",
+      "surprised-2"
+    ],
+    "storm-danger": [
+      "storm-alert-3",
+      "worried-3",
+      "surprised-3"
+    ],
+    "crying": [
+      "face-with-tears",
+      "face-with-tears-2",
+      "face-with-tears-3",
+      "sad-3"
+    ],
+    "upset": [
+      "sad",
+      "sad-2",
+      "worried-2",
+      "face-with-tears"
+    ],
+    "furious": [
+      "angry",
+      "angry-2",
+      "angry-3"
+    ],
     "summit": [
       "summit",
       "party-hard",
       "excited",
       "love",
-      "laughing"
+      "laughing",
+      "laughing-2"
     ],
     "jolt": [
       "surprised",
@@ -242,6 +328,7 @@
       "party-mode",
       "party-hard",
       "laughing",
+      "laughing-3",
       "cheeky"
     ],
     "four-twenty": [
@@ -253,6 +340,93 @@
       "middle-finger",
       "annoyed",
       "side-eye"
+    ]
+  },
+  "levels": {
+    "storm-alert": [
+      "storm-alert",
+      "storm-alert-2",
+      "storm-alert-3"
+    ],
+    "face-with-tears": [
+      "face-with-tears",
+      "face-with-tears-2",
+      "face-with-tears-3"
+    ],
+    "worried": [
+      "worried",
+      "worried-2",
+      "worried-3"
+    ],
+    "angry": [
+      "angry",
+      "angry-2",
+      "angry-3"
+    ],
+    "sad": [
+      "sad",
+      "sad-2",
+      "sad-3"
+    ],
+    "laughing": [
+      "laughing",
+      "laughing-2",
+      "laughing-3"
+    ],
+    "surprised": [
+      "surprised",
+      "surprised-2",
+      "surprised-3"
+    ],
+    "cold": [
+      "cold",
+      "cold-2",
+      "cold-3"
+    ]
+  },
+  "tilt_thresholds": [
+    8,
+    18,
+    30
+  ],
+  "motion_variants": {
+    "tilted-left": [
+      "tilted-left",
+      "tilted-left-2",
+      "tilted-left-3"
+    ],
+    "tilted-right": [
+      "tilted-right",
+      "tilted-right-2",
+      "tilted-right-3"
+    ],
+    "shaking": [
+      "shaking",
+      "shaking-2",
+      "shaking-3"
+    ],
+    "bouncing": [
+      "bouncing",
+      "bouncing-2",
+      "bouncing-3"
+    ],
+    "happy-hover": [
+      "happy-hover",
+      "happy-hover-2",
+      "happy-hover-3"
+    ],
+    "spinning": [
+      "spinning",
+      "spinning-2",
+      "spinning-3"
+    ],
+    "scanning": [
+      "scanning",
+      "scanning-2",
+      "scanning-3"
+    ],
+    "low-battery": [
+      "low-battery"
     ]
   }
 }
