@@ -244,7 +244,7 @@ function herbieCompanionState({ batteryPercent = null, settings = {}, progress =
   const battery = [batteryPercent, settings.batteryPercent, settings.piBatteryPercent].map(v => (v === null || v === undefined || v === '' ? NaN : Number(v))).find(Number.isFinite) ?? NaN;
   const tiltMagnitude = Math.max(Math.abs(roll), Math.abs(pitch));
   const tilt = tiltMagnitude >= 8;
-  const tiltDirection = !tilt ? null : (Math.abs(roll) >= Math.abs(pitch) ? (roll < 0 ? 'right' : 'left') : (pitch < 0 ? 'top' : 'bottom'));
+  const tiltDirection = !tilt ? null : (Math.abs(roll) >= Math.abs(pitch) ? (roll < 0 ? 'right' : 'left') : (pitch > 0 ? 'top' : 'bottom'));
   const tiltAsset = tiltDirection === 'left' ? { kind:'motions', name:`tilted-left${herbieTiltSuffix(tiltMagnitude)}`, motion:'tilted-left', label:'tilted left' }
     : tiltDirection === 'right' ? { kind:'motions', name:`tilted-right${herbieTiltSuffix(tiltMagnitude)}`, motion:'tilted-right', label:'tilted right' }
     : tiltDirection === 'top' ? { kind:'turnarounds', name:'top', motion:'turnaround-top', label:'top view tilt' }

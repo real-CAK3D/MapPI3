@@ -321,7 +321,8 @@ def herbie_tilt_direction(roll, pitch, threshold=8.0):
         return None
     if abs(roll) >= abs(pitch):
         return 'right' if roll < 0 else 'left'
-    return 'top' if pitch < 0 else 'bottom'
+    # Tilting the Pi up gives positive pitch on this Sense HAT mounting, which shows Herbie's top.
+    return 'top' if pitch > 0 else 'bottom'
 
 def herbie_directional_tilt_face(roll, pitch, threshold=8.0):
     direction = herbie_tilt_direction(roll, pitch, threshold)
