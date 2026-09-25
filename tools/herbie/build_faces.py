@@ -39,12 +39,19 @@ PUPIL_EDGE = (88, 140, 48)
 INK_2 = EYE_FILL
 SPROUT = (184, 206, 58)     # bright leaf (charge spark only)
 SPROUT_DARK = (104, 140, 34)
-HAND = (78, 118, 38)
-HAND_DARK = (22, 40, 10)
-HAND_LIGHT = (116, 156, 60)
-SLEEVE = (66, 88, 42)
-HIGH_EYE = (164, 38, 34)    # high AF: red eyes, green pupils
-HIGH_EYE_EDGE = (70, 12, 10)
+HAND = (66, 84, 18)         # sampled from the original facepalm hand
+HAND_DARK = (22, 34, 4)
+HAND_LIGHT = (96, 118, 28)
+HAND_SHADE = (46, 62, 10)
+HAND_VEIN = (36, 50, 8)
+SLEEVE = (104, 91, 21)
+HIGH_EYE = (238, 208, 208)  # high AF: whitish-pink eyes, green pupils
+HIGH_EYE_EDGE = (160, 112, 112)
+LOCK_EYE = (16, 66, 22)     # GPS locked: radar-green reticle eyes
+LOCK_EYE_EDGE = (4, 20, 6)
+LOCK_PUPIL = (150, 250, 116)
+LOCK_PUPIL_EDGE = (60, 150, 60)
+RADAR = (130, 240, 100)
 HIGH_PUPIL = (86, 164, 50)
 HIGH_PUPIL_EDGE = (34, 84, 18)
 BLUSH = (226, 108, 110)
@@ -58,6 +65,22 @@ BG_DARK = (10, 22, 14)
 EYE_L = (55, 55)
 EYE_R = (92, 55)
 MOUTH = (73.5, 73)
+
+# Gaze: every expression is rendered looking straight, left and right (viewer's left/right).
+# The whole face turns a little and the pupils travel a little further.
+GAZES = {'center': 0, 'left': -1, 'right': 1}
+GAZE_SHIFT = 5.5      # units the eyes + mouth move
+GAZE_PUPIL = 2.8      # extra pupil travel inside the eye
+_BASE_LAYOUT = (EYE_L, EYE_R, MOUTH)
+GAZE = [0]
+
+
+def set_gaze(name):
+    global EYE_L, EYE_R, MOUTH
+    g = GAZES[name]
+    GAZE[0] = g
+    (lx, ly), (rx, ry), (mx, my) = _BASE_LAYOUT
+    EYE_L, EYE_R, MOUTH = (lx + g * GAZE_SHIFT, ly), (rx + g * GAZE_SHIFT, ry), (mx + g * GAZE_SHIFT * 0.8, my)
 
 
 def s(v):
@@ -193,7 +216,7 @@ def sprout_mask(cx, cy, size):
 
 
 # ---------------------------------------------------------------- eyes
-def eye_open(c, center, scale=1.0, look=(0, 0), lid=None, lid_side=None, red=False):
+def eye_open(c, center, scale=1.0, look=(0, 0), lid=None, lid_side=None, red=False, palette=None):
     cx, cy = center
     w, h = 10 * scale, 16 * scale
     m = egg_mask(cx, cy, w, h)
@@ -208,11 +231,22 @@ def eye_open(c, center, scale=1.0, look=(0, 0), lid=None, lid_side=None, red=Fal
             yl, yr = (y_in, y_out) if left_is_inner else (y_out, y_in)
             cut = poly_mask([(cx - 9, cy - 12), (cx + 9, cy - 12), (cx + 9, yr), (cx - 9, yl)])
         m = subtract(m, cut)
-    fill, edge, pupil, pupil_edge = (HIGH_EYE, HIGH_EYE_EDGE, HIGH_PUPIL, HIGH_PUPIL_EDGE) if red else (EYE_FILL, EYE_EDGE, PUPIL, PUPIL_EDGE)
+    fill, edge, pupil, pupil_edge = palette or ((HIGH_EYE, HIGH_EYE_EDGE, HIGH_PUPIL, HIGH_PUPIL_EDGE) if red else (EYE_FILL, EYE_EDGE, PUPIL, PUPIL_EDGE))
+    look = (look[0] + GAZE[0] * GAZE_PUPIL, look[1])
     paint(c, m, fill, outline=edge, outline_px=9, shade=edge)
     spr = sprout_mask(cx + look[0], cy - h * 0.12 + look[1], 4.2 * scale)
     spr = ImageChops.multiply(spr, m.filter(ImageFilter.MinFilter(9)))
     paint(c, spr, pupil, outline=pupil_edge, outline_px=3)
+
+
+def eye_reticle(c, center):
+    """GPS locked: radar-green eye with a lock-on ring and crosshair, like the scanning screen."""
+    cx, cy = center
+    eye_open(c, center, palette=(LOCK_EYE, LOCK_EYE_EDGE, LOCK_PUPIL, LOCK_PUPIL_EDGE))
+    ring = subtract(ellipse_mask(cx, cy, 8.2, 10.2), ellipse_mask(cx, cy, 7.4, 9.4))
+    ticks = union(stroke_mask([(cx - 10.5, cy), (cx - 5.2, cy)], 0.9), stroke_mask([(cx + 5.2, cy), (cx + 10.5, cy)], 0.9),
+                  stroke_mask([(cx, cy - 12.5), (cx, cy - 7.5)], 0.9), stroke_mask([(cx, cy + 7.5), (cx, cy + 12.5)], 0.9))
+    paint(c, union(ring, ticks), RADAR, outline=LOCK_EYE_EDGE, outline_px=4)
 
 
 def eye_arc(c, center, up=True, width=10, thick=2.2):
@@ -425,48 +459,102 @@ def shiver_marks(c):
 
 
 # ---------------------------------------------------------------- hands (all built like the Facepalm hand)
+_SLEEVE_TEX = {}
+
+
+def sleeve_texture(scale):
+    """Woven moss sleeve texture sampled from the original facepalm arm, tiled to the canvas."""
+    key = round(scale, 3)
+    if key not in _SLEEVE_TEX:
+        arm = Image.open(TOOLS / 'sources' / 'facepalm_arm_old.png').convert('RGBA')
+        patch = arm.crop((6, 34, 30, 54))
+        a = np.array(patch)
+        a[..., 3] = 255
+        patch = Image.fromarray(a, 'RGBA').resize((round(24 * K * scale), round(20 * K * scale)), Image.LANCZOS)
+        patch = patch.filter(ImageFilter.UnsharpMask(radius=5, percent=120, threshold=2))
+        tex = Image.new('RGBA', (CW, CH))
+        for ty in range(0, CH, patch.height):
+            for tx in range(0, CW, patch.width):
+                tex.paste(patch, (tx, ty))
+        rgb = np.array(tex).astype(float)
+        rgb[..., :3] *= 0.85
+        _SLEEVE_TEX[key] = Image.fromarray(rgb.clip(0, 255).astype(np.uint8), 'RGBA')
+    return _SLEEVE_TEX[key]
+
+
 def leaf_hand(c, cx, cy, angle=0, scale=1.0, pose='open', flip=False):
-    """Leafy glove hand + mossy cuff. pose: open | thumb_up | thumb_down."""
-    hand = Image.new('L', (int(s(40) * scale), int(s(46) * scale)), 0)
+    """Hand built like the facepalm hand: olive leaf glove with finger veins and a woven moss sleeve.
+    pose: open | thumb_up | thumb_down | middle"""
+    hand = Image.new('L', (int(s(40) * scale), int(s(62) * scale)), 0)
+    veins = Image.new('L', hand.size, 0)
     hw, hh = hand.size
-    d = ImageDraw.Draw(hand)
+    d, dv = ImageDraw.Draw(hand), ImageDraw.Draw(veins)
     u = s(1) * scale
-    px, py = hw / 2, hh * 0.62
+    px, py = hw / 2, hh * 0.46
+    vw = max(2, int(0.9 * u))
+
+    def finger(cx_, cy_, w, ln, ang):
+        f = Image.new('L', (int(w * u), int(ln * u)), 0)
+        ImageDraw.Draw(f).ellipse((0, 0, f.width, f.height), fill=255)
+        f = f.rotate(-ang, resample=Image.BICUBIC, expand=True)
+        hand.paste(f, (int(cx_ - f.width / 2), int(cy_ - f.height / 2)), f)
+        dx, dy = math.sin(math.radians(ang)) * ln * 0.32 * u, -math.cos(math.radians(ang)) * ln * 0.32 * u
+        dv.line([(cx_ - dx * 0.4, cy_ - dy * 0.4), (cx_ + dx, cy_ + dy)], fill=255, width=vw)
+
     if pose == 'open':
-        d.ellipse((px - 9 * u, py - 8 * u, px + 9 * u, py + 8 * u), fill=255)             # palm
-        for ang, ln in [(-38, 13), (-14, 15), (10, 14.5), (32, 12.5)]:                       # fingers (leaf shaped)
-            f = Image.new('L', (int(8 * u), int(ln * 2 * u)), 0)
-            ImageDraw.Draw(f).ellipse((0, 0, f.width, f.height), fill=255)
-            f = f.rotate(-ang, resample=Image.BICUBIC, expand=True)
-            fx = px + math.sin(math.radians(ang)) * 9 * u - f.width / 2
-            fy = py - math.cos(math.radians(ang)) * 9 * u - f.height / 2 - ln * 0.35 * u
-            hand.paste(f, (int(fx), int(fy)), f)
-        th = Image.new('L', (int(7 * u), int(18 * u)), 0)                                   # thumb
-        ImageDraw.Draw(th).ellipse((0, 0, th.width, th.height), fill=255)
-        th = th.rotate(58, resample=Image.BICUBIC, expand=True)
-        hand.paste(th, (int(px - 16 * u - th.width / 4), int(py - th.height / 2)), th)
+        d.ellipse((px - 9 * u, py - 8 * u, px + 9 * u, py + 8 * u), fill=255)
+        for ang, ln in [(-38, 26), (-14, 30), (10, 29), (32, 25)]:
+            fx = px + math.sin(math.radians(ang)) * 12 * u
+            fy = py - math.cos(math.radians(ang)) * 12 * u
+            finger(fx, fy, 8, ln, ang)
+        finger(px - 12 * u, py + 1 * u, 7, 18, -58)
     else:
         d.rounded_rectangle((px - 9 * u, py - 7 * u, px + 9 * u, py + 9 * u), radius=int(6 * u), fill=255)   # fist
-        for i in range(4):                                                                                    # knuckles
-            d.ellipse((px + 3 * u, py - 7 * u + i * 4 * u, px + 11 * u, py - 2 * u + i * 4 * u), fill=255)
-        th = Image.new('L', (int(7.5 * u), int(19 * u)), 0)                                                  # thumb up
-        ImageDraw.Draw(th).ellipse((0, 0, th.width, th.height), fill=255)
-        hand.paste(th, (int(px - 7 * u), int(py - 22 * u)), th)
-    cuff = Image.new('L', hand.size, 0)
-    ImageDraw.Draw(cuff).rounded_rectangle((px - 8 * u, py + 6 * u, px + 8 * u, hh), radius=int(3 * u), fill=255)
+        if pose == 'middle':
+            for kx in (-6, 6.5):                                                                              # folded knuckles
+                d.ellipse((px + (kx - 3.2) * u, py - 10 * u, px + (kx + 3.2) * u, py - 3 * u), fill=255)
+            finger(px + 0.3 * u, py - 14 * u, 7.2, 24, 0)                                                     # middle finger up
+            d.ellipse((px - 8 * u, py + 1 * u, px + 3 * u, py + 6.5 * u), fill=255)                           # thumb across
+            dv.line([(px - 7 * u, py + 3.8 * u), (px + 1.5 * u, py + 3.8 * u)], fill=255, width=vw)
+        else:
+            for k in range(4):                                                                                # knuckles
+                d.ellipse((px + 3 * u, py - 7 * u + k * 4 * u, px + 11 * u, py - 2 * u + k * 4 * u), fill=255)
+                dv.line([(px + 4 * u, py - 4.5 * u + k * 4 * u), (px + 8 * u, py - 4.5 * u + k * 4 * u)], fill=255, width=vw)
+            finger(px - 3.5 * u, py - 13 * u, 7.5, 21, 0)                                                     # thumb up
+    sleeve = Image.new('L', hand.size, 0)
+    s_top, s_bot = py + 6 * u, min(hh, py + 24 * u)
+    ImageDraw.Draw(sleeve).polygon([(px - 7.5 * u, s_top), (px + 7.5 * u, s_top), (px + 9 * u, s_bot), (px - 9 * u, s_bot)], fill=255)
+    wraps = Image.new('L', hand.size, 0)      # diagonal wrap bands across the sleeve
+    wd = ImageDraw.Draw(wraps)
+    for k in range(5):
+        y0 = s_top + (k + 0.6) * 3.6 * u
+        wd.line([(px - 11 * u, y0 + 2 * u), (px + 11 * u, y0 - 2 * u)], fill=255, width=max(2, int(0.9 * u)))
     if flip:
-        hand, cuff = hand.transpose(Image.FLIP_LEFT_RIGHT), cuff.transpose(Image.FLIP_LEFT_RIGHT)
+        hand, veins, sleeve, wraps = (im.transpose(Image.FLIP_LEFT_RIGHT) for im in (hand, veins, sleeve, wraps))
     if pose == 'thumb_down':
         angle += 180
-    hand = hand.rotate(angle, resample=Image.BICUBIC, expand=True)
-    cuff = cuff.rotate(angle, resample=Image.BICUBIC, expand=True)
+    hand, veins, sleeve, wraps = (im.rotate(angle, resample=Image.BICUBIC, expand=True) for im in (hand, veins, sleeve, wraps))
     ox, oy = int(s(cx) - hand.width / 2), int(s(cy) - hand.height / 2)
-    hm, cm = new_mask(), new_mask()
+    hm, vm, sm, wm = new_mask(), new_mask(), new_mask(), new_mask()
     hm.paste(hand, (ox, oy), hand)
-    cm.paste(cuff, (ox, oy), cuff)
-    cm = subtract(cm, hm)
-    paint(c, cm, SLEEVE, outline=HAND_DARK, outline_px=9, light=(130, 150, 90))
-    paint(c, hm, HAND, outline=HAND_DARK, outline_px=11, light=HAND_LIGHT, light_offset=(-6, -8), shade=(76, 116, 38))
+    vm.paste(veins, (ox, oy), veins)
+    sm.paste(sleeve, (ox, oy), sleeve)
+    wm.paste(wraps, (ox, oy), wraps)
+    sm = subtract(sm, hm)
+    paint(c, sm, (92, 80, 20), outline=HAND_DARK, outline_px=9, light=(140, 128, 48), light_offset=(-5, 0), shade=(60, 52, 12))
+    wm = ImageChops.multiply(wm, sm.filter(ImageFilter.MinFilter(5)))
+    c.paste(Image.new('RGBA', c.size, (54, 60, 14, 255)), (0, 0), wm.filter(ImageFilter.GaussianBlur(1)))
+    rng = np.random.default_rng(int(cx * 10 + cy))                 # moss flecks, like the woven original
+    fleck = np.zeros((CH, CW), np.uint8)
+    ys, xs = np.nonzero(np.array(sm.filter(ImageFilter.MinFilter(7))) > 128)
+    if len(xs):
+        pick = rng.choice(len(xs), size=min(len(xs), 140), replace=False)
+        for x_, y_ in zip(xs[pick], ys[pick]):
+            fleck[max(0, y_ - 3):y_ + 3, max(0, x_ - 3):x_ + 3] = 200
+    c.paste(Image.new('RGBA', c.size, (126, 132, 40, 255)), (0, 0), Image.fromarray(fleck).filter(ImageFilter.GaussianBlur(1.5)))
+    paint(c, hm, HAND, outline=HAND_DARK, outline_px=11, light=HAND_LIGHT, light_offset=(-6, -8), shade=HAND_SHADE)
+    vm = ImageChops.multiply(vm, hm.filter(ImageFilter.MinFilter(11)))
+    c.paste(Image.new('RGBA', c.size, HAND_VEIN + (255,)), (0, 0), vm.filter(ImageFilter.GaussianBlur(1.2)))
 
 
 def ground_mist(c, strength=0.55, seed=7):
@@ -481,17 +569,26 @@ def ground_mist(c, strength=0.55, seed=7):
     c.paste(Image.new('RGBA', c.size, (226, 234, 224, 255)), (0, 0), Image.fromarray(alpha))
 
 
-def old_facepalm_arm(c, dx=3, dy=3, darken=0.85):
+def old_facepalm_arm(c, dx=3, dy=3, darken=0.85, flip=False, center=None, scale=1.0, angle=0):
     """The original facepalm arm + leaf hand, lifted from the first-pass art and placed on the new template."""
     arm = Image.open(TOOLS / 'sources' / 'facepalm_arm_old.png').convert('RGBA')
     ox, oy = json.loads((TOOLS / 'sources' / 'facepalm_arm_old.json').read_text())['origin_on_145x105_grid']
-    arm = arm.resize((round(arm.width * K), round(arm.height * K)), Image.LANCZOS)
+    arm = arm.resize((round(arm.width * K * scale), round(arm.height * K * scale)), Image.LANCZOS)
     arm = arm.filter(ImageFilter.UnsharpMask(radius=6, percent=140, threshold=2))  # source is 145x105-era art
     rgb = np.array(arm).astype(float)
     rgb[..., :3] *= darken
     arm = Image.fromarray(rgb.clip(0, 255).astype(np.uint8), 'RGBA')
     arm.putalpha(arm.getchannel('A').filter(ImageFilter.GaussianBlur(3)).point(lambda v: 0 if v < 40 else min(255, int(v * 1.25))))
-    c.alpha_composite(arm, (round(s(ox + dx)), round(s(oy + dy))))
+    if flip:
+        arm = arm.transpose(Image.FLIP_LEFT_RIGHT)
+    if angle:
+        arm = arm.rotate(angle, resample=Image.BICUBIC, expand=True)
+    if center is None:
+        c.alpha_composite(arm, (round(s(ox + dx)), round(s(oy + dy))))
+    else:
+        layer = Image.new('RGBA', c.size, (0, 0, 0, 0))
+        layer.paste(arm, (round(s(center[0]) - arm.width / 2), round(s(center[1]) - arm.height / 2)), arm)
+        c.alpha_composite(layer)
 
 
 def battery_panel(c):
@@ -579,17 +676,18 @@ FACES = {
     'melting':      lambda c: (eyes(c, lid='sad', lid_side='L', look=(0, 2)), mouth_tongue(c), sweat(c, 108, 48), sweat(c, 38, 50)),
     'sweating':     lambda c: (eyes(c, lid='sad', lid_side='L'), mouth_wavy(c, 14), sweat(c)),
     'overwhelmed':  lambda c: (eye_spiral(c, EYE_L), eye_spiral(c, EYE_R), mouth_wavy(c, 18, 2)),
-    'greetings':    lambda c: (eyes(c, 'happy'), mouth_smile(c, 22, 6), leaf_hand(c, 115, 62, angle=-18, scale=0.62)),
+    'greetings':    lambda c: (eyes(c, 'happy'), mouth_smile(c, 22, 6), old_facepalm_arm(c, flip=True, center=(121, 72), scale=0.82, angle=-6)),
     'wink':         lambda c: (eye_open(c, EYE_L), eye_arc(c, EYE_R, up=True), mouth_smile(c, 20, 5)),
-    'thumbs-up':    lambda c: (eyes(c), mouth_smile(c, 20, 5), leaf_hand(c, 115, 70, angle=-8, scale=0.6, pose='thumb_up')),
-    'thumbs-down':  lambda c: (eye_open(c, EYE_L, lid='sad', lid_side='L'), eye_open(c, EYE_R, lid='sad', lid_side='R'), mouth_frown(c), leaf_hand(c, 115, 68, angle=8, scale=0.6, pose='thumb_down')),
+    'thumbs-up':    lambda c: (eyes(c), mouth_smile(c, 20, 5), leaf_hand(c, 116, 74, angle=-8, scale=0.62, pose='thumb_up')),
+    'thumbs-down':  lambda c: (eye_open(c, EYE_L, lid='sad', lid_side='L'), eye_open(c, EYE_R, lid='sad', lid_side='R'), mouth_frown(c), leaf_hand(c, 116, 62, angle=8, scale=0.62, pose='thumb_down')),
     'facepalm':     lambda c: (eye_open(c, EYE_R, lid='half'), mouth_flat(c, 10, dy=1), old_facepalm_arm(c)),
     'oh-no':        lambda c: (eyes(c, scale=1.2, look=(0, 1)), brow(c, EYE_L, 3, lift=2), brow(c, EYE_R, 3, lift=2, side='R'), mouth_o(c, 4.2, 5.2)),
     'face-with-tears': lambda c: (eye_arc(c, EYE_L, up=False), eye_arc(c, EYE_R, up=False), brow(c, EYE_L, 3), brow(c, EYE_R, 3, side='R'), tear_streams(c), mouth_wobble(c)),
-    'party-hard':   lambda c: (eye_squeeze(c, EYE_L, 'L'), eye_squeeze(c, EYE_R, 'R'), mouth_grin(c, 26, 11), leaf_hand(c, 116, 54, angle=-12, scale=0.62)),
+    'party-hard':   lambda c: (eye_squeeze(c, EYE_L, 'L'), eye_squeeze(c, EYE_R, 'R'), mouth_grin(c, 26, 11), old_facepalm_arm(c, flip=True, center=(121, 66), scale=0.82, angle=-16)),
     # New faces for features added since the original set.
     'gps-searching': lambda c: (eyes(c, look=(-2, -3)), brow(c, EYE_L, 2, lift=1), mouth_o(c, 2.2, 2.4)),
-    'gps-locked':   lambda c: (eye_open(c, EYE_L, lid='angry', lid_side='L'), eye_open(c, EYE_R, lid='angry', lid_side='R'), mouth_smile(c, 22, 5)),
+    'gps-locked':   lambda c: (eye_reticle(c, EYE_L), eye_reticle(c, EYE_R), mouth_smile(c, 22, 5)),
+    'middle-finger': lambda c: (eye_open(c, EYE_L, lid='half', look=(0, 1)), eye_open(c, EYE_R, lid='angry', lid_side='R', look=(0, 1)), mouth_smirk(c), leaf_hand(c, 116, 66, angle=-4, scale=0.78, pose='middle')),
     'off-route':    lambda c: (eyes(c, look=(3, 1), lid='sad', lid_side='R'), brow(c, EYE_R, 3, side='R'), mouth_wavy(c, 16)),
     'thirsty':      lambda c: (eyes(c, lid='half', look=(0, 2)), mouth_tongue(c, 14), sweat(c, 108, 48)),
     'cold':         lambda c: (eye_squeeze(c, EYE_L, 'L'), eye_squeeze(c, EYE_R, 'R'), mouth_zigzag(c), shiver_marks(c)),
@@ -600,7 +698,32 @@ FACES = {
 
 LABELS = {'high-af': 'high AF', 'oh-no': 'oh no!', 'face-with-tears': 'face with tears', 'gps-searching': 'GPS searching',
           'gps-locked': 'GPS locked', 'off-route': 'off route', 'storm-alert': 'storm alert', 'party-mode': 'party mode',
-          'party-hard': 'party hard', 'side-eye': 'side eye', 'thumbs-up': 'thumbs up', 'thumbs-down': 'thumbs down'}
+          'party-hard': 'party hard', 'side-eye': 'side eye', 'thumbs-up': 'thumbs up', 'thumbs-down': 'thumbs down',
+          'middle-finger': 'middle finger'}
+
+# Event groups: when something happens Herbie picks from the whole group (and a gaze) instead of one face.
+GROUPS = {
+    'idle':          ['neutral', 'happy', 'curious', 'wink', 'chillin', 'grateful', 'thinking', 'excited'],
+    'morning':       ['greetings', 'happy', 'excited', 'thumbs-up'],
+    'day':           ['happy', 'curious', 'neutral', 'wink', 'excited'],
+    'evening':       ['chillin', 'meditating', 'grateful', 'happy'],
+    'night':         ['sleepy', 'yawning', 'meditating', 'tired'],
+    'gps-searching': ['gps-searching', 'thinking', 'curious', 'focused'],
+    'gps-locked':    ['gps-locked', 'determined', 'thumbs-up', 'happy'],
+    'navigating':    ['focused', 'determined', 'curious', 'gps-locked'],
+    'off-route':     ['off-route', 'confused', 'worried', 'oh-no'],
+    'low-battery':   ['tired', 'worried', 'sweating'],
+    'charging':      ['charging', 'meditating', 'grateful', 'happy'],
+    'hot':           ['sweating', 'melting', 'thirsty', 'chillin'],
+    'cold':          ['cold', 'tired', 'sad'],
+    'storm':         ['storm-alert', 'worried', 'oh-no', 'surprised'],
+    'summit':        ['summit', 'party-hard', 'excited', 'love', 'laughing'],
+    'jolt':          ['surprised', 'oh-no', 'wow'],
+    'oops':          ['facepalm', 'thumbs-down', 'annoyed', 'face-with-tears'],
+    'party':         ['party-mode', 'party-hard', 'laughing', 'cheeky'],
+    'four-twenty':   ['high-af', 'chillin', 'laughing'],
+    'rude':          ['middle-finger', 'annoyed', 'side-eye'],
+}
 
 MOTIONS = {
     'tilted-left':  ('curious', 9),
@@ -663,11 +786,21 @@ def center_turnaround(name):
     return canvas
 
 
+def save_png(img, path):
+    """256-colour palette PNG (dithered): about a third of the size of full RGB for this painted art."""
+    img.convert('RGB').quantize(colors=256, method=Image.Quantize.MEDIANCUT, dither=Image.Dither.FLOYDSTEINBERG).save(path, optimize=True)
+
+
 def main(preview=False):
     TOOLS.mkdir(parents=True, exist_ok=True)
     template = build_template()
     template.save(TOOLS / 'template.png')
-    faces = {name: render_face(template, name) for name in FACES}
+    gazes = {}
+    for g in GAZES:
+        set_gaze(g)
+        gazes[g] = {name: render_face(template, name) for name in FACES}
+    set_gaze('center')
+    faces = gazes['center']
     motions = {}
     for name, (base, angle) in MOTIONS.items():
         if name == 'scanning':
@@ -679,18 +812,22 @@ def main(preview=False):
     turns = {n: center_turnaround(n) for n in TURNAROUND_BOXES}
 
     if '--dry' not in sys.argv:
-        for name, img in faces.items():
-            img.save(OUT / 'expressions' / f'{name}.png', optimize=True)
+        for g, set_ in gazes.items():
+            for name, img in set_.items():
+                save_png(img, OUT / 'expressions' / (f'{name}.png' if g == 'center' else f'{name}-{g}.png'))
         for name, img in motions.items():
-            img.save(OUT / 'motions' / f'{name}.png', optimize=True)
+            save_png(img, OUT / 'motions' / f'{name}.png')
         for name, img in turns.items():
-            img.save(OUT / 'turnarounds' / f'{name}.png', optimize=True)
+            save_png(img, OUT / 'turnarounds' / f'{name}.png')
         manifest = json.loads((SRC / 'manifest.json').read_text())
         manifest['size'] = [OUT_W, OUT_H]
         manifest['expressions'] = {n: f'/assets/herbie/expressions/{n}.png' for n in FACES}
         manifest['labels'] = {n: LABELS.get(n, n.replace('-', ' ')) for n in FACES}
         manifest['motions'] = {n: f'/assets/herbie/motions/{n}.png' for n in MOTIONS}
         manifest['turnarounds'] = {n: f'/assets/herbie/turnarounds/{n}.png' for n in TURNAROUND_BOXES}
+        manifest['gazes'] = list(GAZES)
+        manifest['gaze_pattern'] = '/assets/herbie/expressions/{name}-{gaze}.png'
+        manifest['groups'] = GROUPS
         (SRC / 'manifest.json').write_text(json.dumps(manifest, indent=2) + '\n')
 
     if preview:

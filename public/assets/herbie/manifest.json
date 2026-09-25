@@ -44,6 +44,7 @@
     "party-hard": "/assets/herbie/expressions/party-hard.png",
     "gps-searching": "/assets/herbie/expressions/gps-searching.png",
     "gps-locked": "/assets/herbie/expressions/gps-locked.png",
+    "middle-finger": "/assets/herbie/expressions/middle-finger.png",
     "off-route": "/assets/herbie/expressions/off-route.png",
     "thirsty": "/assets/herbie/expressions/thirsty.png",
     "cold": "/assets/herbie/expressions/cold.png",
@@ -117,11 +118,141 @@
     "party-hard": "party hard",
     "gps-searching": "GPS searching",
     "gps-locked": "GPS locked",
+    "middle-finger": "middle finger",
     "off-route": "off route",
     "thirsty": "thirsty",
     "cold": "cold",
     "storm-alert": "storm alert",
     "summit": "summit",
     "charging": "charging"
+  },
+  "gazes": [
+    "center",
+    "left",
+    "right"
+  ],
+  "gaze_pattern": "/assets/herbie/expressions/{name}-{gaze}.png",
+  "groups": {
+    "idle": [
+      "neutral",
+      "happy",
+      "curious",
+      "wink",
+      "chillin",
+      "grateful",
+      "thinking",
+      "excited"
+    ],
+    "morning": [
+      "greetings",
+      "happy",
+      "excited",
+      "thumbs-up"
+    ],
+    "day": [
+      "happy",
+      "curious",
+      "neutral",
+      "wink",
+      "excited"
+    ],
+    "evening": [
+      "chillin",
+      "meditating",
+      "grateful",
+      "happy"
+    ],
+    "night": [
+      "sleepy",
+      "yawning",
+      "meditating",
+      "tired"
+    ],
+    "gps-searching": [
+      "gps-searching",
+      "thinking",
+      "curious",
+      "focused"
+    ],
+    "gps-locked": [
+      "gps-locked",
+      "determined",
+      "thumbs-up",
+      "happy"
+    ],
+    "navigating": [
+      "focused",
+      "determined",
+      "curious",
+      "gps-locked"
+    ],
+    "off-route": [
+      "off-route",
+      "confused",
+      "worried",
+      "oh-no"
+    ],
+    "low-battery": [
+      "tired",
+      "worried",
+      "sweating"
+    ],
+    "charging": [
+      "charging",
+      "meditating",
+      "grateful",
+      "happy"
+    ],
+    "hot": [
+      "sweating",
+      "melting",
+      "thirsty",
+      "chillin"
+    ],
+    "cold": [
+      "cold",
+      "tired",
+      "sad"
+    ],
+    "storm": [
+      "storm-alert",
+      "worried",
+      "oh-no",
+      "surprised"
+    ],
+    "summit": [
+      "summit",
+      "party-hard",
+      "excited",
+      "love",
+      "laughing"
+    ],
+    "jolt": [
+      "surprised",
+      "oh-no",
+      "wow"
+    ],
+    "oops": [
+      "facepalm",
+      "thumbs-down",
+      "annoyed",
+      "face-with-tears"
+    ],
+    "party": [
+      "party-mode",
+      "party-hard",
+      "laughing",
+      "cheeky"
+    ],
+    "four-twenty": [
+      "high-af",
+      "chillin",
+      "laughing"
+    ],
+    "rude": [
+      "middle-finger",
+      "annoyed",
+      "side-eye"
+    ]
   }
 }

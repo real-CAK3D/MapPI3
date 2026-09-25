@@ -281,7 +281,7 @@ def render_snake():
     return img
 
 def herbie_cycle(period=6.0, offset=0, pool=None):
-    pool = tuple(pool or HERBIE_EXPRESSION_ORDER)
+    pool = tuple(p for p in (pool or HERBIE_EXPRESSION_ORDER) if p not in HERBIE_MANUAL_ONLY)
     idx = int(time.time() // max(1.0, float(period))) + int(offset)
     return pool[idx % len(pool)]
 
@@ -380,7 +380,7 @@ def whisplay_herbie_state(now=None, status=None, sense=None, net=None):
     if battery_reminder:
         return battery_reminder
     if hot:
-        return ['sweating','melting','wow','chillin'][int(time.time() // 4) % 4], f'temp {temp_f_text(temp)}'
+        return herbie_group_face('hot', 'sweating', period=8), f'temp {temp_f_text(temp)}'
     if tilted:
         return 'surprised', 'tilt reaction'
     if net.get('_error'):
@@ -535,9 +535,9 @@ def herbie_pawn_state():
     elif api_available and battery_reminder:
         mood, reason, accent = battery_reminder[0], battery_reminder[1], RED
     elif api_available and temp_c is not None and temp_c >= 34:
-        mood, reason, accent = ['melting','sweating','wow','chillin'][int(time.time() // 4) % 4], f'hot field kit {temp_f_text(temp_c)}', RED
+        mood, reason, accent = herbie_group_face('hot', 'melting', period=8), f'hot field kit {temp_f_text(temp_c)}', RED
     elif api_available and temp_c is not None and temp_c >= 29:
-        mood, reason, accent = ['sweating','chillin','wow','thumbs-up'][int(time.time() // 4) % 4], f'warm sensors {temp_f_text(temp_c)}', AMBER
+        mood, reason, accent = herbie_group_face('hot', 'sweating', period=10), f'warm sensors {temp_f_text(temp_c)}', AMBER
     elif api_available and roll is not None and pitch is not None and max(abs(roll), abs(pitch)) >= 45:
         mood, reason, accent = 'oh-no', 'big tilt / picked up', AMBER
     elif api_available and roll is not None and pitch is not None and max(abs(roll), abs(pitch)) >= 16:
@@ -547,7 +547,7 @@ def herbie_pawn_state():
     elif api_available and (hour >= 22 or hour < 5):
         mood, reason, accent = idle, 'night trail buddy awake', GREEN
     elif api_available and 5 <= hour < 7:
-        mood, reason, accent = ['greetings','happy','excited','thumbs-up'][int(time.time() // 4) % 4], 'early trail wakeup', GREEN
+        mood, reason, accent = herbie_group_face('morning', 'greetings', period=10), 'early trail wakeup', GREEN
     elif api_available and net.get('_error'):
         if status.get('hotspot_active') or status.get('connection_mode') == 'hotspot':
             mood, reason, accent = herbie_idle_face(5.0, 7), 'offline hotspot trail mode', GREEN
@@ -577,7 +577,7 @@ def draw_herbie_mood():
     d.rounded_rectangle((6, 6, W-7, H-7), 12, outline=accent, width=2, fill=(12, 24, 34))
     d.text((14, 12), 'Herbie', font=F_TITLE, fill=accent)
     blinking = int(time.time() * 2) % 29 == 0
-    p = herbie_asset_path_from_ref(blink_face(mood) if blinking else mood)
+    p = herbie_asset_path_from_ref(blink_face(mood) if blinking else herbie_gaze_ref(mood))
     if p:
         try:
             face = Image.open(p).convert('RGBA')
@@ -601,7 +601,8 @@ def render():
     title = PAGES[page % len(PAGES)]
     if title == 'Buddy Home':
         mood, caption = whisplay_herbie_state()
-        return draw_face(mood, caption, blink=(int(time.time() * 2) % 23 == 0))
+        blinking = int(time.time() * 2) % 23 == 0
+        return draw_face(mood if blinking else herbie_gaze_ref(mood), caption, blink=blinking)
     if title == 'Herbie': return draw_herbie_mood()
     if title == 'Field Kit': return draw_card('Field Kit/Power', lines_fieldkit(), GREEN)
     if title == 'Compass+Level': return draw_card('Compass + Level', lines_compass(), BLUE)

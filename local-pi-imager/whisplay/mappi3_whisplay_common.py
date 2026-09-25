@@ -86,8 +86,10 @@ HERBIE_EXPRESSION_ORDER = (
     'chillin','meditating','laughing','cheeky','wow','love','grateful','blushing','sweating','melting',
     'overwhelmed','high-af','party-mode','greetings','wink','thumbs-up','thumbs-down','facepalm',
     'oh-no','face-with-tears','party-hard',
-    'gps-searching','gps-locked','off-route','thirsty','cold','storm-alert','summit','charging'
+    'gps-searching','gps-locked','off-route','thirsty','cold','storm-alert','summit','charging',
+    'middle-finger'
 )
+HERBIE_MANUAL_ONLY = ('middle-finger',)   # never picked automatically
 HERBIE_EXPRESSIONS = set(HERBIE_EXPRESSION_ORDER)
 HERBIE_IDLE_PRIORITY = ('happy','curious','thinking','focused','wink','grateful','excited','greetings','cheeky','love')
 HERBIE_RANDOM_CAMEOS = ('neutral','chillin','meditating','laughing','blushing','party-mode','party-hard','thumbs-up','side-eye','suspicious')
@@ -104,6 +106,46 @@ def herbie_asset_path(kind, name):
         except OSError:
             continue
     return None
+
+# Gaze: every expression also exists as <name>-left / <name>-right. Herbie glances around on a
+# fixed beat while he stays in a state: straight, straight, left, straight, right.
+HERBIE_GAZE_CYCLE = ('center', 'center', 'left', 'center', 'right')
+HERBIE_GAZE_BEAT_S = 3.0
+
+def herbie_gaze_now(now_ts=None):
+    t = time.time() if now_ts is None else now_ts
+    return HERBIE_GAZE_CYCLE[int(t // HERBIE_GAZE_BEAT_S) % len(HERBIE_GAZE_CYCLE)]
+
+def herbie_gaze_ref(ref, now_ts=None):
+    """'happy' / 'expressions/happy' -> 'expressions/happy-left' on a glance beat (motions/turnarounds unchanged)."""
+    raw = str(ref or '')
+    if '/' in raw and not raw.startswith('expressions/'):
+        return raw
+    name = raw.split('/', 1)[-1]
+    gaze = herbie_gaze_now(now_ts)
+    if gaze == 'center' or name.endswith(('-left', '-right')) or not herbie_asset_path('expressions', f'{name}-{gaze}'):
+        return raw
+    return f'expressions/{name}-{gaze}'
+
+def load_herbie_groups():
+    for root in HERBIE_ASSET_ROOTS:
+        try:
+            groups = json.loads((root / 'manifest.json').read_text()).get('groups') or {}
+            if groups:
+                return groups
+        except Exception:
+            continue
+    return {}
+
+HERBIE_GROUPS = load_herbie_groups()
+
+def herbie_group_face(group, fallback='happy', period=15.0, now_ts=None):
+    """Pick from an event group, moving to the next face every `period` seconds."""
+    faces = [f for f in HERBIE_GROUPS.get(group, []) if f not in HERBIE_MANUAL_ONLY or group == 'rude']
+    if not faces:
+        return fallback
+    t = time.time() if now_ts is None else now_ts
+    return faces[int(t // max(1.0, period)) % len(faces)]
 
 def herbie_asset_ref(kind, name):
     return f'{kind}/{name}' if herbie_asset_path(kind, name) else None

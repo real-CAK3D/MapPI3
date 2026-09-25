@@ -131,7 +131,7 @@ const herbieExpressions = [
   'sleepy','blushing','laughing','cheeky','focused','wow','love','grateful',
   'party-mode','high-af','chillin','meditating','bored','melting','sweating','overwhelmed',
   'greetings','wink','thumbs-up','thumbs-down','facepalm','oh-no','face-with-tears','party-hard',
-  'gps-searching','gps-locked','off-route','thirsty','cold','storm-alert','summit','charging'
+  'gps-searching','gps-locked','off-route','thirsty','cold','storm-alert','summit','charging','middle-finger'
 ];
 const herbieExpressionLabels = {
   auto:'Auto trail mood', neutral:'Neutral', happy:'Happy', excited:'Excited', curious:'Curious', thinking:'Thinking', 'side-eye':'Side eye', suspicious:'Suspicious', confused:'Confused',
@@ -139,7 +139,7 @@ const herbieExpressionLabels = {
   sleepy:'Sleepy', blushing:'Blushing', laughing:'Laughing', cheeky:'Cheeky', focused:'Focused', wow:'Wow', love:'Love', grateful:'Grateful',
   'party-mode':'Party mode', 'high-af':'High AF', chillin:"Chillin'", meditating:'Meditating', bored:'Bored', melting:'Melting', sweating:'Sweating', overwhelmed:'Overwhelmed',
   greetings:'Greetings', wink:'Wink', 'thumbs-up':'Thumbs up', 'thumbs-down':'Thumbs down', facepalm:'Facepalm', 'oh-no':'Oh no!', 'face-with-tears':'Face with tears', 'party-hard':'Party hard',
-  'gps-searching':'GPS searching', 'gps-locked':'GPS locked', 'off-route':'Off route', thirsty:'Thirsty', cold:'Cold', 'storm-alert':'Storm alert', summit:'Summit', charging:'Charging'
+  'gps-searching':'GPS searching', 'gps-locked':'GPS locked', 'off-route':'Off route', thirsty:'Thirsty', cold:'Cold', 'storm-alert':'Storm alert', summit:'Summit', charging:'Charging', 'middle-finger':'Middle finger'
 };
 const herbieMotionAssets = ['tilted-left','tilted-right','shaking','bouncing','spinning','happy-hover','scanning','low-battery'];
 const herbieTurnaroundAssets = ['top','bottom','left','back','right'];
@@ -150,7 +150,23 @@ const herbieTriggerOptions = [
 ];
 const defaultHerbieExpressionRules = { default:'happy', morning:'greetings', day:'happy', evening:'chillin', night:'happy', motion:'surprised', pacman:'party-mode', gps:'focused', wifi:'curious', lowBattery:'worried', hot:'sweating', cold:'cold', routeFinish:'summit' };
 const herbieMotionExpressionMap = { bouncing:'party-mode', 'happy-hover':'happy', shaking:'surprised', spinning:'wow', scanning:'focused', 'low-battery':'worried', 'tilted-left':'side-eye', 'tilted-right':'suspicious', 'turnaround-top':'wow', 'turnaround-bottom':'oh-no', blink:'happy', idle:'' };
-function getHerbieRule(settings = {}, key, fallback) { const rules = { ...defaultHerbieExpressionRules, ...(settings.herbieExpressionRules || {}) }; return herbieExpressions.includes(rules[key]) ? rules[key] : fallback; }
+const herbieGroups = {
+  idle:['neutral','happy','curious','wink','chillin','grateful','thinking','excited'], morning:['greetings','happy','excited','thumbs-up'],
+  day:['happy','curious','neutral','wink','excited'], evening:['chillin','meditating','grateful','happy'], night:['sleepy','yawning','meditating','tired'],
+  'gps-searching':['gps-searching','thinking','curious','focused'], 'gps-locked':['gps-locked','determined','thumbs-up','happy'],
+  navigating:['focused','determined','curious','gps-locked'], 'off-route':['off-route','confused','worried','oh-no'],
+  'low-battery':['tired','worried','sweating'], charging:['charging','meditating','grateful','happy'], hot:['sweating','melting','thirsty','chillin'],
+  cold:['cold','tired','sad'], storm:['storm-alert','worried','oh-no','surprised'], summit:['summit','party-hard','excited','love','laughing'],
+  jolt:['surprised','oh-no','wow'], oops:['facepalm','thumbs-down','annoyed','face-with-tears'], party:['party-mode','party-hard','laughing','cheeky'],
+  'four-twenty':['high-af','chillin','laughing'], rude:['middle-finger','annoyed','side-eye']
+};
+// Default rules pick from an event group (a new face every 15 s); a face the user set in Herbie rules wins.
+const herbieRuleGroups = { default:'idle', morning:'morning', day:'day', evening:'evening', night:'night', motion:'jolt', pacman:'party', gps:'navigating', lowBattery:'low-battery', hot:'hot', cold:'cold', routeFinish:'summit' };
+const herbieGroupPick = (group, fallback, now = Date.now()) => { const faces = herbieGroups[group] || []; return faces.length ? faces[Math.floor(now / 15000) % faces.length] : fallback; };
+// Every expression also exists as <name>-left / <name>-right; Herbie glances on a 3 s beat (same as the Whisplay).
+const HERBIE_GAZE_CYCLE = ['center','center','left','center','right'];
+const herbieGazeNow = (now = Date.now()) => HERBIE_GAZE_CYCLE[Math.floor(now / 3000) % HERBIE_GAZE_CYCLE.length];
+function getHerbieRule(settings = {}, key, fallback) { const custom = (settings.herbieExpressionRules || {})[key]; if (herbieExpressions.includes(custom) && custom !== 'auto') return custom; if (herbieRuleGroups[key]) return herbieGroupPick(herbieRuleGroups[key], fallback); const rules = defaultHerbieExpressionRules; return herbieExpressions.includes(rules[key]) ? rules[key] : fallback; }
 function passiveWifiAwareness(networkLive = null, wifiScan = null) {
   const wifi = networkLive?.wifi || {};
   const visible = Array.isArray(wifiScan?.networks) ? wifiScan.networks.length : Number(networkLive?.visible_networks || 0);
@@ -290,7 +306,9 @@ function HerbieCompanionPanel({ settings = {}, setSettings, progress = 0.34, tic
   const imageKind = herbie.imageAsset?.kind || 'expressions';
   // Blink by briefly showing Herbie's closed-eye art on calm faces (same rule as the Whisplay screen).
   const baseName = herbie.imageAsset?.name || herbie.expression;
-  const imageName = herbie.blinking && imageKind === 'expressions' && herbieBlinkableFaces.includes(baseName) ? 'meditating' : baseName;
+  const blinkNow = herbie.blinking && imageKind === 'expressions' && herbieBlinkableFaces.includes(baseName);
+  const gaze = herbieGazeNow();
+  const imageName = blinkNow ? 'meditating' : (imageKind === 'expressions' && gaze !== 'center' ? `${baseName}-${gaze}` : baseName);
   return <div className={`herbie-companion motion-${herbie.motion} ${herbie.blinking ? 'is-blinking' : ''} ${herbie.tilted ? 'is-tilted' : ''}`}><div className="herbie-stage"><img src={herbieAsset(imageKind, imageName)} alt={`Herbie Map ${imageName} ${imageKind === 'motions' ? 'motion' : imageKind === 'turnarounds' ? 'turnaround' : 'expression'}`} loading="lazy" /></div><div className="herbie-copy"><div className="section-head compact"><div><h3>Herbie Map companion</h3><p className="muted">Your trail buddy. Herbie's face follows the Whisplay screen and reacts to Sense HAT tilt and bumps.</p></div><Pill>{herbieExpressionLabels[herbie.expression] || herbie.expression}</Pill><Pill tone={herbie.buddyMood === 'excited' ? 'online' : herbie.buddyMood === 'sleepy' ? 'warn' : 'default'}>Buddy Mood: {herbie.buddyMood}</Pill></div><label className="field-line"><span>Herbie mood</span><select value={manual} onChange={e=>setHerbie(e.target.value)}>{herbieExpressions.map(x=><option key={x} value={x}>{herbieExpressionLabels[x] || x}</option>)}</select></label><div className="tag-row"><Pill>{herbie.reason}</Pill></div>{herbie.whisplayOk && <div className="herbie-whisplay-mirror"><strong>Whisplay HAT live display</strong><span>{herbie.whisplayForeground || 'foreground unknown'} · {herbie.whisplayScreen?.width || 240}×{herbie.whisplayScreen?.height || 280} {herbie.whisplayScreen?.pixel_format || 'RGB565'}</span></div>}</div></div>;
 }
 function rgbToCss(c = [0,0,0]) { return `rgb(${c[0]||0},${c[1]||0},${c[2]||0})`; }
