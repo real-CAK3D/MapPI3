@@ -45,8 +45,8 @@ HAND_LIGHT = (72, 90, 17)
 HAND_SHADE = (34, 46, 6)
 HAND_VEIN = (26, 36, 4)
 SLEEVE = (88, 77, 18)
-HIGH_EYE = (242, 150, 178)  # high AF: pink eyes, green pupils
-HIGH_EYE_EDGE = (150, 64, 96)
+HIGH_EYE = (212, 108, 146)  # high AF: pink eyes, green pupils
+HIGH_EYE_EDGE = (118, 40, 72)
 LOCK_EYE = (16, 66, 22)     # GPS locked: radar-green reticle eyes
 LOCK_EYE_EDGE = (4, 20, 6)
 LOCK_PUPIL = (150, 250, 116)
@@ -473,6 +473,12 @@ def sunglasses(c):
             c.paste(Image.new('RGBA', c.size, (235, 245, 250, 255)), (0, 0), streak)
 
 
+def fall_lines(c):
+    """Speed lines above Herbie: he is dropping."""
+    for x, y0, y1 in ((40, 20, 30), (50, 16, 24), (97, 16, 25), (107, 20, 31), (74, 12, 20)):
+        paint(c, stroke_mask([(x, y0), (x, y1)], 1.3), (238, 240, 226), outline=INK, outline_px=4)
+
+
 def charge_spark(c, x=108, y=44):
     pts = [(x + 1.5, y - 6), (x - 2.5, y + 0.5), (x + 0.5, y + 0.5), (x - 1.5, y + 6), (x + 3, y - 1), (x, y - 1)]
     paint(c, poly_mask(pts), SPROUT, outline=INK, outline_px=5)
@@ -714,6 +720,7 @@ FACES = {
     # New faces for features added since the original set.
     'gps-searching': lambda c: (eyes(c, look=(-2, -3)), brow(c, EYE_L, 2, lift=1), mouth_o(c, 2.2, 2.4)),
     'gps-locked':   lambda c: (eye_reticle(c, EYE_L), eye_reticle(c, EYE_R), mouth_smile(c, 22, 5)),
+    'falling':      lambda c: (eyes(c, scale=1.55, look=(0, -3.5)), brow(c, EYE_L, 5, lift=8), brow(c, EYE_R, 5, lift=8, side='R'), mouth_wail(c, 18, 13), sweat(c, 110, 40), sweat(c, 36, 42), fall_lines(c)),
     'middle-finger': lambda c: (eye_open(c, EYE_L, lid='half', look=(0, 1)), eye_open(c, EYE_R, lid='angry', lid_side='R', look=(0, 1)), mouth_smirk(c), leaf_hand(c, 116, 66, angle=-4, scale=0.78, pose='middle')),
     'off-route':    lambda c: (eyes(c, look=(3, 1), lid='sad', lid_side='R'), brow(c, EYE_R, 3, side='R'), mouth_wavy(c, 16)),
     'thirsty':      lambda c: (eyes(c, lid='half', look=(0, 2)), mouth_tongue(c, 14), sweat(c, 108, 48)),
@@ -742,7 +749,7 @@ FACES = {
 LABELS = {'high-af': 'high AF', 'oh-no': 'oh no!', 'face-with-tears': 'face with tears', 'gps-searching': 'GPS searching',
           'gps-locked': 'GPS locked', 'off-route': 'off route', 'storm-alert': 'storm alert', 'party-mode': 'party mode',
           'party-hard': 'party hard', 'side-eye': 'side eye', 'thumbs-up': 'thumbs up', 'thumbs-down': 'thumbs down',
-          'middle-finger': 'middle finger'}
+          'middle-finger': 'middle finger', 'falling': "I'm falling"}
 # Stronger versions: <name>-2 / <name>-3 escalate the same expression.
 LEVELS = {base: [base, f'{base}-2', f'{base}-3'] for base in ('storm-alert', 'face-with-tears', 'worried', 'angry', 'sad', 'laughing', 'surprised', 'cold')}
 LABELS.update({f'{b}-{n}': f"{LABELS.get(b, b.replace('-', ' '))} {'(strong)' if n == 2 else '(extreme)'}" for b in LEVELS for n in (2, 3)})
@@ -772,38 +779,94 @@ GROUPS = {
     'furious':       ['angry', 'angry-2', 'angry-3'],
     'summit':        ['summit', 'party-hard', 'excited', 'love', 'laughing', 'laughing-2'],
     'jolt':          ['surprised', 'oh-no', 'wow'],
+    'dropped':       ['falling', 'oh-no', 'surprised-3'],
     'oops':          ['facepalm', 'thumbs-down', 'annoyed', 'face-with-tears'],
     'party':         ['party-mode', 'party-hard', 'laughing', 'laughing-3', 'cheeky'],
     'four-twenty':   ['high-af', 'chillin', 'laughing'],
     'rude':          ['middle-finger', 'annoyed', 'side-eye'],
 }
 
-# (base face, rotation). Tilt levels show at Sense HAT tilt >= 8 / 18 / 30 degrees.
+def _shake(dl, dr, look_l, look_r):
+    def draw(c):
+        l, r = (EYE_L[0] + dl[0], EYE_L[1] + dl[1]), (EYE_R[0] + dr[0], EYE_R[1] + dr[1])
+        eye_open(c, l, scale=1.2, look=look_l)
+        eye_open(c, r, scale=1.2, look=look_r)
+        brow(c, l, 0, lift=3)
+        brow(c, r, 0, lift=3, side='R')
+        mouth_o(c, 3.4, 4.4)
+    return draw
+
+
+def _bounce(dy, look_y):
+    def draw(c):
+        eye_open(c, (EYE_L[0], EYE_L[1] + dy), scale=1.15, look=(0, look_y))
+        eye_open(c, (EYE_R[0], EYE_R[1] + dy), scale=1.15, look=(0, look_y))
+        mouth_grin(c)
+    return draw
+
+
+def _split_scan(reticle_side):
+    def draw(c):
+        if reticle_side == 'R':
+            eye_open(c, EYE_L)
+            eye_reticle(c, EYE_R)
+        else:
+            eye_reticle(c, EYE_L)
+            eye_open(c, EYE_R)
+        mouth_flat(c, 12)
+    return draw
+
+
+# Frames that only exist as motions (not listed as expressions).
+MOTION_FACES = {
+    'shake-1': _shake((-1.8, -1.2), (1.6, 1.2), (-1.5, 0), (1.5, 1)),
+    'shake-2': _shake((1.6, 0.8), (-1.2, -1.6), (1.5, -1), (-1.5, 0)),
+    'shake-3': _shake((0.2, 1.8), (0.8, -1.2), (0, 1.5), (0.5, -1.5)),
+    'bounce-1': _bounce(-2.6, -2),
+    'bounce-2': _bounce(0, 0),
+    'bounce-3': _bounce(2.6, 2),
+    'scan-reticle-right': _split_scan('R'),
+    'scan-reticle-left': _split_scan('L'),
+}
+
+# (base face or motion frame, rotation / radar sweep). Tilt levels show at Sense HAT tilt >= 8 / 18 / 30 degrees.
 MOTIONS = {
     'tilted-left':    ('curious', 6),
-    'tilted-left-2':  ('surprised', 14),
-    'tilted-left-3':  ('oh-no', 24),
+    'tilted-left-2':  ('oh-no', 24),
+    'tilted-left-3':  ('falling', 40),
     'tilted-right':   ('curious', -6),
-    'tilted-right-2': ('surprised', -14),
-    'tilted-right-3': ('oh-no', -24),
-    'shaking':        ('surprised', None),
-    'shaking-2':      ('oh-no', None),
-    'shaking-3':      ('overwhelmed', None),
-    'bouncing':       ('excited', None),
-    'bouncing-2':     ('laughing', None),
-    'bouncing-3':     ('party-mode', None),
+    'tilted-right-2': ('oh-no', -24),
+    'tilted-right-3': ('falling', -40),
+    'shaking':        ('shake-1', None),
+    'shaking-2':      ('shake-2', None),
+    'shaking-3':      ('shake-3', None),
+    'bouncing':       ('bounce-1', None),
+    'bouncing-2':     ('bounce-2', None),
+    'bouncing-3':     ('bounce-3', None),
     'happy-hover':    ('happy', None),
     'happy-hover-2':  ('grateful', None),
     'happy-hover-3':  ('love', None),
     'spinning':       ('overwhelmed', None),
     'spinning-2':     ('overwhelmed', 15),
     'spinning-3':     ('overwhelmed', 30),
+    'spinning-4':     ('overwhelmed', -15),
+    'spinning-5':     ('overwhelmed', -30),
     'scanning':       ('neutral', -30),
     'scanning-2':     ('focused', 90),
     'scanning-3':     ('gps-searching', 210),
+    'scanning-4':     ('scan-reticle-right', 30),
+    'scanning-5':     ('scan-reticle-left', 150),
     'low-battery':    ('tired', None),
 }
 TILT_THRESHOLDS = (8, 18, 30)
+# Frame order for looping motions ('' = the base frame). Spinning rocks both ways; scanning sweeps round.
+MOTION_SEQUENCES = {
+    'spinning':    ['', '-2', '-3', '-2', '', '-4', '-5', '-4'],
+    'scanning':    ['', '-4', '-2', '-5', '-3'],
+    'shaking':     ['', '-2', '-3'],
+    'bouncing':    ['', '-2', '-3', '-2'],
+    'happy-hover': ['', '-2', '-3'],
+}
 
 
 def render_face(template, name, draw=None):
@@ -871,13 +934,15 @@ def main(preview=False):
     set_gaze('center')
     faces = gazes['center']
     motions = {}
+    frames = {k: render_face(template, k, draw=f) for k, f in MOTION_FACES.items()}
+    frames.update(faces)
     for name, (base, angle) in MOTIONS.items():
         if name.startswith('scanning'):
-            motions[name] = radar_scan(faces[base], sweep_deg=angle)
+            motions[name] = radar_scan(frames[base], sweep_deg=angle)
         elif name == 'low-battery':
             motions[name] = render_face(template, name, draw=battery_panel)
         else:
-            motions[name] = on_background(faces[base], angle=angle, ghost=name.startswith('shaking'))
+            motions[name] = on_background(frames[base], angle=angle, ghost=name.startswith('shaking'))
     turns = {n: center_turnaround(n) for n in TURNAROUND_BOXES}
 
     if '--dry' not in sys.argv:
@@ -899,6 +964,7 @@ def main(preview=False):
         manifest['groups'] = GROUPS
         manifest['levels'] = LEVELS
         manifest['tilt_thresholds'] = list(TILT_THRESHOLDS)
+        manifest['motion_sequences'] = MOTION_SEQUENCES
         manifest['motion_variants'] = {b: [m for m in MOTIONS if m == b or m.startswith(b + '-') and m[len(b) + 1:].isdigit()] for b in MOTIONS if not b[-1].isdigit()}
         (SRC / 'manifest.json').write_text(json.dumps(manifest, indent=2) + '\n')
 

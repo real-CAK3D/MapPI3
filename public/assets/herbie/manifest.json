@@ -44,6 +44,7 @@
     "party-hard": "/assets/herbie/expressions/party-hard.png",
     "gps-searching": "/assets/herbie/expressions/gps-searching.png",
     "gps-locked": "/assets/herbie/expressions/gps-locked.png",
+    "falling": "/assets/herbie/expressions/falling.png",
     "middle-finger": "/assets/herbie/expressions/middle-finger.png",
     "off-route": "/assets/herbie/expressions/off-route.png",
     "thirsty": "/assets/herbie/expressions/thirsty.png",
@@ -87,9 +88,13 @@
     "spinning": "/assets/herbie/motions/spinning.png",
     "spinning-2": "/assets/herbie/motions/spinning-2.png",
     "spinning-3": "/assets/herbie/motions/spinning-3.png",
+    "spinning-4": "/assets/herbie/motions/spinning-4.png",
+    "spinning-5": "/assets/herbie/motions/spinning-5.png",
     "scanning": "/assets/herbie/motions/scanning.png",
     "scanning-2": "/assets/herbie/motions/scanning-2.png",
     "scanning-3": "/assets/herbie/motions/scanning-3.png",
+    "scanning-4": "/assets/herbie/motions/scanning-4.png",
+    "scanning-5": "/assets/herbie/motions/scanning-5.png",
     "low-battery": "/assets/herbie/motions/low-battery.png"
   },
   "turnarounds": {
@@ -148,6 +153,7 @@
     "party-hard": "party hard",
     "gps-searching": "GPS searching",
     "gps-locked": "GPS locked",
+    "falling": "I'm falling",
     "middle-finger": "middle finger",
     "off-route": "off route",
     "thirsty": "thirsty",
@@ -318,6 +324,11 @@
       "oh-no",
       "wow"
     ],
+    "dropped": [
+      "falling",
+      "oh-no",
+      "surprised-3"
+    ],
     "oops": [
       "facepalm",
       "thumbs-down",
@@ -418,15 +429,54 @@
     "spinning": [
       "spinning",
       "spinning-2",
-      "spinning-3"
+      "spinning-3",
+      "spinning-4",
+      "spinning-5"
     ],
     "scanning": [
       "scanning",
       "scanning-2",
-      "scanning-3"
+      "scanning-3",
+      "scanning-4",
+      "scanning-5"
     ],
     "low-battery": [
       "low-battery"
+    ]
+  },
+  "motion_sequences": {
+    "spinning": [
+      "",
+      "-2",
+      "-3",
+      "-2",
+      "",
+      "-4",
+      "-5",
+      "-4"
+    ],
+    "scanning": [
+      "",
+      "-4",
+      "-2",
+      "-5",
+      "-3"
+    ],
+    "shaking": [
+      "",
+      "-2",
+      "-3"
+    ],
+    "bouncing": [
+      "",
+      "-2",
+      "-3",
+      "-2"
+    ],
+    "happy-hover": [
+      "",
+      "-2",
+      "-3"
     ]
   }
 }

@@ -87,7 +87,7 @@ HERBIE_EXPRESSION_ORDER = (
     'overwhelmed','high-af','party-mode','greetings','wink','thumbs-up','thumbs-down','facepalm',
     'oh-no','face-with-tears','party-hard',
     'gps-searching','gps-locked','off-route','thirsty','cold','storm-alert','summit','charging',
-    'middle-finger'
+    'middle-finger','falling'
 )
 HERBIE_MANUAL_ONLY = ('middle-finger',)   # never picked automatically
 HERBIE_EXPRESSIONS = set(HERBIE_EXPRESSION_ORDER)
@@ -113,6 +113,8 @@ HERBIE_GAZE_CYCLE = ('center', 'center', 'left', 'center', 'right')
 HERBIE_GAZE_BEAT_S = 3.0
 # Motions with 3 frames (<name>, <name>-2, <name>-3) play as a short loop at this many seconds per frame.
 HERBIE_MOTION_CYCLE_S = {'spinning': 0.4, 'shaking': 0.5, 'scanning': 0.6, 'bouncing': 0.8, 'happy-hover': 1.2}
+# Frame order per motion ('' = base frame): spinning rocks both ways, scanning sweeps round.
+HERBIE_MOTION_SEQUENCES = {'spinning': ('', '-2', '-3', '-2', '', '-4', '-5', '-4'), 'scanning': ('', '-4', '-2', '-5', '-3'), 'shaking': ('', '-2', '-3'), 'bouncing': ('', '-2', '-3', '-2'), 'happy-hover': ('', '-2', '-3')}
 # Tilt levels: tilted-<dir>, tilted-<dir>-2, tilted-<dir>-3 at these Sense HAT angles.
 HERBIE_TILT_LEVELS = (8.0, 18.0, 30.0)
 
@@ -129,8 +131,8 @@ def herbie_gaze_ref(ref, now_ts=None):
         beat = HERBIE_MOTION_CYCLE_S.get(base)
         if not beat:
             return raw
-        variants = [base] + [f'{base}-{n}' for n in (2, 3) if herbie_asset_path('motions', f'{base}-{n}')]
-        return 'motions/' + variants[int(t // beat) % len(variants)]
+        frames = [f'{base}{sfx}' for sfx in HERBIE_MOTION_SEQUENCES.get(base, ('',)) if herbie_asset_path('motions', f'{base}{sfx}')] or [base]
+        return 'motions/' + frames[int(t // beat) % len(frames)]
     if '/' in raw and not raw.startswith('expressions/'):
         return raw
     name = raw.split('/', 1)[-1]
