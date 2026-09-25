@@ -818,8 +818,29 @@ def _split_scan(reticle_side):
     return draw
 
 
+def _look_vertical(dy, look_y, brows=0.0, mouth='smile'):
+    """Top/bottom transition: Herbie starts looking up or down before the turnaround view shows."""
+    def draw(c):
+        l, r = (EYE_L[0], EYE_L[1] + dy), (EYE_R[0], EYE_R[1] + dy)
+        eye_open(c, l, look=(0, look_y))
+        eye_open(c, r, look=(0, look_y))
+        if brows:
+            brow(c, l, brows, lift=2)
+            brow(c, r, brows, lift=2, side='R')
+        if mouth == 'o':
+            mouth_o(c, 2.4, 2.8, dy=dy * 0.6)
+        else:
+            cx, cy = MOUTH
+            paint(c, stroke_mask(arc_points(cx, cy + dy * 0.6 - 3, 9, 3.5, 20, 160), 2.4), INK)
+    return draw
+
+
 # Frames that only exist as motions (not listed as expressions).
 MOTION_FACES = {
+    'look-up-1': _look_vertical(-2.0, -3.0),
+    'look-up-2': _look_vertical(-4.5, -4.5, brows=1.5, mouth='o'),
+    'look-down-1': _look_vertical(2.0, 3.0),
+    'look-down-2': _look_vertical(4.5, 4.5, brows=2.5, mouth='o'),
     'shake-1': _shake((-1.8, -1.2), (1.6, 1.2), (-1.5, 0), (1.5, 1)),
     'shake-2': _shake((1.6, 0.8), (-1.2, -1.6), (1.5, -1), (-1.5, 0)),
     'shake-3': _shake((0.2, 1.8), (0.8, -1.2), (0, 1.5), (0.5, -1.5)),
@@ -830,7 +851,8 @@ MOTION_FACES = {
     'scan-reticle-left': _split_scan('L'),
 }
 
-# (base face or motion frame, rotation / radar sweep). Tilt levels show at Sense HAT tilt >= 8 / 18 / 30 degrees.
+# (base face or motion frame, rotation / radar sweep). Tilt levels show at Sense HAT tilt >= 8 / 18 / 30 degrees;
+# up/down: tilted-up (8) -> tilted-up-2 (18) -> turnarounds/top (30), same for down/bottom.
 MOTIONS = {
     'tilted-left':    ('curious', 6),
     'tilted-left-2':  ('oh-no', 24),
@@ -838,6 +860,10 @@ MOTIONS = {
     'tilted-right':   ('curious', -6),
     'tilted-right-2': ('oh-no', -24),
     'tilted-right-3': ('falling', -40),
+    'tilted-up':      ('look-up-1', None),
+    'tilted-up-2':    ('look-up-2', None),
+    'tilted-down':    ('look-down-1', None),
+    'tilted-down-2':  ('look-down-2', None),
     'shaking':        ('shake-1', None),
     'shaking-2':      ('shake-2', None),
     'shaking-3':      ('shake-3', None),

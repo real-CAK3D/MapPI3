@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 from __future__ import annotations
-import datetime, json, math, random, time
+import datetime, json, math, random, threading, time
 from urllib import request
 from mappi3_whisplay_common import *
 
@@ -25,6 +25,25 @@ def api(path, timeout=5.0):
             return json.loads(r.read().decode('utf-8'))
     except Exception as e:
         return {'_error': str(e)}
+
+# /api/status takes ~0.2-0.7 s, longer than the old 0.35 s inline timeout, so Herbie often fell back to the
+# "offline face loop" and never saw events, GPS or battery. A background thread keeps a fresh copy instead.
+_STATUS_CACHE = {'data': {'_error': 'status not loaded yet'}, 'at': 0.0, 'thread': None}
+
+def _status_worker():
+    while running:
+        data = api('/api/status', timeout=4.0)
+        _STATUS_CACHE['data'] = data
+        _STATUS_CACHE['at'] = time.time()
+        time.sleep(3.0)
+
+def cached_status(max_age=20.0):
+    if _STATUS_CACHE['thread'] is None:
+        _STATUS_CACHE['thread'] = threading.Thread(target=_status_worker, daemon=True)
+        _STATUS_CACHE['thread'].start()
+    if time.time() - _STATUS_CACHE['at'] > max_age:
+        return {'_error': 'status stale'}
+    return _STATUS_CACHE['data']
 
 def post_command(name, payload=None, timeout=1.8):
     body = json.dumps(payload or {}).encode('utf-8')
@@ -330,12 +349,19 @@ def herbie_directional_tilt_face(roll, pitch, threshold=8.0):
         return None
     asset = herbie_best_asset(TILT_DIRECTION_ASSETS[direction])
     label = {'left':'tilted left','right':'tilted right','top':'top view tilt','bottom':'bottom view tilt'}[direction]
+    mag = max(abs(roll), abs(pitch))
+    level = 3 if mag >= HERBIE_TILT_LEVELS[2] else 2 if mag >= HERBIE_TILT_LEVELS[1] else 1
     if direction in ('left', 'right'):
-        mag = max(abs(roll), abs(pitch))
-        level = 3 if mag >= HERBIE_TILT_LEVELS[2] else 2 if mag >= HERBIE_TILT_LEVELS[1] else 1
         if level > 1 and herbie_asset_ref('motions', f'tilted-{direction}-{level}'):
             asset = f'motions/tilted-{direction}-{level}'
         label = f'{label} {round(mag)} deg'
+    else:
+        # Herbie starts looking up/down first; the top/bottom view only shows at the strongest tilt.
+        way = 'up' if direction == 'top' else 'down'
+        step = f'motions/tilted-{way}' if level == 1 else f'motions/tilted-{way}-2' if level == 2 else None
+        if step and herbie_asset_path_from_ref(step):
+            asset = step
+        label = f'looking {way} {round(mag)} deg' if step else label
     return asset, label, direction
 
 # Low battery: at or below 40% Herbie keeps rotating his normal faces and shows the battery face for
@@ -359,6 +385,33 @@ def low_battery_reminder(status, now_ts=None):
         return 'motions/low-battery', f'battery {round(pct)}% - charge soon'
     return None
 
+HERBIE_EVENT_STATE = {'gps_fix': None, 'gps_lock_until': 0.0}
+
+def herbie_event_face(status, now_ts=None):
+    """Face for an active event: app-set herbie_event first, then GPS just locked, then charging."""
+    if not isinstance(status, dict) or status.get('_error'):
+        return None
+    t = time.time() if now_ts is None else now_ts
+    st = status.get('state') if isinstance(status.get('state'), dict) else {}
+    ev = st.get('herbie_event') if isinstance(st.get('herbie_event'), dict) else {}
+    try:
+        active = bool(ev.get('name')) and float(ev.get('until') or 0) > t
+    except (TypeError, ValueError):
+        active = False
+    if active:
+        return herbie_group_face(ev['name'], 'happy', period=6, now_ts=t), str(ev.get('reason') or ev['name'])[:28]
+    gps = status.get('gps') if isinstance(status.get('gps'), dict) else {}
+    fix = bool(gps.get('fix'))
+    if HERBIE_EVENT_STATE['gps_fix'] is False and fix:
+        HERBIE_EVENT_STATE['gps_lock_until'] = t + 30
+    HERBIE_EVENT_STATE['gps_fix'] = fix
+    if t < HERBIE_EVENT_STATE['gps_lock_until']:
+        return herbie_group_face('gps-locked', 'gps-locked', period=6, now_ts=t), f"GPS locked - {gps.get('satellites') or '?'} sats"
+    power = status.get('power') if isinstance(status.get('power'), dict) else {}
+    if power.get('charging') is True and t % 120 < 8:
+        return herbie_group_face('charging', 'charging', period=4, now_ts=t), 'charging'
+    return None
+
 def whisplay_herbie_state(now=None, status=None, sense=None, net=None):
     now = now or datetime.datetime.now()
     # Tilt is the live interaction path, so read the fast Sense endpoint first and
@@ -374,16 +427,19 @@ def whisplay_herbie_state(now=None, status=None, sense=None, net=None):
         return motion_reaction[0], motion_reaction[1]
     if tilt_reaction:
         return tilt_reaction[0], tilt_reaction[1]
-    status = status if status is not None else api('/api/status', timeout=0.35)
+    status = status if status is not None else cached_status()
     net = net if net is not None else api('/api/network/status', timeout=0.6)
     temp = sense.get('temperature') if sense.get('temperature') is not None else sense.get('temp_c')
     battery_reminder = low_battery_reminder(status)
+    event_face = herbie_event_face(status)
     try: tilted = roll is not None and pitch is not None and max(abs(roll), abs(pitch)) >= 12
     except Exception: tilted = False
     try: hot = temp is not None and float(temp) >= 30
     except Exception: hot = False
     if status.get('_error'):
         return herbie_idle_face(5.0), 'offline face loop'
+    if event_face:
+        return event_face
     if battery_reminder:
         return battery_reminder
     if hot:
@@ -523,7 +579,7 @@ def herbie_pawn_state():
     if tilt_reaction:
         details = [f'tilt {tilt_source} r{round(roll)} p{round(pitch)}', 'fast Sense-only reaction', 'priority faces + cameos']
         return {'mood': tilt_reaction[0], 'reason': tilt_reaction[1], 'accent': AMBER, 'details': details, 'idle': idle}
-    status = api('/api/status', timeout=0.35)
+    status = cached_status()
     net = api('/api/network/status', timeout=0.6)
     weather = api('/api/weather?days=1', timeout=0.6)
     temp_c = num(sense.get('temperature') if sense.get('temperature') is not None else sense.get('temp_c'))
@@ -531,6 +587,7 @@ def herbie_pawn_state():
     pressure = num(sense.get('pressure'))
     compass = num(sense.get('compass') or sense.get('heading'))
     battery_reminder = low_battery_reminder(status)
+    event_face = herbie_event_face(status)
     api_available = not (status.get('_error') and sense.get('_error') and net.get('_error') and weather.get('_error'))
     mood = idle
     reason = 'all-face wandering loop'
@@ -539,6 +596,8 @@ def herbie_pawn_state():
         mood, reason, accent = 'high-af', '4:20 trail minute', GREEN
     elif api_available and tilt_reaction:
         mood, reason, accent = tilt_reaction[0], tilt_reaction[1], AMBER
+    elif api_available and event_face:
+        mood, reason, accent = event_face[0], event_face[1], AMBER
     elif api_available and battery_reminder:
         mood, reason, accent = battery_reminder[0], battery_reminder[1], RED
     elif api_available and temp_c is not None and temp_c >= 34:

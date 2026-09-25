@@ -76,6 +76,10 @@
     "tilted-right": "/assets/herbie/motions/tilted-right.png",
     "tilted-right-2": "/assets/herbie/motions/tilted-right-2.png",
     "tilted-right-3": "/assets/herbie/motions/tilted-right-3.png",
+    "tilted-up": "/assets/herbie/motions/tilted-up.png",
+    "tilted-up-2": "/assets/herbie/motions/tilted-up-2.png",
+    "tilted-down": "/assets/herbie/motions/tilted-down.png",
+    "tilted-down-2": "/assets/herbie/motions/tilted-down-2.png",
     "shaking": "/assets/herbie/motions/shaking.png",
     "shaking-2": "/assets/herbie/motions/shaking-2.png",
     "shaking-3": "/assets/herbie/motions/shaking-3.png",
@@ -410,6 +414,14 @@
       "tilted-right",
       "tilted-right-2",
       "tilted-right-3"
+    ],
+    "tilted-up": [
+      "tilted-up",
+      "tilted-up-2"
+    ],
+    "tilted-down": [
+      "tilted-down",
+      "tilted-down-2"
     ],
     "shaking": [
       "shaking",

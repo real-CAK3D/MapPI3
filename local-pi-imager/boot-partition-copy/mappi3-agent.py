@@ -18,7 +18,7 @@ PACMAN_EVENT_SEQ = 0
 BATTERY_LED_STATE = {'full_since': None}
 SENSE_FACE_STATE = {'last_accel': None, 'last_accel_at': 0.0, 'surprise_until': 0.0, 'still_since': 0.0}
 SENSE_MODES = ['compass','compass-arrow','compass-cardinal','rotation-test','liquid','pacman','battery','weather','fire','flashlight','sos','message','boot','sun','gps','clock','progress','beacon','stars','temp','humidity','pressure','avatar','level','custom','border','magic8','water','snake']
-ALLOWED = {'status','restart-web','reboot','shutdown','update-app','gps-sample','toggle-hotspot','hotspot-on','connect-home-wifi','wifi-scan','wifi-save-network','wifi-connect-saved','network-status','tailscale-status','tailscale-login','remote-access-repair','sense-mode','calibrate','harden-hotspot','plugin-update','vnc-setup','vnc-disable','weather-refresh','noaa-refresh','hourly-online-refresh','online-maintenance','gps-diagnose','sense-diagnose','field-ai-verify','captive-setup','captive-disable','captive-status','gps-pps-setup','whisplay-test-popup','whisplay-input','whisplay-input-status','snake-trail-event','plugin-status','plugin-install','plugin-install-all','plugin-uninstall','notification-status','notification-test','notification-publish','notification-clear','notification-preferences','audio-tts-test','audio-ambient-test'}
+ALLOWED = {'herbie-event', 'status','restart-web','reboot','shutdown','update-app','gps-sample','toggle-hotspot','hotspot-on','connect-home-wifi','wifi-scan','wifi-save-network','wifi-connect-saved','network-status','tailscale-status','tailscale-login','remote-access-repair','sense-mode','calibrate','harden-hotspot','plugin-update','vnc-setup','vnc-disable','weather-refresh','noaa-refresh','hourly-online-refresh','online-maintenance','gps-diagnose','sense-diagnose','field-ai-verify','captive-setup','captive-disable','captive-status','gps-pps-setup','whisplay-test-popup','whisplay-input','whisplay-input-status','snake-trail-event','plugin-status','plugin-install','plugin-install-all','plugin-uninstall','notification-status','notification-test','notification-publish','notification-clear','notification-preferences','audio-tts-test','audio-ambient-test'}
 SENSE_CACHE = {'ok': False, 'mode': 'compass', 'message': 'Sense HAT display loop starting', 'updated': 0, 'joystick': {'seq': 0, 'direction': '', 'pressed': False, 'updated': 0}}
 SENSE_LOCK = threading.Lock()
 TIMELINE_LOCK = threading.RLock()
@@ -2469,13 +2469,34 @@ def _whisplay_rpc(cmd, payload=None, timeout=1.2):
     except Exception as e:
         return {'ok': False, 'cmd': cmd, 'error': str(e)}
 
+HERBIE_EVENT_GROUPS = {'gps-searching', 'gps-locked', 'navigating', 'off-route', 'storm-watch', 'storm-warning', 'storm-danger',
+                       'summit', 'oops', 'charging', 'low-battery', 'dropped', 'crying', 'upset', 'furious', 'party', 'freezing',
+                       'hot', 'cold', 'jolt'}
+
+def herbie_event(payload=None):
+    """Set (or clear) a short-lived Herbie event; the Whisplay and the app show that event's face group until it expires."""
+    payload = payload or {}
+    name = str(payload.get('event') or '').strip()
+    st = read_state()
+    if not name or name == 'clear':
+        st.pop('herbie_event', None); write_state(st)
+        return {'ok': True, 'cleared': True}
+    if name not in HERBIE_EVENT_GROUPS:
+        return {'ok': False, 'error': f'unknown Herbie event {name!r}', 'events': sorted(HERBIE_EVENT_GROUPS)}
+    try: ttl = int(payload.get('ttl') or 60)
+    except Exception: ttl = 60
+    now = time.time()
+    st['herbie_event'] = {'name': name, 'until': now + max(5, min(900, ttl)), 'reason': str(payload.get('reason') or name)[:60], 'set_at': now}
+    write_state(st)
+    return {'ok': True, 'event': st['herbie_event']}
+
 def whisplay_display_status(payload=None):
     health=_whisplay_rpc('health.ping')
     apps=_whisplay_rpc('app.list')
-    fg={}
-    for cmd in ('app.foreground','app.get_foreground','foreground.get','display.status'):
-        fg=_whisplay_rpc(cmd)
-        if fg.get('ok') and not fg.get('error'): break
+    # The daemon reports the foreground app in health.ping; app.foreground / display.status etc. are not
+    # daemon commands and only produced "unknown command" errors in the Herbie panel.
+    hp=health.get('payload') if isinstance(health.get('payload'), dict) else {}
+    fg={'ok': bool(health.get('ok')), 'foreground_app_id': hp.get('foreground_app_id'), 'source': 'health.ping'}
     screen={}
     for src in (health.get('payload'), health.get('screen'), health):
         if isinstance(src, dict):
@@ -2986,6 +3007,7 @@ def command(name, payload=None):
     if name=='wifi-connect-saved': return wifi_connect_saved(payload)
     if name=='hotspot-on': return hotspot_on(payload)
     if name=='gps-sample': return gps_sample()
+    if name=='herbie-event': return herbie_event(payload)
     if name=='sense-mode': return set_sense_mode(payload.get('mode') or payload.get('sense_mode') or payload.get('orientationMode') or 'compass', payload)
     if name=='calibrate': return calibrate(payload.get('target') or 'all')
     if name=='harden-hotspot': return harden_hotspot()
