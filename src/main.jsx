@@ -13,7 +13,7 @@ import AdventureGlobeAtlas from './components/AdventureGlobeAtlas.jsx';
 import { createMapPiRecord, fetchMapPiRecords, signInMapPiUser, signUpMapPiUser, supabaseConfig } from './lib/supabaseClient.js';
 import './styles.css';
 
-const VERSION = 'V1.2.45';
+const VERSION = 'V1.2.46';
 if (typeof window !== 'undefined' && 'serviceWorker' in navigator) {
   window.addEventListener('load', () => {
     navigator.serviceWorker.register('/mappi3-sw.js').catch(error => console.warn('MapPI3 service worker registration failed', error));
