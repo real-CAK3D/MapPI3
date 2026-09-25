@@ -1190,6 +1190,43 @@ function straightDriveRoute(origin, destination) {
   const bearing = bearingBetween(origin, destination);
   return { ok:false, fallback:true, source:'straight-line fallback', geometry:{ type:'LineString', coordinates:[[origin.lon, origin.lat],[destination.lon, destination.lat]] }, distanceMiles:miles, durationMinutes:Math.max(1, Math.round((miles/35)*60)), steps:[{ instruction:`Head ${bearingToCompass(bearing)} toward ${destination.label || 'destination'}. Online routing unavailable, so this is a straight-line safety fallback — use road signs/real nav until route service is reachable.`, distanceMiles:miles, durationMinutes:Math.max(1, Math.round((miles/35)*60)), maneuver:'fallback' }] };
 }
+// ---- Drive navigation: live position along the route, next turn, speed/heading, reroute, voice ----
+const bearingDeg = (a, b) => { const p1 = toRadians(a.lat), p2 = toRadians(b.lat), dl = toRadians(b.lon - a.lon); const y = Math.sin(dl) * Math.cos(p2), x = Math.cos(p1) * Math.sin(p2) - Math.sin(p1) * Math.cos(p2) * Math.cos(dl); return (Math.atan2(y, x) * 180 / Math.PI + 360) % 360; };
+const cardinalOf = (deg) => ['N','NE','E','SE','S','SW','W','NW'][Math.round((((deg % 360) + 360) % 360) / 45) % 8];
+const formatDriveDistance = (mi) => mi >= 0.95 ? `${mi.toFixed(mi >= 10 ? 0 : 1)} mi` : `${Math.max(50, Math.round(mi * 5280 / 50) * 50)} ft`;
+const spokenDistance = (mi) => mi >= 0.95 ? `${mi.toFixed(1)} miles` : mi >= 0.4 ? 'half a mile' : mi >= 0.2 ? 'a quarter mile' : `${Math.max(100, Math.round(mi * 5280 / 100) * 100)} feet`;
+function osrmInstruction(step, destLabel) {
+  const m = step.maneuver || {}, type = m.type, mod = m.modifier || '', road = step.name ? ` onto ${step.name}` : '';
+  const turn = mod === 'uturn' ? 'Make a U-turn' : mod === 'straight' ? 'Continue straight' : mod.startsWith('slight') ? `Bear ${mod.replace('slight ', '')}` : mod.startsWith('sharp') ? `Turn sharp ${mod.replace('sharp ', '')}` : mod ? `Turn ${mod}` : 'Continue';
+  switch (type) {
+    case 'depart': return `Head ${cardinalOf(m.bearing_after || 0)}${step.name ? ` on ${step.name}` : ''}`;
+    case 'arrive': return `Arrive at ${destLabel || 'your destination'}${mod && mod !== 'straight' ? `, on the ${mod}` : ''}`;
+    case 'roundabout': case 'rotary': case 'roundabout turn': return `At the roundabout, take exit ${m.exit || 1}${road}`;
+    case 'merge': return `Merge${mod ? ` ${mod.replace('slight ', '')}` : ''}${road}`;
+    case 'on ramp': return `Take the ramp${mod ? ` on the ${mod.replace('slight ', '')}` : ''}${road}`;
+    case 'off ramp': return `Take the exit${mod ? ` on the ${mod.replace('slight ', '')}` : ''}${road}`;
+    case 'fork': return `Keep ${mod.replace('slight ', '') || 'straight'} at the fork${road}`;
+    case 'end of road': return `${turn} at the end of the road${road}`;
+    case 'new name': case 'continue': return `Continue${road || ' straight'}`;
+    default: return `${turn}${road}`;
+  }
+}
+const maneuverAngle = (step) => { const mod = step?.modifier || ''; if (mod.includes('uturn')) return 180; const side = mod.includes('left') ? -1 : mod.includes('right') ? 1 : 0; return side * (mod.includes('slight') ? 45 : mod.includes('sharp') ? 135 : 90); };
+function ManeuverIcon({ step }) { if (step?.maneuver === 'arrive') return <svg viewBox="0 0 48 48" width="40" height="40" aria-hidden="true"><path d="M14 42V6" stroke="currentColor" strokeWidth="5" strokeLinecap="round" /><path d="M16 7h20l-5 7 5 7H16z" fill="currentColor" /></svg>; return <svg viewBox="0 0 48 48" width="40" height="40" aria-hidden="true" style={{ transform: `rotate(${maneuverAngle(step)}deg)` }}><path d="M24 42V12" stroke="currentColor" strokeWidth="6" strokeLinecap="round" /><path d="M10 22L24 7l14 15" fill="none" stroke="currentColor" strokeWidth="6" strokeLinecap="round" strokeLinejoin="round" /></svg>; }
+function lineCumulative(line) { const cum = [0]; for (let i = 1; i < line.length; i++) cum.push(cum[i - 1] + distanceBetweenMiles(line[i - 1], line[i])); return cum; }
+function projectOnLine(line, cum, p) {
+  if (!line?.length || !p?.lat) return { along: 0, offMiles: Infinity };
+  const mLat = 69, mLon = Math.cos(toRadians(p.lat)) * 69.172;
+  let best = { along: 0, offMiles: Infinity };
+  for (let i = 0; i < line.length - 1; i++) {
+    const ax = (line[i].lon - p.lon) * mLon, ay = (line[i].lat - p.lat) * mLat, bx = (line[i + 1].lon - p.lon) * mLon, by = (line[i + 1].lat - p.lat) * mLat;
+    const vx = bx - ax, vy = by - ay, len2 = vx * vx + vy * vy || 1e-12;
+    const t = Math.max(0, Math.min(1, -(ax * vx + ay * vy) / len2));
+    const off = Math.hypot(ax + vx * t, ay + vy * t);
+    if (off < best.offMiles) best = { along: cum[i] + (cum[i + 1] - cum[i]) * t, offMiles: off };
+  }
+  return best;
+}
 function Drive({ driveDestination, setDriveDestination, selectedRoute = primaryRoutePack, setSelectedRoute, onStartRoute, onOpenHike, originPoint = localHome }) {
   const [destinationText, setDestinationText] = useState(driveDestination?.address || driveDestination?.label || '');
   const [addressParts, setAddressParts] = useState(() => loadStored('mappi3.driveAddressParts', { street:'', city:'Lewiston', state:'ME', zip:'04240', zip4:'' }));
@@ -1203,6 +1240,12 @@ function Drive({ driveDestination, setDriveDestination, selectedRoute = primaryR
   const [trace, setTrace] = useState(() => loadStored('mappi3.driveTrace', []));
   const [savedDrives, setSavedDrives] = useState(() => loadStored('mappi3.driveHistory', []));
   const secure = typeof window !== 'undefined' && window.isSecureContext;
+  const [speedMph, setSpeedMph] = useState(0);
+  const [headingDeg, setHeadingDeg] = useState(null);
+  const [gpsLabel, setGpsLabel] = useState('GPS idle');
+  const [voiceOn, setVoiceOn] = useState(() => loadStored('mappi3.driveVoice', true));
+  const driveRefs = useRef({ last: null, offCount: 0, lastReroute: 0, spoken: new Set(), arrived: false });
+  useEffect(() => localStorage.setItem('mappi3.driveVoice', JSON.stringify(voiceOn)), [voiceOn]);
   useEffect(() => { if (driveDestination) { setDestination(driveDestination); setDestinationText(driveDestination.address || driveDestination.label || ''); } }, [driveDestination?.lat, driveDestination?.lon, driveDestination?.label]);
   useEffect(() => localStorage.setItem('mappi3.driveTrace', JSON.stringify(trace)), [trace]);
   useEffect(() => localStorage.setItem('mappi3.driveAddressParts', JSON.stringify(addressParts)), [addressParts]);
@@ -1210,16 +1253,28 @@ function Drive({ driveDestination, setDriveDestination, selectedRoute = primaryR
   useEffect(() => {
     if (!traceOn) return undefined;
     let watchId, timer;
-    const addPoint = (point, source='gps') => { setCurrent(point); setTrace(t => [...t, { ...point, source, t: Date.now() }].slice(-5000)); };
+    const addPoint = (point, source='gps', speedMs = null, track = null) => {
+      const refs = driveRefs.current, now = Date.now(), last = refs.last;
+      let mph = Number.isFinite(speedMs) && speedMs !== null ? speedMs * 2.23694 : null, hdg = Number.isFinite(track) && track !== null ? track : null;
+      if (last && (mph === null || hdg === null)) { const miles = distanceBetweenMiles(last, point), hrs = (now - last.t) / 3600e3; if (mph === null && hrs > 0) mph = miles / hrs; if (hdg === null && miles > 0.01) hdg = bearingDeg(last, point); }
+      refs.last = { ...point, t: now };
+      if (mph !== null) setSpeedMph(m => mph < 1 ? 0 : m * 0.4 + mph * 0.6);
+      if (hdg !== null && (mph === null || mph >= 2)) setHeadingDeg(hdg);
+      setGpsLabel(source === 'phone' ? 'Phone GPS' : 'MapPI3 GPS');
+      setCurrent(point); setTrace(t => [...t, { ...point, source, t: now }].slice(-5000));
+    };
     if (navigator.geolocation && secure) {
       setStatus('Drive trace ON · phone GPS active. Turn-by-turn stays on this Drive page.');
-      watchId = navigator.geolocation.watchPosition(pos => addPoint({ lat:pos.coords.latitude, lon:pos.coords.longitude, accuracy:pos.coords.accuracy, label:'Live phone GPS' }, 'phone'), err => setStatus(`Phone GPS unavailable: ${err.message}. Trying Pi GPS status endpoint.`), { enableHighAccuracy:true, maximumAge:1000, timeout:12000 });
+      watchId = navigator.geolocation.watchPosition(pos => { driveRefs.current.phoneAt = Date.now(); addPoint({ lat:pos.coords.latitude, lon:pos.coords.longitude, accuracy:pos.coords.accuracy, label:'Live phone GPS' }, 'phone', pos.coords.speed, pos.coords.heading); }, err => setStatus(`Phone GPS unavailable: ${err.message}. Trying Pi GPS status endpoint.`), { enableHighAccuracy:true, maximumAge:1000, timeout:12000 });
     }
     timer = setInterval(async () => {
-      try { const data = await fetch('/api/status', { cache:'no-store' }).then(r=>r.json()); const gps=data?.gps; if (gps?.fix && Number.isFinite(Number(gps.lat)) && Number.isFinite(Number(gps.lon))) addPoint({ lat:Number(gps.lat), lon:Number(gps.lon), accuracy:8, label:'Pi GPS fix' }, 'pi-gps'); }
-      catch {}
-    }, 4000);
-    return () => { if (watchId) navigator.geolocation.clearWatch(watchId); if (timer) clearInterval(timer); };
+      if (Date.now() - (driveRefs.current.phoneAt || 0) < 5000) return;
+      try { const gps = await fetch('/api/gps', { cache:'no-store' }).then(r=>r.json()); if (gps?.fix && Number.isFinite(Number(gps.lat)) && Number.isFinite(Number(gps.lon))) addPoint({ lat:Number(gps.lat), lon:Number(gps.lon), accuracy:8, label:'Pi GPS fix' }, 'pi-gps', gps.speed == null ? null : Number(gps.speed), gps.track == null ? null : Number(gps.track)); else setGpsLabel(`Waiting for GPS fix · ${gps?.satellites || 0} sats`); }
+      catch { setGpsLabel('No GPS'); }
+    }, 1000);
+    let wake = null; navigator.wakeLock?.request?.('screen').then(w => { wake = w; }).catch(() => {});
+    const stopWake = () => wake?.release?.().catch(() => {});
+    return () => { if (watchId) navigator.geolocation.clearWatch(watchId); if (timer) clearInterval(timer); stopWake(); };
   }, [traceOn, secure]);
   const geocode = async (text) => {
     if (/^-?\d+(\.\d+)?\s*,\s*-?\d+(\.\d+)?$/.test(text.trim())) { const [lat,lon]=text.split(',').map(Number); return { label:`${lat.toFixed(5)}, ${lon.toFixed(5)}`, address:text, lat, lon }; }
@@ -1236,8 +1291,9 @@ function Drive({ driveDestination, setDriveDestination, selectedRoute = primaryR
       const url=`https://router.project-osrm.org/route/v1/driving/${pointToUrlPart(src)};${pointToUrlPart(dest)}?overview=full&geometries=geojson&steps=true`;
       const data=await fetch(url).then(r=>r.json());
       const r=data?.routes?.[0]; if (!r) throw new Error(data?.message || 'No OSRM route returned');
-      const nextSteps=(r.legs||[]).flatMap(leg => (leg.steps||[]).map(step => ({ instruction: [step.maneuver?.modifier, step.maneuver?.type === 'arrive' ? `Arrive at ${dest.label || 'destination'}` : step.name ? `onto ${step.name}` : step.maneuver?.type].filter(Boolean).join(' '), distanceMiles: Number((step.distance/1609.344).toFixed(2)), durationMinutes: Math.max(1, Math.round(step.duration/60)), maneuver: step.maneuver?.type || 'continue' }))).filter(x => x.instruction);
-      const mapped={ ok:true, source:'OSRM online driving route', geometry:r.geometry, distanceMiles:Number((r.distance/1609.344).toFixed(1)), durationMinutes:Math.round(r.duration/60), steps:nextSteps };
+      const line=(r.geometry?.coordinates||[]).map(([lon,lat])=>({lat,lon})); const cum=lineCumulative(line);
+      const nextSteps=(r.legs||[]).flatMap(leg => (leg.steps||[]).map(step => { const loc=step.maneuver?.location; return { instruction: osrmInstruction(step, dest.label), distanceMiles: Number((step.distance/1609.344).toFixed(2)), durationMinutes: Math.max(1, Math.round(step.duration/60)), maneuver: step.maneuver?.type || 'continue', modifier: step.maneuver?.modifier || '', along: loc ? projectOnLine(line, cum, { lat: loc[1], lon: loc[0] }).along : 0 }; })).filter(x => x.instruction);
+      const mapped={ ok:true, source:'OSRM online driving route', geometry:r.geometry, line, cum, distanceMiles:Number((r.distance/1609.344).toFixed(1)), durationMinutes:Math.round(r.duration/60), steps:nextSteps };
       setRoute(mapped); setSteps(nextSteps); setStatus(`Drive route ready: ${mapped.distanceMiles} mi · ${mapped.durationMinutes} min · ${nextSteps.length} turn(s).`); return mapped;
     } catch (err) {
       const fallback=straightDriveRoute(src,dest); setRoute(fallback); setSteps(fallback.steps); setStatus(`Online turn-by-turn unavailable: ${err.message}. Showing straight-line fallback.`); return fallback;
@@ -1249,9 +1305,29 @@ function Drive({ driveDestination, setDriveDestination, selectedRoute = primaryR
   const saveDrive = () => { const entry={ id:`drive-${Date.now()}`, name:destination?.label || 'Drive trace', destination, trace, routeMiles:route?.distanceMiles || 0, at:Date.now() }; setSavedDrives(items=>[entry,...items].slice(0,50)); setStatus(`Saved drive trace: ${trace.length} point(s).`); };
   const milesLeft = destination?.lat ? distanceBetweenMiles(current, destination) : 0;
   const arrived = milesLeft <= 0.12;
+  const nav = useMemo(() => {
+    if (!route?.line?.length || !current?.lat) return null;
+    const { along, offMiles } = projectOnLine(route.line, route.cum, current);
+    const total = route.cum[route.cum.length - 1] || 0, remaining = Math.max(0, total - along);
+    const idx = (route.steps || []).findIndex(st => st.along > along + 0.01);
+    const next = idx >= 0 ? route.steps[idx] : (route.steps || [])[route.steps.length - 1];
+    const toNext = next && idx >= 0 ? Math.max(0, next.along - along) : remaining;
+    const avgMph = route.durationMinutes ? route.distanceMiles / (route.durationMinutes / 60) : 40;
+    const etaMin = remaining / (speedMph > 5 ? speedMph : avgMph) * 60;
+    return { along, offMiles, remaining, next, nextIndex: idx, toNext, etaMin, arrival: new Date(Date.now() + etaMin * 60e3) };
+  }, [route, current?.lat, current?.lon, speedMph]);
+  useEffect(() => {
+    if (!traceOn || !nav) return;
+    const refs = driveRefs.current;
+    if (nav.offMiles > 0.1 && route?.ok) { refs.offCount += 1; if (refs.offCount >= 2 && Date.now() - refs.lastReroute > 30000) { refs.lastReroute = Date.now(); refs.offCount = 0; refs.spoken.clear(); setStatus('Off route — rerouting from your position…'); buildRoute(destination, current); } } else refs.offCount = 0;
+    if (voiceOn && typeof window !== 'undefined' && window.speechSynthesis && nav.next && nav.nextIndex >= 0) {
+      for (const mark of [0.5, 0.1]) { const key = `${nav.nextIndex}-${mark}`; if (nav.toNext <= mark && nav.toNext > mark / 3 && !refs.spoken.has(key)) { refs.spoken.add(key); window.speechSynthesis.speak(new SpeechSynthesisUtterance(`In ${spokenDistance(nav.toNext)}, ${nav.next.instruction}`)); break; } }
+    }
+    if ((nav.remaining < 0.06 || arrived) && !refs.arrived) { refs.arrived = true; postHerbieEvent('trailhead', 120, `arrived: ${destination?.label || 'destination'}`.slice(0, 60), 0); if (voiceOn && window.speechSynthesis) window.speechSynthesis.speak(new SpeechSynthesisUtterance(`You have arrived at ${destination?.label || 'your destination'}`)); }
+  }, [nav?.along, traceOn]);
   const driveRoute = route ? { name:`Drive to ${destination?.label || 'destination'}`, geometry:route.geometry, distanceMiles:route.distanceMiles, miles:route.distanceMiles, waypoints:[{ name:'Start', lat:current.lat, lon:current.lon, type:'drive start' }, { name:'Destination', lat:destination.lat, lon:destination.lon, type:'drive destination' }] } : null;
   const center = current?.lat ? [current.lat,current.lon] : [destination?.lat || localHome.lat, destination?.lon || localHome.lon];
-  return <section className="drive-screen"><div className="panel drive-hero"><div className="section-head"><div><h2>Drive GPS</h2><p className="muted">Turn-by-turn driving to an address, trailhead, or lat/lon. Toggle trace to record the drive just like Daily Exercise records a walk.</p></div><Pill tone={traceOn?'recording':arrived?'online':'default'}>{traceOn?'DRIVE REC':arrived?'arrived':'ready'}</Pill></div><div className="address-grid"><label><span>Street / house</span><input value={addressParts.street || ''} onChange={e=>updateAddressPart('street', e.target.value)} placeholder="123 Trail Rd" /></label><label><span>Town / city</span><input value={addressParts.city || ''} onChange={e=>updateAddressPart('city', e.target.value)} placeholder="Lewiston" /></label><label><span>State</span><input value={addressParts.state || ''} onChange={e=>updateAddressPart('state', e.target.value.toUpperCase())} maxLength={2} placeholder="ME" /></label><label><span>ZIP</span><input value={addressParts.zip || ''} onChange={e=>updateAddressPart('zip', e.target.value)} inputMode="numeric" placeholder="04240" /></label><label><span>ZIP+4</span><input value={addressParts.zip4 || ''} onChange={e=>updateAddressPart('zip4', e.target.value)} inputMode="numeric" placeholder="optional" /></label></div><div className="drive-search"><input value={destinationText} onChange={e=>setDestinationText(e.target.value)} placeholder={mapPi3StructuredAddress(addressParts) || 'Address, trailhead, or 44.1004,-70.2148'} onKeyDown={e=>{ if(e.key==='Enter') routeAddress(); }} /><button className="primary small" onClick={routeAddress}>Route address</button><button className="ghost small" onClick={useTrailhead}>Use selected trailhead</button><button className="ghost small" onClick={useCurrent}>Set start from GPS</button></div><div className="map-pack-card"><strong>{lewistonOverviewMapPack.name}</strong><span>{lewistonOverviewMapPack.radiusMiles} mi · {lewistonOverviewMapPack.zooms} · {lewistonOverviewMapPack.tileCount.toLocaleString()} tiles · {lewistonOverviewMapPack.sizeLabel}</span><small>{lewistonOverviewMapPack.detailPlan}</small></div><div className="route-summary"><Stat value={route?.distanceMiles ? `${route.distanceMiles} mi` : `${milesLeft.toFixed(1)} mi`} label={route?.ok?'road route':'to destination'} /><Stat value={route?.durationMinutes ? `${route.durationMinutes} min` : '—'} label="drive ETA" /><Stat value={trace.length} label="trace points" /><Stat value={destination?.routeName || selectedRoute?.name || 'custom'} label="handoff hike" /></div><div className="button-row"><button className={traceOn?'danger small':'primary small'} onClick={()=>setTraceOn(v=>!v)}>{traceOn?'Stop drive trace':'Start drive trace'}</button><button className="ghost small" onClick={()=>setTrace([])}>Clear trace</button><button className="ghost small" onClick={saveDrive}>Save drive trace</button><button className="ghost small" onClick={()=>buildRoute(destination,current)}>Recalculate</button>{arrived && <button className="primary small" onClick={() => { onOpenHike && onOpenHike(); onStartRoute && onStartRoute(selectedRoute); }}>Arrived — start hike</button>}</div><div className="alert info">{status}</div></div><section className="map-card"><div className="map-toolbar"><Pill>Drive map</Pill><Pill>{destination?.label || 'no destination'}</Pill><Pill tone={route?.fallback?'warn':route?.ok?'online':'default'}>{route?.source || 'no route yet'}</Pill></div><LiveLeafletMap route={driveRoute} trace={trace} center={center} active={traceOn} waypoints={driveRoute?.waypoints || []} /></section><div className="panel drive-steps"><h3>Turn-by-turn</h3>{steps.length ? steps.slice(0,30).map((step,i)=><div key={i} className="drive-step"><strong>{i+1}. {step.instruction}</strong><span>{step.distanceMiles} mi · {step.durationMinutes} min</span></div>) : <p className="muted">Build a route to show turns. If internet routing is unavailable, MapPI3 will show a clear fallback instead of pretending it has road directions.</p>}<details><summary>Saved drive traces ({savedDrives.length})</summary>{savedDrives.map(item=><p key={item.id}><strong>{item.name}</strong> · {item.trace?.length || 0} pts · {formatDateTime(item.at)}</p>)}</details></div></section>;
+  return <section className="drive-screen"><div className="panel drive-hero"><div className="section-head"><div><h2>Drive GPS</h2><p className="muted">Turn-by-turn driving to an address, trailhead, or lat/lon. Toggle trace to record the drive just like Daily Exercise records a walk.</p></div><Pill tone={traceOn?'recording':arrived?'online':'default'}>{traceOn?'DRIVING':arrived?'arrived':'ready'}</Pill></div>{route && <div className="drive-nav" aria-live="polite"><div className="drive-next"><span className="drive-arrow"><ManeuverIcon step={nav?.next || steps[0]} /></span><div><strong>{(nav?.next || steps[0])?.instruction || `Head ${cardinalOf(bearingDeg(current, destination))} toward ${destination?.label || 'destination'}`}</strong><span>{nav ? formatDriveDistance(nav.toNext) : route?.distanceMiles ? `${route.distanceMiles} mi total` : ''}</span></div></div><div className="drive-gauges"><Stat value={`${Math.round(speedMph)} mph`} label="speed" /><Stat value={headingDeg == null ? '—' : `${Math.round(headingDeg)}° ${cardinalOf(headingDeg)}`} label="heading" /><Stat value={nav ? formatDriveDistance(nav.remaining) : `${milesLeft.toFixed(1)} mi`} label="remaining" /><Stat value={nav ? nav.arrival.toLocaleTimeString([], { hour:'numeric', minute:'2-digit' }) : route?.durationMinutes ? `${route.durationMinutes} min` : '—'} label="arrive" /></div>{nav && nav.offMiles > 0.1 && <p className="drive-offroute">Off route by {formatDriveDistance(nav.offMiles)} · {route.ok ? 'rerouting' : 'head back toward the line'}</p>}{!route.ok && destination?.lat && <p className="muted">No road routing offline: destination is {milesLeft.toFixed(1)} mi to the {cardinalOf(bearingDeg(current, destination))} ({Math.round(bearingDeg(current, destination))}°).</p>}<div className="drive-nav-meta"><Pill tone={/Waiting|No GPS/.test(gpsLabel) ? 'warn' : traceOn ? 'online' : 'default'}>{traceOn ? gpsLabel : 'GPS idle'}</Pill><button className={voiceOn ? 'primary small' : 'ghost small'} onClick={() => setVoiceOn(v => !v)}>{voiceOn ? 'Voice on' : 'Voice off'}</button></div></div>}<div className="address-grid"><label><span>Street / house</span><input value={addressParts.street || ''} onChange={e=>updateAddressPart('street', e.target.value)} placeholder="123 Trail Rd" /></label><label><span>Town / city</span><input value={addressParts.city || ''} onChange={e=>updateAddressPart('city', e.target.value)} placeholder="Lewiston" /></label><label><span>State</span><input value={addressParts.state || ''} onChange={e=>updateAddressPart('state', e.target.value.toUpperCase())} maxLength={2} placeholder="ME" /></label><label><span>ZIP</span><input value={addressParts.zip || ''} onChange={e=>updateAddressPart('zip', e.target.value)} inputMode="numeric" placeholder="04240" /></label><label><span>ZIP+4</span><input value={addressParts.zip4 || ''} onChange={e=>updateAddressPart('zip4', e.target.value)} inputMode="numeric" placeholder="optional" /></label></div><div className="drive-search"><input value={destinationText} onChange={e=>setDestinationText(e.target.value)} placeholder={mapPi3StructuredAddress(addressParts) || 'Address, trailhead, or 44.1004,-70.2148'} onKeyDown={e=>{ if(e.key==='Enter') routeAddress(); }} /><button className="primary small" onClick={routeAddress}>Route address</button><button className="ghost small" onClick={useTrailhead}>Use selected trailhead</button><button className="ghost small" onClick={useCurrent}>Set start from GPS</button></div><div className="map-pack-card"><strong>{lewistonOverviewMapPack.name}</strong><span>{lewistonOverviewMapPack.radiusMiles} mi · {lewistonOverviewMapPack.zooms} · {lewistonOverviewMapPack.tileCount.toLocaleString()} tiles · {lewistonOverviewMapPack.sizeLabel}</span><small>{lewistonOverviewMapPack.detailPlan}</small></div><div className="route-summary"><Stat value={route?.distanceMiles ? `${route.distanceMiles} mi` : `${milesLeft.toFixed(1)} mi`} label={route?.ok?'road route':'to destination'} /><Stat value={route?.durationMinutes ? `${route.durationMinutes} min` : '—'} label="drive ETA" /><Stat value={trace.length} label="trace points" /><Stat value={destination?.routeName || selectedRoute?.name || 'custom'} label="handoff hike" /></div><div className="button-row"><button className={traceOn?'danger small':'primary small'} onClick={()=>setTraceOn(v=>!v)}>{traceOn?'Stop driving':'Start driving'}</button><button className="ghost small" onClick={()=>setTrace([])}>Clear trace</button><button className="ghost small" onClick={saveDrive}>Save drive trace</button><button className="ghost small" onClick={()=>buildRoute(destination,current)}>Recalculate</button>{arrived && <button className="primary small" onClick={() => { onOpenHike && onOpenHike(); onStartRoute && onStartRoute(selectedRoute); }}>Arrived — start hike</button>}</div><div className="alert info">{status}</div></div><section className="map-card"><div className="map-toolbar"><Pill>Drive map</Pill><Pill>{destination?.label || 'no destination'}</Pill><Pill tone={route?.fallback?'warn':route?.ok?'online':'default'}>{route?.source || 'no route yet'}</Pill></div><LiveLeafletMap route={driveRoute} trace={trace} center={center} active={traceOn} waypoints={driveRoute?.waypoints || []} /></section><div className="panel drive-steps"><h3>Turn-by-turn</h3>{steps.length ? steps.slice(0,30).map((step,i)=><div key={i} className="drive-step"><strong>{i+1}. {step.instruction}</strong><span>{step.distanceMiles} mi · {step.durationMinutes} min</span></div>) : <p className="muted">Build a route to show turns. If internet routing is unavailable, MapPI3 will show a clear fallback instead of pretending it has road directions.</p>}<details><summary>Saved drive traces ({savedDrives.length})</summary>{savedDrives.map(item=><p key={item.id}><strong>{item.name}</strong> · {item.trace?.length || 0} pts · {formatDateTime(item.at)}</p>)}</details></div></section>;
 }
 
 function TrailNavFieldCards({ selectedRoute = primaryRoutePack, originPoint = localHome, conditions = defaultConditions, routeStatus = {}, activeMapPackLabel = 'PNG overview fallback' }) {

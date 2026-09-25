@@ -712,3 +712,19 @@ body[data-theme] .telemetry-gauge span,body[data-theme] .telemetry-chart-grid sm
 .herbie-compass{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}
 .herbie-compass g{transition:transform .35s ease-out}
 @media (prefers-reduced-motion:reduce){.herbie-compass g{transition:none}}
+
+/* Drive GPS: next-turn banner + gauges */
+.drive-nav{display:grid;gap:10px;margin:12px 0;padding:14px;border-radius:20px;background:linear-gradient(145deg,rgba(20,60,34,.92),rgba(8,24,14,.92));border:1px solid rgba(156,227,108,.35)}
+.drive-next{display:flex;align-items:center;gap:14px}
+.drive-arrow{flex:0 0 auto;display:grid;place-items:center;width:64px;height:64px;border-radius:18px;background:#9ce36c;color:#071109;font-size:40px;font-weight:900;line-height:1}
+.drive-next strong{display:block;font-size:clamp(18px,4.5vw,26px);line-height:1.15;text-wrap:balance}
+.drive-next span{display:block;margin-top:4px;font-size:clamp(20px,5vw,30px);font-weight:900;color:#d9ffc6;font-variant-numeric:tabular-nums}
+.drive-gauges{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px}
+.drive-gauges>div{padding:8px 10px;border-radius:14px;background:rgba(0,0,0,.25);font-variant-numeric:tabular-nums}
+.drive-offroute{margin:0;padding:8px 12px;border-radius:12px;background:#493e18;color:#ffe28a;font-weight:800}
+.drive-nav-meta{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+@media(max-width:560px){.drive-gauges{grid-template-columns:repeat(2,minmax(0,1fr))}.drive-arrow{width:54px;height:54px;font-size:32px}}
+.drive-gauges>div{display:grid;gap:2px}
+.drive-gauges strong{font-size:18px;line-height:1.1}
+.drive-gauges span{font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:#bdd5c2}
+.drive-nav-meta button{width:auto}
