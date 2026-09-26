@@ -37,7 +37,7 @@ const dom = new JSDOM(`<!doctype html><html><head></head><body><div id="root"></
     window.URL.createObjectURL = () => 'blob:mappi3-audit';
     window.URL.revokeObjectURL = () => {};
     const canvasContext = {
-      setTransform(){}, resetTransform(){}, clearRect(){}, fillRect(){}, strokeRect(){}, beginPath(){}, arc(){}, fill(){}, stroke(){}, moveTo(){}, lineTo(){}, closePath(){}, rect(){}, clip(){}, drawImage(){}, getImageData(){ return { data: new Uint8ClampedArray(4) }; }, putImageData(){}, createLinearGradient(){ return { addColorStop(){} }; }, createPattern(){ return null; }, measureText(){ return { width: 0 }; }, fillText(){}, strokeText(){}, save(){}, restore(){}, translate(){}, rotate(){}, scale(){}, setLineDash(){},
+      setTransform(){}, resetTransform(){}, clearRect(){}, fillRect(){}, strokeRect(){}, beginPath(){}, arc(){}, fill(){}, stroke(){}, moveTo(){}, lineTo(){}, closePath(){}, quadraticCurveTo(){}, bezierCurveTo(){}, ellipse(){}, createRadialGradient(){ return { addColorStop(){} }; }, rect(){}, clip(){}, drawImage(){}, getImageData(){ return { data: new Uint8ClampedArray(4) }; }, putImageData(){}, createLinearGradient(){ return { addColorStop(){} }; }, createPattern(){ return null; }, measureText(){ return { width: 0 }; }, fillText(){}, strokeText(){}, save(){}, restore(){}, translate(){}, rotate(){}, scale(){}, setLineDash(){},
     };
     window.HTMLCanvasElement.prototype.getContext = () => canvasContext;
     window.navigator.geolocation = {
@@ -57,36 +57,46 @@ const dom = new JSDOM(`<!doctype html><html><head></head><body><div id="root"></
 });
 
 const { window } = dom;
-window.eval(bundle + '\n//# sourceURL=mappi3-dist-bundle.js');
+// The bundle is an ES module; jsdom evaluates it as a classic script, so stand in for import.meta
+// (only Vite's lazy-chunk helper uses it).
+const classic = bundle.replace(/import\.meta\.resolve\?/g, 'false?').replace(/import\.meta/g, '({url:"http://127.0.0.1:5179/assets/app.js",env:{}})').replace(/export\s*\{[^}]*\};?\s*$/, '');
+window.eval(classic + '\n//# sourceURL=mappi3-dist-bundle.js');
 await new Promise(r => window.setTimeout(r, 500));
 
 function norm(s) { return String(s || '').replace(/\s+/g, ' ').trim(); }
-function buttonsByText(text) { return [...window.document.querySelectorAll('button,a')].filter(el => norm(el.textContent).includes(text)); }
-const primaryBottomByTop = { Overview:'Home', Explore:'Search', Exercise:'Saved', Navigate:'Map', Survival:'Guide', Settings:'Settings' };
-const expectedBottomLabels = ['Home','Search','Saved','Map','Health','Guide','Settings'];
+function buttonsByText(text) {
+  // Page content first, so sub-tabs win over the header's page tabs with the same name (e.g. Weather).
+  const inMain = [...window.document.querySelectorAll('main button, main a')].filter(el => norm(el.textContent).includes(text));
+  return inMain.length ? inMain : [...window.document.querySelectorAll('button,a')].filter(el => norm(el.textContent).includes(text));
+}
+// Trail Station shell: page tabs in the header, and Home/Explore/Navigate/Health/More on phones.
+const stationTabLabel = { Overview:'Home', Explore:'Explore', Navigate:'Navigate', Weather:'Weather', Exercise:'Health', Adventure:'Adventure', Survival:'Guide', Camp:'Camp', Settings:'Settings' };
+const expectedBottomLabels = ['Home','Explore','Navigate','Health','More'];
 async function clickText(text) {
   const btn = buttonsByText(text)[0];
-  if (!btn) throw new Error(`Missing clickable text: ${text}`);
+  if (!btn) {
+    // Long tab sets put the rest in a "More…" dropdown.
+    const select = [...window.document.querySelectorAll('.hub-tabs-more select')].find(sel => [...sel.options].some(o => o.value === text));
+    if (select) {
+      const setter = Object.getOwnPropertyDescriptor(window.HTMLSelectElement.prototype, 'value').set;
+      setter.call(select, text);
+      select.dispatchEvent(new window.Event('change', { bubbles: true }));
+      await new Promise(r => window.setTimeout(r, 120));
+      return select;
+    }
+    throw new Error(`Missing clickable text: ${text}`);
+  }
   btn.dispatchEvent(new window.MouseEvent('click', { bubbles: true, cancelable: true }));
   await new Promise(r => window.setTimeout(r, 120));
   return btn;
 }
 async function openTopTab(top) {
-  const directBottom = [...window.document.querySelectorAll('.bottom-nav .nav-link')].find(btn => norm(btn.textContent) === (primaryBottomByTop[top] || top));
-  if (directBottom) {
-    directBottom.dispatchEvent(new window.MouseEvent('click', { bubbles: true, cancelable: true }));
-    await new Promise(r => window.setTimeout(r, 160));
-    return directBottom;
-  }
-  const menu = window.document.querySelector('.hamburger-button');
-  if (!menu) throw new Error('Missing hamburger navigation button');
-  menu.dispatchEvent(new window.MouseEvent('click', { bubbles: true, cancelable: true }));
-  await new Promise(r => window.setTimeout(r, 120));
-  const tabButton = [...window.document.querySelectorAll('.drawer-grid button')].find(btn => norm(btn.querySelector('strong')?.textContent || btn.textContent) === top);
-  if (!tabButton) throw new Error(`Missing hamburger top tab: ${top}`);
-  tabButton.dispatchEvent(new window.MouseEvent('click', { bubbles: true, cancelable: true }));
+  const label = stationTabLabel[top] || top;
+  const tab = [...window.document.querySelectorAll('.station-tabs button')].find(btn => norm(btn.textContent) === label);
+  if (!tab) throw new Error(`Missing station tab: ${label}`);
+  tab.dispatchEvent(new window.MouseEvent('click', { bubbles: true, cancelable: true }));
   await new Promise(r => window.setTimeout(r, 160));
-  return tabButton;
+  return tab;
 }
 async function assertLoads(label, expectedText) {
   await new Promise(r => window.setTimeout(r, 120));
@@ -102,13 +112,13 @@ async function assertLoads(label, expectedText) {
 
 const results = [];
 results.push(await assertLoads('Overview initial', 'Overview'));
-results.push(await assertLoads('Navigation shell', ['MapPI3 Trail OS','Home','Search','Saved','Map','Health','Guide','Settings']));
-const bottomLabels = [...window.document.querySelectorAll('.bottom-nav .nav-link')].map(btn => norm(btn.textContent));
+results.push(await assertLoads('Navigation shell', ['MAPPI3','Home','Explore','Navigate','Weather','Health','Guide','Settings']));
+const bottomLabels = [...window.document.querySelectorAll('.station-tabbar button')].map(btn => norm(btn.textContent));
 results.push({ label:'Bottom nav IA', ok: JSON.stringify(bottomLabels) === JSON.stringify(expectedBottomLabels), bottomLabels, snippet: bottomLabels.join(' | ') });
-for (const top of ['Explore','Navigate','Camp','Adventure','Exercise','Survival','Settings']) {
+for (const top of ['Explore','Navigate','Weather','Camp','Adventure','Exercise','Survival','Settings']) {
   failures.length = 0;
   await openTopTab(top);
-  results.push(await assertLoads(`Top tab: ${top}`, top === 'Navigate' ? ['Active hike navigation','Drive GPS','Return-to-Car + TrailNav','Detailed map intelligence','Guide AI'] : top === 'Camp' ? ['Camp','camp mode','Camp Plan','Games'] : top === 'Adventure' ? ['Adventure Timeline','Add event','mobile calm view','Replay + search'] : top === 'Survival' ? ['Survival + MapPI3new','Emergency Mode','Survival Trainer'] : top === 'Settings' ? ['Pi connection summary','Network','Hardware','Bluetooth','Sense HAT'] : top));
+  results.push(await assertLoads(`Top tab: ${top}`, top === 'Navigate' ? ['Active hike navigation','Drive GPS','Return-to-Car + TrailNav','Detailed map intelligence','Guide AI'] : top === 'Camp' ? ['Camp','camp mode','Camp Plan','Games'] : top === 'Adventure' ? ['Adventure Timeline','Add event','mobile calm view','Replay + search'] : top === 'Survival' ? ['Survival + MapPI3new','Emergency Mode','Survival Trainer'] : top === 'Settings' ? ['Pi connection summary','Network','Hardware','Bluetooth','Sense HAT'] : top === 'Weather' ? ['Next 48 hours','10 days','Weather Center'] : top === 'Exercise' ? ['Today','calories left','Exercise'] : top));
 }
 await openTopTab('Adventure');
 await clickText('Play replay');
