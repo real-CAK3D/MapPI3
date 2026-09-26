@@ -42,21 +42,28 @@ const onlineTileModes = {
     url: 'https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png',
     options: { maxZoom: 17, attribution: 'Map data &copy; OpenStreetMap contributors, SRTM | OpenTopoMap', crossOrigin: true, detectRetina: true }
   },
+  topo: {
+    label: 'Topo',
+    status: 'USGS topo map · works offline when the area is saved',
+    url: 'https://basemap.nationalmap.gov/arcgis/rest/services/USGSTopo/MapServer/tile/{z}/{y}/{x}',
+    options: { maxZoom: 19, maxNativeZoom: 16, attribution: 'USGS The National Map', crossOrigin: true }
+  },
+  // Satellite and hybrid use USGS imagery (public domain) so a saved area shows them offline.
   satellite: {
     label: 'Satellite',
-    status: 'live Esri satellite imagery',
-    url: 'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',
-    options: { maxZoom: 19, attribution: 'Tiles &copy; Esri', crossOrigin: true }
+    status: 'USGS satellite imagery · works offline when the area is saved',
+    url: 'https://basemap.nationalmap.gov/arcgis/rest/services/USGSImageryOnly/MapServer/tile/{z}/{y}/{x}',
+    options: { maxZoom: 19, maxNativeZoom: 16, attribution: 'USGS The National Map: imagery', crossOrigin: true }
   },
   hybrid: {
     label: 'Hybrid',
-    status: 'live satellite + trail overlay',
-    url: 'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',
-    options: { maxZoom: 19, attribution: 'Tiles &copy; Esri | OpenStreetMap overlay', crossOrigin: true }
+    status: 'USGS imagery with roads and names',
+    url: 'https://basemap.nationalmap.gov/arcgis/rest/services/USGSImageryTopo/MapServer/tile/{z}/{y}/{x}',
+    options: { maxZoom: 19, maxNativeZoom: 16, attribution: 'USGS The National Map', crossOrigin: true }
   }
 };
 
-export default function LiveLeafletMap({ trace = [], center = defaultCenter, active = false, route = null, waypoints = [], onMapClick = null, onWaypointMove = null, onViewChange = null, showCenterMarker = true, tilePath = '/tiles/{z}/{x}/{y}.png', tileMaxZoom = 18, tileLabel = 'offline Pi map tiles' }) {
+export default function LiveLeafletMap({ trace = [], center = defaultCenter, active = false, route = null, waypoints = [], onMapClick = null, onWaypointMove = null, onViewChange = null, showCenterMarker = true, tilePath = '/tiles/{z}/{x}/{y}.png', tileMaxZoom = 18, tileLabel = 'offline Pi map tiles', trailLines = null, accuracyM = null }) {
   const [tileStatus, setTileStatus] = useState('loading map tiles');
   const [mapMode, setMapMode] = useState(() => localStorage.getItem('mappi3.mapMode') || 'street');
   const [pitch3d, setPitch3d] = useState(() => localStorage.getItem('mappi3.mapPitch3d') === 'true');
@@ -64,7 +71,7 @@ export default function LiveLeafletMap({ trace = [], center = defaultCenter, act
   const mapRef = useRef(null);
   const containerRef = useRef(null);
   const tileRef = useRef({ activeLayer: null, overlayLayer: null, goodTiles: 0, switched: false, localTiles: null, modes: {} });
-  const layerRef = useRef({ marker: null, line: null, route: null, shadow: null, grade: null, segments: [], waypoints: [] });
+  const layerRef = useRef({ marker: null, line: null, route: null, shadow: null, grade: null, segments: [], waypoints: [], trails: null, accuracy: null });
   const routePoints = useMemo(() => routeToPoints(route), [route]);
   const routeMiles = useMemo(() => {
     const total = Number(route?.distanceMiles || route?.miles || 0);
@@ -117,10 +124,7 @@ export default function LiveLeafletMap({ trace = [], center = defaultCenter, act
     tileRef.current.activeLayer = nextLayer;
     if (nextLayer && !map.hasLayer(nextLayer)) nextLayer.addTo(map);
     if (tileRef.current.overlayLayer) { map.removeLayer(tileRef.current.overlayLayer); tileRef.current.overlayLayer = null; }
-    if (mapMode === 'hybrid') {
-      tileRef.current.overlayLayer = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { maxZoom: 19, opacity: 0.42, attribution: '&copy; OpenStreetMap contributors overlay', crossOrigin: true });
-      tileRef.current.overlayLayer.addTo(map);
-    }
+
     setTileStatus(isPiLocal && mapMode === 'street' ? 'offline Pi map tiles' : (onlineTileModes[mapMode]?.status || 'live map tiles'));
   }, [mapMode, pitch3d]);
 
@@ -213,6 +217,29 @@ export default function LiveLeafletMap({ trace = [], center = defaultCenter, act
     if (boundsPoints.length > 1) map.fitBounds(L.latLngBounds(boundsPoints), { padding: [24, 24], maxZoom: 17 });
     else map.setView(latest, 15);
   }, [points, tracePoints, routePoints, routeMiles, waypoints, center, active, onWaypointMove, route, showCenterMarker, pitch3d]);
+
+  // Real trail lines from OpenStreetMap for a saved area: thin dashed lines under the route.
+  useEffect(() => {
+    if (!mapRef.current) return;
+    if (layerRef.current.trails) { layerRef.current.trails.remove(); layerRef.current.trails = null; }
+    const ways = trailLines?.ways || [];
+    const water = trailLines?.water || [];
+    if (!ways.length && !water.length) return;
+    const group = L.layerGroup();
+    water.forEach(w => L.polyline(w.line.map(([lon, lat]) => [lat, lon]), { color: '#3d7f95', weight: w.kind === 'water' ? 1.5 : 2, opacity: 0.7, interactive: false }).addTo(group));
+    ways.forEach(w => L.polyline(w.line.map(([lon, lat]) => [lat, lon]), { color: w.kind === 'track' ? '#8a6420' : '#6b3f1d', weight: 2.2, opacity: 0.85, dashArray: '5 4' }).bindTooltip(w.name || (w.kind === 'track' ? 'Track' : 'Trail'), { sticky: true }).addTo(group));
+    group.addTo(mapRef.current);
+    group.eachLayer(l => l.bringToBack && l.bringToBack());
+    layerRef.current.trails = group;
+  }, [trailLines]);
+  // GPS accuracy circle around the live position.
+  useEffect(() => {
+    if (!mapRef.current) return;
+    if (layerRef.current.accuracy) { layerRef.current.accuracy.remove(); layerRef.current.accuracy = null; }
+    const last = points[points.length - 1];
+    if (!active || !accuracyM || !last) return;
+    layerRef.current.accuracy = L.circle(last, { radius: accuracyM, color: '#58a8ff', weight: 1, fillOpacity: 0.12, interactive: false }).addTo(mapRef.current);
+  }, [points, accuracyM, active]);
 
   const latestPoint = points[points.length - 1] || center;
   const gainLabel = Number(route?.elevationGainFt || route?.gainFt || 0) ? `${Number(route?.elevationGainFt || route?.gainFt || 0).toLocaleString()} ft gain` : 'elevation pending';

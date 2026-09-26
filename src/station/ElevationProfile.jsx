@@ -25,15 +25,16 @@ const kindLabel = { water: 'Water', view: 'View', camp: 'Camp', flag: 'Start / e
 const profileCache = new Map();
 
 export function useRouteProfile(route) {
-  const [profile, setProfile] = useState(() => (route?.id && profileCache.get(route.id)) || (route ? estimatedProfile(route) : null));
+  const key = route ? `${route.id}:${route.geometryRefined?.builtAt || 0}` : '';
+  const [profile, setProfile] = useState(() => (key && profileCache.get(key)) || (route ? estimatedProfile(route) : null));
   useEffect(() => {
     if (!route) { setProfile(null); return undefined; }
-    if (profileCache.has(route.id) && profileCache.get(route.id).source !== 'estimate-pending') { setProfile(profileCache.get(route.id)); return undefined; }
+    if (profileCache.has(key)) { setProfile(profileCache.get(key)); return undefined; }
     let cancelled = false;
     setProfile(estimatedProfile(route));
-    profileForRoute(route).then(p => { if (p && !cancelled) { profileCache.set(route.id, p); setProfile(p); } });
+    profileForRoute(route).then(p => { if (p && !cancelled) { profileCache.set(key, p); setProfile(p); } });
     return () => { cancelled = true; };
-  }, [route?.id]);
+  }, [key]);
   return profile;
 }
 

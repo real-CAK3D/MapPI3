@@ -8,6 +8,10 @@ const proxy = { '/api': { target: piApi, changeOrigin: true } };
 
 export default defineConfig({
   plugins: [react()],
+  // MapLibre's 3D worker is bundled as an ES module worker (see src/station/TerrainViews.jsx).
+  worker: { format: 'es' },
+  // In dev, load MapLibre as-is so it finds maplibre-gl-worker.mjs beside itself.
+  optimizeDeps: { exclude: ['maplibre-gl'] },
   server: {
     host: '0.0.0.0',
     proxy,
