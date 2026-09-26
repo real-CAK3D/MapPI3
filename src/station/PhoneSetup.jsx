@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { connectBle, disconnectBle, useBleLink } from './bleLink.js';
 
 // Phone setup: how this phone is connected, installing MapPI3 as an app, every permission it uses
 // (with a one-tap request), offline storage, and battery saving choices.
@@ -81,11 +82,23 @@ export default function PhoneSetup({ settings = {}, setSettings, piLive = null, 
         <label className="st-phone-row"><span>GPS source</span><select value={settings.gpsPreference || 'auto'} onChange={e => set({ gpsPreference: e.target.value })}><option value="auto">Phone first, MapPI3 backup</option><option value="pi">MapPI3 first (saves phone battery)</option><option value="phone">Phone only</option></select></label>
         <p className="muted">Battery saver turns off background effects, checks the MapPI3 less often, and uses the MapPI3 GPS instead of the phone's whenever it has a fix. The app always pauses its checks while the screen is off.</p>
       </div>
-      <div className="st-card">
-        <div className="st-label">Bluetooth link</div>
-        <p>{navigator.bluetooth ? 'This phone can talk to the MapPI3 over Bluetooth.' : 'This browser cannot use Bluetooth (iPhone browsers and Firefox do not). Wi-Fi stays the way in.'}</p>
-        <p className="muted">A Bluetooth link lets the phone read GPS, compass and battery from the MapPI3 with Wi-Fi off, using much less power. It needs a small update on the MapPI3, which is ready to install once you approve it.</p>
-      </div>
+      <BleCard />
     </div>
   </section>;
+}
+
+function BleCard() {
+  const ble = useBleLink();
+  const [pair, setPair] = useState('');
+  const openPairing = async () => { try { const r = await fetch('/api/command/ble-pair-window', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: '{}' }).then(x => x.json()); setPair(r.message || r.error || 'Done.'); } catch { setPair('Connect to the MapPI3 Wi-Fi once to open pairing.'); } };
+  return <div className="st-card">
+    <div className="st-label">Bluetooth link</div>
+    <p>{!navigator.bluetooth ? 'This browser cannot use Bluetooth (iPhone browsers and Firefox do not). Wi-Fi stays the way in.' : ble.status === 'connected' ? <strong>Connected over Bluetooth. GPS, compass and battery are coming in with Wi-Fi off.</strong> : 'This phone can link to the MapPI3 over Bluetooth.'}</p>
+    <p className="muted">The link uses very little power and works with the phone's Wi-Fi off or on another network. It is encrypted and only works with a phone you paired. First time: open pairing while on the MapPI3 Wi-Fi, then connect.</p>
+    {navigator.bluetooth && <div className="st-ble-actions">
+      <button type="button" className="ghost" onClick={openPairing}>Open pairing for 2 minutes</button>
+      {ble.status === 'connected' ? <button type="button" className="ghost" onClick={disconnectBle}>Disconnect</button> : <button type="button" className="primary" onClick={connectBle}>Connect over Bluetooth</button>}
+    </div>}
+    {(pair || ble.message) && <p className="st-phone-msg" aria-live="polite">{pair || ble.message}</p>}
+  </div>;
 }

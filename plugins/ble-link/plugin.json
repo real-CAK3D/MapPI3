@@ -1,0 +1,11 @@
+{
+  "id": "ble-link",
+  "name": "Bluetooth Phone Link",
+  "status": "ready",
+  "install": "install.sh",
+  "uninstall": "uninstall.sh",
+  "features": ["bleStatus", "bleHerbieEvents", "blePairWindow"],
+  "offline_safe": true,
+  "installed_marker": "/var/lib/mappi3/plugins/ble-link/installed.json",
+  "description": "Low-power Bluetooth LE link: a paired phone reads GPS, compass, battery and Herbie with Wi-Fi off. Encrypted, paired phones only; pairing opens for 2 minutes on request."
+}

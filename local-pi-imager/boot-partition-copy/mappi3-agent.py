@@ -18,7 +18,7 @@ PACMAN_EVENT_SEQ = 0
 BATTERY_LED_STATE = {'full_since': None}
 SENSE_FACE_STATE = {'last_accel': None, 'last_accel_at': 0.0, 'surprise_until': 0.0, 'still_since': 0.0}
 SENSE_MODES = ['compass','compass-arrow','compass-cardinal','rotation-test','liquid','pacman','battery','weather','fire','flashlight','sos','message','boot','sun','gps','clock','progress','beacon','stars','temp','humidity','pressure','avatar','level','custom','border','magic8','water','snake']
-ALLOWED = {'herbie-event', 'herbie-plans', 'status','restart-web','reboot','shutdown','update-app','gps-sample','toggle-hotspot','hotspot-on','connect-home-wifi','wifi-scan','wifi-save-network','wifi-connect-saved','network-status','tailscale-status','tailscale-login','remote-access-repair','sense-mode','calibrate','harden-hotspot','plugin-update','vnc-setup','vnc-disable','weather-refresh','noaa-refresh','hourly-online-refresh','online-maintenance','gps-diagnose','sense-diagnose','field-ai-verify','captive-setup','captive-disable','captive-status','gps-pps-setup','whisplay-test-popup','whisplay-input','whisplay-input-status','snake-trail-event','plugin-status','plugin-install','plugin-install-all','plugin-uninstall','notification-status','notification-test','notification-publish','notification-clear','notification-preferences','audio-tts-test','audio-ambient-test'}
+ALLOWED = {'herbie-event', 'herbie-plans', 'ble-pair-window', 'status','restart-web','reboot','shutdown','update-app','gps-sample','toggle-hotspot','hotspot-on','connect-home-wifi','wifi-scan','wifi-save-network','wifi-connect-saved','network-status','tailscale-status','tailscale-login','remote-access-repair','sense-mode','calibrate','harden-hotspot','plugin-update','vnc-setup','vnc-disable','weather-refresh','noaa-refresh','hourly-online-refresh','online-maintenance','gps-diagnose','sense-diagnose','field-ai-verify','captive-setup','captive-disable','captive-status','gps-pps-setup','whisplay-test-popup','whisplay-input','whisplay-input-status','snake-trail-event','plugin-status','plugin-install','plugin-install-all','plugin-uninstall','notification-status','notification-test','notification-publish','notification-clear','notification-preferences','audio-tts-test','audio-ambient-test'}
 SENSE_CACHE = {'ok': False, 'mode': 'compass', 'message': 'Sense HAT display loop starting', 'updated': 0, 'joystick': {'seq': 0, 'direction': '', 'pressed': False, 'updated': 0}}
 SENSE_LOCK = threading.Lock()
 TIMELINE_LOCK = threading.RLock()
@@ -3141,6 +3141,15 @@ def command(name, payload=None):
     if name=='gps-sample': return gps_sample()
     if name=='herbie-event': return herbie_event(payload)
     if name=='herbie-plans': return herbie_plans(payload)
+    if name=='ble-pair-window':
+        # Opens Bluetooth pairing for 2 minutes (read by the ble-link plugin service).
+        try:
+            pathlib.Path('/run/mappi3').mkdir(parents=True, exist_ok=True)
+            pathlib.Path('/run/mappi3/ble-pair-window').write_text(str(time.time()))
+            running = sh('systemctl is-active mappi3-ble-link.service 2>&1', timeout=5).get('output','').strip() == 'active'
+            return {'ok': True, 'seconds': 120, 'service_running': running, 'message': 'Pairing open for 2 minutes. Pair "MapPI3" from the phone now.' if running else 'Bluetooth phone link extra is not installed yet.'}
+        except Exception as e:
+            return {'ok': False, 'error': str(e)}
     if name=='sense-mode': return set_sense_mode(payload.get('mode') or payload.get('sense_mode') or payload.get('orientationMode') or 'compass', payload)
     if name=='calibrate': return calibrate(payload.get('target') or 'all')
     if name=='harden-hotspot': return harden_hotspot()

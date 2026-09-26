@@ -565,3 +565,4 @@ body.station .tp-grid button{padding:0;border:1px solid var(--st-line)!important
 .st-phone-msg{background:var(--st-panel);border-radius:8px;padding:8px 10px;font-size:14px}
 .st-link{font-weight:700;color:inherit;text-decoration:underline}
 @media (max-width:900px){.st-phone-grid{grid-template-columns:1fr}}
+.st-ble-actions{display:flex;flex-wrap:wrap;gap:8px}.st-ble-actions button{min-height:44px;width:auto!important;padding:0 14px}

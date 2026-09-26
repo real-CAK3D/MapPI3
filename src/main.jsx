@@ -31,6 +31,7 @@ import DailyHealth from './station/DailyHealth.jsx';
 import StationSky from './station/StationSky.jsx';
 import TrailPhotos from './station/TrailPhotos.jsx';
 import PhoneSetup from './station/PhoneSetup.jsx';
+import { bleHerbieEvent, bleSnapshot, useBleLink } from './station/bleLink.js';
 import OfflineAreaPanel, { useAreaOsm } from './station/OfflineAreaPanel.jsx';
 import { nearestTrail } from './station/offlineArea.js';
 const TerrainViewsLazy = React.lazy(() => import('./station/TerrainViews.jsx'));
@@ -177,7 +178,7 @@ function postHerbieEvent(event, ttl = 30, reason = '', minGapMs = 8000) {
   if (now - (herbieEventLastSent[event] || 0) < minGapMs) return;
   herbieEventLastSent[event] = now;
   logHerbieEvent(event, reason);
-  fetch('/api/command/herbie-event', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ event, ttl, reason }) }).catch(() => {});
+  fetch('/api/command/herbie-event', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ event, ttl, reason }) }).then(r => { if (!r.ok) throw new Error('no pi'); }).catch(() => bleHerbieEvent(event, ttl, reason));
 }
 // Storm severity from the next 6 hours of forecast: hail thunderstorms > thunderstorms > heavy-rain likely.
 function stormSeverity(conditions = {}) {
@@ -1575,6 +1576,8 @@ function Navigate({ recording, setRecording, elapsed, progress, setProgress, res
           setNavStatus(g ? `Waiting for a GPS fix · MapPI3 GPS sees ${g.satellites || 0} satellite(s). Find open sky; your position will not move until there is a real fix.` : 'No GPS available. Open MapPI3 on the Pi hotspot, or use HTTPS so the phone can share its GPS.');
         }
       } catch {
+        const b = bleSnapshot()?.gps;
+        if (!cancelled && b?.fix && Number.isFinite(Number(b.lat))) { lastPiFix = Date.now(); if (preferPi) stopPhone(); accept({ lat: Number(b.lat), lon: Number(b.lon), accuracy: Number(b.eph) || null, t: Date.now(), source: 'pi' }, 'pi', `MapPI3 GPS over Bluetooth · ${b.satellites ?? '?'} satellites`); return; }
         if (!cancelled && !lastPhoneFix) { setGpsSource('waiting'); setNavStatus('No GPS available. Open MapPI3 on the Pi hotspot, or use HTTPS so the phone can share its GPS.'); }
       }
     };
@@ -3083,7 +3086,10 @@ function App() {
   });
   const [navOpen, setNavOpen] = useState(false);
   const [exerciseSub, setExerciseSub] = useState('Today');
-  const piLive = usePiLive();
+  const piLiveWifi = usePiLive();
+  // Over Bluetooth when the MapPI3 is not reachable on Wi-Fi.
+  const ble = useBleLink();
+  const piLive = piLiveWifi || (ble.status === 'connected' && Date.now() - ble.at < 30000 ? ble.data : null);
   const setActiveTab = (tab) => setActiveTabRaw(normalizeTopTab(tab));
   const secure = typeof window !== 'undefined' && window.isSecureContext;
   const [originPoint, setOriginPoint] = useState(() => loadStored('mappi3.originPoint', localHome));
