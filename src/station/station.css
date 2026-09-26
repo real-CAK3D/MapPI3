@@ -414,3 +414,23 @@ body.station .dh-btns button,body.station .dh-more{width:auto!important;flex:0 0
 .st-extras-grid div{background:var(--st-panel);border:1px solid var(--st-line);border-radius:8px;padding:8px 10px;display:flex;flex-direction:column;border-left:4px solid var(--st-line)}
 .st-extras-grid div.on{border-left-color:var(--st-good)}
 .st-extras-grid span{font-size:12.5px;color:var(--st-muted)}
+/* Hike-day timeline inside the briefing */
+.st-daytl{grid-column:1/-1;padding:6px 8px 4px;overflow-x:auto}
+.st-daytl-track{position:relative;height:92px;min-width:620px;margin:0 40px}
+.st-daytl-track::before{content:"";position:absolute;left:0;right:0;top:44px;height:3px;background:rgba(255,255,255,.25);border-radius:2px}
+.st-daytl-stop{position:absolute;top:0;transform:translateX(-50%);display:flex;flex-direction:column;align-items:center;text-align:center;width:110px}
+.st-daytl-stop i{position:absolute;top:38px;width:14px;height:14px;border-radius:50%;background:var(--st-cream);border:3px solid var(--st-forest)}
+.st-daytl-stop strong{font:500 13px var(--st-mono);color:var(--st-cream);margin-top:12px}
+.st-daytl-stop span{font-size:12px;color:var(--st-cream);opacity:.85;margin-top:30px;line-height:1.2}
+.st-daytl-stop.low strong{margin-top:60px;order:2}.st-daytl-stop.low span{margin-top:0;order:3}
+.st-daytl-stop.k-start i,.st-daytl-stop.k-finish i{background:var(--st-brass)}
+.st-daytl-stop.k-sunset i{background:#e0842f}
+.st-daytl-stop.k-drive i{background:transparent;border-color:var(--st-cream)}
+.st-daytl-now{position:absolute;top:26px;bottom:26px;width:2px;background:#fff;transform:translateX(-1px)}
+.st-daytl-now span{position:absolute;top:-16px;left:-12px;font:700 10px var(--st-mono);color:#fff;text-transform:uppercase}
+.st-daytl{overflow-y:hidden;scrollbar-width:thin;scrollbar-color:rgba(255,255,255,.3) transparent;border-top:1px solid rgba(255,255,255,.14);margin-top:4px;padding-top:12px}
+.st-daytl-track{height:108px}
+.st-daytl-stop.low strong{margin-top:62px}
+.st-daytl{overflow-y:hidden;scrollbar-width:thin;scrollbar-color:rgba(255,255,255,.3) transparent;border-top:1px solid rgba(255,255,255,.14);margin-top:4px;padding-top:12px}
+.st-daytl-track{height:108px}
+.st-daytl-stop.low strong{margin-top:62px}

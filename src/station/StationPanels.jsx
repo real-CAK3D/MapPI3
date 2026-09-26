@@ -64,8 +64,34 @@ export function HerbieBriefingCard({ faceUrl, name, calendar, route, hikeDate, s
       <div><strong>{b.plan.startBy.toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' })}</strong><span>start hiking</span></div>
       <div><strong>{sunset.toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' })}</strong><span>sunset</span></div>
     </div>}
+    {b.plan?.startBy && route && <HikeDayTimeline route={route} plan={b.plan} sunset={sunset} now={now} />}
   </section>;
 }
 
 // Live navigation facts shared with Hey Herbie (set by the Navigate page on each GPS fix).
 export const navShared = { offTrailM: undefined, accuracyM: undefined, updatedAt: 0 };
+
+// The hike day on one line: leave home, trailhead, each stop at the planned pace, finish, sunset.
+function HikeDayTimeline({ route, plan, sunset, now }) {
+  const miles = Number(route.distanceMiles || route.miles || 0);
+  const hours = plan.hikeHours || 3;
+  const at = mile => new Date(plan.startBy.getTime() + (mile / Math.max(0.1, miles)) * hours * 3600000);
+  const wps = [...(route.waypoints || [])].filter(w => Number(w.mile) > 0 && Number(w.mile) < miles).sort((a, b) => Number(a.mile) - Number(b.mile));
+  const finish = new Date(plan.startBy.getTime() + hours * 3600000);
+  const stops = [
+    ...(plan.leaveBy ? [{ t: plan.leaveBy, name: 'Leave home', kind: 'drive' }] : []),
+    { t: plan.startBy, name: 'Trailhead', kind: 'start' },
+    ...wps.map(w => ({ t: at(Number(w.mile)), name: String(w.name || '').replace(route.name, '').replace(/^[\s·:-]+/, '').trim() || w.name, kind: 'stop', mile: Number(w.mile) })),
+    { t: finish, name: 'Finish', kind: 'finish', mile: miles },
+    ...(sunset ? [{ t: sunset, name: 'Sunset', kind: 'sunset' }] : [])
+  ].sort((a, b) => a.t - b.t);
+  const t0 = stops[0].t.getTime(), t1 = stops[stops.length - 1].t.getTime();
+  const X = t => `${(((t.getTime() - t0) / Math.max(1, t1 - t0)) * 100).toFixed(2)}%`;
+  const nowIn = now.getTime() >= t0 && now.getTime() <= t1;
+  return <div className="st-daytl" aria-label="Hike day timeline">
+    <div className="st-daytl-track">
+      {stops.map((s, i) => <div key={i} className={`st-daytl-stop k-${s.kind} ${i % 2 ? 'low' : ''}`} style={{ left: X(s.t) }}><i /><strong>{s.t.toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' })}</strong><span>{s.name}{s.mile ? ` · mi ${s.mile}` : ''}</span></div>)}
+      {nowIn && <div className="st-daytl-now" style={{ left: X(now) }}><span>now</span></div>}
+    </div>
+  </div>;
+}
