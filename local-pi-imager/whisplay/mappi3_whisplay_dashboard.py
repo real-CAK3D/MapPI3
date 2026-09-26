@@ -662,6 +662,7 @@ def draw_herbie_mood():
     d.rounded_rectangle((6, 6, W-7, H-7), 12, outline=accent, width=2, fill=(12, 24, 34))
     d.text((14, 12), 'Herbie', font=F_TITLE, fill=accent)
     blinking = int(time.time() * 2) % 29 == 0
+    publish_face(herbie_gaze_ref(mood), state['reason'], 'herbie')
     p = herbie_asset_path_from_ref(blink_face(mood) if blinking else herbie_gaze_ref(mood))
     if p:
         try:
@@ -682,6 +683,22 @@ def draw_herbie_mood():
     d.text((16, H-23), 'offline mood loop · press next', font=F_TINY, fill=DIM)
     return img
 
+# Tell the MapPI3 app which Herbie face is on screen, so the phone/web app shows the same one.
+# Sent in the background (never blocks drawing), only when the face changes or every 4 s.
+_now_sent = {'ref': None, 'at': 0.0}
+def publish_face(ref, reason, page_name):
+    ref = str(ref or '')
+    if not ref:
+        return
+    if '/' not in ref:
+        ref = 'expressions/' + ref
+    t = time.time()
+    if ref == _now_sent['ref'] and t - _now_sent['at'] < 4.0:
+        return
+    _now_sent.update(ref=ref, at=t)
+    heading = LIVE_HEADING[0] if compass_eligible(ref) else None
+    threading.Thread(target=post_command, args=('herbie-now', {'ref': ref, 'reason': str(reason or '')[:60], 'page': page_name, 'heading': heading}), kwargs={'timeout': 0.8}, daemon=True).start()
+
 def render():
     if phone_input_until and time.time() < phone_input_until: return render_phone_input()
     if popup_event and time.time() < popup_until: return render_popup(popup_event)
@@ -689,7 +706,9 @@ def render():
     if title == 'Buddy Home':
         mood, caption = whisplay_herbie_state()
         blinking = int(time.time() * 2) % 23 == 0
-        return draw_face(mood if blinking else herbie_gaze_ref(mood), caption, blink=blinking)
+        shown = mood if blinking else herbie_gaze_ref(mood)
+        publish_face(herbie_gaze_ref(mood), caption, 'home')
+        return draw_face(shown, caption, blink=blinking)
     if title == 'Herbie': return draw_herbie_mood()
     if title == 'Field Kit': return draw_card('Field Kit/Power', lines_fieldkit(), GREEN)
     if title == 'Compass+Level': return draw_card('Compass + Level', lines_compass(), BLUE)
@@ -699,11 +718,9 @@ def render():
 
 def main():
     global running, page, popup_until
-    hw = create_hw('whisplay-mappi3-dashboard', 'MapPI3 Dash', 'M3', 60)
+    hw = create_hw('whisplay-mappi3-dashboard', 'MapPI3 Dash', 'M3', 100)
     def next_page():
         global page, popup_until
-        if page % len(PAGES) == 0:
-            post_command('whisplay-test-popup', {'label':'Dash button popup test', 'display_seconds':3.2}, timeout=0.8)
         page += 1; popup_until = 0.0; show(hw, render())
     def exit_req():
         global running
@@ -714,8 +731,11 @@ def main():
         while running:
             time.sleep(0.12); active = page % len(PAGES)
             phone_changed = poll_phone_input()
-            if phone_changed or poll_popup() or (phone_input_until and time.time() < phone_input_until) or (popup_event and time.time() < popup_until) or active in (0,1,2,3,4,5):
-                if active == 0 and time.time() - last < 0.32: continue
+            overlay = phone_changed or poll_popup() or (phone_input_until and time.time() < phone_input_until) or (popup_event and time.time() < popup_until)
+            # Herbie pages animate (~3 fps); the text cards only need a refresh each second. Every
+            # redraw also queries the agent, so this keeps CPU and battery use down on the Zero.
+            gap = 0.32 if active in (0, 1) else 1.0
+            if overlay or time.time() - last >= gap:
                 last = time.time(); show(hw, render())
     finally:
         hw.cleanup()

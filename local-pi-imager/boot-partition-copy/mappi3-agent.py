@@ -18,7 +18,7 @@ PACMAN_EVENT_SEQ = 0
 BATTERY_LED_STATE = {'full_since': None}
 SENSE_FACE_STATE = {'last_accel': None, 'last_accel_at': 0.0, 'surprise_until': 0.0, 'still_since': 0.0}
 SENSE_MODES = ['compass','compass-arrow','compass-cardinal','rotation-test','liquid','pacman','battery','weather','fire','flashlight','sos','message','boot','sun','gps','clock','progress','beacon','stars','temp','humidity','pressure','avatar','level','custom','border','magic8','water','snake']
-ALLOWED = {'herbie-event', 'herbie-plans', 'ble-pair-window', 'status','restart-web','reboot','shutdown','update-app','gps-sample','toggle-hotspot','hotspot-on','connect-home-wifi','wifi-scan','wifi-save-network','wifi-connect-saved','network-status','tailscale-status','tailscale-login','remote-access-repair','sense-mode','calibrate','harden-hotspot','plugin-update','vnc-setup','vnc-disable','weather-refresh','noaa-refresh','hourly-online-refresh','online-maintenance','gps-diagnose','sense-diagnose','field-ai-verify','captive-setup','captive-disable','captive-status','gps-pps-setup','whisplay-test-popup','whisplay-input','whisplay-input-status','snake-trail-event','plugin-status','plugin-install','plugin-install-all','plugin-uninstall','notification-status','notification-test','notification-publish','notification-clear','notification-preferences','audio-tts-test','audio-ambient-test'}
+ALLOWED = {'herbie-event', 'herbie-now', 'herbie-plans', 'ble-pair-window', 'status','restart-web','reboot','shutdown','update-app','gps-sample','toggle-hotspot','hotspot-on','connect-home-wifi','wifi-scan','wifi-save-network','wifi-connect-saved','network-status','tailscale-status','tailscale-login','remote-access-repair','sense-mode','calibrate','harden-hotspot','plugin-update','vnc-setup','vnc-disable','weather-refresh','noaa-refresh','hourly-online-refresh','online-maintenance','gps-diagnose','sense-diagnose','field-ai-verify','captive-setup','captive-disable','captive-status','gps-pps-setup','whisplay-test-popup','whisplay-input','whisplay-input-status','snake-trail-event','plugin-status','plugin-install','plugin-install-all','plugin-uninstall','notification-status','notification-test','notification-publish','notification-clear','notification-preferences','audio-tts-test','audio-ambient-test'}
 SENSE_CACHE = {'ok': False, 'mode': 'compass', 'message': 'Sense HAT display loop starting', 'updated': 0, 'joystick': {'seq': 0, 'direction': '', 'pressed': False, 'updated': 0}}
 SENSE_LOCK = threading.Lock()
 TIMELINE_LOCK = threading.RLock()
@@ -1988,7 +1988,7 @@ def status():
     sense_text=sense.get('message') or ('sense-hat ok' if sense.get('ok') else 'sense-hat unavailable')
     if sense.get('ok') and sense.get('orientation'):
         o=sense.get('orientation') or {}; sense_text='sense-hat ok roll={:.1f} pitch={:.1f} yaw={:.1f} mode={}'.format(o.get('roll',0),o.get('pitch',0),o.get('yaw',0),sense.get('mode','compass'))
-    return {'ok': True, 'host': socket.gethostname(), 'port': PORT, 'https': https_status(), 'ip': ip, 'connection_mode': mode, **w, 'gps_device': gps.get('device'), 'gps': gps, 'sense_hat': sense_text, 'sense': sense, 'audio': audio_status(), 'power': power_status(), 'system': system_stats(), 'state': read_state(), 'herbie_calendar': herbie_calendar_now(), 'time': time.time()}
+    return {'ok': True, 'host': socket.gethostname(), 'port': PORT, 'https': https_status(), 'ip': ip, 'connection_mode': mode, **w, 'gps_device': gps.get('device'), 'gps': gps, 'sense_hat': sense_text, 'sense': sense, 'audio': audio_status(), 'power': power_status(), 'system': system_stats(), 'state': read_state(), 'herbie_calendar': herbie_calendar_now(), 'herbie_now': herbie_now(), 'time': time.time()}
 
 def _nmcli_lines(args, timeout=5):
     out = sh_cached('nmcli -t ' + args + ' 2>/dev/null || true', timeout=timeout).get('output','')
@@ -2622,6 +2622,20 @@ def herbie_event(payload=None):
     write_state(st)
     return {'ok': True, 'event': st['herbie_event']}
 
+# What the Whisplay is showing right now, reported by the dashboard, so the phone/web app can show
+# exactly the same Herbie. Kept in memory only; stale after 12 s (dashboard not on a Herbie page).
+HERBIE_NOW = {}
+def herbie_now_set(payload=None):
+    payload = payload or {}
+    ref = str(payload.get('ref') or '').strip()
+    if not ref or len(ref) > 80 or '..' in ref or any(c not in 'abcdefghijklmnopqrstuvwxyz0123456789/_-' for c in ref):
+        return {'ok': False, 'error': 'bad face ref'}
+    HERBIE_NOW.clear()
+    HERBIE_NOW.update({'ref': ref, 'reason': str(payload.get('reason') or '')[:60], 'page': str(payload.get('page') or '')[:20], 'heading': payload.get('heading') if isinstance(payload.get('heading'), (int, float)) else None, 'at': time.time()})
+    return {'ok': True}
+def herbie_now():
+    return dict(HERBIE_NOW) if HERBIE_NOW and time.time() - HERBIE_NOW.get('at', 0) <= 12 else None
+
 def whisplay_display_status(payload=None):
     health=_whisplay_rpc('health.ping')
     apps=_whisplay_rpc('app.list')
@@ -3140,6 +3154,7 @@ def command(name, payload=None):
     if name=='hotspot-on': return hotspot_on(payload)
     if name=='gps-sample': return gps_sample()
     if name=='herbie-event': return herbie_event(payload)
+    if name=='herbie-now': return herbie_now_set(payload)
     if name=='herbie-plans': return herbie_plans(payload)
     if name=='ble-pair-window':
         # Opens Bluetooth pairing for 2 minutes (read by the ble-link plugin service).
@@ -4025,6 +4040,7 @@ class Handler(http.server.SimpleHTTPRequestHandler):
         if self.path.startswith('/api/bluetooth/pan/status'): self.json_response(bluetooth_pan_status()); return
         if self.path.startswith('/api/bluetooth/status'): self.json_response(bluetooth_status()); return
         if self.path.startswith('/api/time/status'): self.json_response(time_sync_status()); return
+        if self.path.startswith('/api/herbie/now'): self.json_response({'ok': True, 'now': herbie_now()}); return
         if self.path.startswith('/api/whisplay/display/status'): self.json_response(whisplay_display_status()); return
         if self.path.startswith('/api/whisplay/ai/status'): self.json_response(whisplay_ai_status()); return
         if self.path.startswith('/api/whisplay/input'):

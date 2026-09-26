@@ -1,0 +1,13 @@
+{
+  "app_id": "whisplay-mappi3-dashboard",
+  "display_name": "MapPI3 Dash",
+  "icon": "M3",
+  "launch_command": "python3 mappi3_whisplay_dashboard.py",
+  "cwd": "/opt/whisplay/Whisplay-main/example",
+  "env": { "WHISPLAY_APP_ID": "whisplay-mappi3-dashboard" },
+  "exit_gesture": "quad_click",
+  "priority": 100,
+  "use_daemon_default_log": true,
+  "persist": true,
+  "disable_esc_exit_key": false
+}
