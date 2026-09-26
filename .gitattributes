@@ -1,1 +1,5 @@
 public/map-packs/**/*.rgb565pack filter=lfs diff=lfs merge=lfs -text
+# Scripts and Pi-side code must keep Unix line endings even on a Windows checkout.
+*.sh text eol=lf
+*.py text eol=lf
+*.service text eol=lf
