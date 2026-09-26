@@ -1,0 +1,347 @@
+/* Trail Station theme: Ranger Station colors by day, Night HUD amber after dark.
+   Loaded after styles.css. Shell classes (station-*, st-*) always apply; the overrides for the
+   older page styles apply under body.station so plugin themes can still opt out. */
+:root{
+  --st-bg:#e4ded0;--st-paper:#fffdf6;--st-panel:#f3eee2;--st-ink:#1d2a20;--st-muted:#56604f;--st-line:#d6cdb6;
+  --st-forest:#24412c;--st-forest-2:#2f5238;--st-brass:#b8893a;--st-brass-ink:#1d2a20;--st-cream:#f3e7c4;
+  --st-good:#3f8a55;--st-warn:#a86a12;--st-bad:#b14a2f;--st-water:#3d7f95;--st-map:#1f3325;--st-chip:#24412c;--st-chip-ink:#f3e7c4;
+  --st-shadow:0 1px 2px rgba(40,35,20,.08),0 6px 18px rgba(40,35,20,.07);
+  --st-display:'Bitter',Georgia,serif;--st-body:'Source Sans 3','Segoe UI',system-ui,sans-serif;--st-mono:'IBM Plex Mono',ui-monospace,Consolas,monospace;
+  --st-header-h:64px;
+}
+body.station.night{
+  --st-bg:#08090a;--st-paper:#111417;--st-panel:#0c0f11;--st-ink:#ffcf8a;--st-muted:#c2a274;--st-line:#3a2c14;
+  --st-forest:#050607;--st-forest-2:#1c150b;--st-brass:#ffb347;--st-brass-ink:#1a1206;--st-cream:#ffb347;
+  --st-good:#ffb347;--st-warn:#ffd08a;--st-bad:#ff6b4a;--st-water:#5aa0b3;--st-map:#07090a;--st-chip:#2a1c08;--st-chip-ink:#ffcf8a;
+  --st-shadow:0 0 0 1px rgba(255,179,71,.06);
+  color-scheme:dark;
+}
+body.station{background:var(--st-bg);color:var(--st-ink);font-family:var(--st-body);font-size:16px;color-scheme:light}
+
+/* ---------- shell ---------- */
+.station-header{position:sticky;top:env(safe-area-inset-top,0px);z-index:1200;height:var(--st-header-h);display:flex;align-items:center;gap:14px;padding:0 max(16px,env(safe-area-inset-left,0px));background:var(--st-forest);color:var(--st-cream);border-bottom:5px solid var(--st-brass);font-family:var(--st-body)}
+.station-logo{background:none;border:0;color:inherit;display:flex;flex-direction:column;align-items:flex-start;padding:4px 6px;cursor:pointer;line-height:1}
+.station-logo strong{font-family:var(--st-display);font-weight:800;font-size:21px;letter-spacing:.05em}
+.station-logo small{font-size:11px;opacity:.75;margin-top:3px;font-family:var(--st-mono)}
+.station-tabs{display:flex;gap:2px;overflow-x:auto;scrollbar-width:none;min-width:0;flex:1}
+.station-tabs::-webkit-scrollbar{display:none}
+.station-tabs button{background:none;border:0;color:var(--st-cream);font:600 15px var(--st-body);padding:9px 12px;border-radius:7px;white-space:nowrap;cursor:pointer;opacity:.88}
+.station-tabs button:hover{background:rgba(255,255,255,.08);opacity:1}
+.station-tabs button.on{background:rgba(255,255,255,.16);opacity:1}
+body.station.night .station-tabs button.on{background:var(--st-chip);outline:1px solid var(--st-brass)}
+.station-actions{display:flex;align-items:center;gap:8px;margin-left:auto;flex-shrink:0}
+.station-pi{display:flex;align-items:center;gap:6px;font:600 13px var(--st-mono);opacity:.85}
+.station-pi i{width:9px;height:9px;border-radius:50%;background:#c0472f;display:block}
+.station-pi.on i{background:#6fd38a;box-shadow:0 0 0 3px rgba(111,211,138,.25)}
+.station-round,.station-avatar{width:40px;height:40px;border-radius:50%;display:grid;place-items:center;border:1px solid rgba(255,255,255,.28);background:transparent;color:var(--st-cream);cursor:pointer;padding:0}
+.station-avatar{background:var(--st-brass);color:var(--st-forest);border:0;font:700 14px var(--st-body)}
+body.station.night .station-avatar{color:#1a1206}
+.station-mic{display:flex;align-items:center;gap:7px;height:40px;padding:0 15px;border-radius:999px;border:1px solid var(--st-brass);background:transparent;color:var(--st-cream);font:600 14px var(--st-body);cursor:pointer}
+.station-mic:hover,.station-round:hover{background:rgba(255,255,255,.08)}
+.station-tabbar{display:none}
+.station-sheet-backdrop{position:fixed;inset:0;z-index:1400;background:rgba(10,14,10,.45);display:flex;align-items:flex-end}
+.station-sheet{width:100%;background:var(--st-paper);color:var(--st-ink);border-radius:22px 22px 0 0;padding:10px 16px calc(84px + env(safe-area-inset-bottom,0px));box-shadow:0 -10px 40px rgba(0,0,0,.25)}
+.station-sheet-grip{width:44px;height:5px;border-radius:3px;background:var(--st-line);margin:0 auto 14px}
+.station-sheet-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
+.station-sheet-grid button,.station-sheet-row button{display:flex;flex-direction:column;align-items:center;gap:6px;padding:14px 6px;border-radius:14px;border:1px solid var(--st-line);background:var(--st-panel);color:var(--st-ink);font:600 14px var(--st-body);cursor:pointer}
+.station-sheet-grid button.on{background:var(--st-chip);color:var(--st-chip-ink);border-color:var(--st-chip)}
+.station-sheet-row{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:12px}
+.station-sheet-row button{flex-direction:row;justify-content:center;padding:12px}
+@media (max-width:1180px){.station-mic span{display:none}.station-mic{width:40px;padding:0;justify-content:center}}
+@media (max-width:900px){
+  .station-tabs,.station-pi{display:none}
+  .station-header{height:56px}
+  :root{--st-header-h:56px}
+  .station-mic span{display:inline}.station-mic{width:auto;padding:0 13px}
+  .station-tabbar{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));position:fixed;left:0;right:0;bottom:0;z-index:1300;background:var(--st-forest);border-top:3px solid var(--st-brass);padding:4px 4px calc(6px + env(safe-area-inset-bottom,0px))}
+  .station-tabbar button{display:flex;flex-direction:column;align-items:center;gap:3px;background:none;border:0;color:var(--st-cream);opacity:.72;font:600 12px var(--st-body);padding:8px 0;min-height:52px;cursor:pointer}
+  .station-tabbar button.on{opacity:1;color:var(--st-brass)}
+}
+@media (max-width:420px){.station-logo small{display:none}.station-mic span{display:none}.station-mic{width:40px;padding:0;justify-content:center}}
+
+/* ---------- page frame ---------- */
+body.station .app-shell{width:min(1480px,100%);padding:18px 16px 40px}
+@media (max-width:900px){body.station .app-shell{padding:12px 12px calc(96px + env(safe-area-inset-bottom,0px))}}
+body.station .bottom-nav,body.station .app-nav-header,body.station .mappi3-goo-filter{display:none!important}
+
+/* ---------- old page styles, re-dressed ---------- */
+body.station :is(h1,h2,h3){font-family:var(--st-display);color:var(--st-ink);letter-spacing:0}
+body.station h1{font-size:30px;font-weight:800}
+body.station h2{font-size:22px;font-weight:700}
+body.station h3{font-size:18px;font-weight:700}
+body.station :is(.muted,.top-line p,.live-row span,.route-card p,.kit-card p,.sync-panel p,.tip-card p,small){color:var(--st-muted)}
+body.station :is(.panel,.hero-card,.map-card,.mini-panel,.overview-card,.overview-hero,.tip-card,.pi-settings-card,.plugin-pack-card,.health-card,.kit-card,.nature-card,.field-card,.route-card,.saved-row,.completion-card,.nav-instrument-card,.hike-brief-card,.pack-weight-card,.map-legend-card,.overview-mountain-board,.fieldkit-strip,.survival-panel,.camp-plan-panel){background:var(--st-paper);color:var(--st-ink);border:1px solid var(--st-line);border-radius:12px;box-shadow:var(--st-shadow);backdrop-filter:none;-webkit-backdrop-filter:none}
+body.station :is(.panel .panel,.panel .overview-card,.panel .overview-hero,.panel .tip-card,.panel .plugin-pack-card,.panel .kit-card,.panel .health-card,.panel .route-card,.panel .completion-card,.panel .fieldkit-strip,.panel .overview-mountain-board){background:var(--st-panel);box-shadow:none}
+body.station :is(.quick-stats div,.route-summary div,.nav-grid div,.fieldkit-item,.stat,.pi-stat-grid > *,.exercise-mini-grid > *){background:var(--st-panel);border:1px solid var(--st-line);color:var(--st-ink);border-radius:10px}
+body.station :is(.quick-stats span,.route-summary span,.nav-grid span,.fieldkit-item span,.fieldkit-item small){color:var(--st-muted)}
+body.station :is(.quick-stats strong,.route-summary strong,.nav-grid strong,.fieldkit-item strong){font-family:var(--st-mono);font-weight:500;color:var(--st-ink)}
+body.station .pill{background:var(--st-panel);border:1px solid var(--st-line);color:var(--st-ink);font-weight:600}
+body.station .pill.online{background:var(--st-chip);color:var(--st-chip-ink);border-color:var(--st-chip)}
+body.station .pill.warn{background:#f5e3b8;color:#6b4a0e;border-color:#e2c47f}
+body.station .pill.recording{background:var(--st-bad);color:#fff;border-color:var(--st-bad);box-shadow:none}
+body.station.night .pill.warn{background:#2a1c08;color:var(--st-warn);border-color:#5a3d15}
+body.station button{font-family:var(--st-body)}
+body.station :is(button.primary,.primary){background:var(--st-brass);color:var(--st-brass-ink);border:0;font-weight:700;border-radius:8px;box-shadow:none}
+body.station :is(button.ghost,.ghost){background:transparent;color:var(--st-ink);border:1.5px solid var(--st-forest-2);border-radius:8px;font-weight:600;box-shadow:none}
+body.station.night :is(button.ghost,.ghost){border-color:#5a3d15}
+body.station :is(button.danger,.danger:is(button)){background:var(--st-bad);color:#fff;border:0}
+body.station :is(button.primary,button.ghost):hover{filter:brightness(1.05)}
+body.station :is(button,a,input,select,textarea,[tabindex]):focus-visible{outline:2px solid var(--st-brass);outline-offset:2px}
+body.station :is(input,select,textarea){background:var(--st-paper);color:var(--st-ink);border:1px solid var(--st-line);border-radius:8px;font-family:var(--st-body)}
+body.station :is(input,select,textarea)::placeholder{color:var(--st-muted)}
+body.station .search-box{background:var(--st-paper);border:1px solid var(--st-line);color:var(--st-ink)}
+body.station .search-box input{background:transparent;border:0;color:var(--st-ink)}
+body.station .alert{border-radius:10px;border:1px solid var(--st-line);background:var(--st-panel);color:var(--st-ink)}
+body.station .alert.info{background:#e6eef0;border-color:#b9ccd2;color:#1d3a44}
+body.station .alert.warn{background:#f7ead0;border-color:#e2c47f;color:#5a3d0a}
+body.station .alert.danger{background:#f6dcd5;border-color:#e0a595;color:#6b1d0c}
+body.station.night .alert.info{background:#0f1a1d;border-color:#1f3a42;color:#9fd0dc}
+body.station.night .alert.warn{background:#241807;border-color:#5a3d15;color:var(--st-warn)}
+body.station.night .alert.danger{background:#2a0c05;border-color:#6b2410;color:var(--st-bad)}
+body.station :is(.hub-tabs,.nav-dock-tabs){background:var(--st-paper);border:1px solid var(--st-line);border-radius:10px;padding:4px;gap:3px;box-shadow:none;position:sticky;top:calc(var(--st-header-h) + 5px + env(safe-area-inset-top,0px));z-index:40}
+body.station .subtab-link{background:transparent;color:var(--st-ink);border:0;border-radius:7px;font-weight:600;box-shadow:none}
+body.station .subtab-link.active{background:var(--st-chip);color:var(--st-chip-ink)}
+body.station .settings-nav button{background:var(--st-panel);color:var(--st-ink);border:1px solid var(--st-line)}
+body.station .settings-nav button.active{background:var(--st-chip);color:var(--st-chip-ink);border-color:var(--st-chip)}
+body.station .field-line span,body.station .setting-row span{color:var(--st-muted)}
+body.station table{color:var(--st-ink)}
+body.station :is(th,td){border-color:var(--st-line)}
+body.station .completion-bar,body.station .mini-progress{background:var(--st-line)}
+body.station .completion-bar span,body.station .mini-progress span{background:var(--st-brass)}
+body.station .tag-row .pill{font-weight:500}
+body.station .leaflet-shell{border-radius:10px;overflow:hidden;border:1px solid var(--st-line)}
+body.station .map-mode-dock button{background:rgba(20,30,22,.78);color:#f3e7c4;border:1px solid rgba(255,255,255,.18)}
+body.station .map-mode-dock button.active{background:var(--st-brass);color:#1d2a20}
+/* The Adventure Globe keeps its own look inside its frame. */
+body.station .adventure-globe-atlas,body.station .adventure-globe-atlas *{font-family:inherit}
+
+/* ---------- shared station pieces ---------- */
+.st-label{font:700 12px var(--st-body);letter-spacing:.1em;text-transform:uppercase;color:var(--st-muted)}
+.st-eyebrow{font:700 12px var(--st-body);letter-spacing:.12em;text-transform:uppercase;color:var(--st-brass)}
+body.station:not(.night) .st-eyebrow{color:#8a6420}
+.st-card{background:var(--st-paper);border:1px solid var(--st-line);border-radius:12px;padding:14px;box-shadow:var(--st-shadow);color:var(--st-ink)}
+.st-tiles{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:6px}
+.st-tile{background:var(--st-panel);border:1px solid var(--st-line);border-radius:8px;padding:8px 10px;display:flex;flex-direction:column;min-width:0}
+.st-tile strong{font:500 16px var(--st-mono);color:var(--st-ink);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.st-tile span{font:600 11px var(--st-body);letter-spacing:.08em;text-transform:uppercase;color:var(--st-muted)}
+.st-tile.good strong{color:var(--st-good)}.st-tile.warn strong{color:var(--st-warn)}.st-tile.bad strong{color:var(--st-bad)}
+.st-tile.wide{grid-column:1/-1}
+.st-log{display:flex;flex-direction:column;gap:5px;font-size:13.5px}
+.st-log div{display:flex;gap:8px;padding:6px 8px;background:var(--st-panel);border-radius:6px;border:1px solid var(--st-line)}
+.st-log b{font:500 12.5px var(--st-mono);color:var(--st-brass);white-space:nowrap}
+body.station:not(.night) .st-log b{color:#8a6420}
+
+/* Herbie's briefing */
+.st-briefing{display:grid;grid-template-columns:auto minmax(0,1fr) auto;gap:22px;align-items:center;background:var(--st-forest);color:var(--st-cream);border-radius:14px;padding:18px 24px;border:4px solid var(--st-brass);margin-bottom:16px}
+.st-briefing-face{width:170px;aspect-ratio:300/261;background:rgba(255,255,255,.07);border-radius:50%;display:grid;place-items:center}
+.st-briefing-face img{width:92%;height:auto}
+.st-briefing-copy h2{color:var(--st-cream)!important;font-size:32px;margin:4px 0 6px}
+.st-briefing-copy p{margin:0 0 4px;font-size:17px;line-height:1.45;max-width:62ch;color:var(--st-cream)}
+.st-briefing .st-eyebrow{color:var(--st-brass)!important}
+.st-briefing-actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
+.st-briefing-actions button{min-height:44px;padding:0 18px}
+.st-briefing-actions .ghost{border-color:var(--st-cream)!important;color:var(--st-cream)!important}
+.st-briefing-plan{display:flex;flex-direction:column;gap:8px;min-width:150px}
+.st-briefing-plan div{background:rgba(255,255,255,.08);border-radius:10px;padding:8px 12px;display:flex;flex-direction:column}
+.st-briefing-plan strong{font:500 22px var(--st-mono)}
+.st-briefing-plan span{font:600 11px var(--st-body);letter-spacing:.1em;text-transform:uppercase;opacity:.8}
+@media (max-width:900px){.st-briefing{grid-template-columns:1fr;padding:16px;gap:12px}.st-briefing-face{width:130px;justify-self:center}.st-briefing-copy h2{font-size:26px}.st-briefing-plan{flex-direction:row}.st-briefing-plan div{flex:1}.st-briefing-plan strong{font-size:17px}}
+
+/* Elevation profile */
+.elev-profile{position:relative;width:100%;min-width:0}
+.elev-profile.empty{padding:18px;text-align:center}
+.elev-head{display:flex;justify-content:space-between;gap:10px;align-items:baseline;margin-bottom:2px;flex-wrap:wrap}
+.elev-head .label{font:700 12px var(--st-body);letter-spacing:.08em;text-transform:uppercase;color:var(--st-muted)}
+.elev-src{font:12px var(--st-mono);color:var(--st-muted)}
+.elev-profile svg{display:block;overflow:visible}
+.elev-area{fill:#e6dcc3}.elev-line{fill:none;stroke:#8a7d5d;stroke-width:1.6;stroke-dasharray:5 4}
+.elev-done{fill:none;stroke:var(--st-brass);stroke-width:3.5;stroke-linecap:round;stroke-linejoin:round}
+.elev-steep{fill:var(--st-bad);opacity:.09}
+.elev-grid{stroke:var(--st-line);stroke-width:1}
+.elev-tick{font:11px var(--st-mono);fill:var(--st-muted)}
+.elev-mark line{stroke:currentColor;opacity:.4}
+.elev-mark circle{fill:currentColor;stroke:var(--st-paper);stroke-width:2}
+.elev-mark.k-water{color:var(--st-water)}.elev-mark.k-view{color:var(--st-brass)}.elev-mark.k-camp{color:#7b5ea7}.elev-mark.k-flag{color:var(--st-ink)}.elev-mark.k-hazard{color:var(--st-bad)}.elev-mark.k-wp{color:var(--st-muted)}
+.elev-label{font:600 10.5px var(--st-mono);fill:var(--st-muted)}
+.elev-label.k-water{fill:var(--st-water)}.elev-label.k-view{fill:#8a6420}.elev-label.k-camp{fill:#7b5ea7}
+body.station.night .elev-area{fill:#1c150b}body.station.night .elev-line{stroke:#6b4a1e}body.station.night .elev-label.k-view{fill:var(--st-brass)}
+.elev-you line{stroke:var(--st-ink);stroke-width:1.4}
+.elev-you circle{fill:var(--st-brass);stroke:var(--st-paper);stroke-width:3}
+.elev-you rect{fill:var(--st-ink)}
+.elev-you text{font:700 11px var(--st-mono);fill:var(--st-paper)}
+.elev-hover line{stroke:var(--st-ink);stroke-dasharray:3 3;opacity:.6}
+.elev-hover text{font:600 12px var(--st-mono);fill:var(--st-ink)}
+.elev-next{display:flex;align-items:center;gap:8px;font-size:14px;margin-top:4px}
+.elev-next img{width:40px;height:auto}
+
+/* ---------- Navigate station layout ---------- */
+.st-station{display:grid;grid-template-columns:290px minmax(0,1fr) 290px;gap:14px;align-items:start}
+.st-station > aside{position:sticky;top:calc(var(--st-header-h) + 16px);display:flex;flex-direction:column;gap:12px;max-height:calc(100vh - var(--st-header-h) - 32px);overflow:auto;scrollbar-width:thin}
+.st-center{min-width:0;display:flex;flex-direction:column;gap:12px}
+.st-side-search{display:flex;align-items:center;gap:8px;background:var(--st-panel);border:1px solid var(--st-line);border-radius:8px;padding:0 10px;height:42px;color:var(--st-muted)}
+.st-side-search input{border:0!important;background:transparent!important;outline:0;flex:1;min-width:0;font-size:15px;color:var(--st-ink)}
+.st-route-list{display:flex;flex-direction:column;max-height:260px;overflow:auto;margin:0 -14px}
+.st-route-list button{display:flex;flex-direction:column;align-items:flex-start;gap:2px;text-align:left;background:none;border:0;border-bottom:1px solid var(--st-line);padding:9px 14px;color:var(--st-ink);cursor:pointer;font:inherit}
+.st-route-list button strong{font-size:15px}
+.st-route-list button span{font:12px var(--st-mono);color:var(--st-muted)}
+.st-route-list button.on{background:var(--st-chip);color:var(--st-chip-ink);border-left:4px solid var(--st-brass)}
+.st-route-list button.on span{color:var(--st-chip-ink);opacity:.85}
+.st-wps{display:flex;flex-direction:column}
+.st-wps div{display:flex;justify-content:space-between;gap:8px;padding:6px 0;border-bottom:1px dashed var(--st-line);font-size:14px}
+.st-wps div span:last-child{font-family:var(--st-mono)}
+.st-wps .k-water span:first-child{color:var(--st-water);font-weight:700}
+.st-wps .k-view span:first-child{color:#8a6420;font-weight:700}
+body.station.night .st-wps .k-view span:first-child{color:var(--st-brass)}
+.st-wps .k-camp span:first-child{color:#7b5ea7;font-weight:700}
+.st-wps .next{font-weight:700}
+.st-wps .next span:first-child::after{content:' · next';font-size:11px;letter-spacing:.06em;color:var(--st-brass);text-transform:uppercase}
+.st-wps .passed{opacity:.55}
+.st-precision{display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:10px;border:1px solid var(--st-line);background:var(--st-panel)}
+.st-precision i{width:12px;height:12px;border-radius:50%;background:var(--st-good);flex-shrink:0;box-shadow:0 0 0 4px rgba(63,138,85,.2)}
+.st-precision.off{background:var(--st-bad);color:#fff;border-color:var(--st-bad)}
+.st-precision.off i{background:#fff;box-shadow:none}
+.st-precision.idle i{background:var(--st-muted);box-shadow:none}
+body.station.night .st-precision.off{background:#2a0c05;color:var(--st-bad)}
+.st-precision strong{display:block}
+.st-precision small{font-family:var(--st-mono);color:inherit;opacity:.85}
+.st-herbie-mini{display:flex;flex-direction:column;align-items:center;text-align:center;gap:4px}
+.st-herbie-mini img{width:100%;max-width:210px;height:auto}
+.st-herbie-mini p{margin:0;font-size:14px}
+@media (max-width:1280px){.st-station{grid-template-columns:minmax(0,1fr) 280px}.st-station > aside.st-left{grid-column:1/-1;position:static;max-height:none;display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr))}}
+@media (max-width:900px){.st-station{grid-template-columns:minmax(0,1fr)}.st-station > aside{position:static;max-height:none}.st-station > aside.st-right{order:3}.st-station > aside.st-left{order:2}}
+
+/* ---------- Weather page ---------- */
+.wx-page{display:flex;flex-direction:column;gap:14px}
+.wx-now{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.4fr);gap:18px;align-items:center}
+.wx-now-main{display:flex;align-items:center;gap:16px}
+.wx-now-main .weather-animation{width:110px;height:110px;flex-shrink:0}
+.wx-temp-now{font:800 56px/1 var(--st-display);color:var(--st-ink)}
+.wx-cond{font-size:17px;color:var(--st-muted);margin-top:4px}
+.wx-now-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px}
+.wx-now-grid div{background:var(--st-panel);border:1px solid var(--st-line);border-radius:8px;padding:8px 10px;display:flex;flex-direction:column}
+.wx-now-grid strong{font:500 17px var(--st-mono)}
+.wx-now-grid span{font:600 11px var(--st-body);letter-spacing:.06em;text-transform:uppercase;color:var(--st-muted)}
+.wx-source{grid-column:1/-1;font:12.5px var(--st-mono);color:var(--st-muted)}
+.wx-row{display:grid;grid-template-columns:minmax(0,1.3fr) minmax(0,1fr);gap:14px}
+.wx-hike h3{margin:6px 0 2px}
+.wx-window{margin-top:10px;background:var(--st-chip);color:var(--st-chip-ink);border-radius:10px;padding:10px 14px;display:flex;flex-direction:column;gap:2px}
+.wx-window span{font-size:14px;opacity:.9}
+.wx-hpa{font:500 34px var(--st-mono);margin:6px 0}
+.wx-hpa small{font-size:15px;color:var(--st-muted)}
+.wx-chart-wrap{overflow-x:auto}
+.wx-chart{width:100%;min-width:560px;height:auto;display:block;margin-top:6px}
+.wx-grid{stroke:var(--st-line)}.wx-tick{font:12px var(--st-mono);fill:var(--st-muted)}
+.wx-rain{fill:var(--st-water);opacity:.35}.wx-temp{fill:none;stroke:var(--st-brass);stroke-width:3;stroke-linejoin:round}
+.wx-hover{stroke:var(--st-ink);stroke-dasharray:3 3;opacity:.5}.wx-dot{fill:var(--st-brass);stroke:var(--st-paper);stroke-width:2}
+.wx-readout{font-size:14px;min-height:22px;margin-top:4px}
+.wx-days{display:flex;flex-direction:column;margin-top:6px}
+.wx-day{display:grid;grid-template-columns:minmax(110px,1fr) 32px 48px 40px 120px 40px;gap:8px;align-items:center;padding:8px 4px;border-bottom:1px solid var(--st-line);font-variant-numeric:tabular-nums}
+.wx-day.hike{background:var(--st-panel);font-weight:700;border-radius:6px}
+.wx-day-rain{color:var(--st-water);font:13px var(--st-mono)}.wx-day-lo{color:var(--st-muted);text-align:right}
+.wx-day-bar{position:relative;height:6px;background:var(--st-line);border-radius:3px;width:120px}
+.wx-day-bar i{position:absolute;top:0;height:6px;border-radius:3px;background:linear-gradient(90deg,var(--st-water),var(--st-brass))}
+.wx-legacy{background:var(--st-paper);border:1px solid var(--st-line);border-radius:12px;padding:10px 14px}
+.wx-legacy summary{cursor:pointer;font-weight:700;padding:4px 0}
+@media (max-width:900px){.wx-now,.wx-row{grid-template-columns:1fr}.wx-now-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.wx-day{grid-template-columns:minmax(80px,1fr) 26px 40px 34px 70px 34px;gap:5px}.wx-day-bar{width:70px}}
+
+/* ---------- Hey Herbie ---------- */
+.hh-backdrop{position:fixed;inset:0;z-index:1500;background:rgba(10,14,10,.5);display:flex;align-items:flex-end;justify-content:flex-end;padding:16px}
+.hh-panel{width:min(440px,100%);max-height:min(640px,calc(100vh - 32px));background:var(--st-paper);color:var(--st-ink);border:1px solid var(--st-line);border-radius:16px;box-shadow:0 20px 60px rgba(0,0,0,.35);display:flex;flex-direction:column;overflow:hidden;font-family:var(--st-body)}
+.hh-head{display:flex;align-items:center;gap:10px;padding:12px 14px;background:var(--st-forest);color:var(--st-cream);border-bottom:4px solid var(--st-brass)}
+.hh-head img{width:64px;height:auto}
+.hh-head h2{margin:0;color:var(--st-cream)!important;font-size:20px}
+.hh-head p{margin:0;font-size:13px;opacity:.85}
+.hh-head button{margin-left:auto;border-color:var(--st-cream)!important;color:var(--st-cream)!important}
+.hh-log{flex:1;overflow:auto;padding:12px 14px;display:flex;flex-direction:column;gap:8px;min-height:160px}
+.hh-msg{max-width:88%;padding:8px 12px;border-radius:14px;font-size:15px;line-height:1.4}
+.hh-msg.herbie{align-self:flex-start;background:var(--st-panel);border:1px solid var(--st-line);border-bottom-left-radius:3px}
+.hh-msg.me{align-self:flex-end;background:var(--st-chip);color:var(--st-chip-ink);border-bottom-right-radius:3px}
+.hh-quick{display:flex;gap:6px;overflow-x:auto;padding:0 14px 8px;scrollbar-width:none}
+.hh-quick button{flex-shrink:0;border:1px solid var(--st-line);background:var(--st-panel);color:var(--st-ink);border-radius:999px;padding:7px 12px;font:600 13px var(--st-body);cursor:pointer}
+.hh-input{display:flex;gap:6px;padding:10px 14px;border-top:1px solid var(--st-line)}
+.hh-input input{flex:1;min-width:0;height:44px;padding:0 12px;font-size:16px}
+.hh-input button{height:44px;padding:0 16px}
+.hh-mic{width:44px;padding:0!important;display:grid;place-items:center;border-radius:8px;border:1.5px solid var(--st-forest-2);background:transparent;color:var(--st-ink);cursor:pointer}
+.hh-mic.on{background:var(--st-bad);color:#fff;border-color:var(--st-bad)}
+.hh-toggle{display:flex;gap:8px;align-items:center;padding:0 14px 12px;font-size:13.5px;color:var(--st-muted)}
+.sr-only{position:absolute!important;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+@media (max-width:900px){.hh-backdrop{padding:0;align-items:flex-end}.hh-panel{width:100%;max-height:85vh;border-radius:18px 18px 0 0}}
+
+/* ---------- specificity fixes over the older dock styles ---------- */
+body.station .hub-tabs.nav-dock-tabs .subtab-link,body.station .hub-tabs button{min-width:0;min-height:40px;border-radius:7px;padding:8px 13px;border:0;background:transparent;color:var(--st-ink);font-weight:600;letter-spacing:0;box-shadow:none;flex:0 0 auto}
+body.station .hub-tabs.nav-dock-tabs .subtab-link.active,body.station .hub-tabs button.active{background:var(--st-chip);color:var(--st-chip-ink);box-shadow:none;border:0}
+body.station .hub-tabs.nav-dock-tabs .subtab-link::before,body.station .hub-tabs.nav-dock-tabs .subtab-link::after{display:none}
+body.station .hub-tabs{margin-inline:0;backdrop-filter:none}
+body.station .st-side-search input,body.station .st-side-search input:focus{background:transparent;border:0;box-shadow:none;height:40px;padding:0;color:var(--st-ink)}
+.st-tile strong{font-size:15px}
+body.station :is(.settings-nav,.hub-tabs,.weather-tabs,.sense-mode-grid,.account-picker,.stepper-track,.tabs-grid,.game-tabs) button.active{background:var(--st-chip)!important;color:var(--st-chip-ink)!important;text-shadow:none!important;border-color:var(--st-chip)}
+body.station :is(.weather-tabs,.sense-mode-grid,.account-picker,.tabs-grid,.game-tabs) button{background:var(--st-panel);color:var(--st-ink);border:1px solid var(--st-line)}
+/* Night: dim, amber-tinted map tiles so the screen doesn't blow out night vision. */
+body.station.night .leaflet-tile-pane{filter:invert(1) hue-rotate(180deg) brightness(.78) sepia(.45) saturate(1.2) contrast(.95)}
+body.station.night .leaflet-container{background:#07090a}
+.st-briefing-actions button{width:auto!important;flex:0 0 auto}
+body.station .wx-now-grid strong,body.station .wx-now-grid span{color:var(--st-ink)}body.station .wx-now-grid span{color:var(--st-muted)}
+
+/* Point the old "readable" theme variables at the station palette. */
+body.station{--theme-readable-text:var(--st-ink);--theme-readable-bg:var(--st-paper);--theme-readable-border:var(--st-line);--theme-readable-muted:var(--st-muted);--theme-readable-chip:var(--st-panel);--theme-readable-input-bg:var(--st-paper);--theme-readable-input-text:var(--st-ink);--theme-readable-strong:var(--st-ink)}
+/* Shell buttons must never pick up older button colors. */
+body.station .station-tabs button,body.station .station-tabbar button,body.station .station-mic,body.station .station-round{color:var(--st-cream)!important}
+body.station .station-tabbar button.on{color:var(--st-brass)!important}
+body.station .station-avatar{color:var(--st-forest)!important}
+body.station.night .station-avatar{color:#1a1206!important}
+body.station .station-sheet-grid button,body.station .station-sheet-row button{color:var(--st-ink)!important}
+body.station .station-sheet-grid button.on{color:var(--st-chip-ink)!important}
+body.station :is(.settings-nav,.hub-tabs) button:not(.active){background:transparent!important;color:var(--st-ink)!important}
+body.station .settings-nav button:not(.active){background:var(--st-panel)!important}
+body.station .map-mode-dock button{color:#f3e7c4!important}
+body.station .map-mode-dock button.active{color:#1d2a20!important}
+body.station .st-route-list button{color:var(--st-ink)!important}
+body.station .st-route-list button.on{color:var(--st-chip-ink)!important}
+body.station .hh-quick button,body.station .hh-mic{color:var(--st-ink)!important}
+body.station .hh-mic.on{color:#fff!important}
+body.station .station-logo{color:var(--st-cream)!important}
+body.station .elevation-chip,body.station .mappi3-elevation-badge{background:rgba(20,30,22,.85)!important;color:#f3e7c4!important;border:1px solid rgba(255,255,255,.2)}
+body.station .elevation-chip *,body.station .mappi3-elevation-badge *{color:#f3e7c4!important}
+body.station .map-fallback-label{background:rgba(20,30,22,.8);color:#f3e7c4}
+.station-tabbar button{min-width:0;overflow:hidden}
+.st-precision small{font-family:var(--st-body)}
+
+/* Dark instrument zones: widgets designed dark (timeline, globe, sensor displays, games) keep their
+   look inside a forest panel. The station tokens are re-pointed so everything inside stays readable. */
+body.station :is(.adventure-timeline-screen,.adventure-travel-atlas,.sense-hat-simulator,.professional-sensor-displays,.mini-games-arcade,.sky-screen,.live-hike-charts,.hike-calendar-card){
+  --st-paper:#1a2c20;--st-panel:#213728;--st-ink:#eef3e6;--st-muted:#b7c6b0;--st-line:#34503b;--st-chip:#b8893a;--st-chip-ink:#1d2a20;
+  --theme-readable-text:#eef3e6;--theme-readable-bg:#1a2c20;--theme-readable-border:#34503b;--theme-readable-muted:#b7c6b0;--theme-readable-chip:#213728;--theme-readable-input-bg:#213728;--theme-readable-input-text:#eef3e6;--theme-readable-strong:#fff;
+  background:#16261b!important;color:#eef3e6;border-color:#2f4c37!important
+}
+body.station.night :is(.adventure-timeline-screen,.adventure-travel-atlas,.sense-hat-simulator,.professional-sensor-displays,.mini-games-arcade,.sky-screen,.live-hike-charts,.hike-calendar-card){--st-paper:#111417;--st-panel:#0c0f11;--st-ink:#ffcf8a;--st-muted:#c2a274;--st-line:#3a2c14;background:#0b0d0e!important}
+body.station :is(.adventure-timeline-screen,.adventure-travel-atlas) :is(h1,h2,h3,strong){color:var(--st-ink)}
+body.station :is(.adventure-timeline-screen,.adventure-travel-atlas) button:not(.primary):not(.active){color:var(--st-ink)}
+/* Plain Stat blocks outside a stats grid get a tile. */
+body.station .stat{display:flex;flex-direction:column;gap:2px;padding:10px 12px}
+body.station .stat strong{font:500 18px var(--st-mono);color:var(--st-ink)}
+body.station .stat span{font-size:12px;color:var(--st-muted)}
+/* Buttons with no class otherwise get the browser's grey default. */
+body.station button:not([class]){background:var(--st-panel);color:var(--st-ink);border:1px solid var(--st-line);border-radius:8px;padding:8px 12px;font:600 14px var(--st-body);min-height:40px;cursor:pointer}
+body.station button:not([class]):hover{border-color:var(--st-brass)}
+/* Shell areas are dark-on-forest: point the "strong/readable" colors at cream there. */
+.station-header,.station-tabbar,.st-briefing{--theme-readable-strong:var(--st-cream);--theme-readable-text:var(--st-cream)}
+body.station .https-note{background:#e6eef0;border-color:#b9ccd2;color:#1d3a44}
+body.station .https-note code{background:#1d3a44;color:#fff}
+body.station.night .https-note{background:#0f1a1d;border-color:#1f3a42;color:#9fd0dc}
+
+/* ---------- contrast fixes from the page audit ---------- */
+body.station :is(.settings-nav,.hub-tabs,.weather-tabs,.sense-mode-grid,.account-picker,.stepper-track,.tabs-grid,.game-tabs) button:not(.active){background:var(--st-panel)!important;color:var(--st-ink)!important;border:1px solid var(--st-line)}
+body.station .hub-tabs button:not(.active){background:transparent!important;border:0}
+body.station :is(button.ghost.danger,.ghost.danger){background:transparent!important;color:var(--st-bad)!important;border:1.5px solid var(--st-bad)!important}
+body.station :is(.pill.online,.st-route-list button.on,.subtab-link.active,.hub-tabs button.active,.wx-window,.hh-msg.me,.settings-nav button.active,.station-sheet-grid button.on) :is(strong,b,span,small,em){color:inherit!important}
+body.station :is(.adventure-timeline-screen,.adventure-travel-atlas,.sense-hat-simulator,.professional-sensor-displays,.mini-games-arcade,.sky-screen,.auth-card,.live-hike-charts,.hike-calendar-card){--st-good:#8fd49f;--st-warn:#f2c46d;--st-water:#7cc4d8;--st-bad:#ff8a70}
+body.station .auth-card{--st-paper:#1a2c20;--st-panel:#213728;--st-ink:#eef3e6;--st-muted:#b7c6b0;--st-line:#34503b;--theme-readable-text:#eef3e6;--theme-readable-muted:#b7c6b0;--theme-readable-strong:#fff;color:#eef3e6}
+body.station .adventure-travel-atlas .muted{color:var(--st-muted)!important}
+body.station :is(.adventure-timeline-screen,.adventure-travel-atlas) button.active{color:#1d2a20!important}
+body.station .live-hike-charts{border-radius:12px;padding:12px}
+body.station .hike-calendar-card{border-radius:12px;padding:12px}
+body.station .timeline-pin.active,body.station .timeline-pin.active *{color:#1d2a20!important}
+body.station.night .timeline-pin.active,body.station.night .timeline-pin.active *{color:#1a1206!important}
+body.station .hike-calendar-card :is(p,.time){color:var(--st-ink)!important}
+body.station.night .hike-calendar-card :is(p,.time){color:var(--st-ink)!important}
+body.station button,body.station .pill{text-shadow:none!important}
