@@ -345,3 +345,30 @@ body.station.night .timeline-pin.active,body.station.night .timeline-pin.active 
 body.station .hike-calendar-card :is(p,.time){color:var(--st-ink)!important}
 body.station.night .hike-calendar-card :is(p,.time){color:var(--st-ink)!important}
 body.station button,body.station .pill{text-shadow:none!important}
+
+/* ---------- Looks: seasonal / live weather / forest (day palettes; night stays amber) ---------- */
+.st-ambient{position:fixed;inset:0;z-index:0;pointer-events:none}
+.st-forest{position:fixed;left:0;right:0;bottom:0;width:100%;height:24vh;z-index:0;pointer-events:none}
+.st-forest-back{fill:var(--st-forest);opacity:.12}.st-forest-front{fill:var(--st-forest);opacity:.2}
+body.station.night .st-forest-back{fill:#3a2c14;opacity:.35}body.station.night .st-forest-front{fill:#2a1c08;opacity:.6}
+body.station .app-shell{position:relative;z-index:1}
+body.station:not(.night)[data-station-style="seasonal"][data-season="spring"]{--st-bg:#e2e7d4;--st-forest:#2f5a36;--st-forest-2:#3d6c45;--st-chip:#2f5a36;--st-brass:#b98a3e;--st-cream:#f1ecd2}
+body.station:not(.night)[data-station-style="seasonal"][data-season="summer"]{--st-bg:#e4dfc8;--st-forest:#1f4a3c;--st-forest-2:#2b5e4c;--st-chip:#1f4a3c;--st-brass:#cf8f22}
+body.station:not(.night)[data-station-style="seasonal"][data-season="autumn"]{--st-bg:#e9dccb;--st-forest:#4b2f1d;--st-forest-2:#6a4228;--st-chip:#4b2f1d;--st-brass:#c8641e;--st-cream:#f6e3c6;--st-line:#dccab0}
+body.station:not(.night)[data-station-style="seasonal"][data-season="winter"]{--st-bg:#dfe5e8;--st-forest:#26394a;--st-forest-2:#34506a;--st-chip:#26394a;--st-brass:#7fa7bf;--st-brass-ink:#12202a;--st-cream:#e8f0f4;--st-line:#c9d3d8;--st-panel:#eef2f3;--st-paper:#fbfcfc}
+body.station:not(.night)[data-station-style="weather"][data-weather-mood="rain"]{--st-bg:#d6dde0;--st-forest:#2b4552;--st-forest-2:#375868;--st-chip:#2b4552;--st-cream:#e6eef1;--st-line:#c6d0d3}
+body.station:not(.night)[data-station-style="weather"][data-weather-mood="storm"]{--st-bg:#cfd0d6;--st-forest:#2a2c3c;--st-forest-2:#3a3d52;--st-chip:#2a2c3c;--st-cream:#e9e6f0;--st-brass:#d9a441}
+body.station:not(.night)[data-station-style="weather"][data-weather-mood="snow"]{--st-bg:#e8eef1;--st-forest:#35516b;--st-forest-2:#44657f;--st-chip:#35516b;--st-cream:#eef4f8;--st-brass:#7fa7bf;--st-brass-ink:#12202a}
+body.station:not(.night)[data-station-style="weather"][data-weather-mood="fog"]{--st-bg:#e1e2de;--st-forest:#46524a;--st-forest-2:#56645a;--st-chip:#46524a}
+body.station:not(.night)[data-station-style="weather"][data-weather-mood="sun"]{--st-bg:#eee3c6;--st-forest:#3a4d23;--st-forest-2:#4a6230;--st-chip:#3a4d23;--st-brass:#d69a2c}
+body.station:not(.night)[data-station-style="forest"]{--st-bg:#dde3d0}
+/* Look picker */
+.st-look{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;margin-top:10px}
+.st-look button{display:flex;flex-direction:column;align-items:flex-start;gap:4px;text-align:left;padding:12px;border-radius:10px;border:1.5px solid var(--st-line)!important;background:var(--st-panel)!important;color:var(--st-ink)!important;cursor:pointer;min-height:92px}
+.st-look button.on{border-color:var(--st-brass)!important;box-shadow:0 0 0 3px color-mix(in srgb,var(--st-brass) 30%,transparent)}
+.st-look button strong{font:700 16px var(--st-display)}
+.st-look button span{font-size:13px;color:var(--st-muted)}
+.st-look-swatch{display:flex;gap:4px}.st-look-swatch i{width:18px;height:18px;border-radius:50%;display:block;border:1px solid rgba(0,0,0,.12)}
+.st-look-row{display:flex;flex-wrap:wrap;gap:16px;align-items:center;margin-top:12px}
+.st-look-row label{display:flex;gap:8px;align-items:center}
+@media (max-width:700px){.st-look{grid-template-columns:repeat(2,minmax(0,1fr))}}
