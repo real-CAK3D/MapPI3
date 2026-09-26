@@ -61,7 +61,19 @@ export function workoutActive(w, kg) {
   if (Number.isFinite(Number(w?.activeCalories))) return Number(w.activeCalories);
   return workoutKcal({ kg, type: w?.type, minutes: w?.minutes, intensity: w?.intensity });
 }
-export const trailActive = (t, kg) => hikeKcal({ kg, miles: Number(t?.miles || t?.distanceMiles || 0), gainFt: Number(t?.gainFt || t?.elevationGainFt || 0) });
+// Walked distance from the GPS track when it is plausible (jitter and detours can inflate a track);
+// otherwise the planned distance.
+export const trailMiles = t => { const plan = Number(t?.miles || t?.distanceMiles || 0), track = Number(t?.trackMiles || 0); return track && (!plan || (track >= plan * 0.75 && track <= plan * 1.3)) ? track : plan; };
+export const trailActive = (t, kg) => hikeKcal({ kg, miles: trailMiles(t), gainFt: Number(t?.gainFt || t?.elevationGainFt || 0) });
+// An overnight hike splits across its two days: the way in on the start day, the way out on the finish day.
+export function trailActiveOn(t, kg, key, dayKeyOf) {
+  const done = t?.completedAt ? dayKeyOf(Number(t.completedAt)) : null;
+  const began = t?.startedAt ? dayKeyOf(Number(t.startedAt)) : done;
+  if (!done || (key !== done && key !== began)) return 0;
+  if (began === done || t.gainInFt == null) return key === done ? trailActive(t, kg) : 0;
+  const half = trailMiles(t) / 2;
+  return hikeKcal({ kg, miles: half, gainFt: Number(key === began ? t.gainInFt : t.gainOutFt) || 0 });
+}
 
 const dayKey = d => new Date(d).toLocaleDateString('en-CA');
 const stamp = x => Number(x?.endedAt || x?.savedAt || x?.at || x?.createdAt || x?.completedAt || 0);
@@ -70,7 +82,7 @@ const stamp = x => Number(x?.endedAt || x?.savedAt || x?.at || x?.createdAt || x
 export function dayTotals(key, { hiker = {}, healthHistory = [], savedWalks = [], workoutLog = [], completedTrails = [], vitals = [] }, today = dayKey(Date.now())) {
   const kg = kgOf(hiker);
   const on = x => stamp(x) && dayKey(stamp(x)) === key;
-  const walks = savedWalks.filter(on), workouts = workoutLog.filter(on), hikes = completedTrails.filter(t => t.completedAt && dayKey(Number(t.completedAt)) === key);
+  const walks = savedWalks.filter(on), workouts = workoutLog.filter(on), hikes = completedTrails.filter(t => trailActiveOn(t, kg, key, dayKey) > 0);
   let eaten = 0, water = 0;
   if (key === today) {
     eaten = Object.values(hiker.meals || {}).flat().reduce((a, i) => a + Number(i?.calories || 0), 0);
@@ -81,8 +93,8 @@ export function dayTotals(key, { hiker = {}, healthHistory = [], savedWalks = []
   }
   const walkCal = walks.reduce((a, w) => a + walkActive(w, kg), 0);
   const workoutCal = workouts.reduce((a, w) => a + workoutActive(w, kg), 0);
-  const hikeCal = hikes.reduce((a, t) => a + trailActive(t, kg), 0);
-  const miles = walks.reduce((a, w) => a + Number(w.distanceMiles || 0), 0) + hikes.reduce((a, t) => a + Number(t.miles || 0), 0);
+  const hikeCal = hikes.reduce((a, t) => a + trailActiveOn(t, kg, key, dayKey), 0);
+  const miles = walks.reduce((a, w) => a + Number(w.distanceMiles || 0), 0) + hikes.reduce((a, t) => a + (t.overnight && t.startedAt && dayKey(Number(t.startedAt)) !== dayKey(Number(t.completedAt)) ? trailMiles(t) / 2 : trailMiles(t)), 0);
   const pulses = vitals.filter(v => v.at && dayKey(v.at) === key && v.bpm);
   return {
     key, eaten: Math.round(eaten), water, active: Math.round(walkCal + workoutCal + hikeCal), walkCal: Math.round(walkCal), workoutCal: Math.round(workoutCal), hikeCal: Math.round(hikeCal),

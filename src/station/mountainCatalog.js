@@ -84,3 +84,50 @@ export function catalogTwin(route, catalog, mountainName) {
   }
   return null;
 }
+
+// Backcountry campsites, lean-tos and huts (tools/catalog/build_camps.py -> public/catalog/camps.json).
+let campCache = null, campPending = null;
+const campListeners = new Set();
+export function loadCampCatalog() {
+  if (campCache) return Promise.resolve(campCache);
+  if (!campPending) {
+    campPending = fetch('/catalog/camps.json').then(r => (r.ok ? r.json() : null)).then(d => { campCache = d; campListeners.forEach(fn => fn(d)); return d; }).catch(() => { campPending = null; return null; });
+  }
+  return campPending;
+}
+export function useCampCatalog() {
+  const [data, setData] = useState(campCache);
+  useEffect(() => { if (!campCache) { campListeners.add(setData); loadCampCatalog(); return () => campListeners.delete(setData); } return undefined; }, []);
+  return data;
+}
+const KIND = { shelter: 'shelter', hut: 'hut', campsite: 'campsite' };
+// A campsite approach as a route: in to the site on day one, back out on day two.
+export function campRoute(camp, a) {
+  const out = a.line || [];
+  const line = out.length > 1 ? [...out, ...out.slice(0, -1).reverse()] : out;
+  const [thLat, thLon] = a.trailhead || [out[0]?.[1], out[0]?.[0]];
+  const total = Math.round(a.oneWayMi * 2 * 10) / 10, gain = Number(a.gainInFt || 0) + Number(a.gainOutFt || 0);
+  const hIn = a.oneWayMi / 2 + a.gainInFt / 2000, hOut = a.oneWayMi / 2 + a.gainOutFt / 2000;
+  const fmt = h => `${Math.floor(Math.round(h * 60) / 60)}h ${String(Math.round(h * 60) % 60).padStart(2, '0')}m`;
+  const bits = [camp.operator && `Run by ${camp.operator}`, camp.fee === 'yes' && 'fee in season', camp.fee === 'no' && 'no fee', camp.water && `water: ${camp.water.replace(/_/g, ' ')}`].filter(Boolean);
+  return {
+    id: a.id, schemaVersion: 'mappi3.routePack.v1', fromCatalog: true, campId: camp.id, overnight: true,
+    name: `${camp.name} via ${a.name}`, place: `${camp.town}, ${camp.state}`, region: camp.state, mountainArea: camp.name,
+    summary: `Overnight at ${camp.name} (${KIND[camp.kind] || 'site'}, ${camp.eleFt?.toLocaleString() ?? '?'} ft). ${a.oneWayMi} mi in with ${a.gainInFt.toLocaleString()} ft of climbing, ${a.gainOutFt.toLocaleString()} ft of climbing on the way out.${bits.length ? ` ${bits.join(' · ')}.` : ''} Measured along the mapped trail.`,
+    difficulty: a.gainInFt > 2000 || a.oneWayMi > 5 ? 'Hard' : a.gainInFt > 900 ? 'Moderate' : 'Easy',
+    routeType: 'Overnight out-and-back', status: 'Ready', distanceMiles: total, miles: total, elevationGainFt: gain, gain: `${gain.toLocaleString()} ft`,
+    estimatedTime: `${fmt(hIn)} in · ${fmt(hOut)} out`, time: `${fmt(hIn)} in · ${fmt(hOut)} out`, hoursIn: hIn, hoursOut: hOut, gainInFt: a.gainInFt, gainOutFt: a.gainOutFt,
+    catalogCategory: 'overnight', tags: ['overnight', 'campsite', KIND[camp.kind] || 'camp', 'openstreetmap', String(camp.state || '').toLowerCase()],
+    campRule: { status: 'designated', manager: camp.operator || '', text: `Camp at ${camp.name}. ${bits.length ? `${bits.join(' · ')}. ` : ''}Designated site: do not camp along the way.` },
+    statsCheck: { status: 'measured', note: 'Measured along the mapped OpenStreetMap trail, with climbing from terrain elevation data. Mapped distances usually run 5 to 15% shorter than a GPS track.' },
+    geometry: { type: 'LineString', coordinates: line }, geometryQuality: 'OpenStreetMap trail network', source: 'OpenStreetMap contributors (ODbL)',
+    waypoints: [
+      { id: `${a.id}-th`, name: 'Trailhead', type: 'Start', mile: 0, lat: thLat, lon: thLon, elevationFt: a.trailheadEleFt },
+      { id: `${a.id}-camp`, name: camp.name, type: 'Camp', mile: a.oneWayMi, lat: camp.lat, lon: camp.lon, elevationFt: camp.eleFt, notes: 'Night 1' },
+      { id: `${a.id}-end`, name: 'Back at the trailhead', type: 'Finish', mile: total, lat: thLat, lon: thLon }
+    ]
+  };
+}
+export function campRoutes(catalog) {
+  return (catalog?.camps || []).flatMap(c => (c.approaches || []).map(a => campRoute(c, a)));
+}

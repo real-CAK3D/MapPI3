@@ -47,7 +47,7 @@ export function durationText(hours) {
 }
 
 // Builds the lines Herbie says on Home. Every number comes from the app's own data.
-export function buildBriefing({ now = new Date(), name = '', calendar = null, route = null, hikeDate = '', sunset = null, driveMinutes = null, weather = null, specialDays = [] }) {
+export function buildBriefing({ now = new Date(), name = '', calendar = null, route = null, hikeDate = '', sunset = null, driveMinutes = null, weather = null, specialDays = [], doneToday = [] }) {
   const pod = partOfDay(now.getHours());
   const who = name && !/^trail hiker$/i.test(name) ? `, ${name.split(' ')[0]}` : '';
   const hello = pod === 'night' ? `Still up${who}?` : `Good ${pod}${who}!`;
@@ -59,6 +59,11 @@ export function buildBriefing({ now = new Date(), name = '', calendar = null, ro
   if (holiday) { lines.push(`It's ${holiday.replace(/^Happy /, '')}.`); face = 'party-mode'; }
   else if (calendar?.reason && calendar.kind !== 'hike') lines.push(`${calendar.reason}.`);
   else lines.push(`Happy ${now.toLocaleDateString([], { weekday: 'long' })}.`);
+  if (doneToday.length) {
+    const t = doneToday[0];
+    lines.push(`Nice work on ${t.routeName} today${t.miles ? `: ${t.miles} mi` : ''}${t.gainFt ? ` and ${Number(t.gainFt).toLocaleString()} ft of climbing` : ''}. Refuel, drink up, and check your mountain board.`);
+    return { hello, lines: weatherLine(lines, weather), face: 'happy', plan: null, holiday };
+  }
   const hikeHours = route ? hoursFromText(route.estimatedTime || route.time) : 0;
   let plan = null;
   if (route && hikeDate) {
@@ -71,7 +76,7 @@ export function buildBriefing({ now = new Date(), name = '', calendar = null, ro
       if (hikeHours) sentence += `, so plan for ${durationText(hikeHours)} on the trail`;
       lines.push(`${sentence}.`);
       if (sunset && hikeHours && days >= 0) {
-        const buffer = 45;
+        const buffer = 30; // back at the car 30 min before sunset, same as the Brief
         const startBy = new Date(sunset.getTime() - (hikeHours * 60 + buffer) * 60000);
         if (days === 0 && now > startBy) {
           lines[lines.length - 1] = `${route.name} was planned for today, but it's too late to finish before the ${clock(sunset)} sunset. Pick a new day and I'll replan.`;

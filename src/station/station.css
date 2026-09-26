@@ -714,3 +714,16 @@ body.station.night{--dh-burn:#8fd694}
 .stats-check{margin:8px 0;padding:8px 10px;border-left:3px solid var(--st-line);background:var(--st-panel);border-radius:6px;font-size:13px;color:var(--st-ink)}
 .stats-check b{margin-right:4px}
 .stats-check.measured{border-left-color:var(--st-good)}.stats-check.corrected{border-left-color:var(--st-water)}.stats-check.approximate{border-left-color:var(--st-warn)}
+/* Camping rules */
+.camp-pill{display:inline-flex;align-items:center;padding:3px 10px;border-radius:999px;font-size:12px;font-weight:700;border:1px solid var(--st-line);color:var(--st-ink)}
+.camp-pill.no{background:#b91c1c;border-color:#b91c1c;color:#fff}
+.camp-pill.designated,.camp-pill.permit{background:var(--st-panel);border-color:var(--st-warn)}
+.camp-pill.dispersed{background:var(--st-panel);border-color:var(--st-good)}
+.camp-rule{margin:8px 0;padding:10px 12px;border-radius:8px;border-left:4px solid var(--st-line);background:var(--st-panel);color:var(--st-ink);font-size:13.5px}
+.camp-rule b{margin-right:6px}.camp-rule small{display:block;margin-top:4px;color:var(--st-muted)}
+.camp-rule.no{border-left-color:#b91c1c}.camp-rule.no b{color:#b91c1c}
+body.station.night .camp-rule.no b{color:#ff8a70}
+.camp-rule.designated,.camp-rule.permit{border-left-color:var(--st-warn)}.camp-rule.dispersed{border-left-color:var(--st-good)}
+.device-backup{margin-top:14px;padding-top:12px;border-top:1px solid var(--st-line)}
+.device-backup h3{margin:0 0 4px}
+.file-pick{display:inline-flex;align-items:center;cursor:pointer;border:1px solid var(--st-line);border-radius:8px;padding:0 12px;min-height:36px}

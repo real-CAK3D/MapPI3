@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import { bmr as restingBurn, kgOf, walkActive, workoutActive, trailActive, rangeTotals } from './energy.js';
+import { bmr as restingBurn, kgOf, walkActive, workoutActive, trailActive, trailActiveOn, hikeKcal, rangeTotals } from './energy.js';
 import PulseCheck from './PulseCheck.jsx';
 
 // Daily health: food in against a calorie budget, activity out, and water, the way a phone health app
@@ -46,8 +46,14 @@ export default function DailyHealth({ hiker = {}, setHiker, healthHistory = [], 
   const eaten = items.reduce((a, i) => a + Number(i.calories || 0), 0) || (hiker.foods || []).reduce((a, f) => a + Number(f[1] || 0), 0);
   const walkCal = savedWalks.filter(w => sameDay(w.endedAt || w.savedAt, today)).reduce((a, w) => a + walkActive(w, kg), 0);
   const workoutCal = workoutLog.filter(w => sameDay(w.at || w.createdAt, today)).reduce((a, w) => a + workoutActive(w, kg), 0);
-  const hikeDoneToday = completedTrails.filter(t => sameDay(t.completedAt, today));
-  const hikeCal = recording ? hikeCaloriesNow : hikeDoneToday.reduce((a, t) => a + trailActive(t, kg), 0);
+  const dk = t => dayKey(new Date(Number(t)));
+  const hikeDoneToday = completedTrails.filter(t => trailActiveOn(t, kg, today, dk) > 0);
+  // A hike in progress counts even while paused (the night at camp). On day two of an overnight the
+  // way in already belongs to yesterday.
+  let liveHike = Number(hikeCaloriesNow || 0);
+  try { const st = JSON.parse(localStorage.getItem('mappi3.hikeStartedAt') || 'null'); if (liveHike && selectedRoute?.overnight && st?.routeId === selectedRoute.id && dk(st.at) !== today) liveHike = Math.max(0, liveHike - hikeKcal({ kg, miles: Number(selectedRoute.distanceMiles || 0) / 2, gainFt: Number(selectedRoute.gainInFt || 0) })); } catch { /* keep the full figure */ }
+  const hikeCal = liveHike + hikeDoneToday.reduce((a, t) => a + trailActiveOn(t, kg, today, dk), 0);
+  void trailActive;
   const active = Math.round(walkCal + workoutCal + hikeCal);
   const budget = Math.round(bmr * 1.2 + active);
   const left = budget - eaten;

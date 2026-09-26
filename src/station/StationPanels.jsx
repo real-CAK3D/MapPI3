@@ -43,10 +43,10 @@ export function PiTelemetry({ piLive, gpsAccuracyM = null }) {
 }
 
 // ---- Herbie's good-morning card for Home. ----
-export function HerbieBriefingCard({ faceUrl, name, calendar, route, hikeDate, sunset, driveMinutes, weather, specialDays, onPlan, onDrive, onPack }) {
+export function HerbieBriefingCard({ faceUrl, name, calendar, route, hikeDate, sunset, driveMinutes, weather, specialDays, doneToday = [], onPlan, onDrive, onPack }) {
   const [now, setNow] = useState(() => new Date());
   useEffect(() => { const t = setInterval(() => setNow(new Date()), 60000); return () => clearInterval(t); }, []);
-  const b = buildBriefing({ now, name, calendar, route, hikeDate, sunset, driveMinutes, weather, specialDays });
+  const b = buildBriefing({ now, name, calendar, route, hikeDate, sunset, driveMinutes, weather, specialDays, doneToday });
   return <section className="st-briefing">
     <div className="st-briefing-face"><img src={faceUrl(b.face)} alt={`Herbie, ${b.face.replace('-', ' ')}`} /></div>
     <div className="st-briefing-copy">

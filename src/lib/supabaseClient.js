@@ -75,3 +75,16 @@ export async function supabaseAuth(action, { email, password, refreshToken } = {
 export const signInMapPiUser = (email, password) => supabaseAuth('signin', { email, password });
 export const signUpMapPiUser = (email, password) => supabaseAuth('signup', { email, password });
 export const refreshMapPiSession = (refreshToken) => supabaseAuth('refresh', { refreshToken });
+
+// Is the cloud account server answering? A paused or unreachable project otherwise shows up only as a
+// confusing login error. Resolves to { ok, reason }.
+export async function supabaseHealth(timeoutMs = 6000) {
+  if (!supabaseConfig.enabled) return { ok: false, reason: 'not-configured' };
+  const ctrl = new AbortController(); const t = setTimeout(() => ctrl.abort(), timeoutMs);
+  try {
+    const r = await fetch(`${supabaseUrl.replace(/\/$/, '')}/auth/v1/health`, { headers: { apikey: publishableKey }, signal: ctrl.signal });
+    return r.ok ? { ok: true, reason: '' } : { ok: false, reason: `status-${r.status}` };
+  } catch {
+    return { ok: false, reason: typeof navigator !== 'undefined' && navigator.onLine === false ? 'offline' : 'unreachable' };
+  } finally { clearTimeout(t); }
+}
