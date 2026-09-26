@@ -1,5 +1,6 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { usePhotos } from './TrailPhotos.jsx';
+import { mountainFor, stateOf as mtState, townOf, trailKey } from './mountains.js';
 
 // Trail Passport: every mountain area is a stamp you earn by hiking any trail there, plus tiered
 // badges and a rank built from everything you have done. All from local history; nothing is invented.
@@ -14,7 +15,7 @@ const TIER = ['', 'Bronze', 'Silver', 'Gold'];
 // colors as the original Home skyline: grey until hiked, blue as it fills, lifted when it is your trail.
 const PEAK = 'M2 30 14 8l5 8 7-13 12 27H2z';
 const FACET = 'M14 8 19 16l3-5 4 6 0-14 12 27H2z';
-function MountainBadge({ area, done, total, miles, current, recent, onClick }) {
+function MountainBadge({ area, town, done, total, miles, current, recent, onClick }) {
   const seed = hash(area);
   const frac = total ? done / total : 0;
   const conquered = total > 0 && done >= total;
@@ -33,7 +34,8 @@ function MountainBadge({ area, done, total, miles, current, recent, onClick }) {
       <small>{conquered ? '✓' : `${done}/${total}`}</small>
     </span>
     <strong>{name}</strong>
-    <span className="mb-sub">{done} of {total} trail{total === 1 ? '' : 's'}{Number.isFinite(miles) ? ` · ${Math.round(miles)} mi` : ''}</span>
+    <span className="mb-sub">{town ? `${town} · ` : ''}{Number.isFinite(miles) ? `${Math.round(miles)} mi` : ''}</span>
+    <span className="mb-sub">{done} of {total} trail{total === 1 ? '' : 's'}</span>
   </button>;
 }
 
@@ -41,14 +43,20 @@ export function computePassport({ completedTrails = [], routes = [], savedWalks 
   const byId = new Map(routes.map(r => [r.id, r]));
   const byName = new Map(routes.map(r => [String(r.name || '').toLowerCase(), r]));
   const hikes = completedTrails.map(c => ({ ...c, route: byId.get(c.routeId) || byName.get(String(c.routeName || c.name || '').toLowerCase()) || null, at: new Date(Number(c.completedAt || c.endedAt || c.savedAt || Date.now())) }));
-  const areaOf = r => (r?.mountainArea || r?.place || r?.name || 'Unknown area').replace(/\s+/g, ' ').trim();
+  // Group by the mountain each trail climbs; the same trail listed twice counts once.
   const areas = new Map();
-  routes.forEach(r => { const a = areaOf(r); if (!areas.has(a)) areas.set(a, { area: a, routes: [], state: stateOf(r) }); areas.get(a).routes.push(r); });
-  hikes.forEach(h => { if (h.route) { const a = areas.get(areaOf(h.route)); if (a) { a.first = a.first && a.first < h.at ? a.first : h.at; (a.doneIds ||= new Set()).add(h.route.id); } } });
+  routes.forEach(r => {
+    const m = mountainFor(r); if (!m) return;
+    if (!areas.has(m)) areas.set(m, { area: m, routes: [], trails: new Map() });
+    const a = areas.get(m); a.routes.push(r);
+    const k = trailKey(r, m); if (!a.trails.has(k)) a.trails.set(k, []); a.trails.get(k).push(r.id);
+  });
+  const mode = xs => { const c = {}; xs.filter(Boolean).forEach(x => { c[x] = (c[x] || 0) + 1; }); return Object.keys(c).sort((a, b) => c[b] - c[a])[0] || ''; };
+  areas.forEach(a => { a.state = mode(a.routes.map(mtState)); a.town = mode(a.routes.map(townOf)); });
+  hikes.forEach(h => { if (!h.route) return; const a = areas.get(mountainFor(h.route)); if (!a) return; a.first = a.first && a.first < h.at ? a.first : h.at; (a.doneKeys ||= new Set()).add(trailKey(h.route, a.area)); });
   const centerOf = rs => { const pts = rs.map(r => r.geometry?.coordinates?.[0]).filter(c => Array.isArray(c) && Number.isFinite(c[0])); if (!pts.length) return null; return { lat: pts.reduce((s, c) => s + c[1], 0) / pts.length, lon: pts.reduce((s, c) => s + c[0], 0) / pts.length }; };
   const miFrom = (a, b) => { if (!a || !b) return NaN; const R = 3958.8, t = Math.PI / 180; const dl = (b.lat - a.lat) * t, dn = (b.lon - a.lon) * t; const h = Math.sin(dl / 2) ** 2 + Math.cos(a.lat * t) * Math.cos(b.lat * t) * Math.sin(dn / 2) ** 2; return 2 * R * Math.asin(Math.sqrt(h)); };
-  const isMountain = a => /mount|mtn|peak|hill|ridge|notch|knob|bald|dome|ledge|cliff|summit|tumbledown|speck|range|mountains/i.test(a.area) || a.routes.some(r => Number(r.elevationGainFt || 0) >= 600 || /mountain/i.test(r.catalogCategory || ''));
-  const stamps = [...areas.values()].filter(isMountain).map(a => { const center = centerOf(a.routes); return { ...a, center, miles: miFrom(home, center), earned: Boolean(a.first), done: a.doneIds?.size || 0, total: a.routes.length, date: a.first ? a.first.toLocaleDateString([], { month: 'short', day: 'numeric', year: 'numeric' }).toUpperCase() : '' }; });
+  const stamps = [...areas.values()].map(a => { const center = centerOf(a.routes); return { ...a, center, miles: miFrom(home, center), earned: Boolean(a.first), done: a.doneKeys?.size || 0, total: a.trails.size, date: a.first ? a.first.toLocaleDateString([], { month: 'short', day: 'numeric', year: 'numeric' }).toUpperCase() : '' }; });
   const hikeMiles = hikes.reduce((s, h) => s + Number(h.miles || h.route?.distanceMiles || 0), 0);
   const walkMiles = savedWalks.reduce((s, w) => s + Number(w.distanceMiles || w.miles || 0), 0);
   const gains = hikes.map(h => Number(h.route?.elevationGainFt || 0));
@@ -112,7 +120,8 @@ export default function TrailPassport({ completedTrails = [], routes = [], saved
   }, [pp.rank.points]);
   // The board: mountains within the chosen distance of home, hiked ones first, then nearest first.
   const inRange = pp.stamps.filter(m => !radius || !Number.isFinite(m.miles) || m.miles <= radius);
-  const board = [...inRange].sort((a, b) => (b.done > 0) - (a.done > 0) || (a.miles || 9999) - (b.miles || 9999));
+  const stateDist = {}; inRange.forEach(m => { stateDist[m.state] = Math.min(stateDist[m.state] ?? 9999, m.miles || 9999); });
+  const board = [...inRange].sort((a, b) => (stateDist[a.state] - stateDist[b.state]) || a.state.localeCompare(b.state) || (b.done > 0) - (a.done > 0) || (a.miles || 9999) - (b.miles || 9999));
   const shown = showAll ? board : board.slice(0, 18);
   const colored = inRange.filter(m => m.done > 0).length, conquered = inRange.filter(m => m.done >= m.total && m.total).length;
   const rk = pp.rank;
@@ -135,7 +144,10 @@ export default function TrailPassport({ completedTrails = [], routes = [], saved
     {toast && <div className="pp-toast" role="status">{faceUrl && <img src={faceUrl('party-mode')} alt="" />}<div><strong>{toast.text}</strong>{toast.more > 0 && <span> and {toast.more} more</span>}</div><button type="button" className="ghost small" onClick={() => setToast(null)}>Nice!</button></div>}
     <div className="mb-head"><div className="st-label">Mountain board · {colored} of {inRange.length} colored in{conquered ? ` · ${conquered} conquered` : ''}</div>
       {setRadius && <label className="mb-radius">Within <select value={radius} onChange={e => setRadius(Number(e.target.value))}>{[25, 50, 100, 200, 0].map(r => <option key={r} value={r}>{r ? `${r} mi` : 'any distance'}</option>)}</select> of {homeLabel}</label>}</div>
-    <div className="mb-grid">{shown.map(m => <MountainBadge key={m.area} {...m} current={Boolean(selectedRoute) && m.routes.some(r => r.id === selectedRoute.id)} recent={Boolean(m.first) && Date.now() - m.first.getTime() < 21 * 86400000} onClick={() => onPickArea && onPickArea(m)} />)}</div>
+    {[...new Set(shown.map(m => m.state))].map(st => { const list = shown.filter(m => m.state === st); const all = inRange.filter(m => m.state === st); return <div key={st} className="mb-state">
+      <div className="mb-state-head"><strong>{st}</strong><span>{all.filter(m => m.done).length} of {all.length} colored in</span></div>
+      <div className="mb-grid">{list.map(m => <MountainBadge key={m.area} {...m} current={Boolean(selectedRoute) && m.routes.some(r => r.id === selectedRoute.id)} recent={Boolean(m.first) && Date.now() - m.first.getTime() < 21 * 86400000} onClick={() => onPickArea && onPickArea(m)} />)}</div>
+    </div>; })}
     {board.length > shown.length && <button type="button" className="ghost small pp-more" onClick={() => setShowAll(true)}>Show all {board.length} mountains</button>}
     {!inRange.length && <p className="muted">No mountains in the trail catalog within {radius} miles of {homeLabel}. Try a bigger distance.</p>}
     {inRange.length > 0 && !colored && <p className="muted">Each trail you finish around a mountain colors in part of it. Hike every trail around it to conquer it. Tap a mountain to see its trails.</p>}
