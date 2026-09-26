@@ -575,3 +575,11 @@ body.station .st-guide-quick button.on{box-shadow:0 0 0 3px var(--st-brass)}
 .st-guide-quick strong{font:700 16px var(--st-display)}
 .st-guide-quick span{font-size:13px;color:var(--st-muted);line-height:1.3}
 body.station .st-guide-quick button:first-child span{color:var(--st-chip-ink);opacity:.85}
+/* Explore filters */
+.st-xfilters{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin:10px 0}
+body.station .st-xfilters > button{min-height:38px;padding:0 14px;border-radius:999px;border:1px solid var(--st-line)!important;background:var(--st-panel)!important;color:var(--st-ink)!important;font:600 14px var(--st-body);cursor:pointer;width:auto}
+body.station .st-xfilters > button.on{background:var(--st-chip)!important;color:var(--st-chip-ink)!important;border-color:var(--st-chip)!important}
+.st-xfilters label{display:flex;gap:6px;align-items:center;font-size:14px;font-weight:600}
+.st-xfilters select{min-height:38px;border-radius:999px;padding:0 10px}
+body.station .st-xfilters .st-xclear{border-style:dashed!important}
+body.station .hero-card > .top-line,body.station .hero-card > .quick-stats{display:none}
