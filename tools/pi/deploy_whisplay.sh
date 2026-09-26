@@ -34,7 +34,7 @@ echo "== install Whisplay apps"
 for f in mappi3_whisplay_common.py mappi3_whisplay_dashboard.py mappi3_whisplay_ai_chat.py; do sudo install -o mappi3 -g mappi3 -m 755 "$STAGE/$f" "$EX/$f"; done
 install -m 644 "$STAGE"/apps/*.json "$APPS/"
 # Leftover test entry with no launch command (tops the menu and errors when tapped). Leaves the menu at next daemon start.
-[ -f "$APPS/mappi3-rgb565-render-test.json" ] && mv "$APPS/mappi3-rgb565-render-test.json" "$BK/removed-mappi3-rgb565-render-test.json" || true
+[ -f "$APPS/mappi3-rgb565-render-test.json" ] && sudo mv "$APPS/mappi3-rgb565-render-test.json" "$BK/removed-mappi3-rgb565-render-test.json" || true
 echo "== install agent + restart web"
 sudo install -o root -g root -m 755 "$STAGE/mappi3-agent.py" /usr/local/bin/mappi3-agent.py
 sudo systemctl restart mappi3-web
@@ -50,13 +50,15 @@ def rpc(cmd, payload=None):
         return json.loads(c.makefile('r').readline() or '{}')
 app = 'whisplay-mappi3-dashboard'
 print('exit', rpc('app.exit.request', {'app_id': app}))
-for _ in range(40):
+# Launch only once the old dashboard has fully exited; a launch sent while it is still shutting
+# down is parked as "already running" and then dropped, leaving the menu on screen.
+for _ in range(60):
     time.sleep(0.5)
-    r = rpc('app.launch', {'app_id': app})
-    if r.get('ok'):
-        print('launch', r); break
-else:
-    print('launch did not succeed; check the screen')
+    if not (rpc('health.ping').get('payload') or {}).get('foreground_app_id'):
+        break
+print('launch', rpc('app.launch', {'app_id': app}))
+time.sleep(8)
+print('foreground', (rpc('health.ping').get('payload') or {}).get('foreground_app_id'))
 PY
 sleep 6
 ls -la /tmp/whisplay-fb-* 2>/dev/null || true
