@@ -390,7 +390,8 @@ body.station:not(.night)[data-station-style="forest"]{--st-bg:#dde3d0}
 .dh-coach p{margin:6px 0 0;font-size:15px;line-height:1.45;color:var(--st-chip-ink)}
 .dh-coach.live{background:var(--st-brass);color:var(--st-brass-ink)}
 .dh-coach.live p,.dh-coach.live .st-label{color:var(--st-brass-ink)}
-.dh-row{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr) minmax(0,1.1fr);gap:14px}
+.dh-row{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:14px}
+.dh-row .dh-week{grid-column:1/-1}
 .dh-btns{display:flex;gap:8px;flex-wrap:wrap;margin:10px 0}
 .dh-btns button,.dh-more{min-height:44px;padding:0 14px}
 .dh-snacks{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:10px}
@@ -403,8 +404,9 @@ body.station .dh-snacks button{border:1px solid var(--st-line);background:var(--
 .dh-bars{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:6px;height:150px;align-items:end;margin-top:10px}
 .dh-bars > div{display:flex;flex-direction:column;align-items:center;gap:4px;height:100%}
 .dh-bar{position:relative;flex:1;width:100%;max-width:34px;background:var(--st-panel);border-radius:6px;overflow:visible;display:block}
-.dh-bar i{position:absolute;left:0;right:0;bottom:0;background:var(--st-brass);border-radius:6px;display:block;opacity:.8}
-.dh-bars .today .dh-bar i{opacity:1}
+.dh-bar i{position:absolute;left:0;right:50%;bottom:0;background:var(--st-brass);border-radius:5px 5px 0 0;display:block;opacity:.8}
+.dh-bar b{position:absolute;left:50%;right:0;bottom:0;background:var(--st-good);border-radius:5px 5px 0 0;display:block;opacity:.75}
+.dh-bars .today .dh-bar i,.dh-bars .today .dh-bar b{opacity:1}
 .dh-bar em{position:absolute;left:-3px;right:-3px;border-top:2px dashed var(--st-ink);opacity:.4}
 .dh-bars small{font-size:11.5px;color:var(--st-muted)}
 @media (max-width:1100px){.dh-top{grid-template-columns:auto minmax(0,1fr)}.dh-coach{grid-column:1/-1}.dh-row{grid-template-columns:1fr 1fr}.dh-week{grid-column:1/-1}}
@@ -656,3 +658,56 @@ body.station .mb{display:flex;flex-direction:column;align-items:center;gap:2px;p
 .mb-state-head{display:flex;align-items:baseline;gap:10px;border-bottom:1px solid var(--st-line);padding-bottom:4px}
 .mb-state-head strong{font:700 17px var(--st-display);color:var(--st-ink)}
 .mb-state-head span{font-size:13px;color:var(--st-muted)}
+
+/* Health: week / month summary */
+.dh-week-head{display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap}
+.dh-bars.dense{grid-template-columns:repeat(30,minmax(0,1fr));gap:2px}
+.dh-bars.dense .dh-bar{border-radius:3px}
+.dh-bars.dense > div:not(:nth-last-child(7n+1)) small{visibility:hidden}
+.dh-key{display:inline-block;width:10px;height:10px;border-radius:2px;margin:0 4px 0 6px;vertical-align:-1px}
+.dh-key.eat{background:var(--st-brass)}.dh-key.burn{background:var(--st-good)}
+.dh-sums{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin-top:12px}
+.dh-sums > div{display:flex;flex-direction:column;gap:2px;padding:10px;border:1px solid var(--st-line);border-radius:10px}
+.dh-sums b{font-size:22px;font-variant-numeric:tabular-nums;color:var(--st-ink)}
+.dh-sums span{font-size:13px;color:var(--st-ink)}
+.dh-sums small{font-size:11.5px;color:var(--st-muted)}
+.pc-seg{display:inline-flex;border:1px solid var(--st-line);border-radius:999px;overflow:hidden}
+.pc-seg button{border:0;border-radius:0;background:transparent;color:var(--st-ink);min-height:40px;padding:0 14px;font-weight:600}
+.pc-seg.small button{min-height:32px;padding:0 12px}
+.pc-seg button.on{background:var(--st-brass);color:var(--st-brass-ink)}
+/* Pulse check */
+.pulse-check{margin-top:14px;display:flex;flex-direction:column;gap:10px}
+.pc-head{display:flex;justify-content:space-between;gap:12px;align-items:flex-start}
+.pc-head p{margin:4px 0 0}
+.pc-rest{display:flex;flex-direction:column;align-items:flex-end}
+.pc-rest b{font-size:28px;font-variant-numeric:tabular-nums;color:var(--st-ink)}
+.pc-rest span{font-size:12px;color:var(--st-muted)}
+.pc-video{position:absolute;width:1px;height:1px;opacity:0;pointer-events:none}
+.pc-setup{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+.pc-ctx{display:flex;gap:6px;align-items:center;font-size:13px;color:var(--st-muted)}
+.pc-setup .primary{min-height:44px;padding:0 18px}
+.pc-live{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:8px 14px;align-items:center}
+.pc-trace{width:100%;height:70px;background:var(--st-panel);border-radius:10px}
+.pc-read{display:flex;align-items:baseline;gap:4px}
+.pc-read strong{font-size:40px;font-variant-numeric:tabular-nums;color:var(--st-ink)}
+.pc-read span{color:var(--st-muted)}
+.pc-bar{grid-column:1/-1;height:6px;background:var(--st-panel);border-radius:3px;overflow:hidden}
+.pc-bar i{display:block;height:100%;background:var(--st-bad);transition:width .25s linear}
+.pc-live p{grid-column:1/-1;margin:0}
+.pc-live .ghost{justify-self:start;min-height:40px}
+.pc-nums{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
+.pc-nums > div{display:flex;flex-direction:column;padding:10px;border:1px solid var(--st-line);border-radius:10px}
+.pc-nums strong{font-size:30px;font-variant-numeric:tabular-nums;color:var(--st-ink)}
+.pc-nums span{font-size:12.5px;color:var(--st-muted)}
+.pc-flag{margin:0;padding:10px 12px;border-left:3px solid var(--st-warn);background:var(--st-panel);border-radius:6px;color:var(--st-ink)}
+.pc-hist{display:flex;flex-direction:column;gap:4px}
+.pc-hist > div{display:grid;grid-template-columns:auto 1fr auto;gap:10px;font-size:13px;padding:4px 0;border-bottom:1px solid var(--st-line)}
+.pc-hist small{color:var(--st-muted)}
+.pc-hist b{font-variant-numeric:tabular-nums}
+@media (max-width:520px){.pc-nums{grid-template-columns:1fr 1fr}.pc-nums > div:last-child{grid-column:1/-1}}
+/* Health series colors stay distinct in night mode, where good and brass are both amber. */
+body.station{--dh-eat:var(--st-brass);--dh-burn:var(--st-good);--dh-water:var(--st-water)}
+body.station.night{--dh-burn:#8fd694}
+.dh-bar i,.dh-key.eat{background:var(--dh-eat)}
+.dh-bar b,.dh-key.burn{background:var(--dh-burn)}
+@media (max-width:520px){.dh-sums{grid-template-columns:1fr 1fr}}
