@@ -495,3 +495,38 @@ body.station .tv-seg button.on{background:var(--st-chip);color:var(--st-chip-ink
 .pano-empty{padding:24px}
 @media (max-width:700px){.tv-backdrop{padding:0}.tv-panel{height:100%;border-radius:0}.tv-title{display:none}}
 body.station .tv-head,.tv-head{--theme-readable-strong:var(--st-cream);--theme-readable-text:var(--st-cream)}body.station .tv-title{color:var(--st-cream)!important}
+
+/* ---------- Sky ---------- */
+.st-sky-grid{display:grid;grid-template-columns:minmax(0,1.5fr) minmax(0,1fr);gap:14px}
+.st-sky-view{position:relative;min-height:460px;border-radius:12px;overflow:hidden;background:radial-gradient(ellipse at 50% 120%,#1d3a44 0%,#0b1420 55%,#05080d 100%);border:1px solid var(--st-line)}
+.st-sky-view video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:none}
+.st-sky-view.cam video{display:block}
+.st-sky-horizon{position:absolute;left:0;right:0;border-top:1.5px dashed rgba(233,223,192,.6);transition:top .15s}
+.st-sky-horizon span{position:absolute;right:8px;top:2px;font:11px var(--st-mono);color:rgba(233,223,192,.8)}
+body.station .st-sky-obj{position:absolute;transform:translate(-50%,-50%);display:flex;flex-direction:column;align-items:center;gap:3px;background:none!important;border:0!important;padding:4px;color:#f3e7c4!important;cursor:pointer;min-height:0}
+.st-sky-obj i{width:10px;height:10px;border-radius:50%;background:#fff;box-shadow:0 0 10px rgba(255,255,255,.8);display:block}
+.st-sky-obj.k-planet i{background:#ffd08a;box-shadow:0 0 12px #ffb347}
+.st-sky-obj.k-moon i{width:22px;height:22px;background:#f3ecd6}
+.st-sky-obj.k-constellation i{width:30px;height:30px;background:transparent;border:1.5px dashed rgba(243,231,196,.7);box-shadow:none}
+.st-sky-obj span{font:600 12px var(--st-body);background:rgba(5,8,13,.6);padding:1px 6px;border-radius:4px;white-space:nowrap}
+.st-sky-obj.on i{outline:2px solid #ffb347;outline-offset:3px}
+.st-sky-reticle{position:absolute;left:50%;top:50%;width:46px;height:46px;margin:-23px 0 0 -23px;border:2px solid rgba(255,179,71,.85);border-radius:50%}
+.st-sky-reticle::before,.st-sky-reticle::after{content:"";position:absolute;background:rgba(255,179,71,.85)}
+.st-sky-reticle::before{left:50%;top:-10px;bottom:-10px;width:2px;margin-left:-1px}
+.st-sky-reticle::after{top:50%;left:-10px;right:-10px;height:2px;margin-top:-1px}
+.st-sky-hud{position:absolute;left:10px;top:10px;background:rgba(5,8,13,.7);color:#f3e7c4;border-radius:8px;padding:6px 10px;display:flex;flex-direction:column}
+.st-sky-hud strong{font:500 18px var(--st-mono)}.st-sky-hud span{font-size:12px;opacity:.85}
+.st-sky-guide{position:absolute;left:50%;top:calc(50% + 40px);transform:translateX(-50%);background:rgba(255,179,71,.92);color:#1a1206;border-radius:10px;padding:6px 12px;display:flex;flex-direction:column;align-items:center;text-align:center}
+.st-sky-guide span{font:600 13px var(--st-body)}
+.st-sky-actions{position:absolute;left:10px;right:10px;bottom:10px;display:flex;gap:8px;flex-wrap:wrap}
+.st-sky-actions button{min-height:44px;padding:0 16px;width:auto!important}
+.st-sky-note{position:absolute;left:10px;right:10px;bottom:64px;background:rgba(5,8,13,.75);color:#f3e7c4;padding:6px 10px;border-radius:8px;font-size:13px;margin:0}
+.st-sky-side{display:flex;flex-direction:column;gap:10px;min-width:0}
+.st-sky-list{display:flex;flex-direction:column;gap:6px;max-height:420px;overflow:auto}
+body.station .st-sky-list button{display:flex;flex-direction:column;align-items:flex-start;text-align:left;gap:1px;padding:8px 10px;border-radius:8px;border:1px solid var(--st-line)!important;background:var(--st-panel)!important;color:var(--st-ink)!important;cursor:pointer}
+body.station .st-sky-list button.on{border-color:var(--st-brass)!important;box-shadow:0 0 0 2px var(--st-brass)}
+.st-sky-list span{font:12.5px var(--st-mono);color:var(--st-muted)}
+.st-sky-list small{font-size:12.5px;color:var(--st-muted)}
+.st-sky-cal{display:flex;flex-direction:column;gap:6px;font-size:13.5px;background:var(--st-panel);border-radius:8px;padding:10px}
+.st-sky-cal small{color:var(--st-muted)}
+@media (max-width:900px){.st-sky-grid{grid-template-columns:1fr}.st-sky-view{min-height:62vh}}
