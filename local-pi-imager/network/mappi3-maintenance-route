@@ -1,0 +1,27 @@
+#!/bin/sh
+set -eu
+IFACE="${MAPPI3_MAINT_IFACE:-wlan0}"
+GW="${MAPPI3_MAINT_GW:-10.42.0.38}"
+METRIC="${MAPPI3_MAINT_METRIC:-700}"
+DNS1="${MAPPI3_MAINT_DNS1:-1.1.1.1}"
+DNS2="${MAPPI3_MAINT_DNS2:-8.8.8.8}"
+# Only touch the maintenance route when the MapPI3 hotspot interface is present.
+ip -4 addr show dev "$IFACE" | grep -q "10\.42\.0\.1/24" || exit 0
+if ping -c1 -W1 "$GW" >/dev/null 2>&1; then
+  ip route replace default via "$GW" dev "$IFACE" metric "$METRIC"
+  if command -v resolvectl >/dev/null 2>&1 && systemctl is-active --quiet systemd-resolved; then
+    resolvectl dns "$IFACE" "$DNS1" "$DNS2" || true
+    resolvectl domain "$IFACE" "~." || true
+  elif ! grep -q "^nameserver" /etc/resolv.conf 2>/dev/null; then
+    # No resolver running and NetworkManager left resolv.conf empty (hotspot-only): add the
+    # maintenance DNS so name lookups (weather, time sync, updates) work over this route.
+    printf 'nameserver %s
+nameserver %s # mappi3-maintenance
+' "$DNS1" "$DNS2" >> /etc/resolv.conf
+  fi
+  logger -t mappi3-maintenance-route "enabled maintenance internet via $GW on $IFACE"
+else
+  ip route del default via "$GW" dev "$IFACE" metric "$METRIC" 2>/dev/null || true
+  sed -i "/# mappi3-maintenance$/d; /^nameserver $DNS1$/d" /etc/resolv.conf 2>/dev/null || true
+  logger -t mappi3-maintenance-route "maintenance gateway $GW not reachable; route removed/left offline"
+fi
