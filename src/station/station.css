@@ -584,3 +584,71 @@ body.station .st-xfilters > button.on{background:var(--st-chip)!important;color:
 body.station .st-xfilters .st-xclear{border-style:dashed!important}
 body.station .hero-card > .top-line,body.station .hero-card > .quick-stats{display:none}
 body.station .station-logo small{color:var(--st-cream)!important;opacity:.8}body.station .st-guide-quick button:first-child strong{color:var(--st-chip-ink)!important}
+
+/* ---------- Map markers: trail blazes ---------- */
+.st-pin-wrap,.st-you-wrap{background:none!important;border:0!important}
+.st-pin{--pc:#f3e7c4;--pi:#1d2a20;position:relative;width:34px;height:46px;display:flex;flex-direction:column;align-items:center;filter:drop-shadow(0 2px 3px rgba(0,0,0,.35))}
+.st-pin-head{width:30px;height:30px;margin-top:2px;background:var(--pc);color:var(--pi);border:2px solid rgba(255,255,255,.95);border-radius:50% 50% 50% 4px;transform:rotate(-45deg);display:grid;place-items:center;transition:transform .15s}
+.st-pin-head svg{width:17px;height:17px;transform:rotate(45deg)}
+.st-pin-mile{margin-top:3px;font:700 10px/1 'IBM Plex Mono',ui-monospace,monospace;color:#1d2a20;background:rgba(255,253,246,.94);border:1px solid rgba(29,42,32,.25);border-radius:4px;padding:2px 4px}
+.st-pin.custom .st-pin-head{border-color:#b8893a;box-shadow:0 0 0 2px #b8893a}
+.st-pin.focused .st-pin-head,.st-pin-wrap:hover .st-pin-head{transform:rotate(-45deg) scale(1.15)}
+.st-pin.k-water{--pc:#3d7f95;--pi:#fff}.st-pin.k-view{--pc:#b8893a;--pi:#1d2a20}.st-pin.k-camp{--pc:#7b5ea7;--pi:#fff}
+.st-pin.k-start{--pc:#3f8a55;--pi:#fff}.st-pin.k-finish{--pc:#1d2a20;--pi:#f3e7c4}.st-pin.k-hazard{--pc:#b14a2f;--pi:#fff}
+.st-pin.k-photo{--pc:#6b3f1d;--pi:#f3e7c4}.st-pin.k-junction{--pc:#56604f;--pi:#fff}.st-pin.k-summit{--pc:#24412c;--pi:#f3e7c4}
+.st-pin.k-home{--pc:#24412c;--pi:#d9a441}.st-pin.k-done{--pc:#3f8a55;--pi:#fff}.st-pin.k-walk{--pc:#7b5ea7;--pi:#fff}.st-pin.k-gps{--pc:#58a8ff;--pi:#fff}
+.st-pin.k-wp{--pc:#f3e7c4;--pi:#24412c}
+body.station.night .st-pin{filter:drop-shadow(0 0 4px rgba(255,179,71,.35))}
+body.station.night .st-pin-mile{background:#111417;color:#ffcf8a;border-color:#3a2c14}
+.st-you{position:relative;width:26px;height:26px}
+.st-you i{position:absolute;left:5px;top:5px;width:16px;height:16px;border-radius:50%;background:#58a8ff;border:3px solid #fff;box-shadow:0 1px 4px rgba(0,0,0,.4)}
+.st-you.live::before{content:"";position:absolute;inset:0;border-radius:50%;background:rgba(88,168,255,.35);animation:stYouPulse 2s ease-out infinite}
+@keyframes stYouPulse{0%{transform:scale(.6);opacity:.9}100%{transform:scale(2.2);opacity:0}}
+@media (prefers-reduced-motion:reduce){.st-you.live::before{animation:none}}
+.tv-pin .st-pin{order:2}.tv-pin span{order:1}
+
+/* ---------- Trail Passport + mountain board ---------- */
+.pp{display:flex;flex-direction:column;gap:10px}
+.pp-head{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:18px;align-items:center}
+.pp-rank h2{margin:2px 0 6px;font-size:28px}
+.pp-bar{height:10px;border-radius:5px;background:var(--st-line);overflow:hidden;max-width:420px}
+.pp-bar i{display:block;height:100%;background:linear-gradient(90deg,var(--st-good),var(--st-brass));border-radius:5px}
+.pp-bar.small{height:6px;margin:5px 0 3px}
+.pp-rank p{margin:6px 0 0}
+.pp-totals{display:grid;grid-template-columns:repeat(4,minmax(70px,1fr));gap:8px}
+.pp-totals div{background:var(--st-panel);border:1px solid var(--st-line);border-radius:10px;padding:8px 12px;display:flex;flex-direction:column;text-align:center}
+.pp-totals strong{font:500 20px var(--st-mono);color:var(--st-ink)}.pp-totals span{font-size:11.5px;letter-spacing:.06em;text-transform:uppercase;color:var(--st-muted)}
+.pp-toast{display:flex;gap:12px;align-items:center;background:var(--st-chip);color:var(--st-chip-ink);border-radius:12px;padding:8px 14px 8px 8px;animation:ppIn .4s ease-out}
+.pp-toast img{width:64px;height:auto}.pp-toast strong,.pp-toast span{color:var(--st-chip-ink)!important}
+.pp-toast button{margin-left:auto;border-color:var(--st-chip-ink)!important;color:var(--st-chip-ink)!important;width:auto!important}
+@keyframes ppIn{from{transform:translateY(-6px);opacity:0}to{transform:none;opacity:1}}
+.mb-head{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap}
+.mb-radius{display:flex;gap:6px;align-items:center;font-size:14px;color:var(--st-muted)}
+.mb-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(118px,1fr));gap:10px}
+body.station .mb{display:flex;flex-direction:column;align-items:center;gap:2px;padding:8px 6px 10px;border-radius:12px;border:1px solid var(--st-line)!important;background:var(--st-panel)!important;color:var(--st-ink)!important;cursor:pointer;text-align:center}
+.mb-art{position:relative;display:block;width:100%;max-width:96px;filter:drop-shadow(0 8px 10px rgba(0,0,0,.28));transition:transform .18s}
+.mb svg{width:100%;height:auto;display:block;overflow:visible}
+.mb .peak-shadow{fill:#536052}.mb .peak-snow{fill:#95a08d;opacity:.82}
+.mb .mb-fill{fill:#2563eb}.mb .mb-fill-facet{fill:#93c5fd}
+.mb-flag{fill:#b14a2f;stroke:#1d2a20;stroke-width:.5}
+.mb.current .mb-art{transform:translateY(-5px) scale(1.08)}
+.mb.current .peak-shadow{fill:#10b981}
+.mb.recent .mb-art{filter:drop-shadow(0 0 12px rgba(156,227,108,.65))}
+.mb.conquered .mb-art{filter:drop-shadow(0 0 10px rgba(37,99,235,.45))}
+.mb-art small{position:absolute;bottom:-4px;right:12%;min-width:22px;height:20px;padding:0 5px;display:grid;place-items:center;border-radius:999px;background:#071109;color:#eaffd9;border:1px solid rgba(255,255,255,.18);font:700 10.5px var(--st-mono)}
+.mb.conquered .mb-art small{background:#2563eb;color:#fff}
+.mb strong{font:700 13px/1.2 var(--st-display);margin-top:2px}
+.mb .mb-sub{font-size:11.5px;color:var(--st-muted)}
+.pp-more{align-self:flex-start;width:auto!important}
+.pp-badges{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:8px}
+.pp-badge{display:grid;grid-template-columns:auto minmax(0,1fr);gap:10px;align-items:center;background:var(--st-panel);border:1px solid var(--st-line);border-radius:10px;padding:8px 10px}
+.pp-medal{width:44px;height:44px;border-radius:50%;display:grid;place-items:center;border:3px solid var(--st-line);color:var(--st-muted);background:var(--st-paper)}
+.pp-medal svg{width:22px;height:22px}
+.pp-badge.t1 .pp-medal{border-color:#b0763e;color:#8c5a2b;background:#f3e2cf}
+.pp-badge.t2 .pp-medal{border-color:#9aa4ab;color:#5b666d;background:#eef1f3}
+.pp-badge.t3 .pp-medal{border-color:#d9a441;color:#8a6420;background:#fbf0cf;box-shadow:0 0 0 3px rgba(217,164,65,.25)}
+.pp-badge-copy strong{display:flex;gap:6px;align-items:center;font-size:14.5px}
+.pp-badge-copy em{font:700 10.5px var(--st-body);font-style:normal;text-transform:uppercase;letter-spacing:.06em;padding:1px 6px;border-radius:999px;background:var(--st-chip);color:var(--st-chip-ink)}
+.pp-badge-copy span{display:block;font-size:12.5px;color:var(--st-muted)}
+.pp-badge-copy small{font:12px var(--st-mono);color:var(--st-muted)}
+@media (max-width:760px){.pp-head{grid-template-columns:1fr}.pp-totals{grid-template-columns:repeat(2,minmax(0,1fr))}.mb-grid{grid-template-columns:repeat(3,minmax(0,1fr))}}

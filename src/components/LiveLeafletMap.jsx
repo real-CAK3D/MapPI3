@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
+import { markerHtml, markerKind, PIN_ANCHOR, PIN_SIZE } from '../station/markers.js';
 
 const defaultCenter = [44.1004, -70.2148];
 
@@ -8,15 +9,18 @@ function routeToPoints(route) {
   return route?.geometry?.coordinates?.map(([lon, lat]) => [lat, lon]) || [];
 }
 
-function iconFor(point) {
-  const size = Math.max(24, Math.min(54, Number(point.size || 30)));
+function iconFor(point, routeName = '') {
+  const kind = markerKind(point, routeName);
   return L.divIcon({
-    className: `mappi3-waypoint-icon ${point.custom ? 'custom' : 'stock'} ${point.markerClass || ''}`,
-    html: `<span>${point.icon || (point.custom ? '✚' : '•')}</span>`,
-    iconSize: [size, size],
-    iconAnchor: [size / 2, size / 2]
+    className: 'st-pin-wrap',
+    html: markerHtml({ kind, mile: point.mile, custom: Boolean(point.custom || point.editable), focused: Boolean(point.focused), label: point.name }),
+    iconSize: PIN_SIZE,
+    iconAnchor: PIN_ANCHOR,
+    tooltipAnchor: [0, -38],
+    popupAnchor: [0, -40]
   });
 }
+const youIcon = (active) => L.divIcon({ className: 'st-you-wrap', html: `<div class="st-you ${active ? 'live' : ''}"><i></i></div>`, iconSize: [26, 26], iconAnchor: [13, 13] });
 
 function segmentSlice(routePoints, routeMiles, segment) {
   if (!routePoints.length || !routeMiles.length || !segment) return routePoints;
@@ -174,15 +178,10 @@ export default function LiveLeafletMap({ trace = [], center = defaultCenter, act
       } else {
         layerRef.current.route = L.polyline(routePoints, { color: route?.color || '#9ce36c', weight: pitch3d ? 8 : 6, opacity: 0.86, lineCap: 'round', lineJoin: 'round' }).addTo(map);
       }
-      const gain = Number(route?.elevationGainFt || route?.gainFt || 0);
-      if (gain || pitch3d) {
-        const mid = routePoints[Math.floor(routePoints.length / 2)];
-        layerRef.current.grade = L.marker(mid, { icon: L.divIcon({ className: 'mappi3-elevation-badge', html: `<strong>${gain ? gain.toLocaleString() : '3D'}</strong><span>${gain ? 'ft gain' : 'terrain'}</span>`, iconSize: [86, 42], iconAnchor: [43, 21] }), keyboard: false }).addTo(map);
-      }
     }
 
     (waypoints || []).filter(point => Number.isFinite(point.lat) && Number.isFinite(point.lon)).forEach(point => {
-      const marker = L.marker([point.lat, point.lon], { icon: iconFor(point), draggable: Boolean((point.custom || point.editable) && onWaypointMove), keyboard: false, autoPan: true })
+      const marker = L.marker([point.lat, point.lon], { icon: iconFor(point, route?.name), draggable: Boolean((point.custom || point.editable) && onWaypointMove), keyboard: false, autoPan: true })
         .bindTooltip(`${point.name} · ${point.type || 'Waypoint'} · ${point.mile ?? '—'} mi${point.custom || point.editable ? ' · drag to move' : ''}`, { direction: 'top' })
         .addTo(map);
       marker.bindPopup(`<strong>${point.name}</strong><br>${point.type || 'Waypoint'} · ${point.mile ?? '—'} mi${point.notes ? `<br>${point.notes}` : ''}${point.custom || point.editable ? '<br><em>Drag this marker to move it.</em>' : ''}`);
@@ -201,13 +200,7 @@ export default function LiveLeafletMap({ trace = [], center = defaultCenter, act
     if (tracePoints.length > 1) layerRef.current.line = L.polyline(tracePoints, { color: '#4bd2ff', weight: 6, opacity: 0.9 }).addTo(map);
     else layerRef.current.line = null;
     if (showCenterMarker) {
-      layerRef.current.marker = L.circleMarker(latest, {
-        radius: 9,
-        color: '#dff1ff',
-        weight: 3,
-        fillColor: active ? '#58a8ff' : (route?.color || '#9ce36c'),
-        fillOpacity: 0.9
-      }).bindTooltip(`Live GPS / map point · ${formatCoord(latest)}`, { direction: 'top' }).bindPopup(`<strong>Live GPS / map point</strong><br>${formatCoord(latest)}<br>${active ? 'tracking live movement' : 'selected route/start point'}`).addTo(map);
+      layerRef.current.marker = L.marker(latest, { icon: youIcon(active), keyboard: false, zIndexOffset: 1000 }).bindTooltip(`Live GPS / map point · ${formatCoord(latest)}`, { direction: 'top' }).bindPopup(`<strong>Live GPS / map point</strong><br>${formatCoord(latest)}<br>${active ? 'tracking live movement' : 'selected route/start point'}`).addTo(map);
     } else {
       layerRef.current.marker = null;
     }

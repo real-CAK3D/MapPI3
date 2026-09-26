@@ -5,6 +5,7 @@ import maplibreWorkerUrl from 'maplibre-gl/dist/maplibre-gl-worker.mjs?worker&ur
 import { AREA_LAYERS } from './offlineArea.js';
 import { TERRARIUM_URL, bearingDeg, destination, elevationAt, milesBetween } from './terrain.js';
 import { useRouteProfile, waypointKind } from './ElevationProfile.jsx';
+import { markerHtml, markerKind } from './markers.js';
 
 // 3D terrain map and a computed "view from the top" panorama. Both read the same terrain and imagery
 // tiles that an offline area saves, so they work with no signal once the area is saved.
@@ -87,10 +88,12 @@ function Terrain3D({ route, waypoints, osm, youPoint }) {
         }
         waypoints.filter(w => Number.isFinite(w.lat)).forEach(w => {
           const el = document.createElement('div');
-          el.className = `tv-pin k-${waypointKind(w, route?.name)}`;
-          const dot = document.createElement('i'); const label = document.createElement('span');
+          el.className = 'tv-pin';
+          const label = document.createElement('span');
           label.textContent = String(w.name || '').replace(route?.name || '', '').trim() || w.name || '';
-          el.append(dot, label);
+          const pin = document.createElement('div');
+          pin.innerHTML = markerHtml({ kind: markerKind(w, route?.name), mile: w.mile, custom: Boolean(w.custom), label: w.name });
+          el.append(label, pin.firstChild);
           new maplibregl.Marker({ element: el, anchor: 'bottom' }).setLngLat([w.lon, w.lat]).addTo(map);
         });
         if (youPoint && Number.isFinite(youPoint.lat)) { const el = document.createElement('div'); el.className = 'tv-you'; new maplibregl.Marker({ element: el }).setLngLat([youPoint.lon, youPoint.lat]).addTo(map); }
