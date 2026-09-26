@@ -566,3 +566,12 @@ body.station .tp-grid button{padding:0;border:1px solid var(--st-line)!important
 .st-link{font-weight:700;color:inherit;text-decoration:underline}
 @media (max-width:900px){.st-phone-grid{grid-template-columns:1fr}}
 .st-ble-actions{display:flex;flex-wrap:wrap;gap:8px}.st-ble-actions button{min-height:44px;width:auto!important;padding:0 14px}
+/* Guide quick start */
+.st-guide-quick{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:10px;margin:12px 0}
+body.station .st-guide-quick button{display:grid;grid-template-columns:auto 1fr;grid-template-rows:auto auto;column-gap:10px;align-items:center;text-align:left;padding:12px 14px;border-radius:12px;border:1px solid var(--st-line)!important;background:var(--st-panel)!important;color:var(--st-ink)!important;cursor:pointer;min-height:72px}
+body.station .st-guide-quick button:first-child{background:var(--st-chip)!important;color:var(--st-chip-ink)!important;border-color:var(--st-chip)!important}
+body.station .st-guide-quick button.on{box-shadow:0 0 0 3px var(--st-brass)}
+.st-guide-quick svg{grid-row:1/3;color:var(--st-brass)}
+.st-guide-quick strong{font:700 16px var(--st-display)}
+.st-guide-quick span{font-size:13px;color:var(--st-muted);line-height:1.3}
+body.station .st-guide-quick button:first-child span{color:var(--st-chip-ink);opacity:.85}
