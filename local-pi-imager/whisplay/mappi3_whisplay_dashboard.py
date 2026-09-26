@@ -666,8 +666,7 @@ def draw_herbie_mood():
     p = herbie_asset_path_from_ref(blink_face(mood) if blinking else herbie_gaze_ref(mood))
     if p:
         try:
-            face = Image.open(p).convert('RGBA')
-            face.thumbnail((196, 136), Image.LANCZOS)
+            face = face_image(p, (196, 136))
             x = (W - face.width) // 2
             y = 44 + max(0, (132 - face.height) // 2)
             img.paste(face, (x, y), face)

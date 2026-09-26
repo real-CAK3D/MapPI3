@@ -52,13 +52,25 @@ app = 'whisplay-mappi3-dashboard'
 print('exit', rpc('app.exit.request', {'app_id': app}))
 # Launch only once the old dashboard has fully exited; a launch sent while it is still shutting
 # down is parked as "already running" and then dropped, leaving the menu on screen.
-for _ in range(60):
+import os
+def dash_running():
+    for pid in os.listdir('/proc'):
+        if pid.isdigit():
+            try:
+                if b'mappi3_whisplay_dashboard' in open(f'/proc/{pid}/cmdline', 'rb').read(): return True
+            except OSError: pass
+    return False
+for _ in range(120):
     time.sleep(0.5)
-    if not (rpc('health.ping').get('payload') or {}).get('foreground_app_id'):
+    if not (rpc('health.ping').get('payload') or {}).get('foreground_app_id') and not dash_running():
         break
-print('launch', rpc('app.launch', {'app_id': app}))
-time.sleep(8)
-print('foreground', (rpc('health.ping').get('payload') or {}).get('foreground_app_id'))
+time.sleep(1)
+for attempt in range(3):
+    print('launch', rpc('app.launch', {'app_id': app}))
+    time.sleep(10)
+    fg = (rpc('health.ping').get('payload') or {}).get('foreground_app_id')
+    print('foreground', fg)
+    if fg == app: break
 PY
 sleep 6
 ls -la /tmp/whisplay-fb-* 2>/dev/null || true

@@ -23,8 +23,18 @@ RED = (250, 95, 95)
 WHITE = (236, 246, 255)
 DIM = (130, 150, 168)
 
+try:
+    import numpy as _np
+except Exception:  # numpy is optional; the pure-Python path below still works
+    _np = None
+
 def rgb565_bytes(img: Image.Image) -> bytes:
+    """RGB888 -> big-endian RGB565 for the Whisplay framebuffer (numpy: ~100x faster on the Zero)."""
     img = img.convert('RGB')
+    if _np is not None:
+        a = _np.asarray(img, dtype=_np.uint16)
+        v = ((a[..., 0] & 0xF8) << 8) | ((a[..., 1] & 0xFC) << 3) | (a[..., 2] >> 3)
+        return v.astype('>u2').tobytes()
     out = bytearray(W * H * 2)
     i = 0
     for r, g, b in img.getdata():
@@ -33,6 +43,19 @@ def rgb565_bytes(img: Image.Image) -> bytes:
         out[i+1] = v & 255
         i += 2
     return bytes(out)
+
+_FACE_CACHE = {}
+def face_image(path, box):
+    """Herbie art decoded and resized once per size, then reused every frame."""
+    key = (str(path), box)
+    img = _FACE_CACHE.get(key)
+    if img is None:
+        img = Image.open(path).convert('RGBA')
+        img.thumbnail(box, Image.LANCZOS)
+        if len(_FACE_CACHE) > 160:
+            _FACE_CACHE.clear()
+        _FACE_CACHE[key] = img
+    return img
 
 def font(size=16, bold=False):
     names = [
@@ -259,8 +282,7 @@ def draw_face(mood='happy', caption='ready to roam', blink=False):
     d.text((16, 14), 'Herbie', font=F_TITLE, fill=accent)
     if p:
         try:
-            face = Image.open(p).convert('RGBA')
-            face.thumbnail((210, 158), Image.LANCZOS)
+            face = face_image(p, (210, 158))
             x = (W - face.width) // 2
             y = 54 + max(0, (150 - face.height) // 2)
             img.paste(face, (x, y), face)
