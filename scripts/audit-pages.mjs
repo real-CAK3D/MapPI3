@@ -118,9 +118,11 @@ results.push({ label:'Bottom nav IA', ok: JSON.stringify(bottomLabels) === JSON.
 for (const top of ['Explore','Navigate','Weather','Camp','Adventure','Exercise','Survival','Settings']) {
   failures.length = 0;
   await openTopTab(top);
-  results.push(await assertLoads(`Top tab: ${top}`, top === 'Navigate' ? ['Active hike navigation','Drive GPS','Return-to-Car + TrailNav','Detailed map intelligence','Guide AI'] : top === 'Camp' ? ['Camp','camp mode','Camp Plan','Games'] : top === 'Adventure' ? ['Adventure Timeline','Add event','mobile calm view','Replay + search'] : top === 'Survival' ? ['Survival + MapPI3new','Emergency Mode','Survival Trainer'] : top === 'Settings' ? ['Pi connection summary','Network','Hardware','Bluetooth','Sense HAT'] : top === 'Weather' ? ['Next 48 hours','10 days','Weather Center'] : top === 'Exercise' ? ['Today','calories left','Exercise'] : top));
+  results.push(await assertLoads(`Top tab: ${top}`, top === 'Navigate' ? ['Active hike navigation','Drive GPS','Return-to-Car + TrailNav','Detailed map intelligence','Guide AI'] : top === 'Camp' ? ['Camp','camp mode','Camp Plan','Games'] : top === 'Adventure' ? ['Journal','Globe','Replay','Add a note','Last 7 days'] : top === 'Survival' ? ['Survival + MapPI3new','Emergency Mode','Survival Trainer'] : top === 'Settings' ? ['Pi connection summary','Network','Hardware','Bluetooth','Sense HAT','Connections'] : top === 'Weather' ? ['Next 48 hours','10 days','Weather Center'] : top === 'Exercise' ? ['Today','calories left','Exercise'] : top));
 }
 await openTopTab('Adventure');
+await clickText('Replay');
+await new Promise(r => window.setTimeout(r, 200));
 await clickText('Play replay');
 results.push(await assertLoads('Adventure replay controls', ['Replay + search','Play replay','Speed']));
 const searchInput = [...window.document.querySelectorAll('input')].find(el => String(el.placeholder || '').includes('Search notes'));
@@ -130,6 +132,9 @@ valueSetter.call(searchInput, 'water');
 searchInput.dispatchEvent(new window.Event('input', { bubbles: true }));
 await new Promise(r => window.setTimeout(r, 160));
 results.push(await assertLoads('Adventure search results', ['Water','water','Search']));
+await clickText('Journal');
+await new Promise(r => window.setTimeout(r, 200));
+results.push(await assertLoads('Adventure journal', ['Journal','Search your journal']));
 await openTopTab('Survival');
 for (const sub of ['Emergency Mode','Survival Trainer']) {
   failures.length = 0;
