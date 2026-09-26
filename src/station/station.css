@@ -711,3 +711,6 @@ body.station.night{--dh-burn:#8fd694}
 .dh-bar i,.dh-key.eat{background:var(--dh-eat)}
 .dh-bar b,.dh-key.burn{background:var(--dh-burn)}
 @media (max-width:520px){.dh-sums{grid-template-columns:1fr 1fr}}
+.stats-check{margin:8px 0;padding:8px 10px;border-left:3px solid var(--st-line);background:var(--st-panel);border-radius:6px;font-size:13px;color:var(--st-ink)}
+.stats-check b{margin-right:4px}
+.stats-check.measured{border-left-color:var(--st-good)}.stats-check.corrected{border-left-color:var(--st-water)}.stats-check.approximate{border-left-color:var(--st-warn)}

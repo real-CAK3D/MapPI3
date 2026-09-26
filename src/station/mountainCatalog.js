@@ -46,6 +46,7 @@ export function catalogRoute(mountain, trail) {
     tags: ['mountain', 'summit', 'openstreetmap', String(mountain.state || '').toLowerCase()],
     geometry: { type: 'LineString', coordinates: line },
     geometryQuality: 'OpenStreetMap trail network',
+    statsCheck: { status: 'measured', note: 'Measured along the mapped OpenStreetMap trail, with gain from terrain elevation data. Mapped distances usually run 5 to 15% shorter than a GPS track of the same hike.' },
     source: 'OpenStreetMap contributors (ODbL)',
     waypoints: [
       { id: `${trail.id}-th`, name: `${trail.name.split(' to ')[0]} trailhead`, type: 'Start', mile: 0, lat: thLat, lon: thLon, elevationFt: trail.trailheadEleFt },
@@ -74,9 +75,12 @@ export function catalogTwin(route, catalog, mountainName) {
     // Older entries used rough planning lines, so also match the trail's own words ("Brook", "Parker Ridge").
     const skip = new Set(['trail', 'loop', 'path', 'via', 'the', 'mount', 'mountain', 'summit', ...String(m.name).toLowerCase().split(/[^a-z]+/)]);
     const words = String(route.name || '').toLowerCase().split(/[^a-z]+/).filter(w => w.length > 3 && !skip.has(w));
-    const named = words.length && m.trails.find(tr => km([c[1], c[0]], tr.trailhead) < 5 && words.every(w => tr.name.toLowerCase().includes(w)));
+    // Many older lines are rough sketches whose start can be kilometres off, so these two checks
+    // go by the summit (within 15 km) instead of the trailhead.
+    const nearSummit = km([c[1], c[0]], [m.lat, m.lon]) < 15;
+    const named = words.length && nearSummit && m.trails.find(tr => words.every(w => tr.name.toLowerCase().includes(w)));
     if (named) return named.id;
-    if (!words.length && km([c[1], c[0]], [m.lat, m.lon]) < 5) return m.trails[0].id;
+    if (!words.length && nearSummit) return m.trails[0].id;
   }
   return null;
 }

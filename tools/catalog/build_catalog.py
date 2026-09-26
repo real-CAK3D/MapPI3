@@ -228,7 +228,7 @@ for peak in peaks:
         score = up / 1000 + hike_mi / 3
         hours = hike_mi / 2 + up / 2000
         m['trails'].append({'name': nm, 'hikeMi': hike_mi, 'oneWayMi': round(d / 1609.344, 2), 'routeType': 'Out-and-back', 'climbFt': round(climb), 'gainFt': up,
-            'difficulty': 'Easy' if score < 1.3 else 'Moderate' if score < 2.8 else 'Hard', 'estimatedTime': f'{int(hours)}h {int(round((hours % 1) * 60)):02d}m',
+            'difficulty': 'Easy' if score < 1.3 else 'Moderate' if score < 2.8 else 'Hard', 'estimatedTime': f'{int(round(hours * 60)) // 60}h {int(round(hours * 60)) % 60:02d}m',
             'trailhead': [round(v[0], 5), round(v[1], 5)], 'trailheadEleFt': round(peak['ele_m'] * 3.28084 - climb),
             'alsoSummits': others[:4], 'line': [[round(p[1], 5), round(p[0], 5)] for p in dp_simplify(path)]})
 mountains = {k: m for k, m in mountains.items() if m['trails']}

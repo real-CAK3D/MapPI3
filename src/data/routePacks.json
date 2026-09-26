@@ -204,7 +204,12 @@
     ],
     "markerDensity": "rich route markers from attached geometry",
     "routeFamily": "speck-pond",
-    "approach": "Success Pond Road New Hampshire"
+    "approach": "Success Pond Road New Hampshire",
+    "statsCheck": {
+      "status": "approximate",
+      "checked": "2026-09-25",
+      "note": "Distance and gain are planning estimates and the map line is a sketch. Not yet measured on a mapped trail."
+    }
   },
   {
     "id": "hh-ridge",
@@ -419,7 +424,12 @@
         "color": "#ffd36a"
       }
     ],
-    "markerDensity": "rich route markers from attached geometry"
+    "markerDensity": "rich route markers from attached geometry",
+    "statsCheck": {
+      "status": "approximate",
+      "checked": "2026-09-25",
+      "note": "Distance and gain are planning estimates and the map line is a sketch. Not yet measured on a mapped trail."
+    }
   },
   {
     "id": "rrg-sky",
@@ -599,7 +609,12 @@
         "color": "#ff8bd1"
       }
     ],
-    "markerDensity": "rich route markers from attached geometry"
+    "markerDensity": "rich route markers from attached geometry",
+    "statsCheck": {
+      "status": "approximate",
+      "checked": "2026-09-25",
+      "note": "Distance and gain are planning estimates and the map line is a sketch. Not yet measured on a mapped trail."
+    }
   },
   {
     "id": "mohican-scout",
@@ -770,7 +785,12 @@
         "color": "#b997ff"
       }
     ],
-    "markerDensity": "rich route markers from attached geometry"
+    "markerDensity": "rich route markers from attached geometry",
+    "statsCheck": {
+      "status": "approximate",
+      "checked": "2026-09-25",
+      "note": "Distance and gain are planning estimates and the map line is a sketch. Not yet measured on a mapped trail."
+    }
   },
   {
     "id": "me-baxter-knifes-edge",
@@ -782,9 +802,9 @@
     "difficulty": "Hard",
     "routeType": "Out-and-back",
     "status": "Ready",
-    "distanceMiles": 5.2,
-    "estimatedTime": "4h 10m",
-    "elevationGainFt": 2100,
+    "distanceMiles": 9.6,
+    "estimatedTime": "8h 00m",
+    "elevationGainFt": 4100,
     "storageEstimateMb": 248,
     "tags": [
       "maine",
@@ -963,7 +983,12 @@
         "color": "#ff7e5f"
       }
     ],
-    "markerDensity": "rich route markers from attached geometry"
+    "markerDensity": "rich route markers from attached geometry",
+    "statsCheck": {
+      "status": "corrected",
+      "checked": "2026-09-25",
+      "note": "Was 5.2 mi / 2,100 ft, far too low. Crossing the Knife Edge from Roaring Brook (Helon Taylor up, Saddle/Chimney Pond down) is about 9.6 mi and 4,100 ft."
+    }
   },
   {
     "id": "me-acadia-beehive",
@@ -1172,7 +1197,12 @@
         "color": "#6cf0c2"
       }
     ],
-    "markerDensity": "rich route markers from attached geometry"
+    "markerDensity": "rich route markers from attached geometry",
+    "statsCheck": {
+      "status": "approximate",
+      "checked": "2026-09-25",
+      "note": "Distance and gain are planning estimates and the map line is a sketch. Not yet measured on a mapped trail."
+    }
   },
   {
     "id": "me-acadia-precipice",
@@ -1365,7 +1395,12 @@
         "color": "#9ce36c"
       }
     ],
-    "markerDensity": "rich route markers from attached geometry"
+    "markerDensity": "rich route markers from attached geometry",
+    "statsCheck": {
+      "status": "approximate",
+      "checked": "2026-09-25",
+      "note": "Distance and gain are planning estimates and the map line is a sketch. Not yet measured on a mapped trail."
+    }
   },
   {
     "id": "me-camden-maiden-cliff",
@@ -1558,7 +1593,12 @@
         "color": "#4bd2ff"
       }
     ],
-    "markerDensity": "rich route markers from attached geometry"
+    "markerDensity": "rich route markers from attached geometry",
+    "statsCheck": {
+      "status": "approximate",
+      "checked": "2026-09-25",
+      "note": "Distance and gain are planning estimates and the map line is a sketch. Not yet measured on a mapped trail."
+    }
   },
   {
     "id": "me-grafton-table-rock",
@@ -2203,7 +2243,12 @@
         "color": "#ffd36a"
       }
     ],
-    "markerDensity": "rich route markers from attached geometry"
+    "markerDensity": "rich route markers from attached geometry",
+    "statsCheck": {
+      "status": "approximate",
+      "checked": "2026-09-25",
+      "note": "Distance and gain are planning estimates and the map line is a sketch. Not yet measured on a mapped trail."
+    }
   },
   {
     "id": "me-tumbledown-brook",
@@ -2396,7 +2441,12 @@
         "color": "#ff8bd1"
       }
     ],
-    "markerDensity": "rich route markers from attached geometry"
+    "markerDensity": "rich route markers from attached geometry",
+    "statsCheck": {
+      "status": "approximate",
+      "checked": "2026-09-25",
+      "note": "Distance and gain are planning estimates and the map line is a sketch. Not yet measured on a mapped trail."
+    }
   },
   {
     "id": "me-bradbury-summit",
@@ -2605,7 +2655,12 @@
         "color": "#b997ff"
       }
     ],
-    "markerDensity": "rich route markers from attached geometry"
+    "markerDensity": "rich route markers from attached geometry",
+    "statsCheck": {
+      "status": "approximate",
+      "checked": "2026-09-25",
+      "note": "Distance and gain are planning estimates and the map line is a sketch. Not yet measured on a mapped trail."
+    }
   },
   {
     "id": "me-sebago-douglas",
@@ -2814,7 +2869,12 @@
         "color": "#ff7e5f"
       }
     ],
-    "markerDensity": "rich route markers from attached geometry"
+    "markerDensity": "rich route markers from attached geometry",
+    "statsCheck": {
+      "status": "approximate",
+      "checked": "2026-09-25",
+      "note": "Distance and gain are planning estimates and the map line is a sketch. Not yet measured on a mapped trail."
+    }
   },
   {
     "id": "nh-franconia-ridge",
@@ -3023,7 +3083,12 @@
         "color": "#6cf0c2"
       }
     ],
-    "markerDensity": "rich route markers from attached geometry"
+    "markerDensity": "rich route markers from attached geometry",
+    "statsCheck": {
+      "status": "approximate",
+      "checked": "2026-09-25",
+      "note": "Distance and gain are planning estimates and the map line is a sketch. Not yet measured on a mapped trail."
+    }
   },
   {
     "id": "nh-mount-major",
@@ -3215,7 +3280,12 @@
         "color": "#9ce36c"
       }
     ],
-    "markerDensity": "rich route markers from attached geometry"
+    "markerDensity": "rich route markers from attached geometry",
+    "statsCheck": {
+      "status": "approximate",
+      "checked": "2026-09-25",
+      "note": "Distance and gain are planning estimates and the map line is a sketch. Not yet measured on a mapped trail."
+    }
   },
   {
     "id": "vt-camel-hump",
@@ -3408,7 +3478,12 @@
         "color": "#4bd2ff"
       }
     ],
-    "markerDensity": "rich route markers from attached geometry"
+    "markerDensity": "rich route markers from attached geometry",
+    "statsCheck": {
+      "status": "approximate",
+      "checked": "2026-09-25",
+      "note": "Distance and gain are planning estimates and the map line is a sketch. Not yet measured on a mapped trail."
+    }
   },
   {
     "id": "ma-wachusett-loop",
@@ -3617,7 +3692,12 @@
         "color": "#ffd36a"
       }
     ],
-    "markerDensity": "rich route markers from attached geometry"
+    "markerDensity": "rich route markers from attached geometry",
+    "statsCheck": {
+      "status": "approximate",
+      "checked": "2026-09-25",
+      "note": "Distance and gain are planning estimates and the map line is a sketch. Not yet measured on a mapped trail."
+    }
   },
   {
     "id": "ny-breakneck-ridge",
@@ -3826,7 +3906,12 @@
         "color": "#ff8bd1"
       }
     ],
-    "markerDensity": "rich route markers from attached geometry"
+    "markerDensity": "rich route markers from attached geometry",
+    "statsCheck": {
+      "status": "approximate",
+      "checked": "2026-09-25",
+      "note": "Distance and gain are planning estimates and the map line is a sketch. Not yet measured on a mapped trail."
+    }
   },
   {
     "id": "pa-ricketts-falls",
@@ -4035,7 +4120,12 @@
         "color": "#b997ff"
       }
     ],
-    "markerDensity": "rich route markers from attached geometry"
+    "markerDensity": "rich route markers from attached geometry",
+    "statsCheck": {
+      "status": "approximate",
+      "checked": "2026-09-25",
+      "note": "Distance and gain are planning estimates and the map line is a sketch. Not yet measured on a mapped trail."
+    }
   },
   {
     "id": "wv-dolly-sods-bear-rocks",
@@ -4228,7 +4318,12 @@
         "color": "#ff7e5f"
       }
     ],
-    "markerDensity": "rich route markers from attached geometry"
+    "markerDensity": "rich route markers from attached geometry",
+    "statsCheck": {
+      "status": "approximate",
+      "checked": "2026-09-25",
+      "note": "Distance and gain are planning estimates and the map line is a sketch. Not yet measured on a mapped trail."
+    }
   },
   {
     "id": "ky-natural-bridge-loop",
@@ -4437,7 +4532,12 @@
         "color": "#6cf0c2"
       }
     ],
-    "markerDensity": "rich route markers from attached geometry"
+    "markerDensity": "rich route markers from attached geometry",
+    "statsCheck": {
+      "status": "approximate",
+      "checked": "2026-09-25",
+      "note": "Distance and gain are planning estimates and the map line is a sketch. Not yet measured on a mapped trail."
+    }
   },
   {
     "id": "oh-old-mans-cave",
@@ -4646,7 +4746,12 @@
         "color": "#9ce36c"
       }
     ],
-    "markerDensity": "rich route markers from attached geometry"
+    "markerDensity": "rich route markers from attached geometry",
+    "statsCheck": {
+      "status": "approximate",
+      "checked": "2026-09-25",
+      "note": "Distance and gain are planning estimates and the map line is a sketch. Not yet measured on a mapped trail."
+    }
   },
   {
     "id": "oh-ash-cave-rim",
@@ -4855,7 +4960,12 @@
         "color": "#4bd2ff"
       }
     ],
-    "markerDensity": "rich route markers from attached geometry"
+    "markerDensity": "rich route markers from attached geometry",
+    "statsCheck": {
+      "status": "approximate",
+      "checked": "2026-09-25",
+      "note": "Distance and gain are planning estimates and the map line is a sketch. Not yet measured on a mapped trail."
+    }
   },
   {
     "id": "me-pleasant-mountain",
@@ -5048,7 +5158,12 @@
         "color": "#ffd36a"
       }
     ],
-    "markerDensity": "rich route markers from attached geometry"
+    "markerDensity": "rich route markers from attached geometry",
+    "statsCheck": {
+      "status": "approximate",
+      "checked": "2026-09-25",
+      "note": "Distance and gain are planning estimates and the map line is a sketch. Not yet measured on a mapped trail."
+    }
   },
   {
     "id": "me-moxie-falls",
@@ -5241,7 +5356,12 @@
         "color": "#ff8bd1"
       }
     ],
-    "markerDensity": "rich route markers from attached geometry"
+    "markerDensity": "rich route markers from attached geometry",
+    "statsCheck": {
+      "status": "approximate",
+      "checked": "2026-09-25",
+      "note": "Distance and gain are planning estimates and the map line is a sketch. Not yet measured on a mapped trail."
+    }
   },
   {
     "id": "la-thorncrag-loop",
@@ -5453,7 +5573,12 @@
         "color": "#b997ff"
       }
     ],
-    "markerDensity": "rich route markers from attached geometry"
+    "markerDensity": "rich route markers from attached geometry",
+    "statsCheck": {
+      "status": "approximate",
+      "checked": "2026-09-25",
+      "note": "Distance and gain are planning estimates and the map line is a sketch. Not yet measured on a mapped trail."
+    }
   },
   {
     "id": "la-mount-apatite-loop",
@@ -5664,7 +5789,12 @@
         "color": "#ff7e5f"
       }
     ],
-    "markerDensity": "rich route markers from attached geometry"
+    "markerDensity": "rich route markers from attached geometry",
+    "statsCheck": {
+      "status": "approximate",
+      "checked": "2026-09-25",
+      "note": "Distance and gain are planning estimates and the map line is a sketch. Not yet measured on a mapped trail."
+    }
   },
   {
     "id": "la-androscoggin-riverlands",
@@ -5860,7 +5990,12 @@
         "color": "#6cf0c2"
       }
     ],
-    "markerDensity": "rich route markers from attached geometry"
+    "markerDensity": "rich route markers from attached geometry",
+    "statsCheck": {
+      "status": "approximate",
+      "checked": "2026-09-25",
+      "note": "Distance and gain are planning estimates and the map line is a sketch. Not yet measured on a mapped trail."
+    }
   },
   {
     "id": "la-riverwalk-loop",
@@ -6055,7 +6190,12 @@
         "color": "#9ce36c"
       }
     ],
-    "markerDensity": "rich route markers from attached geometry"
+    "markerDensity": "rich route markers from attached geometry",
+    "statsCheck": {
+      "status": "approximate",
+      "checked": "2026-09-25",
+      "note": "Distance and gain are planning estimates and the map line is a sketch. Not yet measured on a mapped trail."
+    }
   },
   {
     "id": "la-range-ponds-loop",
@@ -6267,7 +6407,12 @@
         "color": "#4bd2ff"
       }
     ],
-    "markerDensity": "rich route markers from attached geometry"
+    "markerDensity": "rich route markers from attached geometry",
+    "statsCheck": {
+      "status": "approximate",
+      "checked": "2026-09-25",
+      "note": "Distance and gain are planning estimates and the map line is a sketch. Not yet measured on a mapped trail."
+    }
   },
   {
     "id": "la-david-rancourt-preserve",
@@ -6478,7 +6623,12 @@
         "color": "#ffd36a"
       }
     ],
-    "markerDensity": "rich route markers from attached geometry"
+    "markerDensity": "rich route markers from attached geometry",
+    "statsCheck": {
+      "status": "approximate",
+      "checked": "2026-09-25",
+      "note": "Distance and gain are planning estimates and the map line is a sketch. Not yet measured on a mapped trail."
+    }
   },
   {
     "id": "la-sherwood-forest",
@@ -6688,7 +6838,12 @@
         "color": "#ff8bd1"
       }
     ],
-    "markerDensity": "rich route markers from attached geometry"
+    "markerDensity": "rich route markers from attached geometry",
+    "statsCheck": {
+      "status": "approximate",
+      "checked": "2026-09-25",
+      "note": "Distance and gain are planning estimates and the map line is a sketch. Not yet measured on a mapped trail."
+    }
   },
   {
     "id": "la-lake-auburn-overlook",
@@ -6883,7 +7038,12 @@
         "color": "#b997ff"
       }
     ],
-    "markerDensity": "rich route markers from attached geometry"
+    "markerDensity": "rich route markers from attached geometry",
+    "statsCheck": {
+      "status": "approximate",
+      "checked": "2026-09-25",
+      "note": "Distance and gain are planning estimates and the map line is a sketch. Not yet measured on a mapped trail."
+    }
   },
   {
     "id": "me-tumbledown-loop-trail",
@@ -7095,7 +7255,12 @@
         "color": "#ff7e5f"
       }
     ],
-    "markerDensity": "rich route markers from attached geometry"
+    "markerDensity": "rich route markers from attached geometry",
+    "statsCheck": {
+      "status": "approximate",
+      "checked": "2026-09-25",
+      "note": "Distance and gain are planning estimates and the map line is a sketch. Not yet measured on a mapped trail."
+    }
   },
   {
     "id": "me-tumbledown-parker-ridge",
@@ -7290,7 +7455,12 @@
         "color": "#6cf0c2"
       }
     ],
-    "markerDensity": "rich route markers from attached geometry"
+    "markerDensity": "rich route markers from attached geometry",
+    "statsCheck": {
+      "status": "approximate",
+      "checked": "2026-09-25",
+      "note": "Distance and gain are planning estimates and the map line is a sketch. Not yet measured on a mapped trail."
+    }
   },
   {
     "id": "me-little-jackson",
@@ -7485,7 +7655,12 @@
         "color": "#9ce36c"
       }
     ],
-    "markerDensity": "rich route markers from attached geometry"
+    "markerDensity": "rich route markers from attached geometry",
+    "statsCheck": {
+      "status": "approximate",
+      "checked": "2026-09-25",
+      "note": "Distance and gain are planning estimates and the map line is a sketch. Not yet measured on a mapped trail."
+    }
   },
   {
     "id": "me-blueberry-mountain-stone-house",
@@ -7695,7 +7870,12 @@
         "color": "#4bd2ff"
       }
     ],
-    "markerDensity": "rich route markers from attached geometry"
+    "markerDensity": "rich route markers from attached geometry",
+    "statsCheck": {
+      "status": "approximate",
+      "checked": "2026-09-25",
+      "note": "Distance and gain are planning estimates and the map line is a sketch. Not yet measured on a mapped trail."
+    }
   },
   {
     "id": "me-mount-blue-trail",
@@ -7889,7 +8069,12 @@
         "color": "#ffd36a"
       }
     ],
-    "markerDensity": "rich route markers from attached geometry"
+    "markerDensity": "rich route markers from attached geometry",
+    "statsCheck": {
+      "status": "approximate",
+      "checked": "2026-09-25",
+      "note": "Distance and gain are planning estimates and the map line is a sketch. Not yet measured on a mapped trail."
+    }
   },
   {
     "id": "me-center-hill-nature",
@@ -8099,7 +8284,12 @@
         "color": "#ff8bd1"
       }
     ],
-    "markerDensity": "rich route markers from attached geometry"
+    "markerDensity": "rich route markers from attached geometry",
+    "statsCheck": {
+      "status": "approximate",
+      "checked": "2026-09-25",
+      "note": "Distance and gain are planning estimates and the map line is a sketch. Not yet measured on a mapped trail."
+    }
   },
   {
     "id": "me-speck-pond-route26-at",
@@ -8519,7 +8709,12 @@
     ],
     "markerDensity": "rich route markers from attached geometry",
     "routeFamily": "speck-pond",
-    "approach": "Route 26 Newry/Grafton Notch Maine"
+    "approach": "Route 26 Newry/Grafton Notch Maine",
+    "statsCheck": {
+      "status": "approximate",
+      "checked": "2026-09-25",
+      "note": "Distance and gain are planning estimates and the map line is a sketch. Not yet measured on a mapped trail."
+    }
   },
   {
     "id": "me-old-speck-at-route26",
@@ -9297,7 +9492,12 @@
         "color": "#ff7e5f"
       }
     ],
-    "markerDensity": "rich route markers from attached geometry"
+    "markerDensity": "rich route markers from attached geometry",
+    "statsCheck": {
+      "status": "approximate",
+      "checked": "2026-09-25",
+      "note": "Distance and gain are planning estimates and the map line is a sketch. Not yet measured on a mapped trail."
+    }
   },
   {
     "id": "me-eyebrow-old-speck-loop",
@@ -10449,7 +10649,12 @@
         "color": "#6cf0c2"
       }
     ],
-    "markerDensity": "rich route markers from attached geometry"
+    "markerDensity": "rich route markers from attached geometry",
+    "statsCheck": {
+      "status": "approximate",
+      "checked": "2026-09-25",
+      "note": "Distance and gain are planning estimates and the map line is a sketch. Not yet measured on a mapped trail."
+    }
   },
   {
     "id": "me-table-rock-grafton-notch",
@@ -11303,7 +11508,12 @@
         "color": "#4bd2ff"
       }
     ],
-    "markerDensity": "rich route markers from attached geometry"
+    "markerDensity": "rich route markers from attached geometry",
+    "statsCheck": {
+      "status": "approximate",
+      "checked": "2026-09-25",
+      "note": "Distance and gain are planning estimates and the map line is a sketch. Not yet measured on a mapped trail."
+    }
   },
   {
     "id": "me-baldpate-east-peak-at",
@@ -11499,7 +11709,12 @@
         "color": "#ffd36a"
       }
     ],
-    "markerDensity": "rich route markers from attached geometry"
+    "markerDensity": "rich route markers from attached geometry",
+    "statsCheck": {
+      "status": "approximate",
+      "checked": "2026-09-25",
+      "note": "Distance and gain are planning estimates and the map line is a sketch. Not yet measured on a mapped trail."
+    }
   },
   {
     "id": "me-puzzle-mountain-grafton-loop",
@@ -11693,7 +11908,12 @@
         "color": "#ff8bd1"
       }
     ],
-    "markerDensity": "rich route markers from attached geometry"
+    "markerDensity": "rich route markers from attached geometry",
+    "statsCheck": {
+      "status": "approximate",
+      "checked": "2026-09-25",
+      "note": "Distance and gain are planning estimates and the map line is a sketch. Not yet measured on a mapped trail."
+    }
   },
   {
     "id": "me-sunday-river-whitecap",
@@ -11888,7 +12108,12 @@
         "color": "#b997ff"
       }
     ],
-    "markerDensity": "rich route markers from attached geometry"
+    "markerDensity": "rich route markers from attached geometry",
+    "statsCheck": {
+      "status": "approximate",
+      "checked": "2026-09-25",
+      "note": "Distance and gain are planning estimates and the map line is a sketch. Not yet measured on a mapped trail."
+    }
   },
   {
     "id": "me-step-falls-preserve",
@@ -12084,7 +12309,12 @@
         "color": "#ff7e5f"
       }
     ],
-    "markerDensity": "rich route markers from attached geometry"
+    "markerDensity": "rich route markers from attached geometry",
+    "statsCheck": {
+      "status": "approximate",
+      "checked": "2026-09-25",
+      "note": "Distance and gain are planning estimates and the map line is a sketch. Not yet measured on a mapped trail."
+    }
   },
   {
     "id": "me-screw-auger-falls",
@@ -12279,7 +12509,12 @@
         "color": "#6cf0c2"
       }
     ],
-    "markerDensity": "rich route markers from attached geometry"
+    "markerDensity": "rich route markers from attached geometry",
+    "statsCheck": {
+      "status": "approximate",
+      "checked": "2026-09-25",
+      "note": "Distance and gain are planning estimates and the map line is a sketch. Not yet measured on a mapped trail."
+    }
   },
   {
     "id": "me-moose-cave-mother-walker",
@@ -12474,7 +12709,12 @@
         "color": "#9ce36c"
       }
     ],
-    "markerDensity": "rich route markers from attached geometry"
+    "markerDensity": "rich route markers from attached geometry",
+    "statsCheck": {
+      "status": "approximate",
+      "checked": "2026-09-25",
+      "note": "Distance and gain are planning estimates and the map line is a sketch. Not yet measured on a mapped trail."
+    }
   },
   {
     "id": "me-mahoosuc-notch-at",
@@ -14565,7 +14805,12 @@
         "color": "#4bd2ff"
       }
     ],
-    "markerDensity": "rich route markers from attached geometry"
+    "markerDensity": "rich route markers from attached geometry",
+    "statsCheck": {
+      "status": "approximate",
+      "checked": "2026-09-25",
+      "note": "Distance and gain are planning estimates and the map line is a sketch. Not yet measured on a mapped trail."
+    }
   },
   {
     "id": "me-popham-morse-mountain",
@@ -14743,7 +14988,12 @@
         "color": "#9ce36c"
       }
     ],
-    "markerDensity": "seed route markers from approximate geometry"
+    "markerDensity": "seed route markers from approximate geometry",
+    "statsCheck": {
+      "status": "approximate",
+      "checked": "2026-09-25",
+      "note": "Distance and gain are planning estimates and the map line is a sketch. Not yet measured on a mapped trail."
+    }
   },
   {
     "id": "me-bald-pate-preserve",
@@ -14929,7 +15179,12 @@
         "color": "#9ce36c"
       }
     ],
-    "markerDensity": "seed route markers from approximate geometry"
+    "markerDensity": "seed route markers from approximate geometry",
+    "statsCheck": {
+      "status": "approximate",
+      "checked": "2026-09-25",
+      "note": "Distance and gain are planning estimates and the map line is a sketch. Not yet measured on a mapped trail."
+    }
   },
   {
     "id": "me-morse-baldwin-hill",
@@ -15115,7 +15370,12 @@
         "color": "#9ce36c"
       }
     ],
-    "markerDensity": "seed route markers from approximate geometry"
+    "markerDensity": "seed route markers from approximate geometry",
+    "statsCheck": {
+      "status": "approximate",
+      "checked": "2026-09-25",
+      "note": "Distance and gain are planning estimates and the map line is a sketch. Not yet measured on a mapped trail."
+    }
   },
   {
     "id": "me-blueberry-mountain",
@@ -15480,7 +15740,12 @@
         "color": "#9ce36c"
       }
     ],
-    "markerDensity": "seed route markers from approximate geometry"
+    "markerDensity": "seed route markers from approximate geometry",
+    "statsCheck": {
+      "status": "approximate",
+      "checked": "2026-09-25",
+      "note": "Distance and gain are planning estimates and the map line is a sketch. Not yet measured on a mapped trail."
+    }
   },
   {
     "id": "me-bigelow-avery",
@@ -15658,7 +15923,12 @@
         "color": "#9ce36c"
       }
     ],
-    "markerDensity": "seed route markers from approximate geometry"
+    "markerDensity": "seed route markers from approximate geometry",
+    "statsCheck": {
+      "status": "approximate",
+      "checked": "2026-09-25",
+      "note": "Distance and gain are planning estimates and the map line is a sketch. Not yet measured on a mapped trail."
+    }
   },
   {
     "id": "me-cutler-coast",
@@ -15671,8 +15941,8 @@
     "routeType": "Loop",
     "status": "Ready",
     "distanceMiles": 9.2,
-    "estimatedTime": "5h 35m",
-    "elevationGainFt": 2826,
+    "estimatedTime": "5h 08m",
+    "elevationGainFt": 1050,
     "storageEstimateMb": 192,
     "tags": [
       "maine",
@@ -15844,7 +16114,12 @@
         "color": "#9ce36c"
       }
     ],
-    "markerDensity": "seed route markers from approximate geometry"
+    "markerDensity": "seed route markers from approximate geometry",
+    "statsCheck": {
+      "status": "corrected",
+      "checked": "2026-09-25",
+      "note": "Gain was 2,826 ft; the Bold Coast loop gains about 1,000\u20131,050 ft (the coast only reaches ~200 ft)."
+    }
   },
   {
     "id": "me-gulf-hagas",
@@ -15857,8 +16132,8 @@
     "routeType": "Loop",
     "status": "Ready",
     "distanceMiles": 8.6,
-    "estimatedTime": "4h 17m",
-    "elevationGainFt": 2658,
+    "estimatedTime": "4h 50m",
+    "elevationGainFt": 1050,
     "storageEstimateMb": 182,
     "tags": [
       "maine",
@@ -16030,7 +16305,12 @@
         "color": "#9ce36c"
       }
     ],
-    "markerDensity": "seed route markers from approximate geometry"
+    "markerDensity": "seed route markers from approximate geometry",
+    "statsCheck": {
+      "status": "corrected",
+      "checked": "2026-09-25",
+      "note": "Gain was 2,658 ft; the rim loop gains about 1,050 ft (cross-checked)."
+    }
   },
   {
     "id": "me-deb-sconeag",
@@ -16216,7 +16496,12 @@
         "color": "#9ce36c"
       }
     ],
-    "markerDensity": "seed route markers from approximate geometry"
+    "markerDensity": "seed route markers from approximate geometry",
+    "statsCheck": {
+      "status": "approximate",
+      "checked": "2026-09-25",
+      "note": "Distance and gain are planning estimates and the map line is a sketch. Not yet measured on a mapped trail."
+    }
   },
   {
     "id": "me-mount-kineo",
@@ -16229,8 +16514,8 @@
     "routeType": "Loop",
     "status": "Ready",
     "distanceMiles": 3.4,
-    "estimatedTime": "2h 42m",
-    "elevationGainFt": 732,
+    "estimatedTime": "2h 09m",
+    "elevationGainFt": 900,
     "storageEstimateMb": 99,
     "tags": [
       "maine",
@@ -16402,7 +16687,12 @@
         "color": "#9ce36c"
       }
     ],
-    "markerDensity": "seed route markers from approximate geometry"
+    "markerDensity": "seed route markers from approximate geometry",
+    "statsCheck": {
+      "status": "corrected",
+      "checked": "2026-09-25",
+      "note": "Gain was 732 ft; corrected after cross-check."
+    }
   },
   {
     "id": "nh-lonesome-lake",
@@ -16414,9 +16704,9 @@
     "difficulty": "Moderate",
     "routeType": "Loop",
     "status": "Ready",
-    "distanceMiles": 3.2,
-    "estimatedTime": "2h 36m",
-    "elevationGainFt": 696,
+    "distanceMiles": 3.1,
+    "estimatedTime": "2h 04m",
+    "elevationGainFt": 1030,
     "storageEstimateMb": 96,
     "tags": [
       "nh",
@@ -16588,7 +16878,12 @@
         "color": "#9ce36c"
       }
     ],
-    "markerDensity": "seed route markers from approximate geometry"
+    "markerDensity": "seed route markers from approximate geometry",
+    "statsCheck": {
+      "status": "corrected",
+      "checked": "2026-09-25",
+      "note": "Gain was 696 ft; the climb from Lafayette Place to the lake is about 1,000 ft."
+    }
   },
   {
     "id": "nh-mount-willard",
@@ -16766,7 +17061,12 @@
         "color": "#9ce36c"
       }
     ],
-    "markerDensity": "seed route markers from approximate geometry"
+    "markerDensity": "seed route markers from approximate geometry",
+    "statsCheck": {
+      "status": "approximate",
+      "checked": "2026-09-25",
+      "note": "Distance and gain are planning estimates and the map line is a sketch. Not yet measured on a mapped trail."
+    }
   },
   {
     "id": "nh-cardigan-west-ridge",
@@ -16943,7 +17243,12 @@
         "color": "#9ce36c"
       }
     ],
-    "markerDensity": "seed route markers from approximate geometry"
+    "markerDensity": "seed route markers from approximate geometry",
+    "statsCheck": {
+      "status": "approximate",
+      "checked": "2026-09-25",
+      "note": "Distance and gain are planning estimates and the map line is a sketch. Not yet measured on a mapped trail."
+    }
   },
   {
     "id": "nh-welch-dickey",
@@ -16955,9 +17260,9 @@
     "difficulty": "Moderate",
     "routeType": "Loop",
     "status": "Ready",
-    "distanceMiles": 4.4,
-    "estimatedTime": "2h 12m",
-    "elevationGainFt": 912,
+    "distanceMiles": 4.3,
+    "estimatedTime": "3h 02m",
+    "elevationGainFt": 1770,
     "storageEstimateMb": 115,
     "tags": [
       "nh",
@@ -17129,7 +17434,12 @@
         "color": "#9ce36c"
       }
     ],
-    "markerDensity": "seed route markers from approximate geometry"
+    "markerDensity": "seed route markers from approximate geometry",
+    "statsCheck": {
+      "status": "corrected",
+      "checked": "2026-09-25",
+      "note": "Gain was 912 ft; the open-data catalog measures 1,560\u20131,690 ft to each summit, and the full loop is about 1,770 ft."
+    }
   },
   {
     "id": "nh-chocorua-piper",
@@ -17307,7 +17617,12 @@
         "color": "#9ce36c"
       }
     ],
-    "markerDensity": "seed route markers from approximate geometry"
+    "markerDensity": "seed route markers from approximate geometry",
+    "statsCheck": {
+      "status": "approximate",
+      "checked": "2026-09-25",
+      "note": "Distance and gain are planning estimates and the map line is a sketch. Not yet measured on a mapped trail."
+    }
   },
   {
     "id": "vt-mount-pisgah",
@@ -17485,7 +17800,12 @@
         "color": "#9ce36c"
       }
     ],
-    "markerDensity": "seed route markers from approximate geometry"
+    "markerDensity": "seed route markers from approximate geometry",
+    "statsCheck": {
+      "status": "approximate",
+      "checked": "2026-09-25",
+      "note": "Distance and gain are planning estimates and the map line is a sketch. Not yet measured on a mapped trail."
+    }
   },
   {
     "id": "vt-sterling-pond",
@@ -17663,7 +17983,12 @@
         "color": "#9ce36c"
       }
     ],
-    "markerDensity": "seed route markers from approximate geometry"
+    "markerDensity": "seed route markers from approximate geometry",
+    "statsCheck": {
+      "status": "approximate",
+      "checked": "2026-09-25",
+      "note": "Distance and gain are planning estimates and the map line is a sketch. Not yet measured on a mapped trail."
+    }
   },
   {
     "id": "ma-blue-hills-skyline",
@@ -17841,7 +18166,12 @@
         "color": "#9ce36c"
       }
     ],
-    "markerDensity": "seed route markers from approximate geometry"
+    "markerDensity": "seed route markers from approximate geometry",
+    "statsCheck": {
+      "status": "approximate",
+      "checked": "2026-09-25",
+      "note": "Distance and gain are planning estimates and the map line is a sketch. Not yet measured on a mapped trail."
+    }
   },
   {
     "id": "ma-mount-greylock",
@@ -18019,7 +18349,12 @@
         "color": "#9ce36c"
       }
     ],
-    "markerDensity": "seed route markers from approximate geometry"
+    "markerDensity": "seed route markers from approximate geometry",
+    "statsCheck": {
+      "status": "approximate",
+      "checked": "2026-09-25",
+      "note": "Distance and gain are planning estimates and the map line is a sketch. Not yet measured on a mapped trail."
+    }
   },
   {
     "id": "ny-adk-cascade-porter",
@@ -18031,9 +18366,9 @@
     "difficulty": "Hard",
     "routeType": "Out-and-back",
     "status": "Ready",
-    "distanceMiles": 6.0,
-    "estimatedTime": "3h 00m",
-    "elevationGainFt": 1930,
+    "distanceMiles": 5.7,
+    "estimatedTime": "4h 00m",
+    "elevationGainFt": 2290,
     "storageEstimateMb": 141,
     "tags": [
       "ny",
@@ -18197,7 +18532,12 @@
         "color": "#9ce36c"
       }
     ],
-    "markerDensity": "seed route markers from approximate geometry"
+    "markerDensity": "seed route markers from approximate geometry",
+    "statsCheck": {
+      "status": "corrected",
+      "checked": "2026-09-25",
+      "note": "Gain was 1,930 ft; corrected after cross-check (Cascade + Porter out-and-back \u2248 5.7 mi / 2,290 ft)."
+    }
   },
   {
     "id": "ny-adk-mount-jo",
@@ -18383,7 +18723,12 @@
         "color": "#9ce36c"
       }
     ],
-    "markerDensity": "seed route markers from approximate geometry"
+    "markerDensity": "seed route markers from approximate geometry",
+    "statsCheck": {
+      "status": "approximate",
+      "checked": "2026-09-25",
+      "note": "Distance and gain are planning estimates and the map line is a sketch. Not yet measured on a mapped trail."
+    }
   },
   {
     "id": "pa-pinnacle-pulpit",
@@ -18395,9 +18740,9 @@
     "difficulty": "Hard",
     "routeType": "Loop",
     "status": "Ready",
-    "distanceMiles": 8.7,
-    "estimatedTime": "4h 20m",
-    "elevationGainFt": 2686,
+    "distanceMiles": 9.0,
+    "estimatedTime": "5h 09m",
+    "elevationGainFt": 1300,
     "storageEstimateMb": 184,
     "tags": [
       "pa",
@@ -18569,7 +18914,12 @@
         "color": "#9ce36c"
       }
     ],
-    "markerDensity": "seed route markers from approximate geometry"
+    "markerDensity": "seed route markers from approximate geometry",
+    "statsCheck": {
+      "status": "corrected",
+      "checked": "2026-09-25",
+      "note": "Gain was 2,686 ft; the loop gains about 1,250\u20131,300 ft (cross-checked)."
+    }
   },
   {
     "id": "wv-seneca-rocks",
@@ -18581,9 +18931,9 @@
     "difficulty": "Moderate",
     "routeType": "Out-and-back",
     "status": "Ready",
-    "distanceMiles": 3.2,
-    "estimatedTime": "2h 36m",
-    "elevationGainFt": 696,
+    "distanceMiles": 3.7,
+    "estimatedTime": "2h 16m",
+    "elevationGainFt": 850,
     "storageEstimateMb": 96,
     "tags": [
       "wv",
@@ -18747,7 +19097,12 @@
         "color": "#9ce36c"
       }
     ],
-    "markerDensity": "seed route markers from approximate geometry"
+    "markerDensity": "seed route markers from approximate geometry",
+    "statsCheck": {
+      "status": "corrected",
+      "checked": "2026-09-25",
+      "note": "Was 3.2 mi / 696 ft; corrected after cross-check."
+    }
   },
   {
     "id": "va-old-rag",
@@ -18933,7 +19288,12 @@
         "color": "#9ce36c"
       }
     ],
-    "markerDensity": "seed route markers from approximate geometry"
+    "markerDensity": "seed route markers from approximate geometry",
+    "statsCheck": {
+      "status": "approximate",
+      "checked": "2026-09-25",
+      "note": "Distance and gain are planning estimates and the map line is a sketch. Not yet measured on a mapped trail."
+    }
   },
   {
     "id": "me-vinal-falls",
@@ -19070,7 +19430,12 @@
         "color": "#4bd2ff"
       }
     ],
-    "markerDensity": "real scenic POI plus generated approach markers"
+    "markerDensity": "real scenic POI plus generated approach markers",
+    "statsCheck": {
+      "status": "approximate",
+      "checked": "2026-09-25",
+      "note": "Distance and gain are planning estimates and the map line is a sketch. Not yet measured on a mapped trail."
+    }
   },
   {
     "id": "me-moxie-falls-real",
@@ -19345,7 +19710,12 @@
         "color": "#4bd2ff"
       }
     ],
-    "markerDensity": "real scenic POI plus generated approach markers"
+    "markerDensity": "real scenic POI plus generated approach markers",
+    "statsCheck": {
+      "status": "approximate",
+      "checked": "2026-09-25",
+      "note": "Distance and gain are planning estimates and the map line is a sketch. Not yet measured on a mapped trail."
+    }
   },
   {
     "id": "me-big-niagara-falls",
@@ -19482,7 +19852,12 @@
         "color": "#4bd2ff"
       }
     ],
-    "markerDensity": "real scenic POI plus generated approach markers"
+    "markerDensity": "real scenic POI plus generated approach markers",
+    "statsCheck": {
+      "status": "approximate",
+      "checked": "2026-09-25",
+      "note": "Distance and gain are planning estimates and the map line is a sketch. Not yet measured on a mapped trail."
+    }
   },
   {
     "id": "me-screw-auger-falls-real",
@@ -19619,7 +19994,12 @@
         "color": "#4bd2ff"
       }
     ],
-    "markerDensity": "real scenic POI plus generated approach markers"
+    "markerDensity": "real scenic POI plus generated approach markers",
+    "statsCheck": {
+      "status": "approximate",
+      "checked": "2026-09-25",
+      "note": "Distance and gain are planning estimates and the map line is a sketch. Not yet measured on a mapped trail."
+    }
   },
   {
     "id": "me-buttermilk-falls",
@@ -19756,7 +20136,12 @@
         "color": "#4bd2ff"
       }
     ],
-    "markerDensity": "real scenic POI plus generated approach markers"
+    "markerDensity": "real scenic POI plus generated approach markers",
+    "statsCheck": {
+      "status": "approximate",
+      "checked": "2026-09-25",
+      "note": "Distance and gain are planning estimates and the map line is a sketch. Not yet measured on a mapped trail."
+    }
   },
   {
     "id": "me-heald-stream-falls",
@@ -19893,7 +20278,12 @@
         "color": "#4bd2ff"
       }
     ],
-    "markerDensity": "real scenic POI plus generated approach markers"
+    "markerDensity": "real scenic POI plus generated approach markers",
+    "statsCheck": {
+      "status": "approximate",
+      "checked": "2026-09-25",
+      "note": "Distance and gain are planning estimates and the map line is a sketch. Not yet measured on a mapped trail."
+    }
   },
   {
     "id": "me-swans-falls",
@@ -20030,7 +20420,12 @@
         "color": "#4bd2ff"
       }
     ],
-    "markerDensity": "real scenic POI plus generated approach markers"
+    "markerDensity": "real scenic POI plus generated approach markers",
+    "statsCheck": {
+      "status": "approximate",
+      "checked": "2026-09-25",
+      "note": "Distance and gain are planning estimates and the map line is a sketch. Not yet measured on a mapped trail."
+    }
   },
   {
     "id": "me-sunday-river-covered-bridge",
@@ -20167,7 +20562,12 @@
         "color": "#ffd36a"
       }
     ],
-    "markerDensity": "real scenic POI plus generated approach markers"
+    "markerDensity": "real scenic POI plus generated approach markers",
+    "statsCheck": {
+      "status": "approximate",
+      "checked": "2026-09-25",
+      "note": "Distance and gain are planning estimates and the map line is a sketch. Not yet measured on a mapped trail."
+    }
   },
   {
     "id": "me-wire-bridge",
@@ -20304,7 +20704,12 @@
         "color": "#ffd36a"
       }
     ],
-    "markerDensity": "real scenic POI plus generated approach markers"
+    "markerDensity": "real scenic POI plus generated approach markers",
+    "statsCheck": {
+      "status": "approximate",
+      "checked": "2026-09-25",
+      "note": "Distance and gain are planning estimates and the map line is a sketch. Not yet measured on a mapped trail."
+    }
   },
   {
     "id": "me-babbs-bridge",
@@ -20441,7 +20846,12 @@
         "color": "#ffd36a"
       }
     ],
-    "markerDensity": "real scenic POI plus generated approach markers"
+    "markerDensity": "real scenic POI plus generated approach markers",
+    "statsCheck": {
+      "status": "approximate",
+      "checked": "2026-09-25",
+      "note": "Distance and gain are planning estimates and the map line is a sketch. Not yet measured on a mapped trail."
+    }
   },
   {
     "id": "me-hemlock-bridge",
@@ -20578,7 +20988,12 @@
         "color": "#ffd36a"
       }
     ],
-    "markerDensity": "real scenic POI plus generated approach markers"
+    "markerDensity": "real scenic POI plus generated approach markers",
+    "statsCheck": {
+      "status": "approximate",
+      "checked": "2026-09-25",
+      "note": "Distance and gain are planning estimates and the map line is a sketch. Not yet measured on a mapped trail."
+    }
   },
   {
     "id": "nh-bath-haverhill-covered-bridge",
@@ -20715,7 +21130,12 @@
         "color": "#ffd36a"
       }
     ],
-    "markerDensity": "real scenic POI plus generated approach markers"
+    "markerDensity": "real scenic POI plus generated approach markers",
+    "statsCheck": {
+      "status": "approximate",
+      "checked": "2026-09-25",
+      "note": "Distance and gain are planning estimates and the map line is a sketch. Not yet measured on a mapped trail."
+    }
   },
   {
     "id": "me-rattlesnake-pool",
@@ -20851,7 +21271,12 @@
         "color": "#4bd2ff"
       }
     ],
-    "markerDensity": "water POI plus safety markers"
+    "markerDensity": "water POI plus safety markers",
+    "statsCheck": {
+      "status": "approximate",
+      "checked": "2026-09-25",
+      "note": "Distance and gain are planning estimates and the map line is a sketch. Not yet measured on a mapped trail."
+    }
   },
   {
     "id": "me-emerald-pool-evans",
@@ -20987,7 +21412,12 @@
         "color": "#4bd2ff"
       }
     ],
-    "markerDensity": "water POI plus safety markers"
+    "markerDensity": "water POI plus safety markers",
+    "statsCheck": {
+      "status": "approximate",
+      "checked": "2026-09-25",
+      "note": "Distance and gain are planning estimates and the map line is a sketch. Not yet measured on a mapped trail."
+    }
   },
   {
     "id": "me-frenchmans-hole",
@@ -21125,7 +21555,12 @@
         "color": "#4bd2ff"
       }
     ],
-    "markerDensity": "water POI plus safety markers"
+    "markerDensity": "water POI plus safety markers",
+    "statsCheck": {
+      "status": "approximate",
+      "checked": "2026-09-25",
+      "note": "Distance and gain are planning estimates and the map line is a sketch. Not yet measured on a mapped trail."
+    }
   },
   {
     "id": "me-coos-canyon-swim",
@@ -21263,7 +21698,12 @@
         "color": "#4bd2ff"
       }
     ],
-    "markerDensity": "water POI plus safety markers"
+    "markerDensity": "water POI plus safety markers",
+    "statsCheck": {
+      "status": "approximate",
+      "checked": "2026-09-25",
+      "note": "Distance and gain are planning estimates and the map line is a sketch. Not yet measured on a mapped trail."
+    }
   },
   {
     "id": "me-step-falls-swim",
@@ -21538,7 +21978,12 @@
         "color": "#4bd2ff"
       }
     ],
-    "markerDensity": "water POI plus safety markers"
+    "markerDensity": "water POI plus safety markers",
+    "statsCheck": {
+      "status": "approximate",
+      "checked": "2026-09-25",
+      "note": "Distance and gain are planning estimates and the map line is a sketch. Not yet measured on a mapped trail."
+    }
   },
   {
     "id": "me-tumbledown-pond-swim",
@@ -21674,7 +22119,12 @@
         "color": "#4bd2ff"
       }
     ],
-    "markerDensity": "water POI plus safety markers"
+    "markerDensity": "water POI plus safety markers",
+    "statsCheck": {
+      "status": "approximate",
+      "checked": "2026-09-25",
+      "note": "Distance and gain are planning estimates and the map line is a sketch. Not yet measured on a mapped trail."
+    }
   },
   {
     "id": "me-dunn-falls-swim",
@@ -21810,7 +22260,12 @@
         "color": "#4bd2ff"
       }
     ],
-    "markerDensity": "water POI plus safety markers"
+    "markerDensity": "water POI plus safety markers",
+    "statsCheck": {
+      "status": "approximate",
+      "checked": "2026-09-25",
+      "note": "Distance and gain are planning estimates and the map line is a sketch. Not yet measured on a mapped trail."
+    }
   },
   {
     "id": "me-gulf-hagas-swim",
@@ -21823,8 +22278,8 @@
     "routeType": "Swimming hole / scenic water",
     "status": "Ready",
     "distanceMiles": 8.6,
-    "estimatedTime": "4.3h",
-    "elevationGainFt": 1456,
+    "estimatedTime": "4h 50m",
+    "elevationGainFt": 1050,
     "storageEstimateMb": 164,
     "tags": [
       "swimming hole",
@@ -21948,7 +22403,12 @@
         "color": "#4bd2ff"
       }
     ],
-    "markerDensity": "water POI plus safety markers"
+    "markerDensity": "water POI plus safety markers",
+    "statsCheck": {
+      "status": "corrected",
+      "checked": "2026-09-25",
+      "note": "Gain was 1,456 ft; matched to the Gulf Hagas rim loop."
+    }
   },
   {
     "id": "me-crystal-pond-planning",
@@ -22084,6 +22544,11 @@
         "color": "#4bd2ff"
       }
     ],
-    "markerDensity": "water POI plus safety markers"
+    "markerDensity": "water POI plus safety markers",
+    "statsCheck": {
+      "status": "approximate",
+      "checked": "2026-09-25",
+      "note": "Distance and gain are planning estimates and the map line is a sketch. Not yet measured on a mapped trail."
+    }
   }
 ]
