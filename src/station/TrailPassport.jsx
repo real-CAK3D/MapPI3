@@ -1,6 +1,7 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { usePhotos } from './TrailPhotos.jsx';
 import { mountainFor, stateOf as mtState, townOf, trailKey } from './mountains.js';
+import { catalogRoutes, useMountainCatalog } from './mountainCatalog.js';
 
 // Trail Passport: every mountain area is a stamp you earn by hiking any trail there, plus tiered
 // badges and a rank built from everything you have done. All from local history; nothing is invented.
@@ -15,7 +16,7 @@ const TIER = ['', 'Bronze', 'Silver', 'Gold'];
 // colors as the original Home skyline: grey until hiked, blue as it fills, lifted when it is your trail.
 const PEAK = 'M2 30 14 8l5 8 7-13 12 27H2z';
 const FACET = 'M14 8 19 16l3-5 4 6 0-14 12 27H2z';
-function MountainBadge({ area, town, done, total, miles, current, recent, onClick }) {
+function MountainBadge({ area, town, eleFt, done, total, miles, current, recent, onClick }) {
   const seed = hash(area);
   const frac = total ? done / total : 0;
   const conquered = total > 0 && done >= total;
@@ -34,29 +35,54 @@ function MountainBadge({ area, town, done, total, miles, current, recent, onClic
       <small>{conquered ? '✓' : `${done}/${total}`}</small>
     </span>
     <strong>{name}</strong>
-    <span className="mb-sub">{town ? `${town} · ` : ''}{Number.isFinite(miles) ? `${Math.round(miles)} mi` : ''}</span>
-    <span className="mb-sub">{done} of {total} trail{total === 1 ? '' : 's'}</span>
+    <span className="mb-sub">{eleFt ? `${eleFt.toLocaleString()} ft · ` : ''}{town || ''}</span>
+    <span className="mb-sub">{Number.isFinite(miles) ? `${Math.round(miles)} mi away · ` : ''}{done} of {total} trail{total === 1 ? '' : 's'}</span>
   </button>;
 }
 
-export function computePassport({ completedTrails = [], routes = [], savedWalks = [], healthHistory = [], photoCount = 0, home = null }) {
-  const byId = new Map(routes.map(r => [r.id, r]));
+export function computePassport({ completedTrails = [], routes = [], savedWalks = [], healthHistory = [], photoCount = 0, home = null, catalog = null }) {
+  const cRoutes = catalogRoutes(catalog);
+  const byId = new Map([...cRoutes, ...routes].map(r => [r.id, r]));
   const byName = new Map(routes.map(r => [String(r.name || '').toLowerCase(), r]));
-  const hikes = completedTrails.map(c => ({ ...c, route: byId.get(c.routeId) || byName.get(String(c.routeName || c.name || '').toLowerCase()) || null, at: new Date(Number(c.completedAt || c.endedAt || c.savedAt || Date.now())) }));
-  // Group by the mountain each trail climbs; the same trail listed twice counts once.
+  const resolve = r => (r?.duplicateOf && byId.get(r.duplicateOf)) || r;
+  const hikes = completedTrails.map(c => ({ ...c, route: resolve(byId.get(c.routeId) || byName.get(String(c.routeName || c.name || '').toLowerCase())) || null, at: new Date(Number(c.completedAt || c.endedAt || c.savedAt || Date.now())) }));
+  const miFrom = (a, b) => { if (!a || !b) return NaN; const R = 3958.8, t = Math.PI / 180; const dl = (b.lat - a.lat) * t, dn = (b.lon - a.lon) * t; const h = Math.sin(dl / 2) ** 2 + Math.cos(a.lat * t) * Math.cos(b.lat * t) * Math.sin(dn / 2) ** 2; return 2 * R * Math.asin(Math.sqrt(h)); };
+  const startOf = r => { const c = r?.geometry?.coordinates?.[0]; return Array.isArray(c) && Number.isFinite(c[0]) ? { lat: c[1], lon: c[0] } : null; };
+  const norm = s => String(s || '').toLowerCase().replace(/\b(mount|mt\.?|mountain|peak)\b/g, '').replace(/[^a-z]/g, '');
+  // 1) Real mountains from the open-data catalog: summit, elevation, state, town and every mapped approach.
   const areas = new Map();
-  routes.forEach(r => {
+  (catalog?.mountains || []).forEach(m => areas.set(`c:${m.id}`, { key: `c:${m.id}`, area: m.name, state: m.state, town: m.town, eleFt: m.eleFt, center: { lat: m.lat, lon: m.lon }, catalog: m, routes: cRoutes.filter(r => r.mountainId === m.id), trailIds: m.trails.map(t => t.id) }));
+  const byNorm = new Map();
+  areas.forEach(a => { const k = norm(a.area); if (!byNorm.has(k)) byNorm.set(k, []); byNorm.get(k).push(a); });
+  // 2) Older catalog trails attach to the same real mountain; mountains outside the catalog keep their own entry.
+  const legacyArea = new Map();
+  routes.filter(r => !r.fromCatalog && !r.duplicateOf).forEach(r => {
     const m = mountainFor(r); if (!m) return;
-    if (!areas.has(m)) areas.set(m, { area: m, routes: [], trails: new Map() });
-    const a = areas.get(m); a.routes.push(r);
+    const th = startOf(r);
+    const match = (byNorm.get(norm(m)) || []).find(a => th && miFrom(th, a.center) < 25);
+    if (match) { (match.legacy ||= []).push(r); legacyArea.set(r.id, match); return; }
+    const key = `l:${m}`;
+    if (!areas.has(key)) areas.set(key, { key, area: m, routes: [], trails: new Map() });
+    const a = areas.get(key); a.routes.push(r); legacyArea.set(r.id, a);
     const k = trailKey(r, m); if (!a.trails.has(k)) a.trails.set(k, []); a.trails.get(k).push(r.id);
   });
   const mode = xs => { const c = {}; xs.filter(Boolean).forEach(x => { c[x] = (c[x] || 0) + 1; }); return Object.keys(c).sort((a, b) => c[b] - c[a])[0] || ''; };
-  areas.forEach(a => { a.state = mode(a.routes.map(mtState)); a.town = mode(a.routes.map(townOf)); });
-  hikes.forEach(h => { if (!h.route) return; const a = areas.get(mountainFor(h.route)); if (!a) return; a.first = a.first && a.first < h.at ? a.first : h.at; (a.doneKeys ||= new Set()).add(trailKey(h.route, a.area)); });
-  const centerOf = rs => { const pts = rs.map(r => r.geometry?.coordinates?.[0]).filter(c => Array.isArray(c) && Number.isFinite(c[0])); if (!pts.length) return null; return { lat: pts.reduce((s, c) => s + c[1], 0) / pts.length, lon: pts.reduce((s, c) => s + c[0], 0) / pts.length }; };
-  const miFrom = (a, b) => { if (!a || !b) return NaN; const R = 3958.8, t = Math.PI / 180; const dl = (b.lat - a.lat) * t, dn = (b.lon - a.lon) * t; const h = Math.sin(dl / 2) ** 2 + Math.cos(a.lat * t) * Math.cos(b.lat * t) * Math.sin(dn / 2) ** 2; return 2 * R * Math.asin(Math.sqrt(h)); };
-  const stamps = [...areas.values()].map(a => { const center = centerOf(a.routes); return { ...a, center, miles: miFrom(home, center), earned: Boolean(a.first), done: a.doneKeys?.size || 0, total: a.trails.size, date: a.first ? a.first.toLocaleDateString([], { month: 'short', day: 'numeric', year: 'numeric' }).toUpperCase() : '' }; });
+  areas.forEach(a => { if (!a.catalog) { a.state = mode(a.routes.map(mtState)); a.town = mode(a.routes.map(townOf)); const pts = a.routes.map(startOf).filter(Boolean); a.center = pts.length ? { lat: pts.reduce((s, p) => s + p.lat, 0) / pts.length, lon: pts.reduce((s, p) => s + p.lon, 0) / pts.length } : null; } });
+  hikes.forEach(h => {
+    if (!h.route) return;
+    let a = h.route.fromCatalog ? areas.get(`c:${h.route.mountainId}`) : legacyArea.get(h.route.id);
+    if (!a) return;
+    a.first = a.first && a.first < h.at ? a.first : h.at;
+    a.doneKeys ||= new Set();
+    if (a.catalog) {
+      if (h.route.fromCatalog) { a.doneKeys.add(h.route.id); return; }
+      // An older trail counts as the nearest mapped approach (same trailhead within about a mile).
+      const th = startOf(h.route);
+      const near = a.catalog.trails.map(t => ({ id: t.id, d: th ? miFrom(th, { lat: t.trailhead[0], lon: t.trailhead[1] }) : 99 })).sort((x, y) => x.d - y.d)[0];
+      a.doneKeys.add(near && near.d < 1.2 ? near.id : (a.catalog.trails.find(t => !a.doneKeys.has(t.id))?.id || `legacy:${h.route.id}`));
+    } else a.doneKeys.add(trailKey(h.route, a.area));
+  });
+  const stamps = [...areas.values()].map(a => { const total = a.catalog ? a.trailIds.length : a.trails.size; return { ...a, miles: miFrom(home, a.center), earned: Boolean(a.first), done: Math.min(total, a.doneKeys?.size || 0), total, date: a.first ? a.first.toLocaleDateString([], { month: 'short', day: 'numeric', year: 'numeric' }).toUpperCase() : '' }; });
   const hikeMiles = hikes.reduce((s, h) => s + Number(h.miles || h.route?.distanceMiles || 0), 0);
   const walkMiles = savedWalks.reduce((s, w) => s + Number(w.distanceMiles || w.miles || 0), 0);
   const gains = hikes.map(h => Number(h.route?.elevationGainFt || 0));
@@ -98,7 +124,8 @@ const BI = {
 
 export default function TrailPassport({ completedTrails = [], routes = [], savedWalks = [], healthHistory = [], selectedRoute = null, faceUrl, onHerbieEvent, onPickArea, home = null, homeLabel = 'home', radius = 100, setRadius }) {
   const photos = usePhotos(null);
-  const pp = useMemo(() => computePassport({ completedTrails, routes, savedWalks, healthHistory, photoCount: photos.length, home }), [completedTrails, routes, savedWalks, healthHistory, photos.length, home?.lat, home?.lon]);
+  const catalog = useMountainCatalog();
+  const pp = useMemo(() => computePassport({ completedTrails, routes, savedWalks, healthHistory, photoCount: photos.length, home, catalog }), [completedTrails, routes, savedWalks, healthHistory, photos.length, home?.lat, home?.lon, catalog]);
   const [showAll, setShowAll] = useState(false);
   const [toast, setToast] = useState(null);
   // Celebrate badges earned since the passport was last seen. The first visit records silently.

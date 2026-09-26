@@ -10,7 +10,7 @@ export function waypointKind(w = {}, routeName = '') {
   let name = String(w.name || '').toLowerCase();
   const rn = String(routeName || w.routeName || '').toLowerCase().trim();
   if (rn) name = name.replace(rn, ' ');
-  name = name.replace(/(trail|path|loop|route)/g, ' ');
+  name = name.replace(/\b(trail|path|loop|route)\b/g, ' ');
   return kindFromText(name);
 }
 function kindFromText(s) {

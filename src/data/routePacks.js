@@ -20,6 +20,7 @@ export const mapRoutePackToCard = (pack) => ({
   size: `${pack.storageEstimateMb} MB`,
   storageEstimateMb: pack.storageEstimateMb,
   routeType: pack.routeType,
+  duplicateOf: pack.duplicateOf,
   mountainArea: pack.mountainArea,
   catalogCategory: pack.catalogCategory,
   landType: pack.landType,

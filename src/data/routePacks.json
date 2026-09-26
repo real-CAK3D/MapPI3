@@ -1566,12 +1566,12 @@
     "name": "Grafton Notch Table Rock",
     "place": "Newry, Maine",
     "region": "Maine",
-    "summary": "OSM-sourced Table Rock Trail line in Grafton Notch with trail markers and route detail view. Verify current access, signage, and conditions before hiking.",
+    "summary": "OSM-sourced Table Rock Trail line in Grafton Notch with trail markers and route detail view. Verify current access, signage, and conditions before hiking. Loop: Table Rock Trail up to the ledge, back down on the Appalachian Trail (about 2.1 mi measured on the mapped trails).",
     "difficulty": "Moderate",
     "routeType": "Loop",
     "status": "Ready",
-    "distanceMiles": 0.81,
-    "estimatedTime": "1h",
+    "distanceMiles": 2.1,
+    "estimatedTime": "1h 45m",
     "elevationGainFt": 900,
     "storageEstimateMb": 118,
     "tags": [
@@ -11106,7 +11106,8 @@
         "color": "#9ce36c"
       }
     ],
-    "markerDensity": "rich route markers from attached geometry"
+    "markerDensity": "rich route markers from attached geometry",
+    "duplicateOf": "me-grafton-table-rock"
   },
   {
     "id": "me-baldpate-west-peak-at",
@@ -15292,7 +15293,8 @@
         "color": "#9ce36c"
       }
     ],
-    "markerDensity": "seed route markers from approximate geometry"
+    "markerDensity": "seed route markers from approximate geometry",
+    "duplicateOf": "me-blueberry-mountain-stone-house"
   },
   {
     "id": "me-caribou-speckled",
@@ -19205,7 +19207,8 @@
         "color": "#4bd2ff"
       }
     ],
-    "markerDensity": "real scenic POI plus generated approach markers"
+    "markerDensity": "real scenic POI plus generated approach markers",
+    "duplicateOf": "me-moxie-falls"
   },
   {
     "id": "me-little-wilson-lower-falls",
@@ -19484,9 +19487,9 @@
   {
     "id": "me-screw-auger-falls-real",
     "schemaVersion": "mappi3.routePack.v1",
-    "name": "Screw Auger Falls real POI",
-    "place": "Grafton Notch, Maine",
-    "region": "Grafton Notch",
+    "name": "Screw Auger Falls (Gulf Hagas)",
+    "place": "Gulf Hagas, Brownville, Maine",
+    "region": "Maine",
     "summary": "Scenic waterfall route pack centered on real mapped POI data. Use as discovery/planning; verify parking, access, and trail conditions before relying on it.",
     "difficulty": "Easy",
     "routeType": "Scenic POI walk",
@@ -19604,7 +19607,7 @@
     ],
     "landType": "Scenic public POI / verify access",
     "catalogCategory": "waterfalls and covered bridges",
-    "mountainArea": "Grafton Notch",
+    "mountainArea": "100-Mile Wilderness",
     "geometryQuality": "real mapped POI with generated approach geometry \u2014 verify route/parking before field navigation",
     "color": "#4bd2ff",
     "segments": [
@@ -21396,7 +21399,8 @@
         "color": "#4bd2ff"
       }
     ],
-    "markerDensity": "water POI plus safety markers"
+    "markerDensity": "water POI plus safety markers",
+    "duplicateOf": "me-step-falls-preserve"
   },
   {
     "id": "me-smalls-falls-swim",
