@@ -835,3 +835,12 @@ body.station.night .camp-rule.no b{color:#ff8a70}
 .mesh-panel .mesh-send .primary,.mesh-panel .mesh-conn button,.mesh-panel .mesh-node button{width:auto!important;flex:0 0 auto}
 .mesh-panel .mesh-convos button.on{color:#1a1206!important}
 body.station .mesh-msg.mine{color:#f4ecd4}
+.screen-error{border-left:4px solid var(--st-warn)}.screen-error h2{margin:0 0 6px}
+.screen-error pre{white-space:pre-wrap;font-size:12px;color:var(--st-muted);background:var(--st-panel);padding:8px;border-radius:6px}
+.screen-error .primary{width:auto!important}
+/* Install app */
+.install-card{display:flex;gap:12px;align-items:center;flex-wrap:wrap;margin-bottom:12px}
+.install-card img{border-radius:10px;flex:0 0 auto}
+.install-text{flex:1;min-width:180px}.install-text p{margin:2px 0 0}
+.install-msg{color:var(--st-good)}
+.install-actions{display:flex;gap:8px}.install-actions button{width:auto!important}

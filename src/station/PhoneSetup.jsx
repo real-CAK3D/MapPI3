@@ -1,3 +1,4 @@
+import InstallApp from './InstallApp.jsx';
 import React, { useEffect, useState } from 'react';
 import { connectBle, disconnectBle, useBleLink } from './bleLink.js';
 
@@ -58,6 +59,7 @@ export default function PhoneSetup({ settings = {}, setSettings, piLive = null, 
     { k: 'persist', name: 'Protected offline storage', why: `Keeps saved areas and photos from being cleared. Using ${mb(p.usage)} of ${mb(p.quota)}.`, st: p.persisted ? 'granted' : 'prompt', needsSecure: false }
   ];
   return <section className="panel st-phone">
+    <InstallApp />
     <div className="section-head"><div><h2>Phone</h2><p className="muted">Set up this phone once so GPS, compass, camera, voice and alerts all work, offline too.</p></div></div>
     <div className="st-phone-grid">
       <div className="st-card">
