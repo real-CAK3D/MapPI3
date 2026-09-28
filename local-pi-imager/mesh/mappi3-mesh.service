@@ -1,0 +1,16 @@
+[Unit]
+Description=MapPI3 Meshtastic mesh service (radio on USB or Wi-Fi)
+After=network.target mappi3-web.service
+
+[Service]
+Type=simple
+User=mappi3
+Group=dialout
+Environment=PYTHONUNBUFFERED=1
+ExecStart=/opt/mappi3/mesh-venv/bin/python /usr/local/bin/mappi3-mesh.py
+Restart=always
+RestartSec=5
+Nice=5
+
+[Install]
+WantedBy=multi-user.target

@@ -16,7 +16,7 @@ phone_input_sensitive = False
 phone_input_last_seq = 0
 phone_input_status = 'phone keyboard ready'
 snake = {'body': [(4,4),(3,4),(2,4)], 'dir': (1,0), 'food': (6,4), 'score': 0, 'over': False, 'last_emit': 0.0}
-PAGES = ['Buddy Home','Herbie','Field Kit','Compass+Level','Weather+Sky','Network','Safety']
+PAGES = ['Buddy Home','Herbie','Field Kit','Compass+Level','Weather+Sky','Mesh','Network','Safety']
 HERBIE_MOTION_STATE = {'last_accel': None, 'last_at': 0.0, 'hits': [], 'event': None, 'event_until': 0.0, 'peak': 0.0}
 
 def api(path, timeout=5.0):
@@ -243,8 +243,122 @@ def render_phone_input():
     ]
     return draw_card('Phone Input', lines, BLUE, 'phone text -> Whisplay prompt')
 
+# ---------- Meshtastic mesh (radio on USB or Wi-Fi, via the mappi3-mesh service) ----------
+_mesh = {'at': 0.0, 'data': {}}
+_mesh_seen = set()
+_mesh_primed = [False]
+def mesh_state(max_age=2.5):
+    if time.time() - _mesh['at'] > max_age:
+        _mesh['data'] = api('/api/mesh/status', timeout=1.2) or {}
+        _mesh['at'] = time.time()
+    return _mesh['data']
+
+def ago_text(sec):
+    if sec is None: return '?'
+    sec = max(0, int(sec))
+    return f'{sec}s' if sec < 60 else f'{sec // 60}m' if sec < 3600 else f'{sec // 3600}h' if sec < 86400 else f'{sec // 86400}d'
+
+CARDINAL = ['N', 'NE', 'E', 'SE', 'S', 'SW', 'W', 'NW']
+def draw_arrow(d, cx, cy, deg, r, color):
+    a = math.radians(deg)
+    ux, uy = math.sin(a), -math.cos(a)           # pointing direction
+    px, py = -uy, ux                              # sideways
+    tip = (cx + ux * r, cy + uy * r)
+    back = (cx - ux * r * 0.8, cy - uy * r * 0.8)
+    notch = (cx - ux * r * 0.35, cy - uy * r * 0.35)
+    d.polygon([tip, (back[0] + px * r * 0.6, back[1] + py * r * 0.6), notch, (back[0] - px * r * 0.6, back[1] - py * r * 0.6)], fill=color)
+
+def draw_bars(d, x, y, snr, color):
+    level = 0 if snr is None else 4 if snr >= 5 else 3 if snr >= 0 else 2 if snr >= -7 else 1
+    for i in range(4):
+        h = 4 + i * 3
+        d.rectangle((x + i * 5, y + 13 - h, x + i * 5 + 3, y + 13), fill=color if i < level else (40, 60, 70))
+
+def draw_mesh():
+    m = mesh_state()
+    img = Image.new('RGB', (W, H), BG)
+    d = ImageDraw.Draw(img)
+    ok = bool(m.get('ok'))
+    accent = BLUE if ok else AMBER
+    d.rounded_rectangle((6, 6, W-7, H-7), 12, outline=accent, width=2, fill=(12, 26, 38))
+    d.text((16, 12), 'Mesh', font=F_TITLE, fill=accent)
+    conn = m.get('connection') or {}
+    if not ok:
+        err = m.get('error') or conn.get('error') or 'no radio'
+        rows = [('~', 'Meshtastic radio'), ('!', str(err)[:26]), ('', 'Plug the radio into the'), ('', 'Pi USB port, or set its'), ('', 'Wi-Fi to join MapPI3.')]
+        y = 50
+        for mark, text in rows:
+            color = RED if mark == '!' else AMBER if mark == '~' else WHITE
+            d.text((16, y), text, font=F_BODY, fill=color); y += 20
+        d.text((16, H-23), 'press = next page', font=F_TINY, fill=DIM)
+        return img
+    me = m.get('me') or {}; radio = m.get('radio') or {}
+    batt = me.get('battery')
+    power = 'USB power' if batt is not None and batt > 100 else f'{batt}%' if batt is not None else ''
+    d.text((78, 16), f"{(me.get('long') or me.get('short') or '').strip()[:10]} · {(conn.get('via') or '').upper()}", font=F_SMALL, fill=WHITE)
+    d.text((16, 38), f"{radio.get('preset') or ''} · {radio.get('region') or ''} · {power}"[:34], font=F_TINY, fill=DIM)
+    heading = None
+    try:
+        sense = sense_payload(api('/api/sense', timeout=0.3))
+        h = (sense.get('orientation') or {}).get('north_heading', sense.get('compass'))
+        heading = float(h) if h is not None else None
+    except Exception:
+        heading = None
+    nodes = (m.get('nodes') or [])[:4]
+    y = 54
+    if not nodes:
+        d.text((16, y + 6), 'No other nodes heard yet.', font=F_BODY, fill=WHITE); y += 40
+    for n in nodes:
+        name = (n.get('long') or n.get('short') or n.get('id') or '?').strip()
+        d.text((16, y), name[:17], font=F_BODY, fill=WHITE)
+        bits = []
+        if n.get('miles') is not None:
+            mi = n['miles']
+            bits.append(f"{mi:.1f} mi {CARDINAL[int(((n.get('bearing') or 0) + 22.5) // 45) % 8]}" if mi >= 0.1 else f"{int(mi * 5280)} ft")
+        if n.get('hops'): bits.append(f"{n['hops']} hop" + ('s' if n['hops'] > 1 else ''))
+        bits.append(ago_text(n.get('ago')) + ' ago' if n.get('ago') is not None else 'not heard yet')
+        d.text((16, y + 18), ' · '.join(bits)[:30], font=F_TINY, fill=DIM)
+        draw_bars(d, W - 34, y + 2, n.get('snr'), GREEN)
+        if n.get('bearing') is not None:
+            rel = (n['bearing'] - heading) % 360 if heading is not None else n['bearing']
+            draw_arrow(d, W - 52, y + 10, rel, 9, AMBER if heading is not None else DIM)
+        y += 36
+    msgs = m.get('messages') or []
+    d.line((12, H-62, W-13, H-62), fill=(45, 70, 90), width=1)
+    if msgs:
+        last = msgs[-1]
+        who = 'you' if last.get('mine') else (last.get('fromName') or last.get('from') or '?').strip()
+        d.text((16, H-56), f"{who[:14]} · {ago_text(time.time() - (last.get('at') or time.time()))} ago", font=F_TINY, fill=AMBER)
+        for i, line in enumerate(wrap(last.get('text') or '', 28)[:2]):
+            d.text((16, H-42 + i * 14), line, font=F_SMALL, fill=WHITE)
+    else:
+        d.text((16, H-50), 'No messages yet.', font=F_SMALL, fill=DIM)
+    return img
+
+def poll_mesh_popup():
+    """New incoming text message -> full-screen popup (old messages are not replayed after a restart)."""
+    global popup_event, popup_until
+    m = mesh_state(max_age=3.0)
+    msgs = [x for x in (m.get('messages') or []) if not x.get('mine')]
+    if not _mesh_primed[0]:
+        _mesh_seen.update(x.get('id') for x in msgs)
+        _mesh_primed[0] = bool(m.get('ok'))
+        return False
+    for x in msgs:
+        if x.get('id') in _mesh_seen: continue
+        _mesh_seen.add(x.get('id'))
+        popup_event = {'type': 'mesh_message', 'from': (x.get('fromName') or x.get('from') or '?').strip(), 'text': x.get('text') or '', 'direct': x.get('direct'), 'snr': x.get('snr')}
+        popup_until = time.time() + 8.0
+        return True
+    return False
+
 def render_popup(event):
     etype = event.get('type') or 'game_event'; label = event.get('label') or etype.replace('_',' ')
+    if etype == 'mesh_message':
+        head = ('+Direct from ' if event.get('direct') else '+Mesh · ') + str(event.get('from') or '?')[:16]
+        lines = [head] + wrap(event.get('text') or '', 24)[:7]
+        if event.get('snr') is not None: lines.append('~signal SNR ' + str(round(event['snr'], 1)))
+        return draw_card('Message', lines, BLUE, 'auto returns · press next')
     if etype in ('manual_popup_test','snake_trail_event'):
         accent = GREEN if etype == 'manual_popup_test' else BLUE
         lines = ['+manual popup bridge' if etype == 'manual_popup_test' else '+Snake Trail', label, event.get('text') or event.get('trail') or 'shared game event', f'score +{event.get("score_delta",0)}', 'text/contrast check']
@@ -712,6 +826,7 @@ def render():
     if title == 'Field Kit': return draw_card('Field Kit/Power', lines_fieldkit(), GREEN)
     if title == 'Compass+Level': return draw_card('Compass + Level', lines_compass(), BLUE)
     if title == 'Weather+Sky': return draw_card('Weather + Sky', lines_weather(), AMBER)
+    if title == 'Mesh': return draw_mesh()
     if title == 'Network': return draw_card('Network', lines_network(), BLUE)
     return draw_card('Trail Safety', lines_safety(), AMBER)
 
@@ -730,7 +845,7 @@ def main():
         while running:
             time.sleep(0.12); active = page % len(PAGES)
             phone_changed = poll_phone_input()
-            overlay = phone_changed or poll_popup() or (phone_input_until and time.time() < phone_input_until) or (popup_event and time.time() < popup_until)
+            overlay = phone_changed or poll_popup() or poll_mesh_popup() or (phone_input_until and time.time() < phone_input_until) or (popup_event and time.time() < popup_until)
             # Herbie pages animate (~3 fps); the text cards only need a refresh each second. Every
             # redraw also queries the agent, so this keeps CPU and battery use down on the Zero.
             gap = 0.32 if active in (0, 1) else 1.0

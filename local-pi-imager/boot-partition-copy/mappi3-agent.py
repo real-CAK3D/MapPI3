@@ -18,7 +18,7 @@ PACMAN_EVENT_SEQ = 0
 BATTERY_LED_STATE = {'full_since': None}
 SENSE_FACE_STATE = {'last_accel': None, 'last_accel_at': 0.0, 'surprise_until': 0.0, 'still_since': 0.0}
 SENSE_MODES = ['compass','compass-arrow','compass-cardinal','rotation-test','liquid','pacman','battery','weather','fire','flashlight','sos','message','boot','sun','gps','clock','progress','beacon','stars','temp','humidity','pressure','avatar','level','custom','border','magic8','water','snake']
-ALLOWED = {'herbie-event', 'herbie-now', 'herbie-plans', 'ble-pair-window', 'status','restart-web','reboot','shutdown','update-app','gps-sample','toggle-hotspot','hotspot-on','connect-home-wifi','wifi-scan','wifi-save-network','wifi-connect-saved','network-status','tailscale-status','tailscale-login','remote-access-repair','sense-mode','calibrate','harden-hotspot','plugin-update','vnc-setup','vnc-disable','weather-refresh','noaa-refresh','hourly-online-refresh','online-maintenance','gps-diagnose','sense-diagnose','field-ai-verify','captive-setup','captive-disable','captive-status','gps-pps-setup','whisplay-test-popup','whisplay-input','whisplay-input-status','snake-trail-event','plugin-status','plugin-install','plugin-install-all','plugin-uninstall','notification-status','notification-test','notification-publish','notification-clear','notification-preferences','audio-tts-test','audio-ambient-test'}
+ALLOWED = {'herbie-event', 'herbie-now', 'mesh-send', 'herbie-plans', 'ble-pair-window', 'status','restart-web','reboot','shutdown','update-app','gps-sample','toggle-hotspot','hotspot-on','connect-home-wifi','wifi-scan','wifi-save-network','wifi-connect-saved','network-status','tailscale-status','tailscale-login','remote-access-repair','sense-mode','calibrate','harden-hotspot','plugin-update','vnc-setup','vnc-disable','weather-refresh','noaa-refresh','hourly-online-refresh','online-maintenance','gps-diagnose','sense-diagnose','field-ai-verify','captive-setup','captive-disable','captive-status','gps-pps-setup','whisplay-test-popup','whisplay-input','whisplay-input-status','snake-trail-event','plugin-status','plugin-install','plugin-install-all','plugin-uninstall','notification-status','notification-test','notification-publish','notification-clear','notification-preferences','audio-tts-test','audio-ambient-test'}
 SENSE_CACHE = {'ok': False, 'mode': 'compass', 'message': 'Sense HAT display loop starting', 'updated': 0, 'joystick': {'seq': 0, 'direction': '', 'pressed': False, 'updated': 0}}
 SENSE_LOCK = threading.Lock()
 TIMELINE_LOCK = threading.RLock()
@@ -2636,6 +2636,17 @@ def herbie_now_set(payload=None):
 def herbie_now():
     return dict(HERBIE_NOW) if HERBIE_NOW and time.time() - HERBIE_NOW.get('at', 0) <= 12 else None
 
+# Meshtastic radio: the mesh service (mappi3-mesh, 127.0.0.1:5061) owns the radio; the agent passes it through.
+MESH_URL = os.environ.get('MAPPI3_MESH_URL', 'http://127.0.0.1:5061')
+def mesh_call(path='/state', payload=None, timeout=2.0):
+    try:
+        data = json.dumps(payload).encode() if payload is not None else None
+        req = urllib.request.Request(MESH_URL + path, data=data, headers={'Content-Type': 'application/json'} if data else {})
+        with urllib.request.urlopen(req, timeout=timeout) as r:
+            return json.loads(r.read().decode())
+    except Exception as e:
+        return {'ok': False, 'error': 'mesh service not running' if 'refused' in str(e).lower() else str(e)[:120]}
+
 def whisplay_display_status(payload=None):
     health=_whisplay_rpc('health.ping')
     apps=_whisplay_rpc('app.list')
@@ -3155,6 +3166,7 @@ def command(name, payload=None):
     if name=='gps-sample': return gps_sample()
     if name=='herbie-event': return herbie_event(payload)
     if name=='herbie-now': return herbie_now_set(payload)
+    if name=='mesh-send': return mesh_call('/send', payload or {})
     if name=='herbie-plans': return herbie_plans(payload)
     if name=='ble-pair-window':
         # Opens Bluetooth pairing for 2 minutes (read by the ble-link plugin service).
@@ -4040,6 +4052,7 @@ class Handler(http.server.SimpleHTTPRequestHandler):
         if self.path.startswith('/api/bluetooth/pan/status'): self.json_response(bluetooth_pan_status()); return
         if self.path.startswith('/api/bluetooth/status'): self.json_response(bluetooth_status()); return
         if self.path.startswith('/api/time/status'): self.json_response(time_sync_status()); return
+        if self.path.startswith('/api/mesh/status'): self.json_response(mesh_call('/state')); return
         if self.path.startswith('/api/herbie/now'): self.json_response({'ok': True, 'now': herbie_now()}); return
         if self.path.startswith('/api/whisplay/display/status'): self.json_response(whisplay_display_status()); return
         if self.path.startswith('/api/whisplay/ai/status'): self.json_response(whisplay_ai_status()); return
