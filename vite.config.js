@@ -1,5 +1,8 @@
 import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
+import { fileURLToPath } from 'node:url';
+
+const shim = f => fileURLToPath(new URL(`./src/shims/${f}`, import.meta.url));
 
 // Dev/preview on a PC forwards /api to a live Pi (e.g. over its hotspot) so sensors, GPS and
 // Whisplay state are real while iterating on the UI. Override with MAPPI3_PI_URL.
@@ -8,6 +11,8 @@ const proxy = { '/api': { target: piApi, changeOrigin: true } };
 
 export default defineConfig({
   plugins: [react()],
+  // @meshtastic/core ships a Node logger; these small stand-ins let it run in the browser.
+  resolve: { alias: { os: shim('node-os.js'), path: shim('node-path.js'), util: shim('node-util.js') } },
   // MapLibre's 3D worker is bundled as an ES module worker (see src/station/TerrainViews.jsx).
   worker: { format: 'es' },
   // In dev, load MapLibre as-is so it finds maplibre-gl-worker.mjs beside itself.

@@ -137,24 +137,157 @@ def lines_compass():
     card = ['N','NE','E','SE','S','SW','W','NW'][int(((float(heading or 0)+22.5)%360)//45)] if heading is not None else '—'
     return [f'heading: {round(float(heading),1) if heading is not None else "—"} {card}', f'roll: {round(float(roll),1) if roll is not None else "—"}', f'pitch: {round(float(pitch),1) if pitch is not None else "—"}', f'{tone(level)}level: {"steady" if level else "tilted/check"}', 'calibrate away from metal', '~carry real compass/map']
 
-def lines_weather():
-    sense = sense_payload(api('/api/sense'))
-    weather = api('/api/weather?days=1', timeout=1.0)
-    temp_c = sense.get('temperature') or sense.get('temp_c')
-    hum = sense.get('humidity')
-    pres = sense.get('pressure')
-    src = weather.get('source') or ('Sense HAT' if temp_c is not None else 'cache/offline')
-    lines=[f'source: {src}', f'temp: {temp_f_text(temp_c)}', f'humidity: {round(float(hum),1) if hum is not None else "—"}%', f'pressure: {round(float(pres),1) if pres is not None else "—"}', 'sky: offline sky cues', 'watch clouds/wind shifts']
-    if weather.get('current'):
-        lines += wrap(json.dumps(weather.get('current'))[:80], 24)[:3]
-    return lines[:12]
+# ---------- Weather + Sky ----------
+WMO = {0: 'Clear', 1: 'Mostly clear', 2: 'Partly cloudy', 3: 'Overcast', 45: 'Fog', 48: 'Freezing fog', 51: 'Light drizzle', 53: 'Drizzle',
+       55: 'Heavy drizzle', 56: 'Freezing drizzle', 57: 'Freezing drizzle', 61: 'Light rain', 63: 'Rain', 65: 'Heavy rain', 66: 'Freezing rain',
+       67: 'Freezing rain', 71: 'Light snow', 73: 'Snow', 75: 'Heavy snow', 77: 'Snow grains', 80: 'Showers', 81: 'Showers', 82: 'Heavy showers',
+       85: 'Snow showers', 86: 'Snow showers', 95: 'Thunderstorm', 96: 'T-storm + hail', 99: 'T-storm + hail'}
+_pressure = []            # (time, hPa) samples for the trend, kept for 3 hours
+_weather = {'at': 0.0, 'data': {}}
 
-def lines_network():
-    net = api('/api/network/status')
-    if net.get('_error'):
-        return ['!network API offline'] + wrap(net['_error'], 24)[:7]
-    text = json.dumps(net, indent=0, sort_keys=True)
-    return wrap(text.replace('{','').replace('}','').replace('"',''), 25)[:12]
+def pressure_trend(hpa):
+    now = time.time()
+    if hpa is not None and (not _pressure or now - _pressure[-1][0] >= 300):
+        _pressure.append((now, float(hpa)))
+    while _pressure and now - _pressure[0][0] > 3 * 3600:
+        _pressure.pop(0)
+    if len(_pressure) < 2 or now - _pressure[0][0] < 3000:
+        return 'trend in ~1 h', DIM
+    rate = (_pressure[-1][1] - _pressure[0][1]) / ((_pressure[-1][0] - _pressure[0][0]) / 3600)   # hPa per hour
+    if rate <= -1.0: return 'falling fast!', RED
+    if rate <= -0.3: return 'falling', AMBER
+    if rate >= 0.3: return 'rising', GREEN
+    return 'steady', WHITE
+
+def sun_times(lat, lon, day=None):
+    """NOAA sunrise/sunset, local time. Returns (sunrise, sunset) as datetimes or (None, None) in polar day/night."""
+    day = day or datetime.date.today()
+    n = day.timetuple().tm_yday
+    g = 2 * math.pi / 365 * (n - 1)
+    eq = 229.18 * (0.000075 + 0.001868 * math.cos(g) - 0.032077 * math.sin(g) - 0.014615 * math.cos(2 * g) - 0.040849 * math.sin(2 * g))
+    decl = 0.006918 - 0.399912 * math.cos(g) + 0.070257 * math.sin(g) - 0.006758 * math.cos(2 * g) + 0.000907 * math.sin(2 * g) - 0.002697 * math.cos(3 * g) + 0.00148 * math.sin(3 * g)
+    cos_h = math.cos(math.radians(90.833)) / (math.cos(math.radians(lat)) * math.cos(decl)) - math.tan(math.radians(lat)) * math.tan(decl)
+    if abs(cos_h) > 1:
+        return None, None
+    ha = math.degrees(math.acos(cos_h))
+    noon_utc = 720 - 4 * lon - eq
+    base = datetime.datetime.combine(day, datetime.time(0, 0), tzinfo=datetime.timezone.utc)
+    rise = (base + datetime.timedelta(minutes=noon_utc - 4 * ha)).astimezone()
+    sset = (base + datetime.timedelta(minutes=noon_utc + 4 * ha)).astimezone()
+    return rise, sset
+
+def moon_phase(now=None):
+    now = now or datetime.datetime.now(datetime.timezone.utc)
+    days = (now - datetime.datetime(2000, 1, 6, 18, 14, tzinfo=datetime.timezone.utc)).total_seconds() / 86400
+    age = days % 29.530588853
+    lit = round((1 - math.cos(2 * math.pi * age / 29.530588853)) / 2 * 100)
+    waxing = age < 29.530588853 / 2
+    if lit < 2: return 'New moon', lit
+    if lit >= 98: return 'Full moon', lit
+    if 47 <= lit <= 53: return ('First quarter' if waxing else 'Last quarter'), lit
+    return ('Waxing ' if waxing else 'Waning ') + ('crescent' if lit < 50 else 'gibbous'), lit
+
+def clock_text(dt):
+    return dt.strftime('%I:%M %p').lstrip('0') if dt else '—'
+
+def draw_weather():
+    if time.time() - _weather['at'] > 60:
+        _weather['data'] = api('/api/weather?days=1', timeout=2.5) or {}
+        _weather['at'] = time.time()
+    w = _weather['data']
+    sense = sense_payload(api('/api/sense', timeout=0.5))
+    img = Image.new('RGB', (W, H), BG)
+    d = ImageDraw.Draw(img)
+    d.rounded_rectangle((6, 6, W-7, H-7), 12, outline=AMBER, width=2, fill=(12, 26, 38))
+    d.text((16, 12), 'Weather + Sky', font=F_TITLE, fill=AMBER)
+    y = 44
+    cur = w.get('current') if isinstance(w.get('current'), dict) else {}
+    today = (w.get('daily') or [{}])[0] if isinstance(w.get('daily'), list) and w.get('daily') else {}
+    if cur.get('temperature_2m') is not None:
+        d.text((16, y), f"{round(cur['temperature_2m'])}°F", font=F_TITLE, fill=WHITE)
+        d.text((86, y + 4), WMO.get(cur.get('weather_code'), 'Weather')[:16], font=F_BODY, fill=WHITE)
+        y += 26
+        bits = []
+        if today.get('minF') is not None: bits.append(f"{round(today['minF'])}-{round(today['maxF'])}°F")
+        if today.get('precip') is not None: bits.append(f"{today['precip']}% rain")
+        if cur.get('relative_humidity_2m') is not None: bits.append(f"{cur['relative_humidity_2m']}% RH")
+        d.text((16, y), ' · '.join(bits)[:32], font=F_SMALL, fill=DIM)
+    else:
+        d.text((16, y), 'No forecast', font=F_BODY, fill=AMBER); y += 20
+        d.text((16, y), 'Needs internet on the Pi.', font=F_SMALL, fill=DIM)
+    y += 22
+    d.line((12, y, W-13, y), fill=(45, 70, 90)); y += 6
+    d.text((16, y), 'On the Pi', font=F_SMALL, fill=AMBER); y += 16
+    hpa = sense.get('pressure')
+    if hpa:
+        trend, color = pressure_trend(hpa)
+        d.text((16, y), f"{round(float(hpa))} hPa", font=F_BODY, fill=WHITE)
+        d.text((96, y + 2), trend[:22], font=F_SMALL, fill=color); y += 20
+    hum = sense.get('humidity')
+    if hum is not None:
+        d.text((16, y), f"humidity {round(float(hum))}% (inside the case)", font=F_SMALL, fill=DIM); y += 16
+    y += 4
+    d.line((12, y, W-13, y), fill=(45, 70, 90)); y += 6
+    d.text((16, y), 'Sky', font=F_SMALL, fill=AMBER); y += 16
+    lat, lon = w.get('lat'), w.get('lon')
+    if lat is not None and lon is not None:
+        rise, sset = sun_times(float(lat), float(lon))
+        d.text((16, y), f"sunrise {clock_text(rise)} · sunset {clock_text(sset)}", font=F_SMALL, fill=WHITE); y += 16
+        if sset:
+            left = (sset - datetime.datetime.now().astimezone()).total_seconds()
+            if 0 < left < 3 * 3600:
+                d.text((16, y), f"{int(left // 3600)} h {int(left % 3600 // 60)} min of daylight left", font=F_SMALL, fill=AMBER); y += 16
+    name, lit = moon_phase()
+    d.text((16, y), f"moon: {name.lower()}, {lit}% lit", font=F_SMALL, fill=WHITE); y += 16
+    age = time.time() - float(w.get('fetched_at') or 0) if w.get('fetched_at') else None
+    src = 'forecast ' + (f"{int(age // 60)} min old" if age is not None and age < 86400 else 'age unknown') if cur else 'offline'
+    d.line((12, H-30, W-13, H-30), fill=(45, 70, 90), width=1)
+    d.text((16, H-23), src[:34], font=F_TINY, fill=DIM)
+    return img
+
+# ---------- Network ----------
+def draw_network():
+    net = api('/api/network/status', timeout=2.5) or {}
+    img = Image.new('RGB', (W, H), BG)
+    d = ImageDraw.Draw(img)
+    d.rounded_rectangle((6, 6, W-7, H-7), 12, outline=BLUE, width=2, fill=(12, 26, 38))
+    d.text((16, 12), 'Network', font=F_TITLE, fill=BLUE)
+    if net.get('_error') or not net:
+        d.text((16, 50), 'Network status unavailable', font=F_BODY, fill=RED)
+        return img
+    rows = []
+    route = str(net.get('route') or '')
+    gw = route.split('default via ', 1)[1].split()[0] if 'default via ' in route else None
+    bt = net.get('bluetooth_pan') if isinstance(net.get('bluetooth_pan'), dict) else {}
+    active = ' '.join(net.get('active_connections') or [])
+    if bt.get('internet_ok'):
+        rows.append(('ok', 'Internet', 'via phone (Bluetooth)'))
+    elif gw == '10.42.0.38':
+        rows.append(('ok', 'Internet', 'via NukeBox PC'))
+    elif gw:
+        home = next((w.get('ssid') for w in (net.get('saved_wifi') or []) if w.get('name') and w.get('name') in active and w.get('ssid') != 'MapPI3'), None)
+        rows.append(('ok', 'Internet', f"via {home}" if home else f"via {gw}"))
+    else:
+        rows.append(('warn', 'Internet', 'offline (hotspot only)'))
+    hotspot = 'MapPI3-hotspot' in active
+    rows.append(('ok' if hotspot else 'bad', 'Hotspot', 'MapPI3 · 10.42.0.1' if hotspot else 'off'))
+    ts = net.get('tailscale') if isinstance(net.get('tailscale'), dict) else {}
+    ips = [ip for ip in (ts.get('tailscale_ips') or []) if '.' in ip]
+    rows.append(('ok' if ts.get('online') else 'warn', 'Tailscale', (ips[0] if ips else 'no address') + ('' if ts.get('online') else ' · offline')))
+    ssh = net.get('ssh') if isinstance(net.get('ssh'), dict) else {}
+    rows.append(('ok' if ssh.get('listening') else 'warn', 'SSH', 'ready on port 22' if ssh.get('listening') else 'not listening'))
+    rows.append(('ok' if bt.get('ready') else 'warn', 'Bluetooth', 'phone sharing internet' if bt.get('internet_ok') else 'ready to pair' if bt.get('ready') else 'not ready'))
+    saved = [w.get('ssid') for w in (net.get('saved_wifi') or []) if w.get('ssid') and w.get('ssid') != 'MapPI3']
+    rows.append(('info', 'Saved Wi-Fi', ', '.join(saved[:2]) + (f" +{len(saved) - 2}" if len(saved) > 2 else '') if saved else 'none'))
+    rows.append(('ok' if net.get('remote_ready') else 'warn', 'Remote access', 'ready' if net.get('remote_ready') else 'not ready'))
+    y = 46
+    colors = {'ok': GREEN, 'warn': AMBER, 'bad': RED, 'info': BLUE}
+    for state, label, value in rows:
+        d.ellipse((16, y + 5, 24, y + 13), fill=colors[state])
+        d.text((32, y), label, font=F_SMALL, fill=DIM)
+        d.text((32, y + 13), str(value)[:28], font=F_BODY, fill=WHITE)
+        y += 31
+    return img
 
 def lines_safety():
     return ['+Assist mode only','Carry real nav tools.','Phone/SOS primary.','Offline maps + compass.','Mark last known point.','~When unsure: stop,', '~backtrack, save power.']
@@ -825,9 +958,9 @@ def render():
     if title == 'Herbie': return draw_herbie_mood()
     if title == 'Field Kit': return draw_card('Field Kit/Power', lines_fieldkit(), GREEN)
     if title == 'Compass+Level': return draw_card('Compass + Level', lines_compass(), BLUE)
-    if title == 'Weather+Sky': return draw_card('Weather + Sky', lines_weather(), AMBER)
+    if title == 'Weather+Sky': return draw_weather()
     if title == 'Mesh': return draw_mesh()
-    if title == 'Network': return draw_card('Network', lines_network(), BLUE)
+    if title == 'Network': return draw_network()
     return draw_card('Trail Safety', lines_safety(), AMBER)
 
 def main():
