@@ -844,3 +844,9 @@ body.station .mesh-msg.mine{color:#f4ecd4}
 .install-text{flex:1;min-width:180px}.install-text p{margin:2px 0 0}
 .install-msg{color:var(--st-good)}
 .install-actions{display:flex;gap:8px}.install-actions button{width:auto!important}
+/* Mesh message popup (any screen) */
+.mesh-toast{position:fixed;left:50%;transform:translateX(-50%);top:calc(env(safe-area-inset-top,0px) + 70px);z-index:4000;width:min(560px,calc(100vw - 24px));display:flex;gap:10px;align-items:center;padding:12px 14px;border-radius:14px;background:var(--st-paper);color:var(--st-ink);border:2px solid var(--st-water);box-shadow:0 12px 30px rgba(0,0,0,.35)}
+.mesh-toast > div{flex:1;min-width:0;display:flex;flex-direction:column}
+.mesh-toast b{font-size:13px;color:var(--st-water)}.mesh-toast span{overflow-wrap:anywhere}
+.mesh-toast.alert{border-color:#d63b2f;background:#3a0f0b;color:#fff}.mesh-toast.alert b{color:#ff8a70}
+.mesh-toast button{width:auto!important;flex:0 0 auto}

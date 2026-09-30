@@ -558,6 +558,12 @@
       "middle-finger",
       "annoyed",
       "side-eye"
+    ],
+    "mesh-message": [
+      "greetings",
+      "curious",
+      "excited",
+      "wow"
     ]
   },
   "levels": {

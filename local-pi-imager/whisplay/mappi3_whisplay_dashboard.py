@@ -480,18 +480,19 @@ def poll_mesh_popup():
     for x in msgs:
         if x.get('id') in _mesh_seen: continue
         _mesh_seen.add(x.get('id'))
-        popup_event = {'type': 'mesh_message', 'from': (x.get('fromName') or x.get('from') or '?').strip(), 'text': x.get('text') or '', 'direct': x.get('direct'), 'snr': x.get('snr')}
-        popup_until = time.time() + 8.0
+        popup_event = {'type': 'mesh_message', 'from': (x.get('fromName') or x.get('from') or '?').strip(), 'text': x.get('text') or '', 'direct': x.get('direct'), 'snr': x.get('snr'), 'alert': bool(x.get('alert'))}
+        popup_until = time.time() + (20.0 if x.get('alert') else 8.0)
         return True
     return False
 
 def render_popup(event):
     etype = event.get('type') or 'game_event'; label = event.get('label') or etype.replace('_',' ')
     if etype == 'mesh_message':
-        head = ('+Direct from ' if event.get('direct') else '+Mesh · ') + str(event.get('from') or '?')[:16]
+        alert = bool(event.get('alert'))
+        head = ('!ALERT from ' if alert else '+Direct from ' if event.get('direct') else '+Mesh · ') + str(event.get('from') or '?')[:16]
         lines = [head] + wrap(event.get('text') or '', 24)[:7]
         if event.get('snr') is not None: lines.append('~signal SNR ' + str(round(event['snr'], 1)))
-        return draw_card('Message', lines, BLUE, 'auto returns · press next')
+        return draw_card('ALERT' if alert else 'Message', lines, RED if alert else BLUE, 'auto returns · press next')
     if etype in ('manual_popup_test','snake_trail_event'):
         accent = GREEN if etype == 'manual_popup_test' else BLUE
         lines = ['+manual popup bridge' if etype == 'manual_popup_test' else '+Snake Trail', label, event.get('text') or event.get('trail') or 'shared game event', f'score +{event.get("score_delta",0)}', 'text/contrast check']

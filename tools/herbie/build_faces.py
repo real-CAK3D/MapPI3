@@ -840,6 +840,7 @@ GROUPS = {
     'special-day':   ['party-mode', 'love', 'excited'],
     'hike-day':      ['excited', 'determined', 'greetings', 'thumbs-up'],
     'hike-soon':     ['excited', 'curious', 'thinking'],
+    'mesh-message':  ['greetings', 'curious', 'excited', 'wow'],   # a Meshtastic text arrived
     'goal-due':      ['determined', 'focused', 'thinking'],
     'goal-done':     ['summit', 'party-mode', 'grateful'],
     'weekend':       ['chillin', 'excited', 'party-mode'],

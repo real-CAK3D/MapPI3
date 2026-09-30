@@ -61,6 +61,7 @@ export default function MeshPanel({ originPoint = null }) {
         <p className="muted">Meshtastic chat and nearby nodes, no separate app needed.</p>
       </div>
       <div className="mesh-conn">
+        {typeof Notification !== 'undefined' && Notification.permission === 'default' && <button type="button" className="ghost small" onClick={() => Notification.requestPermission().then(() => setNote(''))}>Turn on phone alerts</button>}
         <span className={`mesh-chip ${m.status === 'connected' ? 'on' : m.status === 'connecting' ? 'wait' : 'off'}`}>{m.status === 'connected' ? via : m.status === 'connecting' ? 'Connecting…' : 'Not connected'}</span>
         {m.source === 'ble' ? <button type="button" className="ghost small" onClick={disconnectBluetooth}>Disconnect</button>
           : bluetoothSupported() ? <button type="button" className={m.source === 'pi' ? 'ghost small' : 'primary small'} onClick={bt} disabled={m.status === 'connecting'}>{m.source === 'pi' ? 'Use phone Bluetooth instead' : 'Connect by Bluetooth'}</button> : null}

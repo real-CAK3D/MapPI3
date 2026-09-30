@@ -88,16 +88,54 @@ def on_receive(packet, interface=None):
                'to': packet.get('toId') or packet.get('to'), 'direct': packet.get('to') == me, 'channel': packet.get('channel', 0), 'text': text[:240],
                'at': packet.get('rxTime') or int(time.time()), 'snr': packet.get('rxSnr'), 'rssi': packet.get('rxRssi'),
                'hops': (packet.get('hopStart', 0) - packet.get('hopLimit', 0)) if packet.get('hopStart') is not None else None, 'mine': False}
+        # Meshtastic's alert bell (ASCII 7) or an SOS-style word marks an alert
+        msg['alert'] = BELL in text or bool(ALERT_WORDS.search(text))
+        msg['text'] = text.replace(BELL, '').strip()[:240] or '(alert)'
+        is_new = False
         with lock:
             if not any(m.get('id') == msg['id'] for m in messages):
-                messages.append(msg); save_messages()
+                messages.append(msg); save_messages(); is_new = True
+        if is_new:
+            who = (msg['fromName'] or str(msg['from'])).strip()
+            herbie('hazard' if msg['alert'] else 'mesh-message', 180 if msg['alert'] else 45, f"{who}: {msg['text']}")
     except Exception as e:  # never let a bad packet kill the listener
         print('receive error', e, flush=True)
+
+
+ALERT_WORDS = __import__('re').compile(r'\b(sos|mayday|emergency|help me|injured|hurt|lost)\b', __import__('re').I)
+BELL = chr(7)
+
+def herbie(event, ttl, reason):
+    """Let Herbie react on the Whisplay and in the app (agent herbie-event)."""
+    try:
+        body = json.dumps({'event': event, 'ttl': ttl, 'reason': reason[:60]}).encode()
+        urllib.request.urlopen(urllib.request.Request(API + '/api/command/herbie-event', data=body, headers={'Content-Type': 'application/json'}), timeout=3).read()
+    except Exception:
+        pass
 
 
 def on_lost(interface=None, **_):
     with lock:
         conn.update(ok=False, error='radio disconnected')
+
+
+def find_wifi_radio():
+    """A Meshtastic radio that joined the MapPI3 hotspot: any hotspot device answering on port 4403."""
+    import socket, subprocess
+    try:
+        out = subprocess.run(['ip', 'neigh', 'show', 'dev', ENV.get('MESH_WIFI_DEV', 'wlan0')], capture_output=True, text=True, timeout=3).stdout
+    except Exception:
+        return None
+    for line in out.splitlines():
+        ip = line.split()[0] if line.split() else ''
+        if not ip.count('.') == 3 or 'FAILED' in line:
+            continue
+        try:
+            with socket.create_connection((ip, 4403), timeout=0.6):
+                return ip
+        except OSError:
+            continue
+    return None
 
 
 def connect_loop():
@@ -115,14 +153,16 @@ def connect_loop():
                 try: iface.close()
                 except Exception: pass
                 iface = None
-            if HOST:
-                iface = meshtastic.tcp_interface.TCPInterface(hostname=HOST); via, port = 'wifi', HOST
-            else:
-                port = find_serial()
-                if not port:
-                    with lock: conn.update(ok=False, via=None, port=None, error='no radio found on USB')
-                    time.sleep(10); continue
+            # USB first (keeps the radio's Bluetooth free for the phone), then a radio on the hotspot's Wi-Fi.
+            port = find_serial()
+            host = None if port else (HOST or find_wifi_radio())
+            if port:
                 iface = meshtastic.serial_interface.SerialInterface(devPath=port); via = 'usb'
+            elif host:
+                iface = meshtastic.tcp_interface.TCPInterface(hostname=host); via, port = 'wifi', host
+            else:
+                with lock: conn.update(ok=False, via=None, port=None, error='no radio on USB or the hotspot')
+                time.sleep(10); continue
             with lock: conn.update(ok=True, via=via, port=port, since=time.time(), error=None)
             print('connected', via, port, flush=True)
         except Exception as e:

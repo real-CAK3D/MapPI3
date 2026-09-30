@@ -20,11 +20,22 @@ const listeners = new Set();
 const emit = () => { const snap = { ...S, nodes: { ...S.nodes }, messages: [...S.messages] }; listeners.forEach(fn => fn(snap)); };
 const persist = () => { save(MSG_KEY, S.messages.slice(-300)); save(NODE_KEY, S.nodes); };
 
+// Meshtastic's alert bell (ASCII 7) or an SOS-style word marks an alert (same rule as the Pi).
+const ALERT_WORDS = /\b(sos|mayday|emergency|help me|injured|hurt|lost)\b/i;
+const BELL = String.fromCharCode(7);
+const isAlert = (text = '', flag) => Boolean(flag) || String(text).includes(BELL) || ALERT_WORDS.test(String(text));
+
+// New incoming messages, for the app-wide toast and phone notification.
+const newMsgListeners = new Set();
+export const onNewMessage = (fn) => { newMsgListeners.add(fn); return () => newMsgListeners.delete(fn); };
+let primed = false;   // messages already on the Pi when the app opens are not re-announced
+
 function addMessage(m) {
   if (S.messages.some(x => x.id === m.id && x.from === m.from)) return;
-  S.messages.push(m);
+  const msg = { ...m, text: String(m.text || '').split(BELL).join('').trim() || '(alert)', alert: isAlert(m.text, m.alert) };
+  S.messages.push(msg);
   S.messages.sort((a, b) => a.at - b.at);
-  if (!m.mine) S.unread += 1;
+  if (!msg.mine) { S.unread += 1; if (primed && Date.now() - msg.at < 10 * 60 * 1000) newMsgListeners.forEach(fn => fn(msg)); }
   persist();
 }
 function upsertNode(id, patch) {
@@ -44,7 +55,8 @@ async function pollPi() {
     S.me = d.me ? { id: d.me.id, long: (d.me.long || '').trim(), short: d.me.short, battery: d.me.battery } : S.me;
     S.radio = d.radio || S.radio;
     (d.nodes || []).forEach(n => upsertNode(n.id, { long: (n.long || '').trim(), short: n.short, hw: n.hw, snr: n.snr, hops: n.hops, battery: n.battery, lastHeard: n.lastHeard ? n.lastHeard * 1000 : null, lat: n.lat, lon: n.lon }));
-    (d.messages || []).forEach(m => addMessage({ id: m.id, from: m.from, fromName: (m.fromName || '').trim(), to: m.to, direct: !!m.direct, channel: m.channel || 0, text: m.text, at: (m.at || 0) * 1000, snr: m.snr, mine: !!m.mine }));
+    (d.messages || []).forEach(m => addMessage({ id: m.id, from: m.from, fromName: (m.fromName || '').trim(), to: m.to, direct: !!m.direct, channel: m.channel || 0, text: m.text, at: (m.at || 0) * 1000, snr: m.snr, mine: !!m.mine, alert: !!m.alert }));
+    primed = true;
     persist(); emit();
     return true;
   } catch (e) {
@@ -65,7 +77,7 @@ export const bluetoothSupported = () => typeof navigator !== 'undefined' && !!na
 
 export async function connectBluetooth() {
   if (!bluetoothSupported()) throw new Error('Bluetooth needs Chrome on Android (or desktop Chrome) and the https app.');
-  S.status = 'connecting'; S.error = ''; emit();
+  S.status = 'connecting'; S.error = ''; primed = true; emit();
   try {
     // the Meshtastic logger reads process.env / process.cwd(), which browsers do not have
     if (typeof globalThis.process === 'undefined') globalThis.process = { env: {}, cwd: () => '/' };

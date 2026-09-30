@@ -1,6 +1,6 @@
 [Unit]
 Description=MapPI3 Meshtastic mesh service (radio on USB or Wi-Fi)
-After=network.target mappi3-web.service
+After=network.target
 
 [Service]
 Type=simple
