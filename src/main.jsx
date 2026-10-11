@@ -260,7 +260,7 @@ function herbieTrailCues(point, status, waypoints, memo, launchPlan = {}, route 
   const now = new Date();
   if (now.getHours() === 12 && now.getMinutes() < 30 && memo.noon !== now.toDateString()) { memo.noon = now.toDateString(); postHerbieEvent('hungry', 300, 'lunch time', 0); return; }
   const turn = parseClock(launchPlan.turnAroundTime, now);
-  if (!overnight && turn && now >= turn && status.progress < 0.55 && !memo.turnaround) { memo.turnaround = true; postHerbieEvent('turn-around', 300, `turnaround time ${launchPlan.turnAroundTime}`, 0); return; }
+  if (!overnight && /out/i.test(route?.routeType || 'out') && turn && now >= turn && status.progress < 0.55 && !memo.turnaround) { memo.turnaround = true; postHerbieEvent('turn-around', 300, `turnaround time ${launchPlan.turnAroundTime}`, 0); return; }
   const sunset = sunsetFor(Number(point.lat), Number(point.lon), now);
   if (sunset && sunset > now && sunset - now <= 3600e3 && status.progress < 0.95 && !memo.sunset) { memo.sunset = true; postHerbieEvent('sunset-soon', 600, `sunset ${sunset.toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' })}`, 0); }
 }
@@ -681,7 +681,9 @@ function launchEstimates(route, hiker, conditions, plan = {}, origin = localHome
   const start = plan.travelTargetPoint === 'end' ? target - hikeMin : target;
   const leaveHome = start - early - driveMinutes, backAtCar = start + hikeMin, homeBy = backAtCar + driveMinutes;
   const oneWay = /out/i.test(route?.routeType || 'out');
-  const turnAround = safeEnd - Math.round(hikeMin / 2);
+  // Out and back: the latest turnaround that still gets you out by the safe finish. A loop has no
+  // turnaround, so show when this plan reaches its halfway point instead.
+  const turnAround = oneWay ? safeEnd - Math.round(hikeMin / 2) : start + Math.round(hikeMin / 2);
   const fmt = m => formatTimeFromMinutes(((m % 1440) + 1440) % 1440);
   const warnings = [];
   if (backAtCar > safeEnd) warnings.push(overnight ? `This plan reaches camp at ${fmt(backAtCar)}, after the ${fmt(safeEnd)} safe finish (sunset ${sun.sunset}). Start by ${fmt(latestStart)} to set up camp in daylight.` : `This plan has you on trail until ${fmt(backAtCar)}, after the ${fmt(safeEnd)} safe finish (sunset ${sun.sunset}). Start by ${fmt(latestStart)} or bring a headlamp.`);
@@ -689,7 +691,7 @@ function launchEstimates(route, hiker, conditions, plan = {}, origin = localHome
   if (start < sunriseMin - 20) warnings.push(`Starting at ${fmt(start)} is before sunrise (${sun.sunrise}); bring a headlamp.`);
   return { miles, hours, waterOz, calories, burnKcal, sun, travelMiles, driveMinutes, originLabel: origin?.label || 'current/home reference',
     startMin: start, startLabel: fmt(start), leaveHomeLabel: fmt(leaveHome), latestStartLabel: fmt(latestStart), homeByLabel: fmt(homeBy),
-    returnLabel: fmt(backAtCar), turnAroundLabel: overnight ? fmt(safeEnd) : fmt(turnAround), turnAroundKind: overnight ? 'at camp by (latest)' : oneWay ? 'turn around by' : 'halfway by', daylightBufferLabel: fmt(safeEnd), warnings, overnight,
+    returnLabel: fmt(backAtCar), turnAroundLabel: overnight ? fmt(safeEnd) : fmt(turnAround), turnAroundKind: overnight ? 'at camp by (latest)' : oneWay ? 'turn around by (latest)' : 'halfway at', daylightBufferLabel: fmt(safeEnd), warnings, overnight,
     dayTwoOutLabel: overnight ? `${Math.round(Number(route.hoursOut || hours) * 10) / 10} h out + ${driveMinutes} min drive` : '' };
 }
 

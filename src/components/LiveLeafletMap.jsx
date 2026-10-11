@@ -78,9 +78,18 @@ export default function LiveLeafletMap({ trace = [], center = defaultCenter, act
   const layerRef = useRef({ marker: null, line: null, route: null, shadow: null, grade: null, segments: [], waypoints: [], trails: null, accuracy: null });
   const routePoints = useMemo(() => routeToPoints(route), [route]);
   const routeMiles = useMemo(() => {
+    // Mile at each point measured along the line (points are not evenly spaced: switchbacks are dense,
+    // straight stretches sparse), scaled so the end matches the route's listed distance.
     const total = Number(route?.distanceMiles || route?.miles || 0);
-    const count = Math.max(1, routePoints.length - 1);
-    return routePoints.map((_, index) => total * (index / count));
+    const r = Math.PI / 180, along = [0];
+    for (let i = 1; i < routePoints.length; i += 1) {
+      const [la1, lo1] = routePoints[i - 1], [la2, lo2] = routePoints[i];
+      const h = Math.sin((la2 - la1) * r / 2) ** 2 + Math.cos(la1 * r) * Math.cos(la2 * r) * Math.sin((lo2 - lo1) * r / 2) ** 2;
+      along.push(along[i - 1] + 7917.6 * Math.asin(Math.sqrt(h)));
+    }
+    const measured = along.at(-1) || 0;
+    const scale = total && measured ? total / measured : 1;
+    return along.map(mi => mi * scale);
   }, [routePoints, route]);
 
   const tracePoints = useMemo(() => {

@@ -1603,16 +1603,16 @@
   {
     "id": "me-grafton-table-rock",
     "schemaVersion": "mappi3.routePack.v1",
-    "name": "Grafton Notch Table Rock",
+    "name": "Table Rock Loop (Grafton Notch)",
     "place": "Newry, Maine",
     "region": "Maine",
-    "summary": "OSM-sourced Table Rock Trail line in Grafton Notch with trail markers and route detail view. Verify current access, signage, and conditions before hiking. Loop: Table Rock Trail up to the ledge, back down on the Appalachian Trail (about 2.1 mi measured on the mapped trails).",
+    "summary": "Steep Table Rock Trail up to the ledge, then down the Appalachian Trail. 2.1 mi loop with 904 ft of climbing from the Route 26 lot (1,496 ft) to about 2,407 ft. Boulder scramble and cliff edges at the top.",
     "difficulty": "Moderate",
     "routeType": "Loop",
     "status": "Ready",
     "distanceMiles": 2.1,
-    "estimatedTime": "1h 45m",
-    "elevationGainFt": 900,
+    "estimatedTime": "1h 53m",
+    "elevationGainFt": 904,
     "storageEstimateMb": 118,
     "tags": [
       "loop",
@@ -1651,8 +1651,35 @@
     },
     "geometry": {
       "type": "LineString",
-      "source": "OpenStreetMap/Overpass import 2026-07-05",
       "coordinates": [
+        [
+          -70.947076,
+          44.589978
+        ],
+        [
+          -70.946657,
+          44.590243
+        ],
+        [
+          -70.946429,
+          44.59025
+        ],
+        [
+          -70.946191,
+          44.590282
+        ],
+        [
+          -70.946007,
+          44.590382
+        ],
+        [
+          -70.945587,
+          44.590803
+        ],
+        [
+          -70.945418,
+          44.590914
+        ],
         [
           -70.945077,
           44.591021
@@ -2112,6 +2139,218 @@
         [
           -70.935665,
           44.58825
+        ],
+        [
+          -70.935598,
+          44.588355
+        ],
+        [
+          -70.935611,
+          44.588456
+        ],
+        [
+          -70.935705,
+          44.588586
+        ],
+        [
+          -70.935638,
+          44.588834
+        ],
+        [
+          -70.93575,
+          44.589103
+        ],
+        [
+          -70.935741,
+          44.589414
+        ],
+        [
+          -70.935696,
+          44.589605
+        ],
+        [
+          -70.935714,
+          44.58988
+        ],
+        [
+          -70.935754,
+          44.590093
+        ],
+        [
+          -70.935888,
+          44.590451
+        ],
+        [
+          -70.93583,
+          44.59061
+        ],
+        [
+          -70.935865,
+          44.590879
+        ],
+        [
+          -70.935879,
+          44.591254
+        ],
+        [
+          -70.935905,
+          44.591362
+        ],
+        [
+          -70.935945,
+          44.591894
+        ],
+        [
+          -70.935972,
+          44.592227
+        ],
+        [
+          -70.93599,
+          44.592373
+        ],
+        [
+          -70.935972,
+          44.592519
+        ],
+        [
+          -70.936035,
+          44.592795
+        ],
+        [
+          -70.93607,
+          44.593125
+        ],
+        [
+          -70.935994,
+          44.593356
+        ],
+        [
+          -70.936043,
+          44.593499
+        ],
+        [
+          -70.936106,
+          44.593559
+        ],
+        [
+          -70.936168,
+          44.593658
+        ],
+        [
+          -70.936164,
+          44.593937
+        ],
+        [
+          -70.936057,
+          44.594051
+        ],
+        [
+          -70.935954,
+          44.594118
+        ],
+        [
+          -70.935981,
+          44.594368
+        ],
+        [
+          -70.936083,
+          44.594447
+        ],
+        [
+          -70.936039,
+          44.594581
+        ],
+        [
+          -70.938039,
+          44.594721
+        ],
+        [
+          -70.939584,
+          44.594646
+        ],
+        [
+          -70.939912,
+          44.594757
+        ],
+        [
+          -70.940325,
+          44.595177
+        ],
+        [
+          -70.940561,
+          44.595196
+        ],
+        [
+          -70.94085,
+          44.594707
+        ],
+        [
+          -70.941151,
+          44.594604
+        ],
+        [
+          -70.94144,
+          44.59462
+        ],
+        [
+          -70.942229,
+          44.594238
+        ],
+        [
+          -70.942599,
+          44.594284
+        ],
+        [
+          -70.942943,
+          44.593982
+        ],
+        [
+          -70.943361,
+          44.593844
+        ],
+        [
+          -70.94343,
+          44.593408
+        ],
+        [
+          -70.943742,
+          44.592843
+        ],
+        [
+          -70.944535,
+          44.591701
+        ],
+        [
+          -70.945077,
+          44.591021
+        ],
+        [
+          -70.945418,
+          44.590914
+        ],
+        [
+          -70.945587,
+          44.590803
+        ],
+        [
+          -70.946007,
+          44.590382
+        ],
+        [
+          -70.946191,
+          44.590282
+        ],
+        [
+          -70.946429,
+          44.59025
+        ],
+        [
+          -70.946657,
+          44.590243
+        ],
+        [
+          -70.947076,
+          44.589978
         ]
       ]
     },
@@ -2147,64 +2386,58 @@
     ],
     "waypoints": [
       {
-        "id": "me-grafton-table-rock-wp-1",
+        "id": "tr-0",
         "name": "Grafton Notch parking",
         "type": "Start",
         "mile": 0.0,
-        "icon": "\u25ce",
+        "lat": 44.589978,
+        "lon": -70.947076,
+        "notes": "Route 26 lot. Day-use fee for Grafton Notch State Park."
+      },
+      {
+        "id": "tr-1",
+        "name": "Table Rock Trail turnoff",
+        "type": "Junction",
+        "mile": 0.13,
         "lat": 44.591021,
         "lon": -70.945077,
-        "source": "OSM geometry mile marker"
+        "notes": "Leave the AT here: orange-blazed Table Rock Trail, steep."
       },
       {
-        "id": "me-grafton-table-rock-wp-2",
-        "name": "Table Rock Trail entrance",
-        "type": "Junction",
-        "mile": 0.16,
-        "icon": "\u2197",
-        "lat": 44.589927,
-        "lon": -70.943979,
-        "source": "OSM geometry mile marker"
-      },
-      {
-        "id": "me-grafton-table-rock-wp-3",
-        "name": "Boulder scramble section",
+        "id": "tr-2",
+        "name": "Boulder scramble",
         "type": "Climb",
-        "mile": 0.32,
-        "icon": "\u25b2",
-        "lat": 44.587966,
-        "lon": -70.942524,
-        "source": "OSM geometry mile marker"
+        "mile": 0.5,
+        "lat": 44.587587,
+        "lon": -70.941265,
+        "notes": "Hands-on rock steps; slow down when wet."
       },
       {
-        "id": "me-grafton-table-rock-wp-4",
-        "name": "Cliff edge caution",
-        "type": "Danger",
-        "mile": 0.49,
-        "icon": "\u26a0\ufe0f",
-        "lat": 44.587764,
-        "lon": -70.939714,
-        "source": "OSM geometry mile marker"
-      },
-      {
-        "id": "me-grafton-table-rock-wp-5",
-        "name": "Table Rock viewpoint",
+        "id": "tr-3",
+        "name": "Table Rock ledge",
         "type": "View",
-        "mile": 0.65,
-        "icon": "\ud83d\udc41\ufe0f",
-        "lat": 44.588082,
-        "lon": -70.936421,
-        "source": "OSM geometry mile marker"
-      },
-      {
-        "id": "me-grafton-table-rock-wp-6",
-        "name": "Turnaround / descend same way",
-        "type": "Finish",
-        "mile": 0.81,
-        "icon": "\u25ce",
+        "mile": 0.93,
         "lat": 44.58825,
         "lon": -70.935665,
-        "source": "OSM geometry mile marker"
+        "notes": "Big drop-offs. Stay back from the edge. Then follow the connector path up to the AT."
+      },
+      {
+        "id": "tr-4",
+        "name": "Rejoin the Appalachian Trail",
+        "type": "Junction",
+        "mile": 1.39,
+        "lat": 44.594581,
+        "lon": -70.936039,
+        "notes": "Turn left (west) on the AT, downhill to the lot."
+      },
+      {
+        "id": "tr-5",
+        "name": "Back at the parking lot",
+        "type": "Finish",
+        "mile": 2.15,
+        "lat": 44.589978,
+        "lon": -70.947076,
+        "notes": ""
       }
     ],
     "pois": [
@@ -2218,37 +2451,45 @@
     "landType": "Public land",
     "catalogCategory": "mountain trail",
     "mountainArea": "Grafton Notch / Route 26",
-    "geometryQuality": "osm-imported-needs-field-check",
+    "geometryQuality": "OpenStreetMap trails (Table Rock Trail, connector, Appalachian Trail)",
     "color": "#9ce36c",
     "segments": [
       {
         "id": "seg-1",
-        "name": "Loop start / approach",
+        "name": "AT to the Table Rock Trail turnoff",
         "startMile": 0.0,
-        "endMile": 0.28,
+        "endMile": 0.13,
         "color": "#9ce36c"
       },
       {
         "id": "seg-2",
-        "name": "High point / ridge",
-        "startMile": 0.28,
-        "endMile": 0.55,
-        "color": "#4bd2ff"
+        "name": "Table Rock Trail climb",
+        "startMile": 0.13,
+        "endMile": 0.93,
+        "color": "#ff8a4b"
       },
       {
         "id": "seg-3",
-        "name": "Loop return",
-        "startMile": 0.55,
-        "endMile": 0.81,
+        "name": "Connector up to the AT",
+        "startMile": 0.93,
+        "endMile": 1.39,
+        "color": "#4bd2ff"
+      },
+      {
+        "id": "seg-4",
+        "name": "Appalachian Trail down to the lot",
+        "startMile": 1.39,
+        "endMile": 2.15,
         "color": "#ffd36a"
       }
     ],
     "markerDensity": "rich route markers from attached geometry",
     "statsCheck": {
-      "status": "approximate",
-      "checked": "2026-09-25",
-      "note": "Distance and gain are planning estimates and the map line is a sketch. Not yet measured on a mapped trail."
-    }
+      "status": "measured",
+      "checked": "2026-10-10",
+      "note": "Measured along the mapped OpenStreetMap trails, with climbing from terrain elevation data (2.15 mi, 904 ft)."
+    },
+    "noCatalogTwin": true
   },
   {
     "id": "me-tumbledown-brook",

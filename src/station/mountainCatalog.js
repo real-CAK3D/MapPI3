@@ -64,7 +64,8 @@ export function catalogRoutes(catalog) {
 const normName = s => String(s || '').toLowerCase().replace(/\b(mount|mt\.?|mountain|peak)\b/g, '').replace(/[^a-z]/g, '');
 const km = (a, b) => { const t = Math.PI / 180, dl = (b[0] - a[0]) * t, dn = (b[1] - a[1]) * t; const h = Math.sin(dl / 2) ** 2 + Math.cos(a[0] * t) * Math.cos(b[0] * t) * Math.sin(dn / 2) ** 2; return 12742 * Math.asin(Math.sqrt(h)); };
 export function catalogTwin(route, catalog, mountainName) {
-  if (!catalog || route?.fromCatalog || route?.custom || !mountainName) return null;
+  // noCatalogTwin: a hike of its own that shares a trailhead with a catalog mountain (Table Rock vs Baldpate)
+  if (!catalog || route?.fromCatalog || route?.custom || route?.noCatalogTwin || !mountainName) return null;
   const c = route?.geometry?.coordinates?.[0];
   if (!Array.isArray(c)) return null;
   const n = normName(mountainName);
