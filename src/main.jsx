@@ -493,6 +493,7 @@ const offlinePackCatalog = [
   { name:'Water filter / purifier', category:'gear', qty:'1', weightLb:0.18, notes:'filter, tablets, or squeeze system', stage:'before', keywords:'water filter purifier gear hydration' },
   { name:'Trekking poles', category:'gear', qty:'pair', weightLb:1.10, notes:'helps knees, water crossings, snow/ice balance', stage:'during', keywords:'poles trekking hiking gear' },
   { name:'Power bank 10,000 mAh', category:'electronics', qty:'1', weightLb:0.55, notes:'phone/Pi/GPS reserve power', stage:'before', keywords:'battery bank charger power electronics gear' },
+  { name:'MapPI3 unit + its power cable', category:'electronics', qty:'1 set', weightLb:0.30, notes:'the cable that runs the Pi from the power bank', stage:'before', keywords:'pi mappi3 power cable usb electronics gear' },
   { name:'USB-C / Lightning cable', category:'electronics', qty:'1', weightLb:0.06, notes:'match phone/Pi field kit connector', stage:'before', keywords:'charging cable usb electronics gear' },
   { name:'Dog leash + waste bags', category:'dog', qty:'1 set', weightLb:0.35, notes:'pet trail basics where allowed', stage:'before', keywords:'dog pet leash bags gear' },
   { name:'Dog water bowl', category:'dog', qty:'1', weightLb:0.16, notes:'collapsible bowl', stage:'during', keywords:'dog pet water bowl gear' },
@@ -706,6 +707,14 @@ function weatherPackingHints(conditions = {}) {
   hints.push({ name: 'Rain shell check', qty: '1', weightLb: 0.7, stage: 'before', notes: 'pack if forecast or mountain clouds look sketchy', required: false });
   return hints;
 }
+// Saved lists from before the Pi cable item existed get it added to Gear, keeping the user's edits.
+function withPiCable(pack) {
+  if (!pack?.categories || pack.categories.some(c => (c.items || []).some(i => /mappi3 unit|pi .*cable/i.test(i.name || '')))) return pack;
+  const gi = pack.categories.findIndex(c => /gear|electronics/i.test(c.name || ''));
+  if (gi < 0) return pack;
+  const item = { id: 'gear-pi-cable', checked: false, required: true, name: 'MapPI3 unit + its power cable', qty: '1 set', notes: 'the cable that runs the Pi from the power bank', weightLb: 0.3, stage: 'before' };
+  return { ...pack, categories: pack.categories.map((c, i) => (i === gi ? { ...c, items: [...(c.items || []), item] } : c)) };
+}
 function defaultPackingForRoute(route, estimates = {}, conditions = {}) {
   const waterOz = Number(estimates.waterOz || 64);
   const calories = Number(estimates.calories || 900);
@@ -721,7 +730,7 @@ function defaultPackingForRoute(route, estimates = {}, conditions = {}) {
     categories: [
       mk('Food', [{ name: `${calories} cal trail food`, qty: `${calories} cal`, weightLb: foodLb, stage: 'before', notes: 'bars, sandwich, jerky, fruit; keep dog-safe snacks separate' }, { name: 'Emergency snack', qty: '1', weightLb: 0.25, stage: 'during', notes: 'do not eat unless needed' }]),
       mk('Water', [{ name: `${waterOz} oz water`, qty: `${waterOz} oz`, weightLb: waterLb, stage: 'before', notes: 'adjust for heat/humidity' }, { name: 'Filter / purification', qty: hard ? '1' : 'optional', weightLb: 0.25, stage: 'during', notes: 'strongly recommended for longer hikes' }, ...weatherPackingHints(conditions)]),
-      mk('Gear', [{ name: 'Phone with MapPI3 offline route', qty: '1', weightLb: 0.45, stage: 'before' }, { name: 'Power bank + cable', qty: '1', weightLb: 0.6, stage: 'before' }, { name: 'Headlamp / flashlight', qty: '1', weightLb: 0.25, stage: 'before' }, { name: 'Paper map / backup navigation', qty: '1', weightLb: 0.15, stage: 'before' }, { name: 'First aid kit', qty: '1', weightLb: 0.5, stage: 'during' }, { name: 'Emergency blanket / whistle', qty: '1 set', weightLb: 0.2, stage: 'during' }]),
+      mk('Gear', [{ name: 'Phone with MapPI3 offline route', qty: '1', weightLb: 0.45, stage: 'before' }, { name: 'Power bank + cable', qty: '1', weightLb: 0.6, stage: 'before' }, { name: 'MapPI3 unit + its power cable', qty: '1 set', weightLb: 0.3, stage: 'before', notes: 'the cable that runs the Pi from the power bank' },{ name: 'Headlamp / flashlight', qty: '1', weightLb: 0.25, stage: 'before' }, { name: 'Paper map / backup navigation', qty: '1', weightLb: 0.15, stage: 'before' }, { name: 'First aid kit', qty: '1', weightLb: 0.5, stage: 'during' }, { name: 'Emergency blanket / whistle', qty: '1 set', weightLb: 0.2, stage: 'during' }]),
       mk('Clothes', [{ name: 'Rain/wind layer', qty: '1', weightLb: 0.7, stage: 'before' }, { name: 'Warm layer', qty: '1', weightLb: 0.9, stage: 'before' }, { name: 'Dry socks', qty: '1 pair', weightLb: 0.15, stage: 'after' }, { name: 'Hat / gloves', qty: hard ? '1 set' : 'weather based', weightLb: 0.2, stage: 'before', required: hard }]),
       mk('Dog Specific', [{ name: 'Leash + harness/collar check', qty: '1 set', weightLb: 0.6, stage: 'before' }, { name: 'Dog water + collapsible bowl', qty: '1', weightLb: 0.4, stage: 'during', notes: 'plus shared water above' }, { name: 'Waste bags', qty: '3+', weightLb: 0.05, stage: 'during' }, { name: 'Dog first-aid basics', qty: '1 mini kit', weightLb: 0.25, stage: 'during', notes: 'paw wrap/tweezers/tick tool' }, { name: 'Paw/tick check before car', qty: '1 reminder', weightLb: 0, stage: 'after' }, { name: 'Dog towel / blanket for car', qty: '1', weightLb: 0.8, stage: 'after' }]),
       mk('Supplies', [{ name: 'Car key secured', qty: '1', weightLb: 0.05, stage: 'before' }, { name: 'ID / cash / card', qty: '1 set', weightLb: 0.1, stage: 'before' }, { name: 'Emergency contact shared', qty: '1', weightLb: 0, stage: 'before' }, { name: 'Trash bag / wet gear bag', qty: '1', weightLb: 0.1, stage: 'after' }])
@@ -1210,7 +1219,7 @@ function Launch({ selectedRoute, routes, setSelectedRoute, secure, conditions, h
   const waterUnit = basePlan.waterUnit || settings.waterUnit || 'oz';
   const estimates = launchEstimates(selectedRoute, hiker, conditions, basePlan, originPoint || localHome);
   const routePackKey = selectedRoute?.id || 'general-hike';
-  const activePack = basePlan.packingByRoute?.[routePackKey] || defaultPackingForRoute(selectedRoute, estimates, conditions);
+  const activePack = withPiCable(basePlan.packingByRoute?.[routePackKey]) || defaultPackingForRoute(selectedRoute, estimates, conditions);
   const packStats = packingStats(activePack);
   const stageStats = packingStageStats(activePack);
   const sunTargetTime = basePlan.sunTarget === 'sunrise' ? estimates.sun.sunrise : basePlan.sunTarget === 'sunset' ? estimates.sun.sunset : (basePlan.customSunTime || estimates.sun.sunset);
