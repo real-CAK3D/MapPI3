@@ -19,7 +19,7 @@ body.station.night{
 body.station{background:var(--st-bg);color:var(--st-ink);font-family:var(--st-body);font-size:16px;color-scheme:light}
 
 /* ---------- shell ---------- */
-.station-header{position:sticky;top:env(safe-area-inset-top,0px);z-index:1200;height:var(--st-header-h);display:flex;align-items:center;gap:14px;padding:0 max(16px,env(safe-area-inset-left,0px));background:var(--st-forest);color:var(--st-cream);border-bottom:5px solid var(--st-brass);font-family:var(--st-body)}
+.station-header{position:sticky;top:0;z-index:1200;box-sizing:content-box;height:var(--st-header-h);padding-top:env(safe-area-inset-top,0px)!important;display:flex;align-items:center;gap:14px;padding:0 max(16px,env(safe-area-inset-left,0px));background:var(--st-forest);color:var(--st-cream);border-bottom:5px solid var(--st-brass);font-family:var(--st-body)}
 .station-logo{background:none;border:0;color:inherit;display:flex;flex-direction:column;align-items:flex-start;padding:4px 6px;cursor:pointer;line-height:1}
 .station-logo strong{font-family:var(--st-display);font-weight:800;font-size:21px;letter-spacing:.05em}
 .station-logo small{font-size:11px;opacity:.75;margin-top:3px;font-family:var(--st-mono)}
